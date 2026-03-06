@@ -308,6 +308,131 @@ Use these facts:
 - Youngest women's No. 1: Martina Hingis at 16 years, 6 months
 - Most year-end No. 1 (men): Djokovic 8 times`,
   },
+  {
+    slug: 'most-career-titles-tennis',
+    title: 'Most Career Titles in Tennis History',
+    category: 'records',
+    prompt: `Write an article (600-800 words) about the all-time career title leaders in tennis.
+
+Structure:
+## Most Career Titles in Tennis History
+## Men's Open Era Career Title Leaders
+## Women's Open Era Career Title Leaders
+## Active Players Climbing the Rankings
+## What It Takes to Win 50+ Titles
+
+Use these facts:
+- Men's all-time (Open Era): Jimmy Connors (109), Roger Federer (103), Ivan Lendl (94), Novak Djokovic (99), Rafael Nadal (92)
+- Women's all-time (Open Era): Martina Navratilova (167 incl doubles), Chris Evert (157), Steffi Graf (107)
+- Active players: Djokovic (99), approaching Connors' record
+- Title rate: Federer won 103 from ~1500 matches, Djokovic 99 from ~1300 matches`,
+  },
+  {
+    slug: 'longest-winning-streaks-tennis',
+    title: 'Longest Winning Streaks in Tennis History',
+    category: 'records',
+    prompt: `Write an article (500-700 words) about the longest winning streaks in tennis.
+
+Structure:
+## Longest Winning Streaks in Tennis History
+## Men's Record: Guillermo Vilas — 46 Matches
+## Women's Record: Martina Navratilova — 74 Matches
+## Modern Era Winning Streaks
+## Surface-Specific Streaks
+
+Use these facts:
+- Men's Open Era record: Guillermo Vilas 46 consecutive wins (1977)
+- Women's record: Martina Navratilova 74 consecutive wins (1984)
+- Novak Djokovic: 43 consecutive wins in 2011
+- Roger Federer: 41 consecutive wins spanning 2006-07
+- Rafael Nadal: 81 consecutive wins on clay (2005-07)
+- Roger Federer: 65 consecutive wins on grass (2003-08)`,
+  },
+  {
+    slug: 'biggest-upsets-tennis',
+    title: 'The Biggest Upsets in Tennis History',
+    category: 'records',
+    prompt: `Write an article (600-800 words) about the most shocking upsets in tennis history.
+
+Structure:
+## The Biggest Upsets in Tennis History
+## Grand Slam Shock Results
+## Ranking Upsets: When Underdogs Triumphed
+## What Makes an Upset in Tennis?
+## Notable First-Round Exits
+
+Use these facts:
+- Robin Soderling beat Rafael Nadal at 2009 Roland Garros (ended Nadal's 31-match RG streak)
+- Lukas Rosol beat Rafael Nadal at 2012 Wimbledon (2nd round)
+- Roberta Vinci beat Serena Williams at 2015 US Open semifinal (stopped Calendar Slam)
+- Novak Djokovic lost to #178 Daniel Elahi Galan at 2023 Davis Cup
+- Boris Becker won Wimbledon at 17 as unseeded (1985)
+- Emma Raducanu won 2021 US Open as qualifier (ranked #150)`,
+  },
+  {
+    slug: 'golden-slam-calendar-slam',
+    title: 'Golden Slam & Calendar Slam — Tennis\'s Rarest Achievement',
+    category: 'records',
+    prompt: `Write an article (500-700 words) about the Golden Slam and Calendar Slam in tennis.
+
+Structure:
+## What Is a Golden Slam?
+## Calendar Slam Holders
+## Golden Slam Holders
+## Near Misses: Who Almost Made It?
+## Why It's So Hard
+
+Use these facts:
+- Calendar Slam (all 4 Slams in one year): Rod Laver (1962, 1969), Maureen Connolly (1953), Margaret Court (1970), Steffi Graf (1988)
+- Golden Slam (all 4 Slams + Olympic Gold): Only Steffi Graf (1988)
+- Novak Djokovic came close in 2021 (won 3 Slams, lost US Open final)
+- Serena Williams came close in 2015 (won 3 Slams, lost US Open SF)
+- Last Calendar Slam attempt was Djokovic in 2021`,
+  },
+  {
+    slug: 'youngest-oldest-tennis-records',
+    title: 'Youngest & Oldest Records in Tennis History',
+    category: 'records',
+    prompt: `Write an article (500-700 words) about age-related records in tennis.
+
+Structure:
+## Age Records in Tennis
+## Youngest Grand Slam Champions
+## Oldest Grand Slam Champions
+## Youngest World No. 1 Players
+## Longest Careers in Tennis
+
+Use these facts:
+- Youngest men's Slam champion: Michael Chang (17y 3m, 1989 Roland Garros)
+- Youngest women's Slam champion: Martina Hingis (16y 3m, 1997 Australian Open)
+- Oldest men's Slam champion: Ken Rosewall (37y 2m, 1972 Australian Open), in Open Era: Federer (36, 2018 AO)
+- Oldest women's Slam champion: Serena Williams (35, 2017 Australian Open)
+- Youngest men's No. 1: Carlos Alcaraz (19y 4m)
+- Youngest women's No. 1: Martina Hingis (16y 6m)
+- Longest career: Martina Navratilova played pro tennis for 32 years
+- Roger Federer retired at 41, Serena Williams at 41`,
+  },
+  {
+    slug: 'most-aces-tennis-records',
+    title: 'Most Aces in Tennis History — All-Time Records',
+    category: 'records',
+    prompt: `Write an article (500-700 words) about ace records in professional tennis.
+
+Structure:
+## Most Aces in Tennis History
+## All-Time Career Ace Leaders
+## Most Aces in a Single Match
+## Most Aces at Grand Slams
+## The Science of the Big Serve
+
+Use these facts:
+- All-time career aces leader: Ivo Karlovic (~13,728 career aces)
+- Second: John Isner (~12,000+)
+- Most aces in a single match: John Isner (113 aces vs Mahut, 2010 Wimbledon)
+- Karlovic hit 78 aces in a single Davis Cup match (2009)
+- Average ace speed on ATP Tour: ~195-210 km/h for top servers
+- Isner vs Mahut featured combined 216 aces in one match`,
+  },
 ];
 
 // ============================================================
@@ -349,13 +474,14 @@ async function generatePlayerArticles(type) {
   const subcategory = type.replace('player-', '');
   const template = PROMPT_TEMPLATES[type];
 
-  // Get players that need articles
+  // Get players that need articles — fetch more than LIMIT to account for existing articles
+  const fetchLimit = LIMIT + 50; // Extra buffer for already-processed players
   let query = supabase
     .from('players')
     .select('*')
     .gt('career_titles', type === 'player-networth' ? 5 : 3) // Higher bar for net worth
     .order('career_titles', { ascending: false })
-    .limit(LIMIT);
+    .limit(fetchLimit);
 
   if (TOUR_FILTER) query = query.eq('tour', TOUR_FILTER);
 
@@ -382,6 +508,9 @@ async function generatePlayerArticles(type) {
     const existingIds = new Set((existing || []).map(a => a.player_id));
     playersToProcess = players.filter(p => !existingIds.has(p.player_id));
   }
+
+  // Limit to the requested number of articles
+  playersToProcess = playersToProcess.slice(0, LIMIT);
 
   console.log(`📋 ${playersToProcess.length} players need ${type} articles\n`);
 
