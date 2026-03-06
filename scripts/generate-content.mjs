@@ -436,6 +436,618 @@ Use these facts:
 ];
 
 // ============================================================
+// GEAR ARTICLE TEMPLATES
+// ============================================================
+
+const GEAR_ARTICLES = [
+  {
+    slug: 'best-tennis-rackets-2026',
+    title: 'Best Tennis Rackets in 2026 — Complete Buyer\'s Guide',
+    prompt: `Write a comprehensive gear guide (700-900 words) about the best tennis rackets in 2026.
+
+Structure:
+## Best Tennis Rackets in 2026
+## Best Overall: Wilson Clash 100 v2
+## Best for Power: Babolat Pure Drive 2024
+## Best for Control: HEAD Gravity Pro
+## Best for Beginners: Wilson Burn 100
+## Best for Advanced Players: Yonex VCORE 98
+## How to Choose the Right Racket
+
+Cover: head size, weight, balance, string pattern basics. Make it useful for recreational players.`,
+  },
+  {
+    slug: 'best-tennis-strings-guide',
+    title: 'Best Tennis Strings in 2026 — Types, Tension & Setup Guide',
+    prompt: `Write a gear guide (600-800 words) about tennis strings.
+
+Structure:
+## Tennis String Guide
+## Types of Tennis Strings (Natural Gut, Polyester, Synthetic, Multifilament)
+## How String Tension Affects Play
+## Best Strings for Power
+## Best Strings for Spin
+## How Often to Restring
+## Pro Player String Choices`,
+  },
+  {
+    slug: 'best-tennis-shoes-2026',
+    title: 'Best Tennis Shoes in 2026 — Court-Tested Reviews',
+    prompt: `Write a gear guide (600-800 words) about the best tennis shoes.
+
+Structure:
+## Best Tennis Shoes in 2026
+## Best Overall: Nike Vapor Pro 2
+## Best for Clay: Asics Gel-Resolution 9
+## Best for Hard Court: adidas Barricade 2026
+## Best Budget Option: New Balance Fresh Foam Lav v2
+## How to Choose Tennis Shoes (Surface, Fit, Durability)`,
+  },
+  {
+    slug: 'tennis-bag-guide',
+    title: 'Best Tennis Bags in 2026 — From Backpacks to 12-Pack',
+    prompt: `Write a gear guide (500-700 words) about tennis bags.
+
+Structure:
+## Best Tennis Bags in 2026
+## Types of Tennis Bags
+## Best Tournament Bag: Wilson Super Tour
+## Best Backpack: HEAD Tour Team Backpack
+## Best Budget Bag
+## What to Look for in a Tennis Bag`,
+  },
+  {
+    slug: 'tennis-overgrip-guide',
+    title: 'Best Tennis Overgrips — Tourna, Wilson, Yonex Compared',
+    prompt: `Write a gear guide (400-600 words) about tennis overgrips.
+
+Structure:
+## Best Tennis Overgrips
+## Why Overgrips Matter
+## Best Dry Grip: Tourna Grip Original
+## Best Tacky Grip: Wilson Pro Overgrip
+## Best Absorbent: Yonex Super Grap
+## How Often to Change Your Overgrip`,
+  },
+  {
+    slug: 'head-vs-wilson-vs-babolat',
+    title: 'HEAD vs Wilson vs Babolat — Which Brand Is Best?',
+    prompt: `Write a comparison article (600-800 words) comparing the three biggest tennis racket brands.
+
+Structure:
+## HEAD vs Wilson vs Babolat
+## Brand History & Heritage
+## HEAD: The Power Specialist
+## Wilson: The All-Rounder
+## Babolat: The Spin King
+## Pro Player Brand Allegiances
+## Which Brand Is Right for You?`,
+  },
+  {
+    slug: 'best-tennis-balls-2026',
+    title: 'Best Tennis Balls in 2026 — Wilson, Penn, Dunlop Compared',
+    prompt: `Write a gear guide (500-600 words) about tennis balls.
+
+Structure:
+## Best Tennis Balls
+## Types of Tennis Balls (Pressurized vs Pressureless)
+## Best Overall: Wilson US Open
+## Best for Practice: Penn Championship
+## Best Premium: Dunlop Fort All Court
+## How Long Do Tennis Balls Last?`,
+  },
+  {
+    slug: 'tennis-accessories-essentials',
+    title: 'Essential Tennis Accessories Every Player Needs',
+    prompt: `Write a gear guide (500-700 words) about must-have tennis accessories.
+
+Structure:
+## Essential Tennis Accessories
+## Vibration Dampeners: Do They Work?
+## Best Tennis Wristbands & Headbands
+## Tennis Elbow Prevention Gear
+## Court Essentials: Water, Towels, Sunscreen
+## Training Aids Worth Buying`,
+  },
+  {
+    slug: 'junior-tennis-racket-guide',
+    title: 'Best Junior Tennis Rackets — Guide by Age & Size',
+    prompt: `Write a gear guide (500-700 words) about tennis rackets for kids and juniors.
+
+Structure:
+## Best Junior Tennis Rackets
+## Racket Size by Age (19", 21", 23", 25", 26")
+## Best for Ages 4-6
+## Best for Ages 7-9
+## Best for Ages 10-12
+## When to Switch to Adult Rackets`,
+  },
+  {
+    slug: 'best-clay-court-shoes',
+    title: 'Best Tennis Shoes for Clay Courts in 2026',
+    prompt: `Write a focused gear guide (500-600 words) about clay court tennis shoes.
+
+Structure:
+## Best Clay Court Tennis Shoes
+## Why Clay Needs Special Shoes
+## Best Overall: Asics Gel-Resolution 9 Clay
+## Best for Sliding: Nike Zoom Vapor Pro 2 Clay
+## Best Durability: adidas Adizero Ubersonic 4 Clay
+## Herringbone Sole Pattern Explained`,
+  },
+  {
+    slug: 'tennis-racket-weight-guide',
+    title: 'Tennis Racket Weight Guide — Light vs Heavy, Which Is Better?',
+    prompt: `Write a technical guide (500-700 words) about tennis racket weight and how it affects play.
+
+Structure:
+## Tennis Racket Weight Guide
+## Weight Categories (Light <285g, Medium 285-310g, Heavy 310g+)
+## Benefits of Lighter Rackets
+## Benefits of Heavier Rackets
+## How Pros Customize Weight (Lead Tape, Silicone)
+## Finding Your Ideal Weight`,
+  },
+  {
+    slug: 'tennis-sunglasses-guide',
+    title: 'Best Sunglasses for Tennis — UV Protection on Court',
+    prompt: `Write a gear guide (400-500 words) about sunglasses for tennis.
+
+Structure:
+## Best Sunglasses for Tennis
+## Why Tennis Players Need Sunglasses
+## Best Overall: Oakley Radar EV
+## Best Budget: Under Armour Blitzing
+## Lens Color Guide for Tennis
+## Prescription Options`,
+  },
+  {
+    slug: 'best-tennis-dampeners',
+    title: 'Best Tennis Vibration Dampeners — Do They Actually Work?',
+    prompt: `Write a gear article (400-600 words) about vibration dampeners.
+
+Structure:
+## Tennis Vibration Dampeners
+## What Dampeners Actually Do (and Don't Do)
+## Best Dampener: Wilson Pro Feel
+## Do Pro Players Use Dampeners?
+## Types: Button vs Worm
+## DIY Alternatives`,
+  },
+  {
+    slug: 'tennis-elbow-prevention-gear',
+    title: 'Tennis Elbow Prevention — Best Gear & Equipment Tips',
+    prompt: `Write a helpful guide (500-700 words) about preventing tennis elbow through equipment choices.
+
+Structure:
+## Tennis Elbow Prevention Through Equipment
+## How Racket Choice Affects Tennis Elbow
+## Best Rackets for Arm-Friendly Play
+## String Choice: Softer Is Better
+## Grip Size Matters
+## Compression Sleeves & Braces That Help`,
+  },
+  {
+    slug: 'used-tennis-rackets-buying-guide',
+    title: 'Buying Used Tennis Rackets — Complete Guide',
+    prompt: `Write a practical guide (500-600 words) about buying used/second-hand tennis rackets.
+
+Structure:
+## Buying Used Tennis Rackets
+## Where to Buy Used Rackets
+## What to Check Before Buying
+## How to Spot a Good Deal
+## Rackets That Hold Value
+## When to Buy New Instead`,
+  },
+];
+
+// ============================================================
+// LIFESTYLE ARTICLE TEMPLATES
+// ============================================================
+
+const LIFESTYLE_ARTICLES = [
+  {
+    slug: 'richest-tennis-players-2026',
+    title: 'Richest Tennis Players in the World — 2026 Rankings',
+    prompt: `Write a lifestyle article (700-900 words) about the wealthiest tennis players.
+
+Structure:
+## Richest Tennis Players in 2026
+## 1. Roger Federer — Estimated $550 Million
+## 2. Novak Djokovic — Estimated $250 Million
+## 3. Rafael Nadal — Estimated $220 Million
+## 4. Serena Williams — Estimated $300 Million
+## 5. Maria Sharapova — Estimated $200 Million
+## How Tennis Players Build Wealth Beyond Prize Money
+## The Endorsement Economy in Tennis`,
+  },
+  {
+    slug: 'tennis-fashion-on-court',
+    title: 'Tennis Fashion — The Most Iconic Outfits in History',
+    prompt: `Write a lifestyle article (600-800 words) about fashion in tennis.
+
+Structure:
+## Tennis Fashion Through the Decades
+## The All-White Tradition at Wimbledon
+## Most Iconic Tennis Outfits Ever
+## Nike vs adidas: The Fashion Battle
+## How Players Express Themselves Through Style
+## Tennis Fashion Trends in 2026`,
+  },
+  {
+    slug: 'tennis-diet-nutrition',
+    title: 'What Do Tennis Players Eat? Diet & Nutrition Guide',
+    prompt: `Write a lifestyle/health article (600-700 words) about tennis player nutrition.
+
+Structure:
+## Tennis Player Diet & Nutrition
+## Novak Djokovic's Gluten-Free Diet
+## Match Day Nutrition
+## Hydration During Matches
+## What to Eat Before, During, and After Tennis
+## Supplements Tennis Players Use`,
+  },
+  {
+    slug: 'tennis-fitness-training',
+    title: 'How Tennis Players Train — Fitness, Strength & Conditioning',
+    prompt: `Write a lifestyle/fitness article (600-700 words) about how pro tennis players train.
+
+Structure:
+## Tennis Training: Beyond the Court
+## Physical Demands of Professional Tennis
+## Strength Training for Tennis
+## Cardio & Endurance Work
+## Flexibility & Recovery
+## A Typical Training Week for a Top-100 Player`,
+  },
+  {
+    slug: 'tennis-retirement-second-careers',
+    title: 'Life After Tennis — What Retired Players Do Next',
+    prompt: `Write a lifestyle article (600-700 words) about what tennis players do after retirement.
+
+Structure:
+## Life After Professional Tennis
+## Coaching: The Most Common Path
+## Business Ventures (Federer's On, Sharapova's Sugarpova)
+## Broadcasting & Commentary
+## Tennis Academy Founders
+## Philanthropy & Giving Back`,
+  },
+  {
+    slug: 'best-tennis-movies-documentaries',
+    title: 'Best Tennis Movies & Documentaries to Watch',
+    prompt: `Write a lifestyle article (500-700 words) about tennis in film and TV.
+
+Structure:
+## Best Tennis Movies & Documentaries
+## Top Documentaries: Break Point, Strokes of Genius, Untold
+## Classic Tennis Movies
+## Best Fictional Tennis Films
+## Where to Stream Tennis Content
+## Tennis YouTube Channels Worth Following`,
+  },
+  {
+    slug: 'tennis-travel-bucket-list',
+    title: 'Tennis Travel Bucket List — 10 Tournaments Every Fan Should Attend',
+    prompt: `Write a travel/lifestyle article (600-800 words) about must-visit tennis tournaments.
+
+Structure:
+## Tennis Travel Bucket List
+## 1. Wimbledon — The Queue Experience
+## 2. Roland Garros — Paris in May
+## 3. Australian Open — Melbourne Magic
+## 4. US Open — New York's Grand Slam
+## 5. Indian Wells — The Fifth Slam
+## Tips for Attending a Grand Slam on a Budget`,
+  },
+  {
+    slug: 'tennis-mental-health',
+    title: 'Mental Health in Tennis — How Players Cope with Pressure',
+    prompt: `Write a thoughtful article (600-700 words) about mental health in professional tennis.
+
+Structure:
+## Mental Health in Professional Tennis
+## The Loneliness of Individual Sport
+## Naomi Osaka's Impact on the Conversation
+## Pressure at Grand Slams
+## Sports Psychology in Tennis
+## How Fans Can Support Player Mental Health`,
+  },
+  {
+    slug: 'how-to-start-playing-tennis',
+    title: 'How to Start Playing Tennis — Beginner\'s Complete Guide',
+    prompt: `Write a helpful beginner guide (600-800 words) about starting tennis.
+
+Structure:
+## How to Start Playing Tennis
+## What Equipment You Need (Budget: $100-200)
+## Finding Courts Near You
+## Basic Rules You Need to Know
+## Your First Lesson: What to Expect
+## Tennis Terminology for Beginners
+## Apps and Resources for New Players`,
+  },
+  {
+    slug: 'tennis-betting-guide',
+    title: 'Understanding Tennis Odds & Statistics — A Fan\'s Guide',
+    prompt: `Write an informational article (500-600 words) about tennis statistics and how they're used.
+
+Structure:
+## Understanding Tennis Statistics
+## Key Stats That Predict Match Outcomes
+## Surface Statistics: Why They Matter
+## Head-to-Head Records
+## How Rankings Work (ATP vs WTA Points System)
+## Advanced Stats: Return Points Won, Break Point Conversion`,
+  },
+];
+
+// ============================================================
+// TOURNAMENT ARTICLE TEMPLATES
+// ============================================================
+
+const TOURNAMENT_ARTICLES = [
+  {
+    slug: 'australian-open-guide',
+    title: 'Australian Open — Complete Tournament Guide',
+    prompt: `Write a tournament guide (600-800 words) about the Australian Open.
+
+Structure:
+## Australian Open — The Grand Slam Down Under
+## History & Key Facts
+## The Venue: Melbourne Park
+## Surface: GreenSet (Hard Court)
+## All-Time Records at the Australian Open
+## Ticket & Travel Guide
+## Notable Moments in AO History`,
+  },
+  {
+    slug: 'roland-garros-guide',
+    title: 'Roland Garros (French Open) — Complete Tournament Guide',
+    prompt: `Write a tournament guide (600-800 words) about Roland Garros.
+
+Structure:
+## Roland Garros — The Clay Court Grand Slam
+## History & Key Facts
+## The Venue: Stade Roland Garros, Paris
+## Surface: Red Clay
+## Rafael Nadal's Dominance (14 titles)
+## All-Time Records at Roland Garros
+## Attending Roland Garros: Tips & Tickets`,
+  },
+  {
+    slug: 'wimbledon-guide',
+    title: 'Wimbledon — The Ultimate Guide to Tennis\'s Most Prestigious Tournament',
+    prompt: `Write a tournament guide (700-900 words) about Wimbledon.
+
+Structure:
+## Wimbledon — The Championships
+## History: From 1877 to Today
+## The All England Club
+## Surface: Grass
+## The Queue — Wimbledon's Unique Tradition
+## All-White Dress Code
+## All-Time Wimbledon Records
+## Strawberries & Cream: The Wimbledon Experience`,
+  },
+  {
+    slug: 'us-open-guide',
+    title: 'US Open — Complete Tournament Guide',
+    prompt: `Write a tournament guide (600-800 words) about the US Open.
+
+Structure:
+## US Open — New York's Grand Slam
+## History & Key Facts
+## The Venue: USTA Billie Jean King National Tennis Center
+## Arthur Ashe Stadium — The Biggest Tennis Arena
+## Night Sessions Under the Lights
+## All-Time Records at the US Open
+## Tips for Attending the US Open`,
+  },
+  {
+    slug: 'indian-wells-guide',
+    title: 'Indian Wells (BNP Paribas Open) — The Fifth Grand Slam',
+    prompt: `Write a tournament guide (500-600 words) about Indian Wells.
+
+Structure:
+## Indian Wells — The Fifth Grand Slam
+## Why It's Called the Fifth Slam
+## The Desert Setting
+## Stadium 1: Second Largest Tennis Venue
+## Notable Moments
+## How to Attend`,
+  },
+  {
+    slug: 'miami-open-guide',
+    title: 'Miami Open — Complete Tournament Guide',
+    prompt: `Write a tournament guide (500-600 words) about the Miami Open.
+
+Structure:
+## Miami Open
+## History: From Key Biscayne to Hard Rock Stadium
+## The Sunshine Double (Indian Wells + Miami)
+## All-Time Winners
+## Miami's Unique Atmosphere
+## Fan Guide`,
+  },
+  {
+    slug: 'atp-finals-guide',
+    title: 'ATP Finals — The Season-Ending Championship Explained',
+    prompt: `Write a tournament guide (500-700 words) about the ATP Finals.
+
+Structure:
+## ATP Finals — The Year-End Showdown
+## How Qualification Works (Top 8 Players)
+## Round-Robin Format Explained
+## History: From Masters Cup to Nitto ATP Finals
+## Host Cities Through the Years
+## All-Time Records (Federer: 6 titles, Djokovic: 7)`,
+  },
+  {
+    slug: 'wta-finals-guide',
+    title: 'WTA Finals — The Season-Ending Championship',
+    prompt: `Write a tournament guide (500-600 words) about the WTA Finals.
+
+Structure:
+## WTA Finals
+## How Qualification Works
+## Format & Structure
+## History & Notable Champions
+## Records & Statistics
+## Where It's Held`,
+  },
+  {
+    slug: 'davis-cup-guide',
+    title: 'Davis Cup — The World Cup of Tennis',
+    prompt: `Write a tournament guide (600-700 words) about the Davis Cup.
+
+Structure:
+## Davis Cup — Tennis's Team Competition
+## History: The Oldest International Team Event
+## New Format Since 2019
+## Most Successful Nations
+## Famous Davis Cup Moments
+## How It Compares to the Billie Jean King Cup`,
+  },
+  {
+    slug: 'monte-carlo-masters-guide',
+    title: 'Monte-Carlo Masters — The Crown Jewel of Clay',
+    prompt: `Write a tournament guide (500-600 words) about the Monte-Carlo Masters.
+
+Structure:
+## Monte-Carlo Masters
+## The Stunning Venue: Monte-Carlo Country Club
+## Clay Court Season Opener
+## Nadal's Record: 11 Titles
+## History & Notable Moments
+## Attending the Tournament`,
+  },
+  {
+    slug: 'shanghai-masters-guide',
+    title: 'Shanghai Masters — Tennis in China',
+    prompt: `Write a tournament guide (400-500 words) about the Shanghai Masters.
+
+Structure:
+## Shanghai Masters
+## History & Growth of Tennis in China
+## The Venue: Qizhong Forest Sports City Arena
+## Notable Champions
+## Tennis's Expansion in Asia`,
+  },
+  {
+    slug: 'laver-cup-guide',
+    title: 'Laver Cup — Tennis\'s Ryder Cup',
+    prompt: `Write a tournament guide (500-600 words) about the Laver Cup.
+
+Structure:
+## Laver Cup — Team Europe vs Team World
+## Named After Rod Laver
+## Unique Format & Scoring
+## Federer's Farewell (2022)
+## Most Memorable Moments
+## Future of the Laver Cup`,
+  },
+];
+
+// ============================================================
+// ADDITIONAL RECORD ARTICLES
+// ============================================================
+
+const EXTRA_RECORD_ARTICLES = [
+  {
+    slug: 'most-masters-1000-titles',
+    title: 'Most Masters 1000 Titles in Tennis History',
+    category: 'records',
+    prompt: `Write an article (500-700 words) about Masters 1000 title records.
+
+Structure:
+## Most Masters 1000 Titles
+## All-Time Leaders: Djokovic, Nadal, Federer
+## Masters 1000 by Tournament
+## The Difficulty of Winning Masters Events
+## Active Players Climbing the List
+
+Use these facts:
+- Djokovic: 40 Masters titles (all-time record)
+- Nadal: 36 Masters titles
+- Federer: 28 Masters titles
+- 9 Masters 1000 events per year
+- Djokovic has won all 9 different Masters (Career Golden Masters)`,
+  },
+  {
+    slug: 'tennis-prize-money-history',
+    title: 'Tennis Prize Money Through History — From $0 to $65 Million',
+    category: 'records',
+    prompt: `Write an article (600-700 words) about the evolution of prize money in tennis.
+
+Structure:
+## Tennis Prize Money History
+## The Open Era Begins (1968)
+## Equal Prize Money Fight
+## Prize Money Growth Decade by Decade
+## Current Grand Slam Prize Money (2024-2026)
+## Highest Career Earnings: Djokovic $185M+
+
+Use these facts:
+- 1968: First Open Era prize money
+- Billie Jean King fought for equal prize money
+- US Open: first Slam with equal pay (1973)
+- Wimbledon: equal pay since 2007
+- 2024 Wimbledon total prize money: £50M+
+- 2024 US Open winner: $3.6M`,
+  },
+  {
+    slug: 'tennis-surface-records',
+    title: 'Tennis Surface Records — Clay, Grass & Hard Court Kings',
+    category: 'records',
+    prompt: `Write an article (600-800 words) about surface-specific records in tennis.
+
+Structure:
+## Surface Records in Tennis
+## Clay Court Records (Nadal's Dominance)
+## Grass Court Records (Federer & Navratilova)
+## Hard Court Records
+## Most Titles by Surface
+## Surface Specialists vs All-Court Players
+
+Use these facts:
+- Nadal: 81 consecutive clay wins (2005-07), 14 French Open titles, 63 clay titles
+- Federer: 65 consecutive grass wins, 8 Wimbledon titles, 19 grass titles
+- Djokovic: Most Australian Open titles (10), most hard court Slam titles
+- Navratilova: 12 consecutive Wimbledon finals`,
+  },
+  {
+    slug: 'grand-slam-hat-tricks',
+    title: 'Grand Slam Hat-Tricks — Players Who Won 3+ Slams in a Year',
+    category: 'records',
+    prompt: `Write an article (500-600 words) about players who won 3 or more Grand Slams in a single year.
+
+Structure:
+## Three Grand Slams in One Year
+## Players Who Achieved This Feat
+## Rod Laver's Calendar Slams
+## Djokovic 2021: So Close to History
+## Federer 2004, 2006, 2007: Three Slams in a Year
+## The Challenge of Maintaining Form Across Surfaces`,
+  },
+  {
+    slug: 'doubles-records-tennis',
+    title: 'Greatest Doubles Teams & Records in Tennis History',
+    category: 'records',
+    prompt: `Write an article (500-700 words) about doubles records in tennis.
+
+Structure:
+## Doubles Records in Tennis
+## Greatest Men's Doubles Teams (Bryan Brothers, Woodbridge/Woodforde)
+## Greatest Women's Doubles Teams (Williams Sisters, Hingis Partners)
+## Most Doubles Grand Slam Titles
+## Mixed Doubles Records
+## The Decline and Revival of Doubles`,
+  },
+];
+
+// ============================================================
 // OPENAI API CALL
 // ============================================================
 
@@ -595,14 +1207,14 @@ async function generatePlayerArticles(type) {
 // GENERATE RECORD ARTICLES
 // ============================================================
 
-async function generateRecordArticles() {
-  let articles = RECORD_ARTICLES;
+async function generateStaticArticles(category, allArticles, systemPrompt) {
+  let articles = allArticles;
 
   if (!FORCE) {
     const { data: existing } = await supabase
       .from('articles')
       .select('slug')
-      .eq('category', 'records')
+      .eq('category', category)
       .in('slug', articles.map(a => a.slug));
 
     const existingSlugs = new Set((existing || []).map(a => a.slug));
@@ -611,7 +1223,7 @@ async function generateRecordArticles() {
 
   if (LIMIT < articles.length) articles = articles.slice(0, LIMIT);
 
-  console.log(`📋 ${articles.length} record articles to generate\n`);
+  console.log(`📋 ${articles.length} ${category} articles to generate\n`);
 
   let generated = 0;
   let errors = 0;
@@ -626,22 +1238,19 @@ async function generateRecordArticles() {
     }
 
     try {
-      const body = await callOpenAI(
-        'You are a professional tennis journalist writing for super.tennis. Write factual, engaging articles about tennis records and history. Use markdown formatting with ## headers. Target a general audience.',
-        article.prompt,
-        1000
-      );
+      const body = await callOpenAI(systemPrompt, article.prompt, 1200);
 
+      const cat = article.category || category;
       const { error: upsertError } = await supabase
         .from('articles')
         .upsert({
           slug: article.slug,
           title: article.title,
-          category: 'records',
-          subcategory: 'record',
+          category: cat,
+          subcategory: cat,
           excerpt: body.substring(0, 200).replace(/\n/g, ' ').trim() + '...',
           body,
-          meta_title: `${article.title} — Tennis Records`,
+          meta_title: `${article.title} — SUPER.TENNIS`,
           meta_description: body.substring(0, 155).replace(/\n/g, ' ').trim(),
           status: 'draft',
         }, { onConflict: 'slug' });
@@ -666,6 +1275,39 @@ async function generateRecordArticles() {
   }
 
   return { generated, errors };
+}
+
+async function generateRecordArticles() {
+  const all = [...RECORD_ARTICLES, ...EXTRA_RECORD_ARTICLES];
+  return generateStaticArticles(
+    'records',
+    all,
+    'You are a professional tennis journalist writing for super.tennis. Write factual, engaging articles about tennis records and history. Use markdown formatting with ## headers. Target a general audience.'
+  );
+}
+
+async function generateGearArticles() {
+  return generateStaticArticles(
+    'gear',
+    GEAR_ARTICLES,
+    'You are a tennis equipment expert writing for super.tennis. Write detailed but accessible gear guides and reviews. Use markdown formatting with ## headers. Be practical and helpful for recreational players.'
+  );
+}
+
+async function generateLifestyleArticles() {
+  return generateStaticArticles(
+    'lifestyle',
+    LIFESTYLE_ARTICLES,
+    'You are a tennis lifestyle writer for super.tennis. Write engaging, informative articles about tennis culture, player lifestyles, and the tennis world beyond the court. Use markdown formatting with ## headers.'
+  );
+}
+
+async function generateTournamentArticles() {
+  return generateStaticArticles(
+    'tournaments',
+    TOURNAMENT_ARTICLES,
+    'You are a tennis travel and tournament expert writing for super.tennis. Write informative tournament guides that help fans plan visits and understand tournament history. Use markdown formatting with ## headers.'
+  );
 }
 
 // ============================================================
@@ -703,9 +1345,18 @@ async function main() {
     case 'record':
       result = await generateRecordArticles();
       break;
+    case 'gear':
+      result = await generateGearArticles();
+      break;
+    case 'lifestyle':
+      result = await generateLifestyleArticles();
+      break;
+    case 'tournament':
+      result = await generateTournamentArticles();
+      break;
     default:
       console.error(`❌ Unknown type: ${TYPE}`);
-      console.error('   Available types: player-profile, player-networth, player-racket, record');
+      console.error('   Available: player-profile, player-networth, player-racket, record, gear, lifestyle, tournament');
       process.exit(1);
   }
 

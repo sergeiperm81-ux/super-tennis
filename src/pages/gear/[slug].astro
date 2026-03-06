@@ -6,29 +6,18 @@ import { marked } from 'marked';
 export async function getStaticPaths() {
   let slugs: string[] = [];
   try {
-    slugs = await getArticleSlugs('records');
+    slugs = await getArticleSlugs('gear');
   } catch (e) {
-    console.warn('records getStaticPaths: Supabase unavailable');
+    console.warn('gear getStaticPaths: Supabase unavailable');
   }
 
-  // Fallback slugs in case DB is empty
   if (slugs.length === 0) {
     slugs = [
-      'most-grand-slam-titles',
-      'fastest-serve-tennis',
-      'longest-match-tennis',
-      'most-weeks-number-one',
-      'most-career-titles-tennis',
-      'longest-winning-streaks-tennis',
-      'biggest-upsets-tennis',
-      'golden-slam-calendar-slam',
-      'youngest-oldest-tennis-records',
-      'most-aces-tennis-records',
-      'tennis-prize-money-history',
-      'most-masters-1000-titles',
-      'tennis-surface-records',
-      'grand-slam-hat-tricks',
-      'doubles-records-tennis',
+      'best-tennis-rackets-2026', 'best-tennis-shoes-2026', 'best-tennis-strings-guide',
+      'tennis-bag-guide', 'tennis-overgrip-guide', 'head-vs-wilson-vs-babolat',
+      'best-tennis-balls-2026', 'tennis-accessories-essentials', 'junior-tennis-racket-guide',
+      'best-clay-court-shoes', 'tennis-racket-weight-guide', 'tennis-sunglasses-guide',
+      'best-tennis-dampeners', 'tennis-elbow-prevention-gear', 'used-tennis-rackets-buying-guide',
     ];
   }
 
@@ -41,22 +30,21 @@ let article: any = null;
 try {
   article = await getArticleBySlug(slug as string);
 } catch (e) {
-  console.warn(`Record article not found: ${slug}`);
+  console.warn(`Gear article not found: ${slug}`);
 }
 
 if (!article) {
-  return Astro.redirect('/records/');
+  return Astro.redirect('/gear/');
 }
 
 const bodyHtml = article.body ? marked.parse(article.body) : '';
 
-// JSON-LD for the article
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Article',
   headline: article.title,
   description: article.meta_description || article.excerpt,
-  url: `https://super.tennis/records/${slug}/`,
+  url: `https://super.tennis/gear/${slug}/`,
   publisher: {
     '@type': 'Organization',
     name: 'SUPER.TENNIS',
@@ -64,31 +52,29 @@ const jsonLd = {
   },
   about: {
     '@type': 'Thing',
-    name: 'Tennis Records',
+    name: 'Tennis Equipment',
   },
 };
 ---
 
 <ArticleLayout
   title={article.meta_title || article.title}
-  description={article.meta_description || article.excerpt || `${article.title} — Tennis records and statistics on SUPER.TENNIS.`}
+  description={article.meta_description || article.excerpt || `${article.title} — Tennis gear guide on SUPER.TENNIS.`}
   breadcrumbs={[
     { label: 'Home', href: '/' },
-    { label: 'Records', href: '/records/' },
+    { label: 'Gear', href: '/gear/' },
     { label: article.title },
   ]}
 >
-  <!-- JSON-LD -->
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <div set:html={bodyHtml} />
 
-  <!-- Navigation Links -->
   <div class="article-nav">
-    <a href="/records/" class="nav-back">← All Tennis Records</a>
+    <a href="/gear/" class="nav-back">← All Gear Guides</a>
     <div class="nav-related">
       <a href="/players/">👥 Player Profiles</a>
-      <a href="/rankings/">📊 Rankings</a>
+      <a href="/records/">🏆 Records</a>
     </div>
   </div>
 </ArticleLayout>
@@ -110,11 +96,7 @@ const jsonLd = {
     font-size: 0.95rem;
   }
   .nav-back:hover { text-decoration: underline; }
-
-  .nav-related {
-    display: flex;
-    gap: 16px;
-  }
+  .nav-related { display: flex; gap: 16px; }
   .nav-related a {
     color: var(--gray-600);
     font-size: 0.9rem;
