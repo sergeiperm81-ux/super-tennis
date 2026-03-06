@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getLeaderboard } from '../../lib/supabase';
+import { getLeaderboard, getArticles } from '../../lib/supabase';
 import { countryFlags } from '../../lib/fallback-data';
 
 // Dynamic leaderboards from Supabase
@@ -29,6 +29,12 @@ try {
 } catch (e) {
   console.warn('Records: Supabase unavailable, using static data only');
 }
+
+// Fetch record articles from Supabase
+let recordArticles: any[] = [];
+try {
+  recordArticles = await getArticles({ category: 'records', limit: 10 });
+} catch (e) {}
 
 // Curated records data (editorial, not in database)
 const records = [
@@ -310,6 +316,27 @@ const records = [
         </section>
       )}
 
+      <!-- Deep Dive Articles -->
+      {recordArticles.length > 0 && (
+        <section class="records-section" id="deep-dive">
+          <h2>
+            <span class="section-icon">📖</span>
+            Deep Dive Articles
+          </h2>
+          <div class="articles-list">
+            {recordArticles.map((art: any) => (
+              <a href={`/records/${art.slug}/`} class="article-card-link">
+                <div class="article-card-content">
+                  <h3>{art.title}</h3>
+                  <p>{art.excerpt}</p>
+                </div>
+                <span class="article-arrow">→</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
       <!-- Related Content -->
       <section class="related-content">
         <h2>Explore More</h2>
@@ -531,6 +558,53 @@ const records = [
     color: var(--gray-500);
     margin: 0;
     line-height: 1.4;
+  }
+
+  /* Deep Dive Articles */
+  .articles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .article-card-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 24px;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    transition: all 0.2s;
+    text-decoration: none;
+    color: inherit;
+  }
+  .article-card-link:hover {
+    border-color: var(--court-green);
+    box-shadow: var(--shadow);
+  }
+  .article-card-content h3 {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 6px;
+    color: var(--gray-900);
+  }
+  .article-card-content p {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+    margin: 0;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .article-arrow {
+    font-size: 1.4rem;
+    color: var(--court-green);
+    flex-shrink: 0;
+    font-weight: 700;
   }
 
   /* Responsive */

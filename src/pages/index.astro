@@ -1,5 +1,45 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getLatestRankings, getPlayerBySlug } from '../lib/supabase';
+import { countryFlags, fallbackPlayers } from '../lib/fallback-data';
+
+// Fetch real sidebar data from Supabase
+let atpTop5: any[] = [];
+let sidebarPlayer: any = null;
+try {
+  const rankings = await getLatestRankings('atp', 5);
+  atpTop5 = rankings.map((r: any) => ({
+    rank: r.ranking,
+    name: `${r.players?.first_name} ${r.players?.last_name}`,
+    slug: r.players?.slug,
+    country: r.players?.country_code || '',
+    points: r.points?.toLocaleString() || '0',
+  }));
+
+  // Get featured player for sidebar
+  sidebarPlayer = await getPlayerBySlug('jannik-sinner');
+} catch (e) {
+  console.warn('Homepage: Supabase unavailable for sidebar');
+}
+
+// Fallback sidebar data
+if (atpTop5.length === 0) {
+  atpTop5 = [
+    { rank: 1, name: 'Jannik Sinner', slug: 'jannik-sinner', country: 'ITA', points: '11,830' },
+    { rank: 2, name: 'Alexander Zverev', slug: 'alexander-zverev', country: 'GER', points: '9,855' },
+    { rank: 3, name: 'Carlos Alcaraz', slug: 'carlos-alcaraz', country: 'ESP', points: '7,190' },
+    { rank: 4, name: 'Novak Djokovic', slug: 'novak-djokovic', country: 'SRB', points: '6,875' },
+    { rank: 5, name: 'Daniil Medvedev', slug: 'daniil-medvedev', country: 'RUS', points: '6,445' },
+  ];
+}
+
+if (!sidebarPlayer) {
+  sidebarPlayer = fallbackPlayers['jannik-sinner'] || {
+    first_name: 'Jannik', last_name: 'Sinner', country_code: 'ITA',
+    career_titles: 19, grand_slam_titles: 3, slug: 'jannik-sinner',
+    image_url: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=300&fit=crop&q=80',
+  };
+}
 
 // All content data (will come from content collections later)
 const badgeColors: Record<string, string> = {
@@ -54,20 +94,20 @@ const hero2 = {
   desc: "From Belgrade to billionaire status — the business ventures behind the GOAT debate.",
 };
 const hero3 = {
-  title: "Australian Open 2026: Draw, Schedule & Results",
-  badge: "TOURNAMENTS",
+  title: "Most Grand Slam Titles of All Time — Complete List",
+  badge: "RECORDS",
   image: "https://images.unsplash.com/photo-1530915534664-4ac6423816b7?w=1200&h=600&fit=crop&q=80",
-  href: "/tournaments/australian-open/",
-  desc: "Everything you need to know about the first Grand Slam of the year.",
+  href: "/records/most-grand-slam-titles/",
+  desc: "Who holds the record for most Grand Slam titles? The definitive ranking of men's and women's tennis legends.",
 };
 
 // Row of 2 vertical cards
 const row2 = [
   {
-    title: "Best Tennis Shoes for Clay Courts in 2026",
-    badge: "GEAR",
+    title: "Roger Federer's Net Worth — $550 Million Tennis Empire",
+    badge: "MONEY",
     image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=600&h=400&fit=crop&q=80",
-    href: "/gear/best-clay-shoes/",
+    href: "/players/roger-federer/net-worth/",
   },
   {
     title: "Carlos Alcaraz's Net Worth Surpasses $40 Million",
@@ -83,53 +123,53 @@ const compactCards = [
     title: "Fastest Serves in Tennis History — Updated Rankings",
     badge: "RECORDS",
     image: "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=200&h=140&fit=crop&q=80",
-    href: "/records/fastest-serve/",
+    href: "/records/fastest-serve-tennis/",
   },
   {
-    title: "Inside the $15M Prize Pool at Wimbledon 2026",
-    badge: "LIFESTYLE",
+    title: "Most Weeks at World No. 1 — All-Time Record",
+    badge: "RECORDS",
     image: "https://images.unsplash.com/photo-1530915534664-4ac6423816b7?w=200&h=140&fit=crop&q=80",
-    href: "/tournaments/wimbledon/prize-money/",
+    href: "/records/most-weeks-number-one/",
   },
 ];
 
 // Horizontal feature card (big photo left + title right)
 const featureCard = {
-  title: "Richest Tennis Players in the World — 2026 Rankings",
-  badge: "LIFESTYLE",
+  title: "Serena Williams' Net Worth — From Tennis to Business Empire",
+  badge: "MONEY",
   image: "https://images.unsplash.com/photo-1560012057-4372e14c5085?w=600&h=400&fit=crop&q=80",
-  href: "/lifestyle/richest-tennis-players/",
-  desc: "From prize money to endorsement deals — who's earning the most on and off the court.",
+  href: "/players/serena-williams/net-worth/",
+  desc: "How the 23-time Grand Slam champion built a fortune beyond the court.",
 };
 
 // Hero 4
 const hero4 = {
-  title: "Novak Djokovic vs Carlos Alcaraz — Head to Head Record",
-  badge: "H2H",
+  title: "The Longest Match in Tennis History — Isner vs Mahut",
+  badge: "RECORDS",
   image: "https://images.unsplash.com/photo-1599586120429-48281b6f0ece?w=1200&h=600&fit=crop&q=80",
-  href: "/vs/djokovic-alcaraz/",
-  desc: "The defining rivalry of modern tennis — every match, every stat, every moment.",
+  href: "/records/longest-match-tennis/",
+  desc: "11 hours, 5 minutes. A final set of 70-68. The match that redefined endurance in tennis.",
 };
 
 // Second row of 3 vertical cards
 const row3b = [
   {
-    title: "Wilson vs Head vs Babolat — The Ultimate Comparison",
+    title: "What Racket Does Rafael Nadal Use?",
     badge: "GEAR",
     image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=600&h=400&fit=crop&q=80",
-    href: "/gear/best-racket-brands/",
+    href: "/players/rafael-nadal/racket/",
   },
   {
-    title: "Coco Gauff's Rise to Stardom",
+    title: "Alexander Zverev — Player Profile & Stats",
     badge: "PLAYERS",
     image: "https://images.unsplash.com/photo-1542144582-1ba00456b5e3?w=600&h=400&fit=crop&q=80",
-    href: "/players/coco-gauff/",
+    href: "/players/alexander-zverev/",
   },
   {
-    title: "Aryna Sabalenka's Net Worth in 2026",
+    title: "Andy Murray's Net Worth & Career Earnings",
     badge: "MONEY",
     image: "https://images.unsplash.com/photo-1599586120429-48281b6f0ece?w=600&h=400&fit=crop&q=80",
-    href: "/players/aryna-sabalenka/net-worth/",
+    href: "/players/andy-murray/net-worth/",
   },
 ];
 
@@ -140,24 +180,25 @@ const recentScores = [
   { p1: 'N. Djokovic', p2: 'D. Medvedev', score: '6-7  6-4  6-2', tournament: 'Australian Open', round: 'SF', winner: 1 },
 ];
 
-const playerProfile = {
-  name: 'Novak Djokovic',
-  country: 'Serbia',
-  ranking: 3,
-  age: 38,
-  titles: 99,
-  grandSlams: 24,
+// Build sidebar player profile from real data
+const profilePlayer = sidebarPlayer || fallbackPlayers['jannik-sinner'];
+const playerProfile = profilePlayer ? {
+  name: `${profilePlayer.first_name} ${profilePlayer.last_name}`,
+  country: profilePlayer.country_code || '',
+  flag: countryFlags[profilePlayer.country_code || ''] || '🏳️',
+  ranking: 1,
+  titles: profilePlayer.career_titles || 0,
+  grandSlams: profilePlayer.grand_slam_titles || 0,
+  image: profilePlayer.image_url || "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=300&fit=crop&q=80",
+  href: `/players/${profilePlayer.slug}/`,
+  wl: `${profilePlayer.career_win || 0}-${profilePlayer.career_loss || 0}`,
+} : {
+  name: 'Jannik Sinner', country: 'ITA', flag: '🇮🇹', ranking: 1, titles: 19, grandSlams: 3,
   image: "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=300&fit=crop&q=80",
-  href: '/players/novak-djokovic/',
+  href: '/players/jannik-sinner/', wl: '0-0',
 };
 
-const topRankings = [
-  { rank: 1, name: 'Jannik Sinner', country: 'ITA', points: '11,830' },
-  { rank: 2, name: 'Carlos Alcaraz', country: 'ESP', points: '9,855' },
-  { rank: 3, name: 'Novak Djokovic', country: 'SRB', points: '7,190' },
-  { rank: 4, name: 'Alexander Zverev', country: 'GER', points: '6,875' },
-  { rank: 5, name: 'Daniil Medvedev', country: 'RUS', points: '6,445' },
-];
+// Rankings uses atpTop5 (dynamic from Supabase, with fallback already set above)
 ---
 
 <BaseLayout title="Home">
@@ -304,19 +345,18 @@ const topRankings = [
           <!-- PLAYER PROFILE -->
           <div class="sb-profile">
             <div class="sb-profile__header">
-              <span class="sb-profile__label">Profile</span>
+              <span class="sb-profile__label">Featured Player</span>
               <a href="/players/" class="sb-link">View all &rarr;</a>
             </div>
             <a href={playerProfile.href} class="sb-profile__card">
               <div class="sb-profile__img">
                 <img src={playerProfile.image} alt={playerProfile.name} loading="lazy" />
-                <div class="sb-profile__name">{playerProfile.name}</div>
+                <div class="sb-profile__name">{playerProfile.flag} {playerProfile.name}</div>
               </div>
               <div class="sb-profile__stats">
-                <div class="sb-profile__row"><span>Rank</span><span>{playerProfile.ranking}</span></div>
                 <div class="sb-profile__row"><span>Grand Slams</span><span>{playerProfile.grandSlams}</span></div>
                 <div class="sb-profile__row"><span>Career Titles</span><span>{playerProfile.titles}</span></div>
-                <div class="sb-profile__row"><span>Age</span><span>{playerProfile.age}</span></div>
+                <div class="sb-profile__row"><span>Record</span><span>{playerProfile.wl}</span></div>
               </div>
             </a>
           </div>
@@ -329,10 +369,18 @@ const topRankings = [
             </div>
             <table class="sb-rankings__table">
               <tbody>
-                {topRankings.map(r => (
+                {atpTop5.map(r => (
                   <tr>
                     <td class="sb-rankings__rank">{r.rank}</td>
-                    <td class="sb-rankings__name">{r.name}</td>
+                    <td class="sb-rankings__name">
+                      {r.slug ? (
+                        <a href={`/players/${r.slug}/`}>
+                          {countryFlags[r.country] || '🏳️'} {r.name}
+                        </a>
+                      ) : (
+                        <span>{countryFlags[r.country] || '🏳️'} {r.name}</span>
+                      )}
+                    </td>
                     <td class="sb-rankings__pts">{r.points}</td>
                   </tr>
                 ))}
@@ -761,6 +809,13 @@ const topRankings = [
     font-weight: 600;
     font-size: 0.8rem;
     color: var(--gray-900);
+  }
+  .sb-rankings__name a {
+    color: var(--gray-900);
+    transition: color 0.2s;
+  }
+  .sb-rankings__name a:hover {
+    color: var(--court-green);
   }
   .sb-rankings__pts {
     padding: 10px 16px;
