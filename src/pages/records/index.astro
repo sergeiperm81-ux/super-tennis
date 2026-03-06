@@ -1,0 +1,353 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// Records data — will be replaced with Supabase/content collections later
+const records = [
+  {
+    category: 'Grand Slam Records',
+    icon: '🏆',
+    items: [
+      { title: 'Most Grand Slam Titles (Men\'s Singles)', holder: 'Novak Djokovic', value: '24', slug: 'novak-djokovic', detail: 'Australian Open (10), Roland Garros (3), Wimbledon (7), US Open (4)' },
+      { title: 'Most Grand Slam Titles (Women\'s Singles)', holder: 'Margaret Court', value: '24', slug: null, detail: 'Australian Open (11), Roland Garros (5), Wimbledon (3), US Open (5)' },
+      { title: 'Most Grand Slam Titles (Open Era, Women\'s)', holder: 'Serena Williams', value: '23', slug: null, detail: 'Australian Open (7), Roland Garros (3), Wimbledon (7), US Open (6)' },
+      { title: 'Most Consecutive Grand Slam Titles', holder: 'Novak Djokovic', value: '4', slug: 'novak-djokovic', detail: '2015-16: Wimbledon, US Open, Australian Open, Roland Garros' },
+      { title: 'Youngest Grand Slam Champion (Men\'s)', holder: 'Michael Chang', value: '17y 3m', slug: null, detail: '1989 Roland Garros' },
+      { title: 'Youngest Grand Slam Champion (Women\'s)', holder: 'Martina Hingis', value: '16y 3m', slug: null, detail: '1997 Australian Open' },
+    ]
+  },
+  {
+    category: 'Ranking Records',
+    icon: '📊',
+    items: [
+      { title: 'Most Weeks at No. 1 (Men\'s)', holder: 'Novak Djokovic', value: '428', slug: 'novak-djokovic', detail: 'Surpassed Roger Federer\'s 310 weeks in March 2023' },
+      { title: 'Most Weeks at No. 1 (Women\'s)', holder: 'Steffi Graf', value: '377', slug: null, detail: 'Held the record since 1997' },
+      { title: 'Youngest No. 1 (Men\'s)', holder: 'Carlos Alcaraz', value: '19y 4m', slug: 'carlos-alcaraz', detail: 'September 12, 2022 after winning US Open' },
+      { title: 'Youngest No. 1 (Women\'s)', holder: 'Martina Hingis', value: '16y 6m', slug: null, detail: 'March 31, 1997' },
+      { title: 'Most Year-End No. 1 (Men\'s)', holder: 'Novak Djokovic', value: '8', slug: 'novak-djokovic', detail: '2011, 2012, 2014, 2015, 2018, 2020, 2021, 2023' },
+      { title: 'Most Year-End No. 1 (Women\'s)', holder: 'Steffi Graf', value: '8', slug: null, detail: '1987, 1988, 1989, 1990, 1993, 1995, 1996' },
+    ]
+  },
+  {
+    category: 'Match & Serve Records',
+    icon: '⚡',
+    items: [
+      { title: 'Fastest Serve Ever Recorded', holder: 'Sam Groth', value: '263.4 km/h', slug: null, detail: '2012 Busan Challenger (not ATP-recognized)' },
+      { title: 'Fastest Serve (ATP Recognized)', holder: 'John Isner', value: '253.0 km/h', slug: null, detail: '2016 Davis Cup' },
+      { title: 'Longest Match in History', holder: 'Isner vs. Mahut', value: '11h 5m', slug: null, detail: '2010 Wimbledon, final score 70-68 in 5th set' },
+      { title: 'Most Career Titles (Men\'s Open Era)', holder: 'Novak Djokovic', value: '99', slug: 'novak-djokovic', detail: 'Surpassed Jimmy Connors\' 109 is the all-time target' },
+      { title: 'Most Career Titles (Women\'s Open Era)', holder: 'Martina Navratilova', value: '167', slug: null, detail: 'Including 59 Grand Slam titles (singles + doubles)' },
+      { title: 'Most Career Prize Money (Men\'s)', holder: 'Novak Djokovic', value: '$185M+', slug: 'novak-djokovic', detail: 'First player to earn over $180 million in prize money' },
+    ]
+  },
+  {
+    category: 'Surface Records',
+    icon: '🎾',
+    items: [
+      { title: 'Most Roland Garros Titles (Men\'s)', holder: 'Rafael Nadal', value: '14', slug: null, detail: 'Won between 2005-2022, lost only 4 matches total' },
+      { title: 'Most Wimbledon Titles (Men\'s)', holder: 'Roger Federer', value: '8', slug: null, detail: 'Won between 2003-2017, including 5 consecutive (2003-07)' },
+      { title: 'Most Australian Open Titles (Men\'s)', holder: 'Novak Djokovic', value: '10', slug: 'novak-djokovic', detail: '2008, 2011, 2012, 2013, 2015, 2016, 2019, 2020, 2023' },
+      { title: 'Most US Open Titles (Open Era, Men\'s)', holder: 'Jimmy Connors / Pete Sampras / Roger Federer', value: '5', slug: null, detail: 'Tied record among three legends' },
+      { title: 'Longest Winning Streak on Clay', holder: 'Rafael Nadal', value: '81 matches', slug: null, detail: 'April 2005 to May 2007' },
+      { title: 'Longest Winning Streak on Grass', holder: 'Roger Federer', value: '65 matches', slug: null, detail: '2003 to 2008' },
+    ]
+  },
+];
+---
+
+<BaseLayout
+  title="Tennis Records — All-Time Stats & Achievements"
+  description="Complete list of tennis records. Grand Slam records, ranking milestones, serve speed records, and all-time achievements in men's and women's tennis."
+>
+  <div class="records-page">
+    <div class="container">
+      <section class="page-hero">
+        <h1>Tennis Records</h1>
+        <p class="subtitle">The greatest achievements and milestones in tennis history</p>
+      </section>
+
+      <!-- Quick Nav -->
+      <nav class="category-nav">
+        {records.map(cat => (
+          <a href={`#${cat.category.toLowerCase().replace(/\s+/g, '-')}`} class="cat-link">
+            <span class="cat-icon">{cat.icon}</span>
+            {cat.category}
+          </a>
+        ))}
+      </nav>
+
+      <!-- Records Sections -->
+      {records.map(cat => (
+        <section class="records-section" id={cat.category.toLowerCase().replace(/\s+/g, '-')}>
+          <h2>
+            <span class="section-icon">{cat.icon}</span>
+            {cat.category}
+          </h2>
+
+          <div class="records-list">
+            {cat.items.map((rec, i) => (
+              <div class="record-card">
+                <div class="record-rank">#{i + 1}</div>
+                <div class="record-content">
+                  <h3>{rec.title}</h3>
+                  <div class="record-holder">
+                    {rec.slug ? (
+                      <a href={`/players/${rec.slug}/`} class="holder-link">{rec.holder}</a>
+                    ) : (
+                      <span class="holder-name">{rec.holder}</span>
+                    )}
+                  </div>
+                  <p class="record-detail">{rec.detail}</p>
+                </div>
+                <div class="record-value">{rec.value}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      <!-- Related Content -->
+      <section class="related-content">
+        <h2>Explore More</h2>
+        <div class="explore-grid">
+          <a href="/players/" class="explore-card">
+            <span class="explore-icon">👥</span>
+            <h3>Player Profiles</h3>
+            <p>Career stats, bios, and rankings for top ATP & WTA players</p>
+          </a>
+          <a href="/rankings/" class="explore-card">
+            <span class="explore-icon">📈</span>
+            <h3>Live Rankings</h3>
+            <p>Current ATP and WTA rankings updated weekly</p>
+          </a>
+          <a href="/gear/" class="explore-card">
+            <span class="explore-icon">🎾</span>
+            <h3>Player Gear</h3>
+            <p>Rackets, shoes, and equipment used by the pros</p>
+          </a>
+        </div>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .records-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  .page-hero {
+    padding: 48px 0 32px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 32px;
+  }
+  .page-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0;
+  }
+  .subtitle {
+    color: var(--gray-600);
+    font-size: 1.1rem;
+    margin: 8px 0 0;
+  }
+
+  /* Category Nav */
+  .category-nav {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+    position: sticky;
+    top: var(--header-height);
+    background: white;
+    padding: 12px 0;
+    z-index: 10;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .cat-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--gray-700);
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .cat-link:hover {
+    border-color: var(--court-green);
+    color: var(--court-green);
+    background: white;
+  }
+  .cat-icon { font-size: 1rem; }
+
+  /* Sections */
+  .records-section {
+    margin-bottom: 48px;
+    scroll-margin-top: calc(var(--header-height) + 60px);
+  }
+  .records-section h2 {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--gray-200);
+  }
+  .section-icon { font-size: 1.4rem; }
+
+  /* Record Cards */
+  .records-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .record-card {
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    gap: 16px;
+    align-items: center;
+    padding: 20px 24px;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    transition: all 0.2s;
+  }
+  .record-card:hover {
+    border-color: var(--court-green);
+    box-shadow: var(--shadow);
+  }
+
+  .record-rank {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    color: var(--gray-400);
+    text-align: center;
+    font-weight: 600;
+  }
+
+  .record-content h3 {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin: 0 0 4px;
+    line-height: 1.3;
+  }
+  .record-holder {
+    margin-bottom: 4px;
+  }
+  .holder-link {
+    color: var(--court-green);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+  }
+  .holder-link:hover {
+    color: var(--court-green-dark);
+    text-decoration: underline;
+  }
+  .holder-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--gray-700);
+  }
+  .record-detail {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .record-value {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--court-green);
+    text-align: right;
+    white-space: nowrap;
+    min-width: 80px;
+  }
+
+  /* Related Content */
+  .related-content {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 2px solid var(--gray-200);
+  }
+  .related-content h2 {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    margin: 0 0 20px;
+  }
+  .explore-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .explore-card {
+    padding: 24px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    transition: all 0.2s;
+  }
+  .explore-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+  }
+  .explore-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 12px;
+  }
+  .explore-card h3 {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  .explore-card p {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-hero h1 { font-size: 2rem; }
+    .category-nav { gap: 8px; }
+    .cat-link { padding: 6px 12px; font-size: 0.8rem; }
+    .record-card {
+      grid-template-columns: 36px 1fr;
+      gap: 12px;
+    }
+    .record-value {
+      grid-column: 2;
+      text-align: left;
+      font-size: 1.3rem;
+    }
+    .explore-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    .record-card { padding: 14px 16px; }
+    .record-content h3 { font-size: 0.9rem; }
+    .record-value { font-size: 1.1rem; }
+  }
+</style>
