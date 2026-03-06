@@ -1,0 +1,117 @@
+---
+const currentYear = new Date().getFullYear();
+
+const sections = [
+  {
+    title: 'Explore',
+    links: [
+      { href: '/players/', label: 'Players' },
+      { href: '/records/', label: 'Records' },
+      { href: '/gear/', label: 'Gear' },
+      { href: '/lifestyle/', label: 'Lifestyle' },
+    ],
+  },
+  {
+    title: 'Tools',
+    links: [
+      { href: '/rankings/', label: 'Rankings' },
+      { href: '/calendar/', label: 'Calendar' },
+      { href: '/vs/', label: 'Head to Head' },
+    ],
+  },
+];
+---
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <span class="footer__logo">SUPER.TENNIS</span>
+      <p class="footer__tagline">Tennis for everyone.</p>
+    </div>
+    <div class="footer__nav">
+      {sections.map(section => (
+        <div class="footer__section">
+          <h4 class="footer__heading">{section.title}</h4>
+          <ul class="footer__list">
+            {section.links.map(link => (
+              <li><a href={link.href} class="footer__link">{link.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <div class="container">
+      <p>&copy; {currentYear} SUPER.TENNIS. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--gray-900);
+    color: var(--gray-400);
+    margin-top: 80px;
+  }
+  .footer__inner {
+    display: flex;
+    justify-content: space-between;
+    gap: 48px;
+    padding: 48px 24px;
+  }
+  .footer__brand {
+    max-width: 280px;
+  }
+  .footer__logo {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 1px;
+  }
+  .footer__tagline {
+    margin-top: 8px;
+    font-size: 0.9rem;
+  }
+  .footer__nav {
+    display: flex;
+    gap: 64px;
+  }
+  .footer__heading {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--white);
+    margin-bottom: 12px;
+  }
+  .footer__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .footer__link {
+    font-size: 0.9rem;
+    transition: var(--transition);
+  }
+  .footer__link:hover {
+    color: var(--ball-yellow);
+  }
+  .footer__bottom {
+    border-top: 1px solid var(--gray-800);
+    padding: 16px 0;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  @media (max-width: 768px) {
+    .footer__inner {
+      flex-direction: column;
+      gap: 32px;
+    }
+    .footer__nav {
+      gap: 32px;
+    }
+  }
+</style>

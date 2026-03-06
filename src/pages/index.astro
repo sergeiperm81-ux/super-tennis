@@ -1,0 +1,818 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// All content data (will come from content collections later)
+const badgeColors: Record<string, string> = {
+  FEATURED: '#ccff00',
+  PLAYERS: '#4CAF50',
+  RECORDS: '#FF9800',
+  GEAR: '#2196F3',
+  LIFESTYLE: '#E91E63',
+  MONEY: '#FFD700',
+  RANKINGS: '#9C27B0',
+  TOURNAMENTS: '#00BCD4',
+  H2H: '#FF5722',
+};
+
+// Hero featured
+const hero = {
+  title: "Jannik Sinner Dominates 2026 Season with Record-Breaking Start",
+  badge: "FEATURED",
+  image: "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=1200&h=700&fit=crop&q=80",
+  href: "/players/jannik-sinner/",
+  desc: "The world No. 1 continues his extraordinary run with 28 consecutive wins.",
+};
+
+// Row of 3 vertical cards
+const row3a = [
+  {
+    title: "Iga Swiatek Returns to World No. 1 After Miami Open Victory",
+    badge: "PLAYERS",
+    image: "https://images.unsplash.com/photo-1542144582-1ba00456b5e3?w=600&h=400&fit=crop&q=80",
+    href: "/players/iga-swiatek/",
+  },
+  {
+    title: "The Most Grand Slam Titles of All Time — Men's & Women's",
+    badge: "RECORDS",
+    image: "https://images.unsplash.com/photo-1587280501635-68a0e82cd5ff?w=600&h=400&fit=crop&q=80",
+    href: "/records/most-grand-slams/",
+  },
+  {
+    title: "What Racket Does Novak Djokovic Actually Use?",
+    badge: "GEAR",
+    image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=600&h=400&fit=crop&q=80",
+    href: "/players/novak-djokovic/racket/",
+  },
+];
+
+// Full-width heroes
+const hero2 = {
+  title: "How Novak Djokovic Built a $250 Million Empire",
+  badge: "MONEY",
+  image: "https://images.unsplash.com/photo-1542144582-1ba00456b5e3?w=1200&h=600&fit=crop&q=80",
+  href: "/players/novak-djokovic/net-worth/",
+  desc: "From Belgrade to billionaire status — the business ventures behind the GOAT debate.",
+};
+const hero3 = {
+  title: "Australian Open 2026: Draw, Schedule & Results",
+  badge: "TOURNAMENTS",
+  image: "https://images.unsplash.com/photo-1530915534664-4ac6423816b7?w=1200&h=600&fit=crop&q=80",
+  href: "/tournaments/australian-open/",
+  desc: "Everything you need to know about the first Grand Slam of the year.",
+};
+
+// Row of 2 vertical cards
+const row2 = [
+  {
+    title: "Best Tennis Shoes for Clay Courts in 2026",
+    badge: "GEAR",
+    image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=600&h=400&fit=crop&q=80",
+    href: "/gear/best-clay-shoes/",
+  },
+  {
+    title: "Carlos Alcaraz's Net Worth Surpasses $40 Million",
+    badge: "MONEY",
+    image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=600&h=400&fit=crop&q=80",
+    href: "/players/carlos-alcaraz/net-worth/",
+  },
+];
+
+// Compact horizontal cards (small thumb + title)
+const compactCards = [
+  {
+    title: "Fastest Serves in Tennis History — Updated Rankings",
+    badge: "RECORDS",
+    image: "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=200&h=140&fit=crop&q=80",
+    href: "/records/fastest-serve/",
+  },
+  {
+    title: "Inside the $15M Prize Pool at Wimbledon 2026",
+    badge: "LIFESTYLE",
+    image: "https://images.unsplash.com/photo-1530915534664-4ac6423816b7?w=200&h=140&fit=crop&q=80",
+    href: "/tournaments/wimbledon/prize-money/",
+  },
+];
+
+// Horizontal feature card (big photo left + title right)
+const featureCard = {
+  title: "Richest Tennis Players in the World — 2026 Rankings",
+  badge: "LIFESTYLE",
+  image: "https://images.unsplash.com/photo-1560012057-4372e14c5085?w=600&h=400&fit=crop&q=80",
+  href: "/lifestyle/richest-tennis-players/",
+  desc: "From prize money to endorsement deals — who's earning the most on and off the court.",
+};
+
+// Hero 4
+const hero4 = {
+  title: "Novak Djokovic vs Carlos Alcaraz — Head to Head Record",
+  badge: "H2H",
+  image: "https://images.unsplash.com/photo-1599586120429-48281b6f0ece?w=1200&h=600&fit=crop&q=80",
+  href: "/vs/djokovic-alcaraz/",
+  desc: "The defining rivalry of modern tennis — every match, every stat, every moment.",
+};
+
+// Second row of 3 vertical cards
+const row3b = [
+  {
+    title: "Wilson vs Head vs Babolat — The Ultimate Comparison",
+    badge: "GEAR",
+    image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=600&h=400&fit=crop&q=80",
+    href: "/gear/best-racket-brands/",
+  },
+  {
+    title: "Coco Gauff's Rise to Stardom",
+    badge: "PLAYERS",
+    image: "https://images.unsplash.com/photo-1542144582-1ba00456b5e3?w=600&h=400&fit=crop&q=80",
+    href: "/players/coco-gauff/",
+  },
+  {
+    title: "Aryna Sabalenka's Net Worth in 2026",
+    badge: "MONEY",
+    image: "https://images.unsplash.com/photo-1599586120429-48281b6f0ece?w=600&h=400&fit=crop&q=80",
+    href: "/players/aryna-sabalenka/net-worth/",
+  },
+];
+
+// Sidebar data
+const recentScores = [
+  { p1: 'J. Sinner', p2: 'C. Alcaraz', score: '6-4  3-6  7-6', tournament: 'Indian Wells Masters', round: 'Final', winner: 1 },
+  { p1: 'A. Sabalenka', p2: 'I. Swiatek', score: '7-5  6-3', tournament: 'Dubai Open', round: 'Final', winner: 1 },
+  { p1: 'N. Djokovic', p2: 'D. Medvedev', score: '6-7  6-4  6-2', tournament: 'Australian Open', round: 'SF', winner: 1 },
+];
+
+const playerProfile = {
+  name: 'Novak Djokovic',
+  country: 'Serbia',
+  ranking: 3,
+  age: 38,
+  titles: 99,
+  grandSlams: 24,
+  image: "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=300&fit=crop&q=80",
+  href: '/players/novak-djokovic/',
+};
+
+const topRankings = [
+  { rank: 1, name: 'Jannik Sinner', country: 'ITA', points: '11,830' },
+  { rank: 2, name: 'Carlos Alcaraz', country: 'ESP', points: '9,855' },
+  { rank: 3, name: 'Novak Djokovic', country: 'SRB', points: '7,190' },
+  { rank: 4, name: 'Alexander Zverev', country: 'GER', points: '6,875' },
+  { rank: 5, name: 'Daniil Medvedev', country: 'RUS', points: '6,445' },
+];
+---
+
+<BaseLayout title="Home">
+  <div class="news-page">
+    <div class="container">
+      <!-- Page header -->
+      <div class="news-page__header">
+        <h1 class="news-page__title">Latest</h1>
+      </div>
+
+      <div class="news-layout">
+        <!-- ========== MAIN CONTENT COLUMN ========== -->
+        <main class="news-main">
+
+          <!-- 1. BIG HERO -->
+          <a href={hero.href} class="card-hero">
+            <img src={hero.image} alt="" loading="eager" />
+            <div class="card-hero__overlay"></div>
+            <div class="card-hero__content">
+              <span class="badge" style={`background: ${badgeColors[hero.badge]}; color: #000;`}>{hero.badge}</span>
+              <h2 class="card-hero__title">{hero.title}</h2>
+              <p class="card-hero__desc">{hero.desc}</p>
+            </div>
+          </a>
+
+          <!-- 2. THREE VERTICAL CARDS -->
+          <div class="row-3">
+            {row3a.map(card => (
+              <a href={card.href} class="vcard">
+                <div class="vcard__img">
+                  <img src={card.image} alt="" loading="lazy" />
+                </div>
+                <h3 class="vcard__title">{card.title}</h3>
+              </a>
+            ))}
+          </div>
+
+          <!-- 3. FULL-WIDTH HERO -->
+          <a href={hero2.href} class="card-hero">
+            <img src={hero2.image} alt="" loading="lazy" />
+            <div class="card-hero__overlay"></div>
+            <div class="card-hero__content">
+              <span class="badge" style={`background: ${badgeColors[hero2.badge]}; color: #000;`}>{hero2.badge}</span>
+              <h3 class="card-hero__title">{hero2.title}</h3>
+              <p class="card-hero__desc">{hero2.desc}</p>
+            </div>
+          </a>
+
+          <!-- 4. FULL-WIDTH HERO -->
+          <a href={hero3.href} class="card-hero">
+            <img src={hero3.image} alt="" loading="lazy" />
+            <div class="card-hero__overlay"></div>
+            <div class="card-hero__content">
+              <span class="badge" style={`background: ${badgeColors[hero3.badge]}; color: #000;`}>{hero3.badge}</span>
+              <h3 class="card-hero__title">{hero3.title}</h3>
+              <p class="card-hero__desc">{hero3.desc}</p>
+            </div>
+          </a>
+
+          <!-- 5. TWO VERTICAL CARDS -->
+          <div class="row-2">
+            {row2.map(card => (
+              <a href={card.href} class="vcard">
+                <div class="vcard__img">
+                  <img src={card.image} alt="" loading="lazy" />
+                </div>
+                <h3 class="vcard__title">{card.title}</h3>
+              </a>
+            ))}
+          </div>
+
+          <!-- 6. TWO COMPACT HORIZONTAL CARDS -->
+          <div class="row-2">
+            {compactCards.map(card => (
+              <a href={card.href} class="hcard">
+                <div class="hcard__img">
+                  <img src={card.image} alt="" loading="lazy" />
+                </div>
+                <div class="hcard__body">
+                  <h3 class="hcard__title">{card.title}</h3>
+                </div>
+              </a>
+            ))}
+          </div>
+
+          <!-- 7. HORIZONTAL FEATURE CARD (big photo left + text right) -->
+          <a href={featureCard.href} class="feature-card">
+            <div class="feature-card__img">
+              <img src={featureCard.image} alt="" loading="lazy" />
+            </div>
+            <div class="feature-card__body">
+              <span class="badge" style={`background: ${badgeColors[featureCard.badge]}; color: #000;`}>{featureCard.badge}</span>
+              <h3 class="feature-card__title">{featureCard.title}</h3>
+              <p class="feature-card__desc">{featureCard.desc}</p>
+            </div>
+          </a>
+
+          <!-- 8. FULL-WIDTH HERO -->
+          <a href={hero4.href} class="card-hero">
+            <img src={hero4.image} alt="" loading="lazy" />
+            <div class="card-hero__overlay"></div>
+            <div class="card-hero__content">
+              <span class="badge" style={`background: ${badgeColors[hero4.badge]}; color: #000;`}>{hero4.badge}</span>
+              <h3 class="card-hero__title">{hero4.title}</h3>
+              <p class="card-hero__desc">{hero4.desc}</p>
+            </div>
+          </a>
+
+          <!-- 9. THREE VERTICAL CARDS -->
+          <div class="row-3">
+            {row3b.map(card => (
+              <a href={card.href} class="vcard">
+                <div class="vcard__img">
+                  <img src={card.image} alt="" loading="lazy" />
+                </div>
+                <h3 class="vcard__title">{card.title}</h3>
+              </a>
+            ))}
+          </div>
+
+        </main>
+
+        <!-- ========== SIDEBAR ========== -->
+        <aside class="sidebar">
+
+          <!-- SCORES -->
+          <div class="sb-scores">
+            <div class="sb-scores__header">
+              <span class="sb-scores__label">Scores</span>
+              <a href="/rankings/" class="sb-link">See all &rarr;</a>
+            </div>
+            {recentScores.map(match => (
+              <div class="sb-scores__match">
+                <div class="sb-scores__tourney">{match.tournament} — {match.round}</div>
+                <div class="sb-scores__row">
+                  <span class={`sb-scores__player ${match.winner === 1 ? 'sb-scores__player--w' : ''}`}>{match.p1}</span>
+                  <span class="sb-scores__result">{match.score}</span>
+                  <span class={`sb-scores__player ${match.winner === 2 ? 'sb-scores__player--w' : ''}`}>{match.p2}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <!-- PLAYER PROFILE -->
+          <div class="sb-profile">
+            <div class="sb-profile__header">
+              <span class="sb-profile__label">Profile</span>
+              <a href="/players/" class="sb-link">View all &rarr;</a>
+            </div>
+            <a href={playerProfile.href} class="sb-profile__card">
+              <div class="sb-profile__img">
+                <img src={playerProfile.image} alt={playerProfile.name} loading="lazy" />
+                <div class="sb-profile__name">{playerProfile.name}</div>
+              </div>
+              <div class="sb-profile__stats">
+                <div class="sb-profile__row"><span>Rank</span><span>{playerProfile.ranking}</span></div>
+                <div class="sb-profile__row"><span>Grand Slams</span><span>{playerProfile.grandSlams}</span></div>
+                <div class="sb-profile__row"><span>Career Titles</span><span>{playerProfile.titles}</span></div>
+                <div class="sb-profile__row"><span>Age</span><span>{playerProfile.age}</span></div>
+              </div>
+            </a>
+          </div>
+
+          <!-- RANKINGS -->
+          <div class="sb-rankings">
+            <div class="sb-rankings__header">
+              <span class="sb-rankings__label">ATP Rankings</span>
+              <a href="/rankings/" class="sb-link">Full table &rarr;</a>
+            </div>
+            <table class="sb-rankings__table">
+              <tbody>
+                {topRankings.map(r => (
+                  <tr>
+                    <td class="sb-rankings__rank">{r.rank}</td>
+                    <td class="sb-rankings__name">{r.name}</td>
+                    <td class="sb-rankings__pts">{r.points}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+        </aside>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  /* ===== NEWS PAGE LAYOUT ===== */
+  .news-page {
+    padding: 24px 0 64px;
+    background: var(--gray-50);
+    min-height: 100vh;
+  }
+  .news-page__header {
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 3px solid var(--court-green);
+  }
+  .news-page__title {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gray-900);
+    margin: 0;
+  }
+
+  /* Two-column: main + sidebar */
+  .news-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 32px;
+    align-items: start;
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  .news-main {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  /* ===== BADGES ===== */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    font-family: var(--font-heading);
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: fit-content;
+  }
+
+  /* ===== HERO CARD — full-width photo + overlay text ===== */
+  .card-hero {
+    position: relative;
+    display: block;
+    border-radius: var(--radius);
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+  }
+  .card-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  .card-hero:hover img {
+    transform: scale(1.03);
+  }
+  .card-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.85) 100%);
+  }
+  .card-hero__content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 28px;
+    z-index: 2;
+    color: #fff;
+  }
+  .card-hero__title {
+    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-top: 10px;
+    color: #fff;
+  }
+  .card-hero__desc {
+    font-size: 0.85rem;
+    margin-top: 8px;
+    opacity: 0.8;
+    line-height: 1.5;
+    max-width: 550px;
+  }
+
+  /* ===== VERTICAL CARD — photo top, title below ===== */
+  .vcard {
+    display: block;
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .vcard:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  .vcard__img {
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+  }
+  .vcard__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+  .vcard:hover .vcard__img img {
+    transform: scale(1.05);
+  }
+  .vcard__title {
+    padding: 16px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--gray-900);
+  }
+
+  /* ===== COMPACT HORIZONTAL CARD — small thumb + title ===== */
+  .hcard {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    padding: 12px;
+    transition: var(--transition);
+  }
+  .hcard:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+  .hcard__img {
+    width: 80px;
+    height: 60px;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .hcard__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hcard__title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--gray-900);
+  }
+
+  /* ===== FEATURE CARD — big photo left + text right ===== */
+  .feature-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: var(--transition);
+  }
+  .feature-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-3px);
+  }
+  .feature-card__img {
+    overflow: hidden;
+  }
+  .feature-card__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+  .feature-card:hover .feature-card__img img {
+    transform: scale(1.03);
+  }
+  .feature-card__body {
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+  }
+  .feature-card__title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--gray-900);
+  }
+  .feature-card__desc {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+    line-height: 1.5;
+  }
+
+  /* ===== ROW LAYOUTS ===== */
+  .row-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .row-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    position: sticky;
+    top: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .sb-link {
+    font-size: 0.75rem;
+    color: var(--court-green);
+    font-weight: 600;
+  }
+  .sb-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Sidebar: Scores */
+  .sb-scores {
+    background: var(--gray-900);
+    border-radius: var(--radius);
+    padding: 20px;
+    border-top: 3px solid var(--court-green);
+  }
+  .sb-scores__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .sb-scores__label {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+  .sb-scores__match {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--gray-700);
+  }
+  .sb-scores__match:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .sb-scores__tourney {
+    font-size: 0.65rem;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .sb-scores__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .sb-scores__player {
+    font-size: 0.8rem;
+    color: var(--gray-400);
+    flex: 1;
+  }
+  .sb-scores__player:last-child {
+    text-align: right;
+  }
+  .sb-scores__player--w {
+    color: #fff;
+    font-weight: 700;
+  }
+  .sb-scores__result {
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    color: var(--ball-yellow);
+    white-space: nowrap;
+    letter-spacing: 1px;
+  }
+
+  /* Sidebar: Player Profile */
+  .sb-profile {
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .sb-profile__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: var(--gray-900);
+  }
+  .sb-profile__label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+  .sb-profile__card {
+    display: block;
+  }
+  .sb-profile__img {
+    position: relative;
+    height: 160px;
+    overflow: hidden;
+  }
+  .sb-profile__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .sb-profile__name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sb-profile__stats {
+    padding: 4px 0;
+  }
+  .sb-profile__row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 0.8rem;
+  }
+  .sb-profile__row:last-child {
+    border-bottom: none;
+  }
+  .sb-profile__row span:first-child {
+    color: var(--gray-500);
+  }
+  .sb-profile__row span:last-child {
+    font-weight: 700;
+    color: var(--gray-900);
+  }
+
+  /* Sidebar: Rankings */
+  .sb-rankings {
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .sb-rankings__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: var(--gray-900);
+  }
+  .sb-rankings__label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+  .sb-rankings__table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .sb-rankings__table tr {
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .sb-rankings__table tr:last-child {
+    border-bottom: none;
+  }
+  .sb-rankings__table tr:hover td {
+    background: var(--gray-50);
+  }
+  .sb-rankings__rank {
+    padding: 10px 16px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--court-green);
+    width: 36px;
+  }
+  .sb-rankings__name {
+    padding: 10px 8px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--gray-900);
+  }
+  .sb-rankings__pts {
+    padding: 10px 16px;
+    text-align: right;
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gray-500);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1024px) {
+    .news-layout {
+      grid-template-columns: 1fr 280px;
+      gap: 24px;
+    }
+  }
+  @media (max-width: 900px) {
+    .news-layout {
+      grid-template-columns: 1fr;
+    }
+    .sidebar {
+      position: static;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .sb-scores {
+      grid-column: span 2;
+    }
+  }
+  @media (max-width: 768px) {
+    .row-3 {
+      grid-template-columns: 1fr;
+    }
+    .row-2 {
+      grid-template-columns: 1fr;
+    }
+    .feature-card {
+      grid-template-columns: 1fr;
+    }
+    .feature-card__img {
+      aspect-ratio: 16 / 9;
+    }
+    .card-hero {
+      aspect-ratio: 4 / 3;
+    }
+    .sidebar {
+      grid-template-columns: 1fr;
+    }
+    .sb-scores {
+      grid-column: span 1;
+    }
+  }
+</style>
