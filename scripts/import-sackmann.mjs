@@ -123,42 +123,48 @@ async function importPlayers() {
   const wtaPlayers = await fetchCSV(`${BASE_WTA}/wta_players.csv`);
 
   // Transform ATP players
+  // CSV columns: player_id, name_first, name_last, hand, dob, ioc, height, wikidata_id
   const atpRows = atpPlayers.map(p => ({
     player_id: `atp_${p.player_id}`,
-    first_name: p.first_name || 'Unknown',
-    last_name: p.last_name || 'Unknown',
-    slug: slugify(`${p.first_name || ''} ${p.last_name || ''}`),
+    first_name: p.name_first || 'Unknown',
+    last_name: p.name_last || 'Unknown',
+    slug: slugify(`${p.name_first || ''} ${p.name_last || ''}`),
     hand: p.hand || 'U',
-    birth_date: parseDate(p.birth_date),
-    country_code: p.country_code,
+    birth_date: parseDate(p.dob),
+    country_code: p.ioc,
     height_cm: p.height ? parseInt(p.height) : null,
     tour: 'atp',
     is_active: true,
   }));
 
   // Transform WTA players
+  // CSV columns: player_id, name_first, name_last, hand, dob, ioc, height, wikidata_id
   const wtaRows = wtaPlayers.map(p => ({
     player_id: `wta_${p.player_id}`,
-    first_name: p.first_name || 'Unknown',
-    last_name: p.last_name || 'Unknown',
-    slug: slugify(`${p.first_name || ''} ${p.last_name || ''}`),
+    first_name: p.name_first || 'Unknown',
+    last_name: p.name_last || 'Unknown',
+    slug: slugify(`${p.name_first || ''} ${p.name_last || ''}`),
     hand: p.hand || 'U',
-    birth_date: parseDate(p.birth_date),
-    country_code: p.country_code,
-    height_cm: null, // WTA CSV doesn't have height
+    birth_date: parseDate(p.dob),
+    country_code: p.ioc,
+    height_cm: p.height ? parseInt(p.height) : null,
     tour: 'wta',
     is_active: true,
   }));
 
-  // Deduplicate slugs (add tour suffix if collision)
-  const slugMap = new Map();
+  // Deduplicate slugs (add counter for collisions)
+  const slugCount = new Map();
   const allPlayers = [...atpRows, ...wtaRows];
 
   for (const p of allPlayers) {
-    if (slugMap.has(p.slug)) {
-      p.slug = `${p.slug}-${p.tour}`;
+    const baseSlug = p.slug;
+    if (slugCount.has(baseSlug)) {
+      const count = slugCount.get(baseSlug) + 1;
+      slugCount.set(baseSlug, count);
+      p.slug = `${baseSlug}-${count}`;
+    } else {
+      slugCount.set(baseSlug, 1);
     }
-    slugMap.set(p.slug, true);
   }
 
   console.log(`  Total: ${atpRows.length} ATP + ${wtaRows.length} WTA = ${allPlayers.length} players`);
@@ -182,12 +188,12 @@ async function importRankings() {
     const latestDates = dates.slice(0, 4); // Last 4 weeks
 
     return rows
-      .filter(r => latestDates.includes(r.ranking_date) && parseInt(r.ranking) <= 200)
+      .filter(r => latestDates.includes(r.ranking_date) && parseInt(r.rank) <= 200)
       .map(r => ({
         ranking_date: parseDate(r.ranking_date),
         player_id: `${tour}_${r.player}`,
         tour,
-        ranking: parseInt(r.ranking),
+        ranking: parseInt(r.rank),
         points: r.points ? parseInt(r.points) : null,
         tours_played: r.tours ? parseInt(r.tours) : null,
       }))

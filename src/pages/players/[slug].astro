@@ -1,0 +1,656 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPlayerBySlug } from '../../lib/supabase';
+import { fallbackPlayers, countryFlags, countryNames, handLabels } from '../../lib/fallback-data';
+
+// SSG: generate paths for known players
+export function getStaticPaths() {
+  // Import inline for getStaticPaths scope
+  const players = import.meta.glob('../../lib/fallback-data.ts', { eager: true });
+  const mod = Object.values(players)[0] as any;
+  return Object.keys(mod.fallbackPlayers).map(slug => ({
+    params: { slug },
+  }));
+}
+
+const { slug } = Astro.params;
+
+// Try Supabase first, fall back to hardcoded data
+let player = await getPlayerBySlug(slug as string);
+if (!player) {
+  player = fallbackPlayers[slug as string] || null;
+}
+
+if (!player) {
+  return Astro.redirect('/players/');
+}
+
+// Calculate age
+function getAge(birthDate: string | null): number | null {
+  if (!birthDate) return null;
+  const birth = new Date(birthDate);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const m = today.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+  return age;
+}
+
+const age = getAge(player.birth_date);
+const winPct = player.career_win && player.career_loss
+  ? ((player.career_win / (player.career_win + player.career_loss)) * 100).toFixed(1)
+  : null;
+const flag = countryFlags[player.country_code || ''] || '🏳️';
+const country = countryNames[player.country_code || ''] || player.country_code || 'Unknown';
+const tourLabel = player.tour === 'atp' ? 'ATP' : 'WTA';
+const tourColor = player.tour === 'atp' ? '#003580' : '#7b2d8e';
+
+// JSON-LD structured data
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: `${player.first_name} ${player.last_name}`,
+  url: `https://super.tennis/players/${player.slug}/`,
+  image: player.image_url,
+  nationality: { '@type': 'Country', name: country },
+  birthDate: player.birth_date || undefined,
+  height: player.height_cm ? { '@type': 'QuantitativeValue', value: player.height_cm, unitCode: 'CMT' } : undefined,
+  description: player.bio_short || `Professional tennis player from ${country}`,
+  sport: 'Tennis',
+};
+
+// Format prize money
+function formatPrize(amount: number): string {
+  if (amount >= 1_000_000) return `$${(amount / 1_000_000).toFixed(1)}M`;
+  if (amount >= 1_000) return `$${(amount / 1_000).toFixed(0)}K`;
+  return `$${amount}`;
+}
+
+// Related players (same tour, for sidebar)
+const relatedSlugs = Object.values(fallbackPlayers)
+  .filter((p: any) => p.tour === player.tour && p.slug !== player.slug)
+  .slice(0, 4);
+---
+
+<BaseLayout
+  title={`${player.first_name} ${player.last_name} — Profile, Stats & Bio`}
+  description={player.bio_short || `${player.first_name} ${player.last_name} tennis player profile. Career stats, Grand Slam titles, rankings and more on SUPER.TENNIS.`}
+>
+  <!-- JSON-LD -->
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <article class="player-profile">
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs">
+      <a href="/">Home</a>
+      <span class="sep">/</span>
+      <a href="/players/">Players</a>
+      <span class="sep">/</span>
+      <span class="current">{player.first_name} {player.last_name}</span>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-photo">
+        <img
+          src={player.image_url || 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800&h=800&fit=crop'}
+          alt={`${player.first_name} ${player.last_name}`}
+          width="400"
+          height="400"
+          loading="eager"
+        />
+        <span class="tour-badge" style={`background: ${tourColor}`}>{tourLabel}</span>
+      </div>
+
+      <div class="hero-info">
+        <div class="hero-name-row">
+          <span class="hero-flag">{flag}</span>
+          <h1>
+            {player.first_name}
+            <strong>{player.last_name}</strong>
+          </h1>
+        </div>
+        <p class="hero-country">{country}</p>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span class="hero-stat-value">{player.career_titles}</span>
+            <span class="hero-stat-label">Career Titles</span>
+          </div>
+          {player.grand_slam_titles > 0 && (
+            <div class="hero-stat gs">
+              <span class="hero-stat-value">{player.grand_slam_titles}</span>
+              <span class="hero-stat-label">Grand Slams</span>
+            </div>
+          )}
+          <div class="hero-stat">
+            <span class="hero-stat-value">{player.career_win}-{player.career_loss}</span>
+            <span class="hero-stat-label">Win-Loss ({winPct}%)</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-value">{formatPrize(player.career_prize_usd || 0)}</span>
+            <span class="hero-stat-label">Prize Money</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Content Grid: Main + Sidebar -->
+    <div class="content-grid">
+      <div class="content-main">
+        <!-- Quick Facts -->
+        <section class="quick-facts">
+          <h2>Quick Facts</h2>
+          <div class="facts-grid">
+            {age && (
+              <div class="fact">
+                <span class="fact-label">Age</span>
+                <span class="fact-value">{age} years</span>
+              </div>
+            )}
+            {player.birth_date && (
+              <div class="fact">
+                <span class="fact-label">Born</span>
+                <span class="fact-value">{new Date(player.birth_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+              </div>
+            )}
+            {player.height_cm && (
+              <div class="fact">
+                <span class="fact-label">Height</span>
+                <span class="fact-value">{player.height_cm} cm ({Math.floor(player.height_cm / 2.54 / 12)}'{Math.round(player.height_cm / 2.54 % 12)}")</span>
+              </div>
+            )}
+            {player.hand && (
+              <div class="fact">
+                <span class="fact-label">Plays</span>
+                <span class="fact-value">{handLabels[player.hand] || player.hand}</span>
+              </div>
+            )}
+            <div class="fact">
+              <span class="fact-label">Country</span>
+              <span class="fact-value">{flag} {country}</span>
+            </div>
+            <div class="fact">
+              <span class="fact-label">Tour</span>
+              <span class="fact-value"><span class="mini-badge" style={`background: ${tourColor}`}>{tourLabel}</span></span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Biography -->
+        {player.bio_short && (
+          <section class="bio-section">
+            <h2>Biography</h2>
+            <p class="bio-text">{player.bio_short}</p>
+          </section>
+        )}
+
+        <!-- Career Stats -->
+        <section class="career-stats">
+          <h2>Career Statistics</h2>
+          <div class="stats-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Statistic</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Career Titles</td>
+                  <td class="stat-val">{player.career_titles}</td>
+                </tr>
+                {player.grand_slam_titles > 0 && (
+                  <tr class="gs-row">
+                    <td>Grand Slam Titles</td>
+                    <td class="stat-val gs-val">{player.grand_slam_titles}</td>
+                  </tr>
+                )}
+                <tr>
+                  <td>Win-Loss Record</td>
+                  <td class="stat-val">{player.career_win} - {player.career_loss}</td>
+                </tr>
+                {winPct && (
+                  <tr>
+                    <td>Win Percentage</td>
+                    <td class="stat-val">{winPct}%</td>
+                  </tr>
+                )}
+                <tr>
+                  <td>Career Prize Money</td>
+                  <td class="stat-val">${(player.career_prize_usd || 0).toLocaleString()}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Related Articles -->
+        <section class="related-articles">
+          <h2>More About {player.first_name} {player.last_name}</h2>
+          <div class="articles-grid">
+            <a href={`/players/${player.slug}/net-worth/`} class="article-link">
+              <div class="article-link-icon">💰</div>
+              <div>
+                <h3>{player.first_name} {player.last_name} Net Worth in 2026</h3>
+                <p>Earnings, endorsements, and total wealth breakdown</p>
+              </div>
+            </a>
+            <a href={`/players/${player.slug}/racket/`} class="article-link">
+              <div class="article-link-icon">🎾</div>
+              <div>
+                <h3>What Racket Does {player.first_name} {player.last_name} Use?</h3>
+                <p>Equipment specs, strings, and setup details</p>
+              </div>
+            </a>
+          </div>
+        </section>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-widget">
+          <h3>Similar Players</h3>
+          <div class="similar-players">
+            {relatedSlugs.map((p: any) => (
+              <a href={`/players/${p.slug}/`} class="similar-player">
+                <img
+                  src={p.image_url}
+                  alt={`${p.first_name} ${p.last_name}`}
+                  width="48"
+                  height="48"
+                  loading="lazy"
+                />
+                <div>
+                  <span class="sp-name">{p.first_name} <strong>{p.last_name}</strong></span>
+                  <span class="sp-country">{countryFlags[p.country_code || ''] || '🏳️'} {countryNames[p.country_code || ''] || ''}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div class="sidebar-widget">
+          <h3>Quick Links</h3>
+          <ul class="quick-links">
+            <li><a href="/rankings/">🏆 {tourLabel} Rankings</a></li>
+            <li><a href="/records/">📊 Tennis Records</a></li>
+            <li><a href="/players/">👥 All Players</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .player-profile {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  /* Breadcrumbs */
+  .breadcrumbs {
+    padding: 20px 0;
+    font-size: 0.85rem;
+    color: var(--gray-500);
+  }
+  .breadcrumbs a {
+    color: var(--gray-600);
+    transition: color 0.2s;
+  }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  /* Hero */
+  .hero {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 40px;
+    align-items: start;
+    padding: 32px 0 40px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 40px;
+  }
+
+  .hero-photo {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+  .hero-photo img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+  .tour-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: white;
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero-info {
+    padding-top: 8px;
+  }
+  .hero-name-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .hero-flag {
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+  .hero-info h1 {
+    font-family: var(--font-body);
+    font-size: 1.6rem;
+    font-weight: 400;
+    line-height: 1.2;
+    margin: 0;
+  }
+  .hero-info h1 strong {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 1.05;
+  }
+  .hero-country {
+    color: var(--gray-600);
+    font-size: 1rem;
+    margin: 8px 0 0;
+    padding-left: 4px;
+  }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px;
+    margin-top: 28px;
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .hero-stat {
+    text-align: center;
+  }
+  .hero-stat-value {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .hero-stat.gs .hero-stat-value { color: #d4a017; }
+  .hero-stat-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+  }
+
+  /* Content Grid */
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 40px;
+    align-items: start;
+  }
+
+  /* Quick Facts */
+  .quick-facts { margin-bottom: 40px; }
+  .quick-facts h2,
+  .bio-section h2,
+  .career-stats h2,
+  .related-articles h2 {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--gray-200);
+  }
+
+  .facts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .fact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: var(--gray-50);
+    border-radius: var(--radius-sm);
+  }
+  .fact-label {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    font-weight: 500;
+  }
+  .fact-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--gray-900);
+  }
+  .mini-badge {
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+
+  /* Biography */
+  .bio-section { margin-bottom: 40px; }
+  .bio-text {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--gray-700);
+  }
+
+  /* Career Stats Table */
+  .career-stats { margin-bottom: 40px; }
+  .stats-table table {
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .stats-table th {
+    background: var(--gray-100);
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--gray-600);
+    letter-spacing: 0.05em;
+    font-family: var(--font-body);
+    font-weight: 600;
+  }
+  .stats-table td {
+    padding: 12px 16px;
+    border-top: 1px solid var(--gray-100);
+    font-size: 0.95rem;
+  }
+  .stat-val {
+    font-weight: 700;
+    color: var(--gray-900);
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+  }
+  .gs-row { background: #fffbeb; }
+  .gs-val { color: #d4a017 !important; }
+
+  /* Related Articles */
+  .related-articles { margin-bottom: 40px; }
+  .articles-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .article-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    border: 1px solid var(--gray-200);
+    transition: all 0.2s;
+  }
+  .article-link:hover {
+    border-color: var(--court-green);
+    background: white;
+    box-shadow: var(--shadow);
+  }
+  .article-link-icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .article-link h3 {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .article-link p {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+    margin: 0;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    position: sticky;
+    top: calc(var(--header-height) + 24px);
+  }
+  .sidebar-widget {
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .sidebar-widget h3 {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    text-transform: uppercase;
+    margin: 0 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--gray-200);
+  }
+
+  .similar-players {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .similar-player {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s;
+  }
+  .similar-player:hover { background: white; }
+  .similar-player img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .sp-name {
+    display: block;
+    font-size: 0.9rem;
+  }
+  .sp-name strong {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+  }
+  .sp-country {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    margin-top: 2px;
+  }
+
+  .quick-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .quick-links a {
+    display: block;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s;
+  }
+  .quick-links a:hover { background: white; }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+    .sidebar {
+      position: static;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .hero-photo {
+      max-width: 280px;
+    }
+    .hero-info h1 strong {
+      font-size: 2.2rem;
+    }
+    .hero-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .facts-grid {
+      grid-template-columns: 1fr;
+    }
+    .sidebar {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero-photo {
+      max-width: 200px;
+    }
+    .hero-flag { font-size: 2rem; }
+    .hero-info h1 { font-size: 1.2rem; }
+    .hero-info h1 strong { font-size: 1.8rem; }
+    .hero-stat-value { font-size: 1.4rem; }
+  }
+</style>

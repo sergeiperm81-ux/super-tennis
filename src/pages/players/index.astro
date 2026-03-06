@@ -1,0 +1,350 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { fallbackPlayers, countryFlags } from '../../lib/fallback-data';
+
+// Rankings data for listing page (will come from Supabase later)
+const rankingsData: Record<string, { ranking: number; points: number }> = {
+  'jannik-sinner': { ranking: 1, points: 11830 },
+  'carlos-alcaraz': { ranking: 2, points: 9855 },
+  'novak-djokovic': { ranking: 3, points: 7190 },
+  'alexander-zverev': { ranking: 4, points: 6875 },
+  'daniil-medvedev': { ranking: 5, points: 6445 },
+  'taylor-fritz': { ranking: 6, points: 5050 },
+  'casper-ruud': { ranking: 7, points: 4210 },
+  'alex-de-minaur': { ranking: 8, points: 3935 },
+  'iga-swiatek': { ranking: 1, points: 8720 },
+  'aryna-sabalenka': { ranking: 2, points: 8670 },
+  'coco-gauff': { ranking: 3, points: 7150 },
+  'elena-rybakina': { ranking: 4, points: 5830 },
+};
+
+const topPlayers = Object.values(fallbackPlayers).map((p: any) => ({
+  ...p,
+  ranking: rankingsData[p.slug]?.ranking || 0,
+  points: rankingsData[p.slug]?.points || 0,
+  image_url: p.image_url?.replace('w=800', 'w=400').replace('h=800', 'h=400') || p.image_url,
+}));
+
+const atpPlayers = topPlayers.filter(p => p.tour === 'atp').sort((a, b) => a.ranking - b.ranking);
+const wtaPlayers = topPlayers.filter(p => p.tour === 'wta').sort((a, b) => a.ranking - b.ranking);
+---
+
+<BaseLayout
+  title="Tennis Players — Profiles, Rankings & Stats"
+  description="Explore profiles of top ATP and WTA tennis players. Career stats, Grand Slam titles, rankings, net worth, and equipment."
+>
+  <div class="players-page">
+    <div class="container">
+      <section class="page-hero">
+        <h1>Tennis Players</h1>
+        <p class="subtitle">Profiles, rankings, stats and stories of the world's best tennis players</p>
+      </section>
+
+      <!-- ATP Section -->
+      <section class="tour-section">
+        <div class="tour-header">
+          <h2>ATP Tour <span class="tour-badge atp">Men's</span></h2>
+          <a href="/rankings/" class="view-all">Full Rankings →</a>
+        </div>
+        <div class="players-grid">
+          {atpPlayers.map((player, i) => (
+            <a href={`/players/${player.slug}/`} class="player-card">
+              <div class="player-rank">#{player.ranking}</div>
+              <div class="player-photo">
+                <img
+                  src={player.image_url}
+                  alt={`${player.first_name} ${player.last_name}`}
+                  loading={i < 4 ? 'eager' : 'lazy'}
+                  width="400"
+                  height="400"
+                />
+              </div>
+              <div class="player-info">
+                <span class="player-flag">{countryFlags[player.country_code || ''] || '🏳️'}</span>
+                <h3>{player.first_name} <strong>{player.last_name}</strong></h3>
+                <div class="player-stats">
+                  <span class="stat">
+                    <em>{player.career_titles}</em> Titles
+                  </span>
+                  {player.grand_slam_titles > 0 && (
+                    <span class="stat gs">
+                      <em>{player.grand_slam_titles}</em> GS
+                    </span>
+                  )}
+                  <span class="stat pts">
+                    <em>{player.points?.toLocaleString()}</em> pts
+                  </span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <!-- WTA Section -->
+      <section class="tour-section">
+        <div class="tour-header">
+          <h2>WTA Tour <span class="tour-badge wta">Women's</span></h2>
+          <a href="/rankings/" class="view-all">Full Rankings →</a>
+        </div>
+        <div class="players-grid">
+          {wtaPlayers.map((player, i) => (
+            <a href={`/players/${player.slug}/`} class="player-card">
+              <div class="player-rank">#{player.ranking}</div>
+              <div class="player-photo">
+                <img
+                  src={player.image_url}
+                  alt={`${player.first_name} ${player.last_name}`}
+                  loading="lazy"
+                  width="400"
+                  height="400"
+                />
+              </div>
+              <div class="player-info">
+                <span class="player-flag">{countryFlags[player.country_code || ''] || '🏳️'}</span>
+                <h3>{player.first_name} <strong>{player.last_name}</strong></h3>
+                <div class="player-stats">
+                  <span class="stat">
+                    <em>{player.career_titles}</em> Titles
+                  </span>
+                  {player.grand_slam_titles > 0 && (
+                    <span class="stat gs">
+                      <em>{player.grand_slam_titles}</em> GS
+                    </span>
+                  )}
+                  <span class="stat pts">
+                    <em>{player.points?.toLocaleString()}</em> pts
+                  </span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <!-- Popular Articles -->
+      <section class="related-content">
+        <h2>Popular Player Articles</h2>
+        <div class="articles-row">
+          <a href="/players/novak-djokovic/net-worth/" class="article-card">
+            <img src="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=600&h=400&fit=crop" alt="Djokovic net worth" loading="lazy" />
+            <h3>Novak Djokovic Net Worth in 2026</h3>
+          </a>
+          <a href="/players/carlos-alcaraz/racket/" class="article-card">
+            <img src="https://images.unsplash.com/photo-1617883861744-13b534e1a5e6?w=600&h=400&fit=crop" alt="Alcaraz racket" loading="lazy" />
+            <h3>What Racket Does Carlos Alcaraz Use?</h3>
+          </a>
+          <a href="/players/iga-swiatek/" class="article-card">
+            <img src="https://images.unsplash.com/photo-1542144582-1ba00456b5e3?w=600&h=400&fit=crop" alt="Swiatek profile" loading="lazy" />
+            <h3>Iga Swiatek — Complete Player Profile</h3>
+          </a>
+        </div>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .players-page {
+    padding: 0 24px 60px;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .page-hero {
+    padding: 48px 0 32px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 40px;
+  }
+  .page-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    text-transform: uppercase;
+    color: var(--dark);
+    margin: 0;
+  }
+  .subtitle {
+    color: #666;
+    font-size: 1.1rem;
+    margin: 8px 0 0;
+  }
+
+  .tour-section {
+    margin-bottom: 48px;
+  }
+
+  .tour-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .tour-header h2 {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+  }
+  .tour-badge {
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-family: var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .tour-badge.atp { background: #003580; color: white; }
+  .tour-badge.wta { background: #7b2d8e; color: white; }
+
+  .view-all {
+    color: var(--court-green);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  .view-all:hover { text-decoration: underline; }
+
+  .players-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .player-card {
+    text-decoration: none;
+    color: inherit;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+  .player-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  }
+
+  .player-rank {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(0,0,0,0.75);
+    color: var(--ball-yellow);
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    z-index: 2;
+  }
+
+  .player-photo {
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+  .player-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+  .player-card:hover .player-photo img {
+    transform: scale(1.05);
+  }
+
+  .player-info {
+    padding: 14px 16px 18px;
+  }
+  .player-flag {
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+    display: inline-block;
+  }
+  .player-info h3 {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 400;
+    margin: 4px 0 8px;
+    line-height: 1.3;
+  }
+  .player-info h3 strong {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+  }
+
+  .player-stats {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    font-size: 0.8rem;
+    color: #888;
+  }
+  .stat em {
+    font-style: normal;
+    font-weight: 700;
+    color: var(--dark);
+    margin-right: 2px;
+  }
+  .stat.gs em { color: #d4a017; }
+
+  /* Related content */
+  .related-content {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 2px solid #eee;
+  }
+  .related-content h2 {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    margin: 0 0 20px;
+  }
+  .articles-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .article-card {
+    text-decoration: none;
+    color: inherit;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.2s;
+  }
+  .article-card:hover { transform: translateY(-3px); }
+  .article-card img {
+    width: 100%;
+    aspect-ratio: 3/2;
+    object-fit: cover;
+  }
+  .article-card h3 {
+    padding: 12px 14px 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .players-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .players-grid { grid-template-columns: repeat(2, 1fr); }
+    .articles-row { grid-template-columns: 1fr; }
+    .page-hero h1 { font-size: 2rem; }
+  }
+  @media (max-width: 480px) {
+    .players-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .player-info { padding: 10px 12px 14px; }
+    .player-info h3 { font-size: 0.9rem; }
+  }
+</style>
