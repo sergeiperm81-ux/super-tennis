@@ -1,0 +1,112 @@
+---
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import { getArticleBySlug, getArticleSlugs } from '../../lib/supabase';
+import { marked } from 'marked';
+
+export async function getStaticPaths() {
+  let slugs: string[] = [];
+  try {
+    slugs = await getArticleSlugs('vs');
+  } catch (e) {
+    console.warn('vs getStaticPaths: Supabase unavailable');
+  }
+
+  if (slugs.length === 0) {
+    slugs = [
+      'djokovic-vs-nadal', 'federer-vs-nadal', 'djokovic-vs-federer',
+      'alcaraz-vs-sinner', 'djokovic-vs-alcaraz', 'evert-vs-navratilova',
+      'williams-vs-williams', 'djokovic-vs-murray', 'nadal-vs-federer-clay',
+      'swiatek-vs-sabalenka', 'sampras-vs-agassi', 'borg-vs-mcenroe',
+      'graf-vs-seles', 'federer-vs-djokovic-wimbledon', 'nadal-vs-djokovic-french-open',
+      'big-three-comparison', 'medvedev-vs-sinner', 'zverev-vs-alcaraz',
+      'gauff-vs-swiatek', 'connors-vs-lendl', 'henin-vs-clijsters',
+      'sharapova-vs-williams', 'federer-vs-murray', 'tsitsipas-vs-medvedev',
+      'kyrgios-vs-djokovic',
+    ];
+  }
+
+  return slugs.map(slug => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+
+let article: any = null;
+try {
+  article = await getArticleBySlug(slug as string);
+} catch (e) {
+  console.warn(`H2H article not found: ${slug}`);
+}
+
+if (!article) {
+  return Astro.redirect('/vs/');
+}
+
+const bodyHtml = article.body ? marked.parse(article.body) : '';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: article.title,
+  description: article.meta_description || article.excerpt,
+  url: `https://super.tennis/vs/${slug}/`,
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+  },
+  about: {
+    '@type': 'Thing',
+    name: 'Tennis Head to Head',
+  },
+};
+---
+
+<ArticleLayout
+  title={article.meta_title || article.title}
+  description={article.meta_description || article.excerpt || `${article.title} — Head to head rivalry analysis on SUPER.TENNIS.`}
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Head to Head', href: '/vs/' },
+    { label: article.title },
+  ]}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <div set:html={bodyHtml} />
+
+  <div class="article-nav">
+    <a href="/vs/" class="nav-back">← All Rivalries</a>
+    <div class="nav-related">
+      <a href="/players/">👥 Player Profiles</a>
+      <a href="/records/">🏆 Records</a>
+      <a href="/rankings/">📊 Rankings</a>
+    </div>
+  </div>
+</ArticleLayout>
+
+<style>
+  .article-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 2px solid var(--gray-200);
+  }
+  .nav-back {
+    color: var(--court-green);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .nav-back:hover { text-decoration: underline; }
+  .nav-related { display: flex; gap: 16px; }
+  .nav-related a {
+    color: var(--gray-600);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-related a:hover { color: var(--court-green); }
+</style>

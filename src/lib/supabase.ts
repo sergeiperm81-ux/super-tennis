@@ -59,7 +59,7 @@ export interface Article {
   id: number;
   slug: string;
   title: string;
-  category: 'players' | 'records' | 'gear' | 'lifestyle' | 'tournaments';
+  category: 'players' | 'records' | 'gear' | 'lifestyle' | 'tournaments' | 'vs';
   subcategory: string | null;
   excerpt: string | null;
   body: string | null;

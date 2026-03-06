@@ -126,7 +126,7 @@ CREATE TABLE articles (
   slug            TEXT UNIQUE NOT NULL,
   title           TEXT NOT NULL,
   category        TEXT NOT NULL CHECK (category IN (
-    'players','records','gear','lifestyle','tournaments'
+    'players','records','gear','lifestyle','tournaments','vs'
   )),
   subcategory     TEXT,                       -- e.g. 'net-worth', 'racket', 'profile'
 

@@ -1311,6 +1311,448 @@ async function generateTournamentArticles() {
 }
 
 // ============================================================
+// H2H COMPARISON ARTICLES
+// ============================================================
+
+const H2H_ARTICLES = [
+  {
+    slug: 'djokovic-vs-nadal',
+    title: 'Djokovic vs Nadal — Head to Head Record & Rivalry History',
+    prompt: `Write a head-to-head rivalry article (800-1000 words) about Novak Djokovic vs Rafael Nadal.
+
+Structure:
+## Djokovic vs Nadal — The Greatest Rivalry in Tennis
+- Overall H2H record (Djokovic leads 31-29)
+## Grand Slam Meetings
+- Key Grand Slam matches between them (Australian Open 2012 final, French Open battles)
+## Surface Breakdown
+- Clay (Nadal dominance), Hard court (Djokovic edge), Grass
+## Key Matches
+- Most iconic encounters (2012 AO Final, 2013 RG SF, 2021 RG SF)
+## Legacy
+- How this rivalry shaped modern tennis`
+  },
+  {
+    slug: 'federer-vs-nadal',
+    title: 'Federer vs Nadal — The Rivalry That Defined Tennis',
+    prompt: `Write a head-to-head rivalry article (800-1000 words) about Roger Federer vs Rafael Nadal.
+
+Structure:
+## Federer vs Nadal — Tennis's Most Beautiful Rivalry
+- Overall H2H record (Nadal leads 24-16)
+## Grand Slam Classics
+- Wimbledon 2008 Final, AO 2017 Final, French Open dominance
+## Playing Style Contrast
+- Federer's elegance vs Nadal's intensity
+## Key Matches
+- Top 5 most memorable encounters
+## Impact on Tennis
+- How they elevated the sport together`
+  },
+  {
+    slug: 'djokovic-vs-federer',
+    title: 'Djokovic vs Federer — Head to Head Record & Greatest Matches',
+    prompt: `Write a head-to-head rivalry article (800-1000 words) about Novak Djokovic vs Roger Federer.
+
+Structure:
+## Djokovic vs Federer — A Clash of Champions
+- Overall H2H record (Djokovic leads 27-23)
+## Grand Slam Battles
+- Wimbledon 2019 Final, US Open meetings
+## Evolution of the Rivalry
+- Early years vs peak years
+## Key Matches
+- Most dramatic encounters
+## Statistical Comparison
+- Titles, rankings, records head-to-head`
+  },
+  {
+    slug: 'alcaraz-vs-sinner',
+    title: 'Alcaraz vs Sinner — The Next Great Tennis Rivalry',
+    prompt: `Write a head-to-head rivalry article (800-1000 words) about Carlos Alcaraz vs Jannik Sinner.
+
+Structure:
+## Alcaraz vs Sinner — Tennis's Future Is Here
+- Current H2H record and trajectory
+## Grand Slam Encounters
+- Their meetings at major tournaments
+## Playing Style Comparison
+- Alcaraz's explosive athleticism vs Sinner's clinical precision
+## Key Matches
+- Best matches so far
+## The Rivalry Ahead
+- What makes this the next defining rivalry`
+  },
+  {
+    slug: 'djokovic-vs-alcaraz',
+    title: 'Djokovic vs Alcaraz — Old Guard Meets New Generation',
+    prompt: `Write a head-to-head rivalry article (800-1000 words) about Novak Djokovic vs Carlos Alcaraz.
+
+Structure:
+## Djokovic vs Alcaraz — The Torch-Passing Rivalry
+- H2H record and context
+## Wimbledon 2023 & 2024 Finals
+- Their Grand Slam battles
+## Generational Clash
+- Experience vs youth and energy
+## Key Matches
+- Most significant encounters
+## What It Means for Tennis
+- The symbolic passing of the guard`
+  },
+  {
+    slug: 'evert-vs-navratilova',
+    title: 'Evert vs Navratilova — The Greatest Women\'s Rivalry',
+    prompt: `Write a head-to-head rivalry article (800-1000 words) about Chris Evert vs Martina Navratilova.
+
+Structure:
+## Evert vs Navratilova — 80 Matches of Brilliance
+- Overall H2H record (Navratilova leads 43-37 across 80 matches!)
+## Grand Slam Meetings
+- Their battles across all four Slams
+## Contrasting Styles & Personalities
+- Baseline queen vs serve-and-volley master
+## Key Matches
+- Most iconic encounters
+## Legacy
+- How they elevated women's tennis`
+  },
+  {
+    slug: 'williams-vs-williams',
+    title: 'Serena vs Venus — The Williams Sisters Head to Head',
+    prompt: `Write a head-to-head rivalry article (800-1000 words) about Serena Williams vs Venus Williams.
+
+Structure:
+## Serena vs Venus — Sisters, Rivals, Champions
+- Overall H2H record (Serena leads 19-12)
+## Grand Slam Finals
+- Their Grand Slam meetings (9 Slam encounters)
+## A Unique Rivalry
+- Family dynamics in professional competition
+## Key Matches
+- Most memorable sister battles
+## Impact
+- How they transformed tennis together`
+  },
+  {
+    slug: 'djokovic-vs-murray',
+    title: 'Djokovic vs Murray — Head to Head & Rivalry History',
+    prompt: `Write a head-to-head rivalry article (800-1000 words) about Novak Djokovic vs Andy Murray.
+
+Structure:
+## Djokovic vs Murray — Born Days Apart, Rivals for Life
+- Overall H2H record (Djokovic leads 25-11)
+## Grand Slam Battles
+- Australian Open finals, Wimbledon meetings
+## Junior Rivals to Grand Slam Champions
+- Their parallel careers from junior tennis
+## Key Matches
+- Most dramatic encounters
+## Murray's Victories
+- When Murray found the winning formula`
+  },
+  {
+    slug: 'nadal-vs-federer-clay',
+    title: 'Nadal vs Federer on Clay — The King vs The Maestro',
+    prompt: `Write a head-to-head rivalry article (800-1000 words) about Nadal vs Federer specifically on clay courts.
+
+Structure:
+## Nadal vs Federer on Clay — Dominance Personified
+- Clay-specific H2H (Nadal leads 14-2 on clay)
+## Roland Garros Battles
+- Their French Open meetings (2005-2011)
+## Rome & Monte Carlo
+- Masters 1000 clay encounters
+## The 2006-2007 Peak
+- When Nadal ended Federer's dreams repeatedly
+## Federer's Hamburg 2007 & Madrid 2009
+- The rare clay victories`
+  },
+  {
+    slug: 'swiatek-vs-sabalenka',
+    title: 'Swiatek vs Sabalenka — WTA\'s Premier Rivalry',
+    prompt: `Write a head-to-head rivalry article (800-1000 words) about Iga Swiatek vs Aryna Sabalenka.
+
+Structure:
+## Swiatek vs Sabalenka — The WTA's Defining Rivalry
+- Current H2H record
+## Grand Slam Encounters
+- Their meetings at majors
+## Playing Style Contrast
+- Swiatek's spin and tactics vs Sabalenka's power
+## Key Matches
+- Most memorable encounters
+## The Battle for No. 1
+- Their race for the top ranking`
+  },
+  {
+    slug: 'sampras-vs-agassi',
+    title: 'Sampras vs Agassi — The 90s Rivalry That Captivated Tennis',
+    prompt: `Write a head-to-head rivalry article (800-1000 words) about Pete Sampras vs Andre Agassi.
+
+Structure:
+## Sampras vs Agassi — Contrasts in Every Way
+- Overall H2H record (Sampras leads 20-14)
+## Grand Slam Meetings
+- US Open finals, Australian Open encounters
+## Style & Personality
+- Serve-and-volley vs return game, reserved vs flamboyant
+## Key Matches
+- US Open 2001 QF, 2002 Final
+## American Tennis Icons
+- How they defined an era`
+  },
+  {
+    slug: 'borg-vs-mcenroe',
+    title: 'Borg vs McEnroe — Fire & Ice on the Tennis Court',
+    prompt: `Write a head-to-head rivalry article (800-1000 words) about Bjorn Borg vs John McEnroe.
+
+Structure:
+## Borg vs McEnroe — The Rivalry That Made Tennis Cool
+- Overall H2H record (Borg leads 7-7)
+## Wimbledon 1980 Final
+- The greatest match ever played (18-16 tiebreak)
+## Contrasting Personas
+- Borg's icy calm vs McEnroe's fiery temperament
+## US Open Battles
+- Their meetings in New York
+## Cultural Impact
+- How they brought tennis into mainstream pop culture`
+  },
+  {
+    slug: 'graf-vs-seles',
+    title: 'Graf vs Seles — A Rivalry Cut Short',
+    prompt: `Write a head-to-head rivalry article (800-1000 words) about Steffi Graf vs Monica Seles.
+
+Structure:
+## Graf vs Seles — What Could Have Been
+- Overall H2H record (Seles leads 10-5 before stabbing incident)
+## The Early Dominance
+- Seles's meteoric rise and challenge to Graf's supremacy
+## The 1993 Tragedy
+- The Hamburg stabbing and its impact
+## Grand Slam Meetings
+- Their major encounters
+## Legacy
+- Two all-time greats with an unfinished story`
+  },
+  {
+    slug: 'federer-vs-djokovic-wimbledon',
+    title: 'Federer vs Djokovic at Wimbledon — Grass Court Battles',
+    prompt: `Write a head-to-head rivalry article (800-1000 words) about Federer vs Djokovic specifically at Wimbledon.
+
+Structure:
+## Federer vs Djokovic at Wimbledon — Centre Court Drama
+- Wimbledon-specific H2H record
+## The 2019 Final
+- The longest Wimbledon final, championship point saves, first 5th-set tiebreak
+## The 2014 Final & 2015 Final
+- Back-to-back finals
+## Semifinal Meetings
+- Their other Wimbledon encounters
+## Federer's Kingdom Under Siege
+- How Djokovic conquered Federer's best surface`
+  },
+  {
+    slug: 'nadal-vs-djokovic-french-open',
+    title: 'Nadal vs Djokovic at Roland Garros — Clay Court Epic',
+    prompt: `Write a head-to-head rivalry article (800-1000 words) about Nadal vs Djokovic at the French Open.
+
+Structure:
+## Nadal vs Djokovic at Roland Garros — Unstoppable vs Immovable
+- Roland Garros H2H record
+## The 2021 Semifinal
+- One of the greatest matches in history
+## Nadal's Clay Kingdom
+- Why Roland Garros matters so much to Nadal
+## Djokovic's 2021 Title
+- Breaking through on Nadal's turf
+## Statistical Breakdown
+- Sets, games, and match stats on the Parisian clay`
+  },
+  {
+    slug: 'big-three-comparison',
+    title: 'Federer vs Nadal vs Djokovic — The Big Three Compared',
+    prompt: `Write a comparison article (800-1000 words) about the Big Three of tennis.
+
+Structure:
+## The Big Three — Greatest Era in Tennis History
+- Why Federer, Nadal, Djokovic dominate the GOAT debate
+## Grand Slam Records
+- Title comparison across all four Slams
+## Head-to-Head Records
+- How they fare against each other (triangular H2H)
+## Surface Mastery
+- Each player's best surface and dominance
+## Records & Milestones
+- Weeks at No. 1, consecutive Slam titles, year-end finishes
+## The Verdict
+- Is there a greatest? Or is each the GOAT of their surface?`
+  },
+  {
+    slug: 'medvedev-vs-sinner',
+    title: 'Medvedev vs Sinner — The New Rivalry in Men\'s Tennis',
+    prompt: `Write a head-to-head rivalry article (700-900 words) about Daniil Medvedev vs Jannik Sinner.
+
+Structure:
+## Medvedev vs Sinner — Cold Precision vs Italian Fire
+- Current H2H record
+## Australian Open 2024 Final
+- The breakout match of this rivalry
+## Playing Style Contrast
+- Medvedev's unorthodox game vs Sinner's clean ball-striking
+## Key Matches
+- Their most significant meetings
+## Rivalry Trajectory
+- Where this rivalry is heading`
+  },
+  {
+    slug: 'zverev-vs-alcaraz',
+    title: 'Zverev vs Alcaraz — European Clash at the Top',
+    prompt: `Write a head-to-head rivalry article (700-900 words) about Alexander Zverev vs Carlos Alcaraz.
+
+Structure:
+## Zverev vs Alcaraz — The Next Chapter
+- Current H2H record
+## Roland Garros 2024 Final
+- Their biggest match
+## Physical Matchup
+- Height, power, and playing styles compared
+## Key Encounters
+- Most notable matches
+## Future Outlook
+- How this rivalry could define the next decade`
+  },
+  {
+    slug: 'gauff-vs-swiatek',
+    title: 'Gauff vs Swiatek — Young Champions Face Off',
+    prompt: `Write a head-to-head rivalry article (700-900 words) about Coco Gauff vs Iga Swiatek.
+
+Structure:
+## Gauff vs Swiatek — The WTA's Future
+- Current H2H record (Swiatek dominates early)
+## Roland Garros Meetings
+- Their clay court battles
+## American Power vs Polish Precision
+- Style comparison
+## Key Matches
+- Most significant meetings so far
+## The Gap Closing
+- How Gauff is improving and closing the gap`
+  },
+  {
+    slug: 'connors-vs-lendl',
+    title: 'Connors vs Lendl — 35 Matches of Pure Rivalry',
+    prompt: `Write a head-to-head rivalry article (700-900 words) about Jimmy Connors vs Ivan Lendl.
+
+Structure:
+## Connors vs Lendl — The 80s Powerhouses
+- Overall H2H record (Lendl leads 22-13)
+## Grand Slam Encounters
+- US Open battles, French Open meetings
+## Generational Overlap
+- The old guard vs the new baseline power
+## Key Matches
+- Most dramatic encounters
+## Legacy
+- How they shaped power tennis`
+  },
+  {
+    slug: 'henin-vs-clijsters',
+    title: 'Henin vs Clijsters — Belgium\'s Tennis Queens',
+    prompt: `Write a head-to-head rivalry article (700-900 words) about Justine Henin vs Kim Clijsters.
+
+Structure:
+## Henin vs Clijsters — From Friends to Rivals
+- Overall H2H record (Henin leads 13-12)
+## Belgian Tennis Boom
+- Two champions from one small country
+## Contrasting Personalities
+- Henin's perfectionism vs Clijsters's joy
+## Grand Slam Encounters
+- Their major meetings
+## The Friendship Factor
+- How personal dynamics shaped this rivalry`
+  },
+  {
+    slug: 'sharapova-vs-williams',
+    title: 'Sharapova vs Serena — Tennis\'s Most Lopsided Rivalry',
+    prompt: `Write a head-to-head rivalry article (700-900 words) about Maria Sharapova vs Serena Williams.
+
+Structure:
+## Sharapova vs Serena — The Numbers Don't Tell the Whole Story
+- Overall H2H record (Serena leads 20-2!)
+## Wimbledon 2004
+- The upset that started it all (Sharapova won)
+## Grand Slam Meetings
+- Their meetings at majors
+## Off-Court Rivalry
+- The tension, the book, the public dynamics
+## Why It Matters
+- Despite the lopsided record, why this is still compelling`
+  },
+  {
+    slug: 'federer-vs-murray',
+    title: 'Federer vs Murray — The Mentor and the Challenger',
+    prompt: `Write a head-to-head rivalry article (700-900 words) about Roger Federer vs Andy Murray.
+
+Structure:
+## Federer vs Murray — Elegance vs Grit
+- Overall H2H record (Federer leads 14-11)
+## Grand Slam Encounters
+- Wimbledon 2012 Final (Murray's breakthrough), Australian Open battles
+## Olympic Drama
+- London 2012 gold medal match
+## Murray's Victories
+- Key wins that defined Murray's career
+## The Respect Factor
+- A rivalry built on mutual admiration`
+  },
+  {
+    slug: 'tsitsipas-vs-medvedev',
+    title: 'Tsitsipas vs Medvedev — The Mediterranean vs The Moscow Tactician',
+    prompt: `Write a head-to-head rivalry article (700-900 words) about Stefanos Tsitsipas vs Daniil Medvedev.
+
+Structure:
+## Tsitsipas vs Medvedev — Fire vs Ice
+- Overall H2H record
+## Australian Open 2022 Semifinal
+- The epic comeback match
+## Playing Style Clash
+- Tsitsipas's all-court game vs Medvedev's defensive wizardry
+## Off-Court Tension
+- Their famous verbal exchanges
+## Key Matches
+- Most dramatic encounters`
+  },
+  {
+    slug: 'kyrgios-vs-djokovic',
+    title: 'Kyrgios vs Djokovic — Tennis\'s Oddest Friendship & Rivalry',
+    prompt: `Write a head-to-head rivalry article (700-900 words) about Nick Kyrgios vs Novak Djokovic.
+
+Structure:
+## Kyrgios vs Djokovic — From Enemies to Friends
+- H2H record (Kyrgios leads the regular season, Djokovic leads at Slams)
+## Wimbledon 2022 Final
+- Their biggest match
+## The Feud Years
+- Years of public criticism and social media battles
+## The Friendship Turn
+- How they became unlikely friends
+## Entertainment Value
+- Why this matchup always delivers drama`
+  },
+];
+
+async function generateH2HArticles() {
+  return generateStaticArticles(
+    'vs',
+    H2H_ARTICLES,
+    'You are a tennis historian and analyst writing for super.tennis. Write engaging head-to-head rivalry articles that combine statistical analysis with storytelling. Include specific match scores and dates where relevant. Use markdown formatting with ## headers.'
+  );
+}
+
+// ============================================================
 // MAIN
 // ============================================================
 
@@ -1354,9 +1796,12 @@ async function main() {
     case 'tournament':
       result = await generateTournamentArticles();
       break;
+    case 'h2h':
+      result = await generateH2HArticles();
+      break;
     default:
       console.error(`❌ Unknown type: ${TYPE}`);
-      console.error('   Available: player-profile, player-networth, player-racket, record, gear, lifestyle, tournament');
+      console.error('   Available: player-profile, player-networth, player-racket, record, gear, lifestyle, tournament, h2h');
       process.exit(1);
   }
 

@@ -1,0 +1,213 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getArticles } from '../../lib/supabase';
+
+// Fetch real H2H articles from Supabase
+let h2hArticles: any[] = [];
+try {
+  h2hArticles = await getArticles({ category: 'vs', limit: 30 });
+} catch (e) {
+  console.warn('H2H index: Supabase unavailable');
+}
+
+// Era labeling for articles
+function getEra(slug: string): string {
+  const modern = ['alcaraz-vs-sinner', 'djokovic-vs-alcaraz', 'swiatek-vs-sabalenka', 'medvedev-vs-sinner', 'zverev-vs-alcaraz', 'gauff-vs-swiatek', 'kyrgios-vs-djokovic'];
+  const bigThree = ['djokovic-vs-nadal', 'federer-vs-nadal', 'djokovic-vs-federer', 'djokovic-vs-murray', 'nadal-vs-federer-clay', 'federer-vs-djokovic-wimbledon', 'nadal-vs-djokovic-french-open', 'big-three-comparison', 'federer-vs-murray', 'tsitsipas-vs-medvedev'];
+  const women = ['evert-vs-navratilova', 'williams-vs-williams', 'graf-vs-seles', 'sharapova-vs-williams', 'henin-vs-clijsters'];
+  const classic = ['sampras-vs-agassi', 'borg-vs-mcenroe', 'connors-vs-lendl'];
+
+  if (modern.includes(slug)) return 'Current Era';
+  if (bigThree.includes(slug)) return 'Big Three Era';
+  if (women.includes(slug)) return "Women's Tennis";
+  if (classic.includes(slug)) return 'Classic Era';
+  return 'Rivalry';
+}
+
+function getEraClass(slug: string): string {
+  const era = getEra(slug);
+  if (era === 'Current Era') return 'current';
+  if (era === 'Big Three Era') return 'big-three';
+  if (era === "Women's Tennis") return 'wta';
+  if (era === 'Classic Era') return 'classic';
+  return 'default';
+}
+
+// Sort: Big Three first, then Current, then Women's, then Classic
+const eraOrder: Record<string, number> = { 'Big Three Era': 0, 'Current Era': 1, "Women's Tennis": 2, 'Classic Era': 3, 'Rivalry': 4 };
+const sortedArticles = [...h2hArticles].sort((a, b) => {
+  return (eraOrder[getEra(a.slug)] ?? 9) - (eraOrder[getEra(b.slug)] ?? 9);
+});
+---
+
+<BaseLayout
+  title="Tennis Head to Head — Greatest Rivalries & Comparisons"
+  description="Head-to-head records and rivalry histories of the greatest tennis matchups. Djokovic vs Nadal, Federer vs Nadal, Alcaraz vs Sinner, and more."
+>
+  <div class="vs-page">
+    <div class="container">
+      <section class="page-hero">
+        <h1>Head to Head</h1>
+        <p class="subtitle">The greatest rivalries, matchups, and head-to-head records in tennis history</p>
+      </section>
+
+      {sortedArticles.length > 0 ? (
+        <div class="h2h-grid">
+          {sortedArticles.map((article, i) => (
+            <a href={`/vs/${article.slug}/`} class={`h2h-card ${getEraClass(article.slug)}`}>
+              <span class={`era-badge ${getEraClass(article.slug)}`}>{getEra(article.slug)}</span>
+              <h2>{article.title}</h2>
+              <p>{article.excerpt || article.meta_description || ''}</p>
+              <span class="read-more">Read Analysis →</span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <div class="empty-state">
+          <p>Head-to-head rivalry articles are coming soon. Check back shortly!</p>
+        </div>
+      )}
+
+      <section class="related-section">
+        <div class="related-links">
+          <a href="/players/">👥 Player Profiles</a>
+          <a href="/records/">🏆 Tennis Records</a>
+          <a href="/rankings/">📊 Current Rankings</a>
+          <a href="/tournaments/">🏟️ Tournament Guides</a>
+        </div>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .vs-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  .page-hero {
+    padding: 48px 0 32px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 40px;
+  }
+  .page-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0;
+  }
+  .subtitle {
+    color: var(--gray-600);
+    font-size: 1.1rem;
+    margin: 8px 0 0;
+  }
+
+  .h2h-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 48px;
+  }
+
+  .h2h-card {
+    text-decoration: none;
+    color: inherit;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.2s;
+    border-top: 3px solid var(--gray-200);
+  }
+  .h2h-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  .h2h-card.big-three { border-top-color: #d4a017; }
+  .h2h-card.current { border-top-color: var(--court-green); }
+  .h2h-card.wta { border-top-color: #7b2d8e; }
+  .h2h-card.classic { border-top-color: #6b7280; }
+
+  .era-badge {
+    font-family: var(--font-heading);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    align-self: flex-start;
+    margin-bottom: 12px;
+  }
+  .era-badge.big-three { background: #fef3c7; color: #92400e; }
+  .era-badge.current { background: #dcfce7; color: #166534; }
+  .era-badge.wta { background: #f3e8ff; color: #6d28d9; }
+  .era-badge.classic { background: #f3f4f6; color: #374151; }
+
+  .h2h-card h2 {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+    line-height: 1.35;
+  }
+  .h2h-card p {
+    color: var(--gray-600);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin: 0;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .read-more {
+    color: var(--court-green);
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-top: 16px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--gray-500);
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    margin-bottom: 48px;
+  }
+
+  .related-section {
+    text-align: center;
+    padding: 32px;
+    background: var(--gray-50);
+    border-radius: var(--radius);
+  }
+  .related-links {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .related-links a {
+    color: var(--court-green);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+  }
+  .related-links a:hover { text-decoration: underline; }
+
+  @media (max-width: 1024px) {
+    .h2h-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .h2h-grid { grid-template-columns: 1fr; }
+    .page-hero h1 { font-size: 2rem; }
+  }
+</style>
