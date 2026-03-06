@@ -1,7 +1,36 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getLeaderboard } from '../../lib/supabase';
+import { countryFlags } from '../../lib/fallback-data';
 
-// Records data — will be replaced with Supabase/content collections later
+// Dynamic leaderboards from Supabase
+let mostTitlesATP: any[] = [];
+let mostTitlesWTA: any[] = [];
+let mostGrandSlams: any[] = [];
+let highestWinPct: any[] = [];
+
+try {
+  [mostTitlesATP, mostTitlesWTA, mostGrandSlams] = await Promise.all([
+    getLeaderboard('career_titles', 'atp', 10),
+    getLeaderboard('career_titles', 'wta', 10),
+    getLeaderboard('grand_slam_titles', null, 10),
+  ]);
+
+  // For win percentage, we need to compute it client-side from the titles leaders
+  const allPlayers = await getLeaderboard('career_win', null, 50);
+  highestWinPct = allPlayers
+    .filter((p: any) => (p.career_win + p.career_loss) >= 200) // Minimum 200 matches
+    .map((p: any) => ({
+      ...p,
+      win_pct: ((p.career_win / (p.career_win + p.career_loss)) * 100).toFixed(1),
+    }))
+    .sort((a: any, b: any) => parseFloat(b.win_pct) - parseFloat(a.win_pct))
+    .slice(0, 10);
+} catch (e) {
+  console.warn('Records: Supabase unavailable, using static data only');
+}
+
+// Curated records data (editorial, not in database)
 const records = [
   {
     category: 'Grand Slam Records',
@@ -73,6 +102,24 @@ const records = [
             {cat.category}
           </a>
         ))}
+        {mostTitlesATP.length > 0 && (
+          <a href="#career-titles-leaderboard" class="cat-link live-data">
+            <span class="cat-icon">👑</span>
+            Titles Leaderboard
+          </a>
+        )}
+        {mostGrandSlams.length > 0 && (
+          <a href="#grand-slam-leaderboard" class="cat-link live-data">
+            <span class="cat-icon">🏆</span>
+            GS Leaders
+          </a>
+        )}
+        {highestWinPct.length > 0 && (
+          <a href="#win-percentage-leaderboard" class="cat-link live-data">
+            <span class="cat-icon">📈</span>
+            Win %
+          </a>
+        )}
       </nav>
 
       <!-- Records Sections -->
@@ -104,6 +151,164 @@ const records = [
           </div>
         </section>
       ))}
+
+      <!-- Dynamic Leaderboards from Real Data -->
+      {mostTitlesATP.length > 0 && (
+        <section class="records-section leaderboard-section" id="career-titles-leaderboard">
+          <h2>
+            <span class="section-icon">👑</span>
+            Career Titles Leaderboard
+          </h2>
+
+          <div class="leaderboard-grid">
+            <!-- ATP Most Titles -->
+            <div class="leaderboard-table">
+              <h3 class="lb-title">ATP — Most Career Titles</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Player</th>
+                    <th>Titles</th>
+                    <th>GS</th>
+                    <th>W-L</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mostTitlesATP.map((p: any, i: number) => (
+                    <tr class={i < 3 ? 'top-3' : ''}>
+                      <td class="lb-rank">{i + 1}</td>
+                      <td class="lb-player">
+                        <a href={`/players/${p.slug}/`}>
+                          <span class="lb-flag">{countryFlags[p.country_code || ''] || '🏳️'}</span>
+                          {p.first_name} <strong>{p.last_name}</strong>
+                        </a>
+                      </td>
+                      <td class="lb-value">{p.career_titles}</td>
+                      <td class="lb-gs">{p.grand_slam_titles || 0}</td>
+                      <td class="lb-wl">{p.career_win}-{p.career_loss}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <!-- WTA Most Titles -->
+            <div class="leaderboard-table">
+              <h3 class="lb-title">WTA — Most Career Titles</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Player</th>
+                    <th>Titles</th>
+                    <th>GS</th>
+                    <th>W-L</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mostTitlesWTA.map((p: any, i: number) => (
+                    <tr class={i < 3 ? 'top-3' : ''}>
+                      <td class="lb-rank">{i + 1}</td>
+                      <td class="lb-player">
+                        <a href={`/players/${p.slug}/`}>
+                          <span class="lb-flag">{countryFlags[p.country_code || ''] || '🏳️'}</span>
+                          {p.first_name} <strong>{p.last_name}</strong>
+                        </a>
+                      </td>
+                      <td class="lb-value">{p.career_titles}</td>
+                      <td class="lb-gs">{p.grand_slam_titles || 0}</td>
+                      <td class="lb-wl">{p.career_win}-{p.career_loss}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {mostGrandSlams.length > 0 && (
+        <section class="records-section leaderboard-section" id="grand-slam-leaderboard">
+          <h2>
+            <span class="section-icon">🏆</span>
+            Grand Slam Titles — All-Time Leaders
+          </h2>
+
+          <div class="leaderboard-single">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Player</th>
+                  <th>Tour</th>
+                  <th>Grand Slams</th>
+                  <th>Total Titles</th>
+                  <th>W-L</th>
+                </tr>
+              </thead>
+              <tbody>
+                {mostGrandSlams.map((p: any, i: number) => (
+                  <tr class={i < 3 ? 'top-3' : ''}>
+                    <td class="lb-rank">{i + 1}</td>
+                    <td class="lb-player">
+                      <a href={`/players/${p.slug}/`}>
+                        <span class="lb-flag">{countryFlags[p.country_code || ''] || '🏳️'}</span>
+                        {p.first_name} <strong>{p.last_name}</strong>
+                      </a>
+                    </td>
+                    <td><span class={`tour-mini ${p.tour}`}>{p.tour?.toUpperCase()}</span></td>
+                    <td class="lb-value gs-val">{p.grand_slam_titles}</td>
+                    <td>{p.career_titles}</td>
+                    <td class="lb-wl">{p.career_win}-{p.career_loss}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {highestWinPct.length > 0 && (
+        <section class="records-section leaderboard-section" id="win-percentage-leaderboard">
+          <h2>
+            <span class="section-icon">📈</span>
+            Highest Career Win Percentage (200+ matches)
+          </h2>
+
+          <div class="leaderboard-single">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Player</th>
+                  <th>Tour</th>
+                  <th>Win %</th>
+                  <th>W-L</th>
+                  <th>Titles</th>
+                </tr>
+              </thead>
+              <tbody>
+                {highestWinPct.map((p: any, i: number) => (
+                  <tr class={i < 3 ? 'top-3' : ''}>
+                    <td class="lb-rank">{i + 1}</td>
+                    <td class="lb-player">
+                      <a href={`/players/${p.slug}/`}>
+                        <span class="lb-flag">{countryFlags[p.country_code || ''] || '🏳️'}</span>
+                        {p.first_name} <strong>{p.last_name}</strong>
+                      </a>
+                    </td>
+                    <td><span class={`tour-mini ${p.tour}`}>{p.tour?.toUpperCase()}</span></td>
+                    <td class="lb-value">{p.win_pct}%</td>
+                    <td class="lb-wl">{p.career_win}-{p.career_loss}</td>
+                    <td>{p.career_titles}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
 
       <!-- Related Content -->
       <section class="related-content">
@@ -349,5 +554,137 @@ const records = [
     .record-card { padding: 14px 16px; }
     .record-content h3 { font-size: 0.9rem; }
     .record-value { font-size: 1.1rem; }
+  }
+
+  /* Live data badge on nav links */
+  .cat-link.live-data {
+    border-color: var(--court-green);
+    background: #f0fdf4;
+    color: var(--court-green);
+  }
+
+  /* Leaderboard Tables */
+  .leaderboard-section {
+    padding-top: 8px;
+  }
+
+  .leaderboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .leaderboard-single,
+  .leaderboard-table {
+    overflow-x: auto;
+  }
+
+  .lb-title {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    text-transform: uppercase;
+    color: var(--gray-700);
+    margin: 0 0 12px;
+    letter-spacing: 0.03em;
+  }
+
+  .leaderboard-table table,
+  .leaderboard-single table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+    font-size: 0.9rem;
+  }
+
+  .leaderboard-table th,
+  .leaderboard-single th {
+    background: var(--gray-100);
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--gray-500);
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+
+  .leaderboard-table td,
+  .leaderboard-single td {
+    padding: 10px 12px;
+    border-top: 1px solid var(--gray-100);
+  }
+
+  .leaderboard-table tr.top-3,
+  .leaderboard-single tr.top-3 {
+    background: #fefce8;
+  }
+
+  .lb-rank {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--gray-400);
+    width: 32px;
+    text-align: center;
+  }
+  .top-3 .lb-rank { color: #d4a017; }
+
+  .lb-player a {
+    color: var(--gray-900);
+    font-size: 0.88rem;
+    transition: color 0.2s;
+  }
+  .lb-player a:hover { color: var(--court-green); }
+  .lb-player strong {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+  }
+  .lb-flag {
+    margin-right: 4px;
+    font-size: 0.9rem;
+  }
+
+  .lb-value {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--court-green);
+    font-size: 1.1rem;
+  }
+  .lb-value.gs-val { color: #d4a017; }
+
+  .lb-gs {
+    color: #d4a017;
+    font-weight: 600;
+  }
+
+  .lb-wl {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    white-space: nowrap;
+  }
+
+  .tour-mini {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .tour-mini.atp { background: #003580; color: white; }
+  .tour-mini.wta { background: #7b2d8e; color: white; }
+
+  @media (max-width: 768px) {
+    .leaderboard-grid { grid-template-columns: 1fr; }
+    .leaderboard-table table,
+    .leaderboard-single table { font-size: 0.82rem; }
+    .leaderboard-table th,
+    .leaderboard-single th,
+    .leaderboard-table td,
+    .leaderboard-single td { padding: 8px 8px; }
   }
 </style>

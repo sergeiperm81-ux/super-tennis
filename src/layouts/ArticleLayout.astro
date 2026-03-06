@@ -1,0 +1,174 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  breadcrumbs: { label: string; href?: string }[];
+  image?: string;
+  publishedDate?: string;
+}
+
+const { title, description, breadcrumbs, image, publishedDate } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <article class="article-page">
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs">
+      {breadcrumbs.map((crumb, i) => (
+        <>
+          {i > 0 && <span class="sep">/</span>}
+          {crumb.href ? (
+            <a href={crumb.href}>{crumb.label}</a>
+          ) : (
+            <span class="current">{crumb.label}</span>
+          )}
+        </>
+      ))}
+    </nav>
+
+    <!-- Article Header -->
+    <header class="article-header">
+      <h1>{title}</h1>
+      {publishedDate && (
+        <time class="article-date">{new Date(publishedDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</time>
+      )}
+    </header>
+
+    <!-- Article Content -->
+    <div class="article-body">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .article-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  .breadcrumbs {
+    padding: 20px 0;
+    font-size: 0.85rem;
+    color: var(--gray-500);
+  }
+  .breadcrumbs a {
+    color: var(--gray-600);
+    transition: color 0.2s;
+  }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-header {
+    padding: 32px 0 24px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 32px;
+  }
+  .article-header h1 {
+    font-family: var(--font-heading);
+    font-size: 2.4rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0;
+    line-height: 1.15;
+  }
+  .article-date {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--gray-500);
+    margin-top: 12px;
+  }
+
+  .article-body {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--gray-700);
+  }
+
+  .article-body :global(h2) {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--gray-200);
+  }
+
+  .article-body :global(h3) {
+    font-family: var(--font-body);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin: 32px 0 12px;
+  }
+
+  .article-body :global(p) {
+    margin: 0 0 20px;
+  }
+
+  .article-body :global(ul),
+  .article-body :global(ol) {
+    margin: 0 0 20px;
+    padding-left: 24px;
+  }
+  .article-body :global(li) {
+    margin-bottom: 8px;
+  }
+
+  .article-body :global(strong) {
+    color: var(--gray-900);
+    font-weight: 700;
+  }
+
+  .article-body :global(a) {
+    color: var(--court-green);
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .article-body :global(a:hover) {
+    text-decoration: underline;
+  }
+
+  .article-body :global(blockquote) {
+    border-left: 4px solid var(--court-green);
+    padding: 12px 20px;
+    margin: 24px 0;
+    background: var(--gray-50);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-style: italic;
+    color: var(--gray-600);
+  }
+
+  .article-body :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .article-body :global(th) {
+    background: var(--gray-100);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--gray-600);
+    font-weight: 600;
+  }
+  .article-body :global(td) {
+    padding: 10px 14px;
+    border-top: 1px solid var(--gray-100);
+    font-size: 0.95rem;
+  }
+
+  @media (max-width: 768px) {
+    .article-header h1 { font-size: 1.8rem; }
+    .article-body { font-size: 1rem; }
+  }
+</style>

@@ -1,0 +1,177 @@
+---
+import ArticleLayout from '../../../layouts/ArticleLayout.astro';
+import { getPlayerBySlug, getTopPlayerSlugs, getArticleBySlug } from '../../../lib/supabase';
+import { fallbackPlayers, countryNames, countryFlags } from '../../../lib/fallback-data';
+import { marked } from 'marked';
+
+export async function getStaticPaths() {
+  // Get top players who might have net worth articles
+  let slugs: string[] = [];
+  try {
+    slugs = await getTopPlayerSlugs(50);
+  } catch (e) {
+    console.warn('net-worth getStaticPaths: Supabase unavailable');
+  }
+
+  // Always include fallback players
+  const fbSlugs = Object.keys(fallbackPlayers);
+  const allSlugs = [...new Set([...slugs, ...fbSlugs])];
+
+  return allSlugs.map(slug => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+
+// Get player data
+let player = await getPlayerBySlug(slug as string);
+if (!player) {
+  player = fallbackPlayers[slug as string] || null;
+}
+
+if (!player) {
+  return Astro.redirect('/players/');
+}
+
+const name = `${player.first_name} ${player.last_name}`;
+const country = countryNames[player.country_code || ''] || player.country_code || '';
+const flag = countryFlags[player.country_code || ''] || '🏳️';
+
+// Try to find the net-worth article
+const articleSlug = `${slug}-net-worth`;
+let article: any = null;
+try {
+  article = await getArticleBySlug(articleSlug);
+} catch (e) {
+  console.warn(`net-worth: article not found for ${articleSlug}`);
+}
+
+// Format prize money
+function formatPrize(amount: number): string {
+  if (!amount) return 'N/A';
+  if (amount >= 1_000_000) return `$${(amount / 1_000_000).toFixed(1)}M`;
+  if (amount >= 1_000) return `$${(amount / 1_000).toFixed(0)}K`;
+  return `$${amount}`;
+}
+
+const prizeMoney = formatPrize(player.career_prize_usd || 0);
+const bodyHtml = article?.body ? marked.parse(article.body) : null;
+---
+
+<ArticleLayout
+  title={`${name} Net Worth in 2026 — Earnings & Salary`}
+  description={article?.meta_description || `${name} net worth, prize money (${prizeMoney}), endorsement deals, and career earnings in 2026.`}
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Players', href: '/players/' },
+    { label: name, href: `/players/${slug}/` },
+    { label: 'Net Worth' },
+  ]}
+>
+  <!-- Quick Stats Banner -->
+  <div class="nw-banner">
+    <div class="nw-stat">
+      <span class="nw-stat-label">Career Prize Money</span>
+      <span class="nw-stat-value">{prizeMoney}</span>
+    </div>
+    <div class="nw-stat">
+      <span class="nw-stat-label">Career Titles</span>
+      <span class="nw-stat-value">{player.career_titles}</span>
+    </div>
+    {player.grand_slam_titles > 0 && (
+      <div class="nw-stat gs">
+        <span class="nw-stat-label">Grand Slams</span>
+        <span class="nw-stat-value">{player.grand_slam_titles}</span>
+      </div>
+    )}
+    <div class="nw-stat">
+      <span class="nw-stat-label">Country</span>
+      <span class="nw-stat-value">{flag} {country}</span>
+    </div>
+  </div>
+
+  {bodyHtml ? (
+    <div set:html={bodyHtml} />
+  ) : (
+    <div class="placeholder-content">
+      <h2>Career Earnings Overview</h2>
+      <p>
+        {name} has earned <strong>{prizeMoney}</strong> in career prize money on the {player.tour === 'atp' ? 'ATP' : 'WTA'} Tour,
+        winning <strong>{player.career_titles} career titles</strong>
+        {player.grand_slam_titles > 0 ? `, including ${player.grand_slam_titles} Grand Slam${player.grand_slam_titles > 1 ? 's' : ''}` : ''}.
+      </p>
+
+      <h2>Key Financial Facts</h2>
+      <ul>
+        <li><strong>Official Prize Money:</strong> {prizeMoney}</li>
+        <li><strong>Career Titles:</strong> {player.career_titles}</li>
+        <li><strong>Career Win-Loss:</strong> {player.career_win}-{player.career_loss}</li>
+        <li><strong>Country:</strong> {country}</li>
+        <li><strong>Tour:</strong> {player.tour === 'atp' ? 'ATP' : 'WTA'}</li>
+      </ul>
+
+      <p><em>Full net worth analysis coming soon. Check back for a detailed breakdown of {name}'s earnings, endorsements, and business ventures.</em></p>
+    </div>
+  )}
+
+  <!-- Back to Profile -->
+  <div class="back-link">
+    <a href={`/players/${slug}/`}>← Back to {name}'s Profile</a>
+    <a href={`/players/${slug}/racket/`}>🎾 {name}'s Racket & Equipment →</a>
+  </div>
+</ArticleLayout>
+
+<style>
+  .nw-banner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+  .nw-stat {
+    text-align: center;
+  }
+  .nw-stat-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+  .nw-stat-value {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--gray-900);
+  }
+  .nw-stat.gs .nw-stat-value { color: #d4a017; }
+
+  .placeholder-content {
+    color: var(--gray-700);
+  }
+
+  .back-link {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 2px solid var(--gray-200);
+  }
+  .back-link a {
+    color: var(--court-green);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .back-link a:hover { text-decoration: underline; }
+
+  @media (max-width: 480px) {
+    .nw-banner { grid-template-columns: 1fr 1fr; }
+    .nw-stat-value { font-size: 1.1rem; }
+  }
+</style>

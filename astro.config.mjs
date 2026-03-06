@@ -10,4 +10,10 @@ export default defineConfig({
     sitemap(),
   ],
   output: 'static',
+  vite: {
+    // Make env variables available at build time for SSG
+    define: {
+      'import.meta.env.SUPABASE_SERVICE_KEY': JSON.stringify(process.env.SUPABASE_SERVICE_KEY || ''),
+    },
+  },
 });

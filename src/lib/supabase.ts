@@ -1,9 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
+// Use service key for SSG builds (never exposed to client, only at build time)
+// Falls back to anon key if service key is not available
+const supabaseKey = import.meta.env.SUPABASE_SERVICE_KEY || import.meta.env.SUPABASE_ANON_KEY || '';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Type helpers for database tables
 export interface Player {
@@ -179,22 +181,74 @@ export async function getRelatedPlayers(tour: 'atp' | 'wta', excludeSlug: string
   return (data as Partial<Player>[]) || [];
 }
 
-// Helper: get published articles
+// Helper: get leaderboards for records page
+export async function getLeaderboard(
+  field: 'career_titles' | 'grand_slam_titles' | 'career_win' | 'career_prize_usd',
+  tour: 'atp' | 'wta' | null = null,
+  limit = 10
+) {
+  let query = supabase
+    .from('players')
+    .select('first_name, last_name, slug, country_code, tour, career_titles, grand_slam_titles, career_win, career_loss, career_prize_usd')
+    .gt(field, 0)
+    .order(field, { ascending: false })
+    .limit(limit);
+
+  if (tour) query = query.eq('tour', tour);
+
+  const { data, error } = await query;
+  if (error) console.error('getLeaderboard error:', error.message);
+  return (data as Partial<Player>[]) || [];
+}
+
+// Helper: get articles (published or draft for SSG)
 export async function getArticles(options: {
   category?: string;
+  subcategory?: string;
   limit?: number;
-  playerSlug?: string;
+  status?: string[];
 } = {}) {
   let query = supabase
     .from('articles')
     .select('*')
-    .eq('status', 'published')
-    .order('published_at', { ascending: false });
+    .in('status', options.status || ['published', 'draft'])
+    .order('created_at', { ascending: false });
 
   if (options.category) query = query.eq('category', options.category);
+  if (options.subcategory) query = query.eq('subcategory', options.subcategory);
   if (options.limit) query = query.limit(options.limit);
 
   const { data, error } = await query;
   if (error) console.error('getArticles error:', error.message);
   return (data as Article[]) || [];
+}
+
+// Helper: get single article by slug
+export async function getArticleBySlug(slug: string) {
+  const { data, error } = await supabase
+    .from('articles')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+
+  if (error) return null;
+  return data as Article;
+}
+
+// Helper: get all article slugs for static path generation
+export async function getArticleSlugs(category?: string): Promise<string[]> {
+  try {
+    let query = supabase
+      .from('articles')
+      .select('slug')
+      .in('status', ['published', 'draft']);
+
+    if (category) query = query.eq('category', category);
+
+    const { data, error } = await query;
+    if (error) return [];
+    return (data || []).map(a => a.slug).filter(Boolean);
+  } catch (e) {
+    return [];
+  }
 }
