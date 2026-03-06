@@ -1,7 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getPlayerBySlug, getTopPlayerSlugs, getRelatedPlayers } from '../../lib/supabase';
+import { getPlayerBySlug, getTopPlayerSlugs, getRelatedPlayers, getArticleBySlug } from '../../lib/supabase';
 import { fallbackPlayers, countryFlags, countryNames, handLabels } from '../../lib/fallback-data';
+import { marked } from 'marked';
 
 // SSG: generate paths for all top players from Supabase + fallback
 export async function getStaticPaths() {
@@ -89,6 +90,17 @@ if (relatedSlugs.length === 0) {
   relatedSlugs = Object.values(fallbackPlayers)
     .filter((p: any) => p.tour === player.tour && p.slug !== player.slug)
     .slice(0, 4);
+}
+
+// Try to load full profile article
+let profileArticleHtml: string | null = null;
+try {
+  const profileArticle = await getArticleBySlug(player.slug);
+  if (profileArticle?.body) {
+    profileArticleHtml = marked.parse(profileArticle.body) as string;
+  }
+} catch (e) {
+  // No article exists, that's fine
 }
 ---
 
@@ -202,6 +214,13 @@ if (relatedSlugs.length === 0) {
           <section class="bio-section">
             <h2>Biography</h2>
             <p class="bio-text">{player.bio_short}</p>
+          </section>
+        )}
+
+        <!-- Full Profile Article (if available) -->
+        {profileArticleHtml && (
+          <section class="profile-article">
+            <div class="article-content" set:html={profileArticleHtml} />
           </section>
         )}
 
@@ -486,6 +505,45 @@ if (relatedSlugs.length === 0) {
     font-size: 1.05rem;
     line-height: 1.8;
     color: var(--gray-700);
+  }
+
+  /* Profile Article */
+  .profile-article { margin-bottom: 40px; }
+  .article-content :global(h2) {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 32px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--gray-200);
+  }
+  .article-content :global(h3) {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin: 24px 0 8px;
+  }
+  .article-content :global(p) {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--gray-700);
+    margin: 0 0 16px;
+  }
+  .article-content :global(ul),
+  .article-content :global(ol) {
+    margin: 0 0 16px;
+    padding-left: 24px;
+  }
+  .article-content :global(li) {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--gray-700);
+    margin-bottom: 6px;
+  }
+  .article-content :global(strong) {
+    font-weight: 600;
+    color: var(--gray-900);
   }
 
   /* Career Stats Table */
