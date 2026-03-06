@@ -1,0 +1,218 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const articles = [
+  {
+    title: 'The Richest Tennis Players of All Time',
+    icon: '💰',
+    excerpt: 'From Federer\'s billion-dollar empire to Djokovic\'s prize money records — the wealthiest players in tennis history.',
+    tags: ['Net Worth', 'Rankings'],
+  },
+  {
+    title: 'Tennis Player Diets: What the Pros Really Eat',
+    icon: '🥗',
+    excerpt: 'Djokovic\'s gluten-free regimen, Nadal\'s match-day meals, and the nutrition secrets behind peak performance.',
+    tags: ['Fitness', 'Nutrition'],
+  },
+  {
+    title: 'The Greatest Tennis Rivalries of All Time',
+    icon: '⚔️',
+    excerpt: 'Federer vs Nadal, Djokovic vs Nadal, Evert vs Navratilova — the matches and moments that defined eras.',
+    tags: ['History', 'Rivalries'],
+  },
+  {
+    title: 'Tennis Fashion: On-Court Style Through the Decades',
+    icon: '👗',
+    excerpt: 'From all-white Wimbledon tradition to bold Nike designs — how tennis fashion has evolved and who sets the trends.',
+    tags: ['Fashion', 'Culture'],
+  },
+  {
+    title: 'Life After Tennis: What Retired Pros Do Now',
+    icon: '🌟',
+    excerpt: 'Coaching, commentary, business ventures, and philanthropy — how tennis legends reinvent themselves after retirement.',
+    tags: ['Retirement', 'Careers'],
+  },
+  {
+    title: 'Best Tennis Movies and Documentaries',
+    icon: '🎬',
+    excerpt: 'From "Break Point" on Netflix to "Borg vs McEnroe" — the must-watch films for every tennis fan.',
+    tags: ['Entertainment', 'Culture'],
+  },
+];
+---
+
+<BaseLayout
+  title="Tennis Lifestyle — Net Worth, Culture & Stories"
+  description="Tennis lifestyle content: player net worth rankings, behind-the-scenes stories, fitness, fashion, rivalries, and the culture of professional tennis."
+>
+  <div class="lifestyle-page">
+    <div class="container">
+      <section class="page-hero">
+        <h1>Tennis Lifestyle</h1>
+        <p class="subtitle">Net worth, culture, rivalries, and stories from the world of professional tennis</p>
+      </section>
+
+      <div class="articles-grid">
+        {articles.map(article => (
+          <div class="article-card">
+            <div class="article-icon">{article.icon}</div>
+            <div class="article-content">
+              <h2>{article.title}</h2>
+              <p>{article.excerpt}</p>
+              <div class="article-tags">
+                {article.tags.map(tag => (
+                  <span class="tag">{tag}</span>
+                ))}
+              </div>
+            </div>
+            <span class="coming-badge">Coming Soon</span>
+          </div>
+        ))}
+      </div>
+
+      <section class="cta-section">
+        <h2>More lifestyle content coming soon</h2>
+        <p>Deep dives into player lives, net worth breakdowns, rivalries analysis, and tennis culture. Stay tuned!</p>
+        <div class="cta-links">
+          <a href="/players/">Browse Players →</a>
+          <a href="/records/">View Records →</a>
+        </div>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .lifestyle-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  .page-hero {
+    padding: 48px 0 32px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 40px;
+  }
+  .page-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0;
+  }
+  .subtitle {
+    color: var(--gray-600);
+    font-size: 1.1rem;
+    margin: 8px 0 0;
+  }
+
+  .articles-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  .article-card {
+    display: flex;
+    gap: 20px;
+    padding: 24px;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    position: relative;
+    transition: all 0.2s;
+  }
+  .article-card:hover {
+    border-color: var(--court-green);
+    box-shadow: var(--shadow);
+  }
+
+  .article-icon {
+    font-size: 2.2rem;
+    flex-shrink: 0;
+    line-height: 1;
+    padding-top: 4px;
+  }
+
+  .article-content h2 {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+    padding-right: 80px;
+  }
+  .article-content p {
+    color: var(--gray-600);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0 0 12px;
+  }
+
+  .article-tags {
+    display: flex;
+    gap: 6px;
+  }
+  .tag {
+    background: var(--gray-100);
+    color: var(--gray-600);
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .coming-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: var(--ball-yellow);
+    color: var(--gray-900);
+    font-family: var(--font-heading);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .cta-section {
+    text-align: center;
+    padding: 40px;
+    background: var(--gray-50);
+    border-radius: var(--radius);
+  }
+  .cta-section h2 {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    margin: 0 0 12px;
+  }
+  .cta-section p {
+    color: var(--gray-600);
+    margin: 0 0 20px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cta-links {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+  }
+  .cta-links a {
+    color: var(--court-green);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .cta-links a:hover { text-decoration: underline; }
+
+  @media (max-width: 768px) {
+    .page-hero h1 { font-size: 2rem; }
+    .article-card { flex-direction: column; gap: 12px; }
+    .article-content h2 { padding-right: 0; }
+  }
+</style>

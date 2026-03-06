@@ -1,0 +1,199 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const gearCategories = [
+  {
+    title: 'Best Tennis Rackets 2026',
+    icon: '🎾',
+    description: 'Expert reviews and comparisons of the top tennis rackets for every level of player.',
+    items: ['Wilson Pro Staff', 'Babolat Pure Aero', 'Head Speed', 'Yonex EZONE'],
+  },
+  {
+    title: 'Tennis Shoes Guide',
+    icon: '👟',
+    description: 'Find the perfect tennis shoes for clay, hard court, and grass surfaces.',
+    items: ['Nike Court', 'Asics Gel-Resolution', 'adidas Barricade', 'New Balance Fresh Foam'],
+  },
+  {
+    title: 'Pro Player Equipment',
+    icon: '⭐',
+    description: 'Discover the exact rackets, strings, and shoes used by ATP and WTA pros.',
+    items: ['What racket does Sinner use?', 'Alcaraz equipment setup', 'Sabalenka racket specs'],
+  },
+  {
+    title: 'Tennis Strings & Accessories',
+    icon: '🔧',
+    description: 'String guides, grips, dampeners, bags, and everything else you need on court.',
+    items: ['Luxilon ALU Power', 'Babolat RPM Blast', 'Wilson Natural Gut', 'Overgrip guide'],
+  },
+];
+---
+
+<BaseLayout
+  title="Tennis Gear — Rackets, Shoes & Equipment Reviews"
+  description="Expert tennis gear reviews and guides. Find the best rackets, shoes, strings, and equipment for your game. Pro player setups and recommendations."
+>
+  <div class="gear-page">
+    <div class="container">
+      <section class="page-hero">
+        <h1>Tennis Gear</h1>
+        <p class="subtitle">Expert reviews, pro player setups, and buying guides for every level</p>
+      </section>
+
+      <div class="gear-grid">
+        {gearCategories.map(cat => (
+          <div class="gear-card">
+            <div class="gear-icon">{cat.icon}</div>
+            <h2>{cat.title}</h2>
+            <p>{cat.description}</p>
+            <ul class="gear-items">
+              {cat.items.map(item => (
+                <li>{item}</li>
+              ))}
+            </ul>
+            <span class="coming-badge">Coming Soon</span>
+          </div>
+        ))}
+      </div>
+
+      <section class="cta-section">
+        <h2>More gear content coming soon</h2>
+        <p>We're working on in-depth reviews, comparison charts, and pro player equipment breakdowns. Check back soon!</p>
+        <div class="cta-links">
+          <a href="/players/">Browse Players →</a>
+          <a href="/rankings/">View Rankings →</a>
+        </div>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .gear-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  .page-hero {
+    padding: 48px 0 32px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 40px;
+  }
+  .page-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0;
+  }
+  .subtitle {
+    color: var(--gray-600);
+    font-size: 1.1rem;
+    margin: 8px 0 0;
+  }
+
+  .gear-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+
+  .gear-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 28px;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .gear-card:hover {
+    border-color: var(--court-green);
+    box-shadow: var(--shadow);
+  }
+
+  .gear-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+  }
+
+  .gear-card h2 {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+  }
+  .gear-card p {
+    color: var(--gray-600);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0 0 16px;
+  }
+
+  .gear-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0;
+    list-style: none;
+  }
+  .gear-items li {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    color: var(--gray-700);
+  }
+
+  .coming-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: var(--ball-yellow);
+    color: var(--gray-900);
+    font-family: var(--font-heading);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .cta-section {
+    text-align: center;
+    padding: 40px;
+    background: var(--gray-50);
+    border-radius: var(--radius);
+  }
+  .cta-section h2 {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    margin: 0 0 12px;
+  }
+  .cta-section p {
+    color: var(--gray-600);
+    margin: 0 0 20px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cta-links {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+  }
+  .cta-links a {
+    color: var(--court-green);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .cta-links a:hover { text-decoration: underline; }
+
+  @media (max-width: 768px) {
+    .gear-grid { grid-template-columns: 1fr; }
+    .page-hero h1 { font-size: 2rem; }
+  }
+</style>

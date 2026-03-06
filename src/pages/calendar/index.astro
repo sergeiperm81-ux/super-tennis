@@ -1,0 +1,285 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// Tournament calendar data (2026 season)
+const months = [
+  {
+    name: 'January',
+    tournaments: [
+      { name: 'Australian Open', dates: 'Jan 19 – Feb 1', location: 'Melbourne, Australia', surface: 'Hard', level: 'Grand Slam', emoji: '🏆' },
+      { name: 'Adelaide International', dates: 'Jan 6 – 12', location: 'Adelaide, Australia', surface: 'Hard', level: 'ATP 250', emoji: '🎾' },
+      { name: 'ASB Classic', dates: 'Jan 6 – 11', location: 'Auckland, New Zealand', surface: 'Hard', level: 'WTA 250', emoji: '🎾' },
+    ]
+  },
+  {
+    name: 'February',
+    tournaments: [
+      { name: 'Dubai Tennis Championships', dates: 'Feb 16 – 22', location: 'Dubai, UAE', surface: 'Hard', level: 'ATP 500', emoji: '⭐' },
+      { name: 'Qatar Open', dates: 'Feb 9 – 15', location: 'Doha, Qatar', surface: 'Hard', level: 'WTA 500', emoji: '⭐' },
+      { name: 'Delray Beach Open', dates: 'Feb 9 – 16', location: 'Delray Beach, USA', surface: 'Hard', level: 'ATP 250', emoji: '🎾' },
+    ]
+  },
+  {
+    name: 'March',
+    tournaments: [
+      { name: 'Indian Wells Masters', dates: 'Mar 5 – 16', location: 'Indian Wells, USA', surface: 'Hard', level: 'Masters 1000', emoji: '🏅' },
+      { name: 'Miami Open', dates: 'Mar 19 – 30', location: 'Miami, USA', surface: 'Hard', level: 'Masters 1000', emoji: '🏅' },
+    ]
+  },
+  {
+    name: 'April',
+    tournaments: [
+      { name: 'Monte-Carlo Masters', dates: 'Apr 6 – 13', location: 'Monte Carlo, Monaco', surface: 'Clay', level: 'Masters 1000', emoji: '🏅' },
+      { name: 'Barcelona Open', dates: 'Apr 14 – 20', location: 'Barcelona, Spain', surface: 'Clay', level: 'ATP 500', emoji: '⭐' },
+      { name: 'Stuttgart Open', dates: 'Apr 21 – 27', location: 'Stuttgart, Germany', surface: 'Clay', level: 'WTA 500', emoji: '⭐' },
+    ]
+  },
+  {
+    name: 'May',
+    tournaments: [
+      { name: 'Madrid Open', dates: 'May 1 – 11', location: 'Madrid, Spain', surface: 'Clay', level: 'Masters 1000', emoji: '🏅' },
+      { name: 'Italian Open', dates: 'May 12 – 18', location: 'Rome, Italy', surface: 'Clay', level: 'Masters 1000', emoji: '🏅' },
+      { name: 'Roland Garros', dates: 'May 25 – Jun 8', location: 'Paris, France', surface: 'Clay', level: 'Grand Slam', emoji: '🏆' },
+    ]
+  },
+  {
+    name: 'June–July',
+    tournaments: [
+      { name: 'Queens Club', dates: 'Jun 16 – 22', location: 'London, UK', surface: 'Grass', level: 'ATP 500', emoji: '⭐' },
+      { name: 'Wimbledon', dates: 'Jun 30 – Jul 13', location: 'London, UK', surface: 'Grass', level: 'Grand Slam', emoji: '🏆' },
+      { name: 'Birmingham Classic', dates: 'Jun 16 – 22', location: 'Birmingham, UK', surface: 'Grass', level: 'WTA 250', emoji: '🎾' },
+    ]
+  },
+  {
+    name: 'August',
+    tournaments: [
+      { name: 'Montreal / Toronto Masters', dates: 'Aug 4 – 10', location: 'Canada', surface: 'Hard', level: 'Masters 1000', emoji: '🏅' },
+      { name: 'Cincinnati Masters', dates: 'Aug 11 – 17', location: 'Cincinnati, USA', surface: 'Hard', level: 'Masters 1000', emoji: '🏅' },
+      { name: 'US Open', dates: 'Aug 25 – Sep 7', location: 'New York, USA', surface: 'Hard', level: 'Grand Slam', emoji: '🏆' },
+    ]
+  },
+  {
+    name: 'September–October',
+    tournaments: [
+      { name: 'China Open', dates: 'Sep 22 – Oct 5', location: 'Beijing, China', surface: 'Hard', level: 'ATP/WTA 1000', emoji: '🏅' },
+      { name: 'Shanghai Masters', dates: 'Oct 6 – 12', location: 'Shanghai, China', surface: 'Hard', level: 'Masters 1000', emoji: '🏅' },
+      { name: 'Basel / Vienna', dates: 'Oct 20 – 26', location: 'Europe', surface: 'Hard (Indoor)', level: 'ATP 500', emoji: '⭐' },
+    ]
+  },
+  {
+    name: 'November',
+    tournaments: [
+      { name: 'ATP Finals', dates: 'Nov 9 – 16', location: 'Turin, Italy', surface: 'Hard (Indoor)', level: 'Tour Finals', emoji: '🏆' },
+      { name: 'WTA Finals', dates: 'Nov 2 – 9', location: 'Riyadh, Saudi Arabia', surface: 'Hard (Indoor)', level: 'Tour Finals', emoji: '🏆' },
+      { name: 'Davis Cup Finals', dates: 'Nov 18 – 23', location: 'TBD', surface: 'Hard (Indoor)', level: 'Team Event', emoji: '🏆' },
+    ]
+  },
+];
+
+const surfaceColors: Record<string, string> = {
+  'Hard': '#2563eb',
+  'Clay': '#dc6b20',
+  'Grass': '#16a34a',
+  'Hard (Indoor)': '#7c3aed',
+};
+---
+
+<BaseLayout
+  title="Tennis Calendar 2026 — Tournament Schedule"
+  description="Complete 2026 tennis tournament calendar. Grand Slams, Masters 1000, ATP and WTA tour dates, locations, and surfaces."
+>
+  <div class="calendar-page">
+    <div class="container">
+      <section class="page-hero">
+        <h1>2026 Tennis Calendar</h1>
+        <p class="subtitle">Complete tournament schedule for the ATP and WTA tours</p>
+      </section>
+
+      <!-- Surface Legend -->
+      <div class="surface-legend">
+        <span class="legend-item"><span class="legend-dot" style="background: #2563eb"></span> Hard</span>
+        <span class="legend-item"><span class="legend-dot" style="background: #dc6b20"></span> Clay</span>
+        <span class="legend-item"><span class="legend-dot" style="background: #16a34a"></span> Grass</span>
+        <span class="legend-item"><span class="legend-dot" style="background: #7c3aed"></span> Indoor</span>
+      </div>
+
+      {months.map(month => (
+        <section class="month-section">
+          <h2 class="month-name">{month.name}</h2>
+          <div class="tournaments-list">
+            {month.tournaments.map(t => (
+              <div class="tournament-card">
+                <div class="tourney-emoji">{t.emoji}</div>
+                <div class="tourney-info">
+                  <h3>{t.name}</h3>
+                  <div class="tourney-meta">
+                    <span class="tourney-dates">{t.dates}</span>
+                    <span class="tourney-location">📍 {t.location}</span>
+                  </div>
+                </div>
+                <div class="tourney-badges">
+                  <span class="surface-badge" style={`background: ${surfaceColors[t.surface] || '#666'}`}>{t.surface}</span>
+                  <span class={`level-badge ${t.level === 'Grand Slam' ? 'gs' : ''}`}>{t.level}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .calendar-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  .page-hero {
+    padding: 48px 0 32px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 24px;
+  }
+  .page-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0;
+  }
+  .subtitle {
+    color: var(--gray-600);
+    font-size: 1.1rem;
+    margin: 8px 0 0;
+  }
+
+  .surface-legend {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 32px;
+    padding: 12px 16px;
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--gray-700);
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .month-section {
+    margin-bottom: 36px;
+  }
+  .month-name {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--gray-200);
+  }
+
+  .tournaments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tournament-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    transition: all 0.2s;
+  }
+  .tournament-card:hover {
+    border-color: var(--court-green);
+    box-shadow: var(--shadow);
+  }
+
+  .tourney-emoji {
+    font-size: 1.6rem;
+    flex-shrink: 0;
+  }
+
+  .tourney-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .tourney-info h3 {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 4px;
+    color: var(--gray-900);
+  }
+  .tourney-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    flex-wrap: wrap;
+  }
+
+  .tourney-badges {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .surface-badge {
+    color: white;
+    font-size: 0.65rem;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+  .level-badge {
+    font-size: 0.7rem;
+    color: var(--gray-600);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .level-badge.gs {
+    color: #d4a017;
+    font-weight: 700;
+  }
+
+  @media (max-width: 768px) {
+    .page-hero h1 { font-size: 2rem; }
+    .tournament-card {
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .tourney-badges {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .tournament-card { padding: 12px 14px; }
+    .tourney-info h3 { font-size: 0.9rem; }
+    .tourney-meta { flex-direction: column; gap: 4px; }
+  }
+</style>
