@@ -106,7 +106,7 @@ export async function getPlayerBySlug(slug: string) {
   return data as Player;
 }
 
-// Helper: get latest rankings
+// Helper: get latest rankings (with player details)
 export async function getLatestRankings(tour: 'atp' | 'wta', limit = 100) {
   // First get the latest date
   const { data: dateData } = await supabase
@@ -122,7 +122,7 @@ export async function getLatestRankings(tour: 'atp' | 'wta', limit = 100) {
 
   const { data, error } = await supabase
     .from('rankings')
-    .select('*, players!inner(first_name, last_name, slug, country_code)')
+    .select('*, players!inner(first_name, last_name, slug, country_code, career_titles, grand_slam_titles, image_url, career_win, career_loss)')
     .eq('tour', tour)
     .eq('ranking_date', latestDate)
     .order('ranking', { ascending: true })
@@ -130,6 +130,53 @@ export async function getLatestRankings(tour: 'atp' | 'wta', limit = 100) {
 
   if (error) console.error('getLatestRankings error:', error.message);
   return data || [];
+}
+
+// Helper: get top player slugs for static path generation
+export async function getTopPlayerSlugs(limit = 100): Promise<string[]> {
+  try {
+    const [atpRes, wtaRes] = await Promise.all([
+      supabase
+        .from('players')
+        .select('slug')
+        .eq('tour', 'atp')
+        .gt('career_titles', 0)
+        .order('career_titles', { ascending: false })
+        .limit(limit),
+      supabase
+        .from('players')
+        .select('slug')
+        .eq('tour', 'wta')
+        .gt('career_titles', 0)
+        .order('career_titles', { ascending: false })
+        .limit(limit),
+    ]);
+
+    const slugs = [
+      ...(atpRes.data || []).map(p => p.slug),
+      ...(wtaRes.data || []).map(p => p.slug),
+    ].filter(Boolean);
+
+    return [...new Set(slugs)];
+  } catch (e) {
+    console.error('getTopPlayerSlugs error:', e);
+    return [];
+  }
+}
+
+// Helper: get related players (same tour, sorted by career titles)
+export async function getRelatedPlayers(tour: 'atp' | 'wta', excludeSlug: string, limit = 4) {
+  const { data, error } = await supabase
+    .from('players')
+    .select('first_name, last_name, slug, country_code, image_url, career_titles, grand_slam_titles')
+    .eq('tour', tour)
+    .neq('slug', excludeSlug)
+    .gt('career_titles', 0)
+    .order('career_titles', { ascending: false })
+    .limit(limit);
+
+  if (error) console.error('getRelatedPlayers error:', error.message);
+  return (data as Partial<Player>[]) || [];
 }
 
 // Helper: get published articles

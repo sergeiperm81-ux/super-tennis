@@ -1,32 +1,63 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getLatestRankings } from '../../lib/supabase';
 import { fallbackPlayers, countryFlags } from '../../lib/fallback-data';
 
-// Rankings data for listing page (will come from Supabase later)
-const rankingsData: Record<string, { ranking: number; points: number }> = {
-  'jannik-sinner': { ranking: 1, points: 11830 },
-  'carlos-alcaraz': { ranking: 2, points: 9855 },
-  'novak-djokovic': { ranking: 3, points: 7190 },
-  'alexander-zverev': { ranking: 4, points: 6875 },
-  'daniil-medvedev': { ranking: 5, points: 6445 },
-  'taylor-fritz': { ranking: 6, points: 5050 },
-  'casper-ruud': { ranking: 7, points: 4210 },
-  'alex-de-minaur': { ranking: 8, points: 3935 },
-  'iga-swiatek': { ranking: 1, points: 8720 },
-  'aryna-sabalenka': { ranking: 2, points: 8670 },
-  'coco-gauff': { ranking: 3, points: 7150 },
-  'elena-rybakina': { ranking: 4, points: 5830 },
-};
+// Generic placeholder image for players without photos
+const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=400&fit=crop';
 
-const topPlayers = Object.values(fallbackPlayers).map((p: any) => ({
-  ...p,
-  ranking: rankingsData[p.slug]?.ranking || 0,
-  points: rankingsData[p.slug]?.points || 0,
-  image_url: p.image_url?.replace('w=800', 'w=400').replace('h=800', 'h=400') || p.image_url,
-}));
+// Fetch real ranked players from Supabase
+let atpRankings = await getLatestRankings('atp', 20);
+let wtaRankings = await getLatestRankings('wta', 20);
 
-const atpPlayers = topPlayers.filter(p => p.tour === 'atp').sort((a, b) => a.ranking - b.ranking);
-const wtaPlayers = topPlayers.filter(p => p.tour === 'wta').sort((a, b) => a.ranking - b.ranking);
+// Map a ranking record to player card format
+function mapRanking(r: any) {
+  const p = r.players;
+  const slug = p?.slug || '';
+  const fb = fallbackPlayers[slug]; // Check if we have a fallback entry with photo
+  return {
+    first_name: p?.first_name || '',
+    last_name: p?.last_name || '',
+    slug,
+    country_code: p?.country_code || '',
+    tour: r.tour,
+    ranking: r.ranking,
+    points: r.points || 0,
+    career_titles: p?.career_titles || fb?.career_titles || 0,
+    grand_slam_titles: p?.grand_slam_titles || fb?.grand_slam_titles || 0,
+    image_url: fb?.image_url?.replace('w=800', 'w=400') || p?.image_url || PLACEHOLDER_IMG,
+  };
+}
+
+// Map fallback data to same format (used when Supabase is unavailable)
+function mapFallback(p: any, ranking: number) {
+  return {
+    ...p,
+    ranking,
+    points: 0,
+    image_url: p.image_url?.replace('w=800', 'w=400') || PLACEHOLDER_IMG,
+  };
+}
+
+// Use real data if available, fall back to hardcoded
+let atpPlayers: any[];
+let wtaPlayers: any[];
+
+if (atpRankings.length > 0) {
+  atpPlayers = atpRankings.map(mapRanking);
+} else {
+  atpPlayers = Object.values(fallbackPlayers)
+    .filter((p: any) => p.tour === 'atp')
+    .map((p: any, i: number) => mapFallback(p, i + 1));
+}
+
+if (wtaRankings.length > 0) {
+  wtaPlayers = wtaRankings.map(mapRanking);
+} else {
+  wtaPlayers = Object.values(fallbackPlayers)
+    .filter((p: any) => p.tour === 'wta')
+    .map((p: any, i: number) => mapFallback(p, i + 1));
+}
 ---
 
 <BaseLayout

@@ -1,14 +1,26 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getPlayerBySlug } from '../../lib/supabase';
+import { getPlayerBySlug, getTopPlayerSlugs, getRelatedPlayers } from '../../lib/supabase';
 import { fallbackPlayers, countryFlags, countryNames, handLabels } from '../../lib/fallback-data';
 
-// SSG: generate paths for known players
-export function getStaticPaths() {
-  // Import inline for getStaticPaths scope
-  const players = import.meta.glob('../../lib/fallback-data.ts', { eager: true });
-  const mod = Object.values(players)[0] as any;
-  return Object.keys(mod.fallbackPlayers).map(slug => ({
+// SSG: generate paths for all top players from Supabase + fallback
+export async function getStaticPaths() {
+  // Try to get slugs from Supabase (top 100 ATP + top 100 WTA by career titles)
+  let dbSlugs: string[] = [];
+  try {
+    const { getTopPlayerSlugs: getSlugs } = await import('../../lib/supabase');
+    dbSlugs = await getSlugs(100);
+  } catch (e) {
+    console.warn('getStaticPaths: Supabase unavailable, using fallback slugs');
+  }
+
+  // Always include fallback slugs as safety net
+  const fbMod = await import('../../lib/fallback-data');
+  const fallbackSlugs = Object.keys(fbMod.fallbackPlayers);
+
+  const allSlugs = [...new Set([...dbSlugs, ...fallbackSlugs])];
+
+  return allSlugs.map(slug => ({
     params: { slug },
   }));
 }
@@ -67,9 +79,17 @@ function formatPrize(amount: number): string {
 }
 
 // Related players (same tour, for sidebar)
-const relatedSlugs = Object.values(fallbackPlayers)
-  .filter((p: any) => p.tour === player.tour && p.slug !== player.slug)
-  .slice(0, 4);
+let relatedSlugs: any[] = [];
+try {
+  relatedSlugs = await getRelatedPlayers(player.tour, player.slug, 4);
+} catch (e) {
+  // Fallback to hardcoded related players
+}
+if (relatedSlugs.length === 0) {
+  relatedSlugs = Object.values(fallbackPlayers)
+    .filter((p: any) => p.tour === player.tour && p.slug !== player.slug)
+    .slice(0, 4);
+}
 ---
 
 <BaseLayout

@@ -1,0 +1,307 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getLatestRankings } from '../../lib/supabase';
+import { countryFlags, countryNames } from '../../lib/fallback-data';
+
+// Fetch real data from Supabase
+let atpRankings = await getLatestRankings('atp', 100);
+let wtaRankings = await getLatestRankings('wta', 100);
+
+// Determine latest ranking date
+const rankingDate = atpRankings[0]?.ranking_date
+  ? new Date(atpRankings[0].ranking_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  : 'Latest';
+---
+
+<BaseLayout
+  title="ATP & WTA Rankings — Live Tennis Rankings"
+  description="Current ATP and WTA tennis rankings. Updated weekly with points, country, and links to player profiles."
+>
+  <div class="rankings-page">
+    <div class="container">
+      <section class="page-hero">
+        <h1>Tennis Rankings</h1>
+        <p class="subtitle">Official ATP & WTA rankings as of {rankingDate}</p>
+      </section>
+
+      <!-- Tour Tabs -->
+      <div class="tour-tabs" id="tour-tabs">
+        <button class="tab active" data-tour="atp" onclick="switchTour('atp')">
+          ATP <span class="tab-badge atp">Men's</span>
+        </button>
+        <button class="tab" data-tour="wta" onclick="switchTour('wta')">
+          WTA <span class="tab-badge wta">Women's</span>
+        </button>
+      </div>
+
+      <!-- ATP Rankings Table -->
+      <div class="rankings-table-wrap" id="atp-table">
+        {atpRankings.length > 0 ? (
+          <table class="rankings-table">
+            <thead>
+              <tr>
+                <th class="col-rank">#</th>
+                <th class="col-player">Player</th>
+                <th class="col-country">Country</th>
+                <th class="col-points">Points</th>
+              </tr>
+            </thead>
+            <tbody>
+              {atpRankings.map((r: any) => {
+                const p = r.players;
+                const slug = p?.slug || '';
+                const name = `${p?.first_name || ''} ${p?.last_name || ''}`.trim();
+                const cc = p?.country_code || '';
+                const flag = countryFlags[cc] || '🏳️';
+                return (
+                  <tr class={r.ranking <= 10 ? 'top-ten' : ''}>
+                    <td class="col-rank">
+                      <span class="rank-num">{r.ranking}</span>
+                    </td>
+                    <td class="col-player">
+                      <a href={`/players/${slug}/`} class="player-link">
+                        <span class="player-flag">{flag}</span>
+                        <span class="player-name">
+                          {p?.first_name} <strong>{p?.last_name?.toUpperCase()}</strong>
+                        </span>
+                      </a>
+                    </td>
+                    <td class="col-country">{cc}</td>
+                    <td class="col-points">
+                      <strong>{r.points?.toLocaleString()}</strong>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        ) : (
+          <div class="empty-state">
+            <p>Rankings data is loading. Please check back shortly.</p>
+          </div>
+        )}
+      </div>
+
+      <!-- WTA Rankings Table -->
+      <div class="rankings-table-wrap" id="wta-table" style="display: none;">
+        {wtaRankings.length > 0 ? (
+          <table class="rankings-table">
+            <thead>
+              <tr>
+                <th class="col-rank">#</th>
+                <th class="col-player">Player</th>
+                <th class="col-country">Country</th>
+                <th class="col-points">Points</th>
+              </tr>
+            </thead>
+            <tbody>
+              {wtaRankings.map((r: any) => {
+                const p = r.players;
+                const slug = p?.slug || '';
+                const name = `${p?.first_name || ''} ${p?.last_name || ''}`.trim();
+                const cc = p?.country_code || '';
+                const flag = countryFlags[cc] || '🏳️';
+                return (
+                  <tr class={r.ranking <= 10 ? 'top-ten' : ''}>
+                    <td class="col-rank">
+                      <span class="rank-num">{r.ranking}</span>
+                    </td>
+                    <td class="col-player">
+                      <a href={`/players/${slug}/`} class="player-link">
+                        <span class="player-flag">{flag}</span>
+                        <span class="player-name">
+                          {p?.first_name} <strong>{p?.last_name?.toUpperCase()}</strong>
+                        </span>
+                      </a>
+                    </td>
+                    <td class="col-country">{cc}</td>
+                    <td class="col-points">
+                      <strong>{r.points?.toLocaleString()}</strong>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        ) : (
+          <div class="empty-state">
+            <p>Rankings data is loading. Please check back shortly.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    function switchTour(tour) {
+      document.getElementById('atp-table').style.display = tour === 'atp' ? '' : 'none';
+      document.getElementById('wta-table').style.display = tour === 'wta' ? '' : 'none';
+      document.querySelectorAll('.tour-tabs .tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tour === tour);
+      });
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .rankings-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  .page-hero {
+    padding: 48px 0 32px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 32px;
+  }
+  .page-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0;
+  }
+  .subtitle {
+    color: var(--gray-600);
+    font-size: 1.05rem;
+    margin: 8px 0 0;
+  }
+
+  /* Tour Tabs */
+  .tour-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .tab {
+    padding: 10px 24px;
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    text-transform: uppercase;
+    background: var(--gray-100);
+    border: 2px solid var(--gray-200);
+    border-radius: 8px;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tab:hover {
+    border-color: var(--gray-400);
+    color: var(--gray-800);
+  }
+  .tab.active {
+    background: var(--gray-900);
+    border-color: var(--gray-900);
+    color: white;
+  }
+  .tab-badge {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: var(--font-body);
+    letter-spacing: 0.04em;
+  }
+  .tab-badge.atp { background: #003580; color: white; }
+  .tab-badge.wta { background: #7b2d8e; color: white; }
+
+  /* Rankings Table */
+  .rankings-table {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .rankings-table thead th {
+    background: var(--gray-100);
+    padding: 12px 16px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gray-500);
+    font-family: var(--font-body);
+    font-weight: 600;
+    text-align: left;
+    border-bottom: 2px solid var(--gray-200);
+  }
+  .rankings-table tbody tr {
+    border-bottom: 1px solid var(--gray-100);
+    transition: background 0.15s;
+  }
+  .rankings-table tbody tr:hover {
+    background: var(--gray-50);
+  }
+  .rankings-table tbody tr.top-ten {
+    background: #fffbeb;
+  }
+  .rankings-table tbody tr.top-ten:hover {
+    background: #fff3c4;
+  }
+
+  .rankings-table td {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+
+  .col-rank { width: 60px; text-align: center; }
+  .col-country { width: 80px; text-align: center; }
+  .col-points { width: 120px; text-align: right; }
+
+  .rank-num {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gray-500);
+  }
+  .top-ten .rank-num { color: var(--court-green); }
+
+  .player-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: inherit;
+    transition: color 0.2s;
+  }
+  .player-link:hover { color: var(--court-green); }
+
+  .player-flag { font-size: 1.2rem; }
+  .player-name {
+    font-size: 0.9rem;
+  }
+  .player-name strong {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+  }
+
+  .col-points strong {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    color: var(--gray-900);
+  }
+  .top-ten .col-points strong {
+    color: var(--court-green);
+  }
+
+  .col-country {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    font-weight: 500;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px;
+    color: var(--gray-500);
+    font-size: 1rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .page-hero h1 { font-size: 2rem; }
+    .col-country { display: none; }
+    .rankings-table td { padding: 8px 10px; }
+    .tab { padding: 8px 16px; font-size: 0.9rem; }
+  }
+</style>
