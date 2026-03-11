@@ -370,11 +370,10 @@ async function generateNews(env: Env): Promise<string> {
 
   log('🎾 Starting news generation...');
 
-  // 1. Deactivate old news (>30 days)
+  // 1. Deactivate ALL currently active news (new batch replaces old)
   try {
-    const monthAgo = new Date(Date.now() - 30 * 86400000).toISOString();
     await supabaseQuery(env, 'news', 'PATCH',
-      { 'published_at': `lt.${monthAgo}`, 'is_active': 'eq.true' },
+      { 'is_active': 'eq.true' },
       { is_active: false },
     );
     log('🗑️  Deactivated old news');
