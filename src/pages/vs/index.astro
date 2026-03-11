@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getArticles } from '../../lib/supabase';
+import { stripMarkdown } from '../../lib/fallback-data';
+import { vsPlayerSlugs, getAllVsPlayerSlugs, getPlayerPhotosBatch, slugToName } from '../../lib/player-photos';
 
 // Fetch real H2H articles from Supabase
 let h2hArticles: any[] = [];
@@ -9,6 +11,10 @@ try {
 } catch (e) {
   console.warn('H2H index: Supabase unavailable');
 }
+
+// Batch-fetch all player photos for VS articles
+const allPlayerSlugs = getAllVsPlayerSlugs();
+const photoMap = await getPlayerPhotosBatch(allPlayerSlugs);
 
 // Era labeling for articles
 function getEra(slug: string): string {
@@ -33,36 +39,113 @@ function getEraClass(slug: string): string {
   return 'default';
 }
 
+// Get player photos for a VS article
+function getVsPlayerPhotos(slug: string): { p1: string | null; p2: string | null; name1: string; name2: string } {
+  const pair = vsPlayerSlugs[slug];
+  if (!pair) return { p1: null, p2: null, name1: '', name2: '' };
+  return {
+    p1: photoMap.get(pair[0]) || null,
+    p2: photoMap.get(pair[1]) || null,
+    name1: slugToName(pair[0]),
+    name2: slugToName(pair[1]),
+  };
+}
+
 // Sort: Big Three first, then Current, then Women's, then Classic
 const eraOrder: Record<string, number> = { 'Big Three Era': 0, 'Current Era': 1, "Women's Tennis": 2, 'Classic Era': 3, 'Rivalry': 4 };
 const sortedArticles = [...h2hArticles].sort((a, b) => {
   return (eraOrder[getEra(a.slug)] ?? 9) - (eraOrder[getEra(b.slug)] ?? 9);
 });
+
+// Featured rivalry (first Big Three article)
+const featured = sortedArticles.length > 0 ? sortedArticles[0] : null;
+const featuredPhotos = featured ? getVsPlayerPhotos(featured.slug) : null;
+const restArticles = sortedArticles.slice(1);
 ---
 
 <BaseLayout
   title="Tennis Head to Head — Greatest Rivalries & Comparisons"
   description="Head-to-head records and rivalry histories of the greatest tennis matchups. Djokovic vs Nadal, Federer vs Nadal, Alcaraz vs Sinner, and more."
+  ogImage="/og/vs.png"
 >
   <div class="vs-page">
     <div class="container">
+      <nav class="breadcrumbs"><a href="/">Home</a> <span class="sep">/</span> <span class="current">Head to Head</span></nav>
       <section class="page-hero">
         <h1>Head to Head</h1>
-        <p class="subtitle">The greatest rivalries, matchups, and head-to-head records in tennis history</p>
+        <p class="subtitle">The greatest rivalries, matchups, and head-to-head records in tennis history{sortedArticles.length > 0 && ` — ${sortedArticles.length} rivalry analyses`}</p>
       </section>
 
-      {sortedArticles.length > 0 ? (
-        <div class="h2h-grid">
-          {sortedArticles.map((article, i) => (
-            <a href={`/vs/${article.slug}/`} class={`h2h-card ${getEraClass(article.slug)}`}>
-              <span class={`era-badge ${getEraClass(article.slug)}`}>{getEra(article.slug)}</span>
-              <h2>{article.title}</h2>
-              <p>{article.excerpt || article.meta_description || ''}</p>
-              <span class="read-more">Read Analysis →</span>
-            </a>
-          ))}
+      {/* Featured Rivalry Hero */}
+      {featured && featuredPhotos && (
+        <a href={`/vs/${featured.slug}/`} class="vs-hero">
+          <div class="vs-hero-photos">
+            <div class="vs-hero-player vs-hero-left">
+              {featuredPhotos.p1 ? (
+                <img src={featuredPhotos.p1} alt={featuredPhotos.name1} loading="eager" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+              ) : null}
+              <div class="vs-hero-placeholder" style={featuredPhotos.p1 ? 'display:none' : ''}>{featuredPhotos.name1.charAt(0)}</div>
+              <span class="vs-hero-name">{featuredPhotos.name1}</span>
+            </div>
+            <div class="vs-hero-divider">VS</div>
+            <div class="vs-hero-player vs-hero-right">
+              {featuredPhotos.p2 ? (
+                <img src={featuredPhotos.p2} alt={featuredPhotos.name2} loading="eager" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+              ) : null}
+              <div class="vs-hero-placeholder" style={featuredPhotos.p2 ? 'display:none' : ''}>{featuredPhotos.name2.charAt(0)}</div>
+              <span class="vs-hero-name">{featuredPhotos.name2}</span>
+            </div>
+          </div>
+          <div class="vs-hero-content">
+            <span class={`era-badge ${getEraClass(featured.slug)}`}>{getEra(featured.slug)}</span>
+            <h2>{featured.title}</h2>
+            <p>{stripMarkdown(featured.excerpt || featured.meta_description || '')}</p>
+            <span class="read-more">Read Full Analysis →</span>
+          </div>
+        </a>
+      )}
+
+      {/* Era Filters */}
+      <div class="era-filters">
+        <button class="era-filter active" data-era="all">All ({restArticles.length + (featured ? 1 : 0)})</button>
+        <button class="era-filter" data-era="big-three">Big Three</button>
+        <button class="era-filter" data-era="current">Current Era</button>
+        <button class="era-filter" data-era="wta">Women's</button>
+        <button class="era-filter" data-era="classic">Classic</button>
+      </div>
+
+      {restArticles.length > 0 ? (
+        <div class="h2h-grid" id="h2h-grid">
+          {restArticles.map((article) => {
+            const photos = getVsPlayerPhotos(article.slug);
+            return (
+              <a href={`/vs/${article.slug}/`} class={`h2h-card ${getEraClass(article.slug)}`} data-era={getEraClass(article.slug)}>
+                <div class="card-player-duo">
+                  <div class="duo-player">
+                    {photos.p1 ? (
+                      <img src={photos.p1} alt={photos.name1} class="duo-avatar" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+                    ) : null}
+                    <div class="duo-placeholder" style={photos.p1 ? 'display:none' : ''}>{photos.name1.charAt(0)}</div>
+                    <span class="duo-name">{photos.name1.split(' ').pop()}</span>
+                  </div>
+                  <span class="duo-vs">vs</span>
+                  <div class="duo-player">
+                    {photos.p2 ? (
+                      <img src={photos.p2} alt={photos.name2} class="duo-avatar" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+                    ) : null}
+                    <div class="duo-placeholder" style={photos.p2 ? 'display:none' : ''}>{photos.name2.charAt(0)}</div>
+                    <span class="duo-name">{photos.name2.split(' ').pop()}</span>
+                  </div>
+                </div>
+                <span class={`era-badge ${getEraClass(article.slug)}`}>{getEra(article.slug)}</span>
+                <h2>{article.title}</h2>
+                <p>{stripMarkdown(article.excerpt || article.meta_description || '')}</p>
+                <span class="read-more">Read Analysis →</span>
+              </a>
+            );
+          })}
         </div>
-      ) : (
+      ) : !featured && (
         <div class="empty-state">
           <p>Head-to-head rivalry articles are coming soon. Check back shortly!</p>
         </div>
@@ -70,10 +153,10 @@ const sortedArticles = [...h2hArticles].sort((a, b) => {
 
       <section class="related-section">
         <div class="related-links">
-          <a href="/players/">👥 Player Profiles</a>
-          <a href="/records/">🏆 Tennis Records</a>
-          <a href="/rankings/">📊 Current Rankings</a>
-          <a href="/tournaments/">🏟️ Tournament Guides</a>
+          <a href="/players/">Player Profiles</a>
+          <a href="/records/">Tennis Records</a>
+          <a href="/rankings/">Current Rankings</a>
+          <a href="/tournaments/">Tournament Guides</a>
         </div>
       </section>
     </div>
@@ -90,7 +173,7 @@ const sortedArticles = [...h2hArticles].sort((a, b) => {
   .page-hero {
     padding: 48px 0 32px;
     border-bottom: 3px solid var(--court-green);
-    margin-bottom: 40px;
+    margin-bottom: 32px;
   }
   .page-hero h1 {
     font-family: var(--font-heading);
@@ -105,6 +188,109 @@ const sortedArticles = [...h2hArticles].sort((a, b) => {
     margin: 8px 0 0;
   }
 
+  /* ===== HERO RIVALRY CARD ===== */
+  .vs-hero {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 32px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .vs-hero:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+  }
+
+  .vs-hero-photos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 32px 24px 16px;
+    position: relative;
+  }
+
+  .vs-hero-player {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+  .vs-hero-player img {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top;
+    border: 3px solid rgba(255,255,255,0.3);
+  }
+  .vs-hero-placeholder {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 3px solid rgba(255,255,255,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: rgba(255,255,255,0.5);
+    font-family: var(--font-heading);
+  }
+  .vs-hero-name {
+    color: rgba(255,255,255,0.9);
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    text-transform: uppercase;
+    margin-top: 12px;
+    letter-spacing: 0.05em;
+  }
+
+  .vs-hero-divider {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    color: var(--ball-yellow);
+    font-weight: 700;
+    flex-shrink: 0;
+    padding: 0 24px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  .vs-hero-content {
+    padding: 16px 32px 32px;
+    text-align: center;
+  }
+  .vs-hero-content .era-badge {
+    margin-bottom: 12px;
+    display: inline-block;
+  }
+  .vs-hero-content h2 {
+    color: white;
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    margin: 0 0 12px;
+  }
+  .vs-hero-content p {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .vs-hero-content .read-more {
+    color: var(--ball-yellow);
+  }
+
+  /* ===== RIVALRY CARDS WITH PLAYER PHOTOS ===== */
   .h2h-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -118,7 +304,7 @@ const sortedArticles = [...h2hArticles].sort((a, b) => {
     background: white;
     border: 1px solid var(--gray-200);
     border-radius: var(--radius);
-    padding: 24px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     transition: all 0.2s;
@@ -133,6 +319,64 @@ const sortedArticles = [...h2hArticles].sort((a, b) => {
   .h2h-card.wta { border-top-color: #7b2d8e; }
   .h2h-card.classic { border-top-color: #6b7280; }
 
+  /* Player duo photos on card */
+  .card-player-duo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .duo-player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .duo-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top;
+    border: 2px solid var(--gray-200);
+  }
+  .duo-placeholder {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--gray-100);
+    border: 2px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--gray-400);
+    font-family: var(--font-heading);
+  }
+  .duo-name {
+    font-size: 0.65rem;
+    color: var(--gray-500);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    max-width: 60px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .duo-vs {
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    color: var(--gray-400);
+    font-weight: 700;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
   .era-badge {
     font-family: var(--font-heading);
     font-size: 0.6rem;
@@ -141,7 +385,7 @@ const sortedArticles = [...h2hArticles].sort((a, b) => {
     border-radius: 4px;
     letter-spacing: 0.05em;
     align-self: flex-start;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
   .era-badge.big-three { background: #fef3c7; color: #92400e; }
   .era-badge.current { background: #dcfce7; color: #166534; }
@@ -150,19 +394,19 @@ const sortedArticles = [...h2hArticles].sort((a, b) => {
 
   .h2h-card h2 {
     font-family: var(--font-body);
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 700;
     margin: 0 0 8px;
     line-height: 1.35;
   }
   .h2h-card p {
     color: var(--gray-600);
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     line-height: 1.6;
     margin: 0;
     flex: 1;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -171,7 +415,7 @@ const sortedArticles = [...h2hArticles].sort((a, b) => {
     color: var(--court-green);
     font-weight: 600;
     font-size: 0.85rem;
-    margin-top: 16px;
+    margin-top: 14px;
   }
 
   .empty-state {
@@ -203,11 +447,72 @@ const sortedArticles = [...h2hArticles].sort((a, b) => {
   }
   .related-links a:hover { text-decoration: underline; }
 
+  /* Era Filters */
+  .era-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .era-filter {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 6px 16px;
+    border-radius: 20px;
+    color: var(--gray-600);
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .era-filter:hover {
+    border-color: var(--gray-400);
+    color: var(--gray-900);
+  }
+  .era-filter.active {
+    background: var(--gray-900);
+    color: white;
+    border-color: var(--gray-900);
+  }
+
   @media (max-width: 1024px) {
     .h2h-grid { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 768px) {
     .h2h-grid { grid-template-columns: 1fr; }
     .page-hero h1 { font-size: 2rem; }
+    .vs-hero-player img, .vs-hero-placeholder { width: 100px; height: 100px; }
+    .vs-hero-divider { font-size: 1.5rem; padding: 0 16px; }
+    .vs-hero-content h2 { font-size: 1.2rem; }
+    .vs-hero-photos { padding: 24px 16px 12px; }
+    .vs-hero-content { padding: 12px 20px 24px; }
   }
 </style>
+
+<script>
+  const eraFilters = document.querySelectorAll('.era-filter');
+  const h2hCards = document.querySelectorAll('.h2h-card');
+  const vsHero = document.querySelector('.vs-hero');
+
+  eraFilters.forEach(btn => {
+    btn.addEventListener('click', () => {
+      eraFilters.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const era = (btn as HTMLElement).dataset.era || 'all';
+
+      // Filter cards
+      h2hCards.forEach(card => {
+        const cardEl = card as HTMLElement;
+        cardEl.style.display = (era === 'all' || cardEl.dataset.era === era) ? '' : 'none';
+      });
+
+      // Show/hide hero based on filter
+      if (vsHero) {
+        const heroEl = vsHero as HTMLElement;
+        const heroEra = heroEl.closest('[data-era]')?.getAttribute('data-era');
+        heroEl.style.display = (era === 'all') ? '' : 'none';
+      }
+    });
+  });
+</script>

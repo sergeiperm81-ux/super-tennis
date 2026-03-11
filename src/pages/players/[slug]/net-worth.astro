@@ -1,7 +1,9 @@
 ---
 import ArticleLayout from '../../../layouts/ArticleLayout.astro';
+import ArticleFooter from '../../../components/ArticleFooter.astro';
 import { getPlayerBySlug, getTopPlayerSlugs, getArticleBySlug } from '../../../lib/supabase';
-import { fallbackPlayers, countryNames, countryFlags } from '../../../lib/fallback-data';
+import { fallbackPlayers, countryNames, countryFlags, getFlagUrl } from '../../../lib/fallback-data';
+import { addInterlinks } from '../../../lib/interlinks';
 import { marked } from 'marked';
 
 export async function getStaticPaths() {
@@ -54,7 +56,8 @@ function formatPrize(amount: number): string {
 }
 
 const prizeMoney = formatPrize(player.career_prize_usd || 0);
-const bodyHtml = article?.body ? marked.parse(article.body) : null;
+const rawHtml = article?.body ? marked.parse(article.body) : null;
+const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/players/${slug}/net-worth/`) : null;
 ---
 
 <ArticleLayout
@@ -85,7 +88,14 @@ const bodyHtml = article?.body ? marked.parse(article.body) : null;
     )}
     <div class="nw-stat">
       <span class="nw-stat-label">Country</span>
-      <span class="nw-stat-value">{flag} {country}</span>
+      <span class="nw-stat-value">
+        {getFlagUrl(player.country_code || '') ? (
+          <img src={getFlagUrl(player.country_code || '')} alt={player.country_code || ''} class="stat-flag" width="20" height="15" loading="lazy" />
+        ) : (
+          <span>{flag}</span>
+        )}
+        {country}
+      </span>
     </div>
   </div>
 
@@ -113,11 +123,16 @@ const bodyHtml = article?.body ? marked.parse(article.body) : null;
     </div>
   )}
 
-  <!-- Back to Profile -->
-  <div class="back-link">
-    <a href={`/players/${slug}/`}>← Back to {name}'s Profile</a>
-    <a href={`/players/${slug}/racket/`}>🎾 {name}'s Racket & Equipment →</a>
-  </div>
+  <ArticleFooter
+    backLabel={`${name}'s Profile`}
+    backHref={`/players/${slug}/`}
+    relatedLinks={[
+      { label: `${name}'s Racket`, href: `/players/${slug}/racket/` },
+      { label: 'All Players', href: '/players/' },
+      { label: 'Rankings', href: '/rankings/' },
+      { label: 'Records', href: '/records/' },
+    ]}
+  />
 </ArticleLayout>
 
 <style>
@@ -155,20 +170,11 @@ const bodyHtml = article?.body ? marked.parse(article.body) : null;
     color: var(--gray-700);
   }
 
-  .back-link {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-    margin-top: 40px;
-    padding-top: 24px;
-    border-top: 2px solid var(--gray-200);
+  .stat-flag {
+    vertical-align: middle;
+    margin-right: 4px;
+    border-radius: 2px;
   }
-  .back-link a {
-    color: var(--court-green);
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-  .back-link a:hover { text-decoration: underline; }
 
   @media (max-width: 480px) {
     .nw-banner { grid-template-columns: 1fr 1fr; }

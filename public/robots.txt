@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://super.tennis/sitemap-index.xml
+
+# Crawl-delay for polite crawling
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10

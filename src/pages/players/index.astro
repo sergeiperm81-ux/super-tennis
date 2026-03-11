@@ -1,10 +1,23 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getLatestRankings } from '../../lib/supabase';
-import { fallbackPlayers, countryFlags } from '../../lib/fallback-data';
+import { getLatestRankings, getPlayerBySlug } from '../../lib/supabase';
+import { fallbackPlayers, countryFlags, getFlagUrl } from '../../lib/fallback-data';
 
-// Generic placeholder image for players without photos
-const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=400&fit=crop';
+// Generic placeholder — tennis ball silhouette
+const PLACEHOLDER_IMG = '/placeholder-player.svg';
+
+// Fetch photos for popular articles section
+let djokovicPhoto = '', alcarazPhoto = '', swiatekPhoto = '';
+try {
+  const [d, a, s] = await Promise.all([
+    getPlayerBySlug('novak-djokovic'),
+    getPlayerBySlug('carlos-alcaraz'),
+    getPlayerBySlug('iga-swiatek'),
+  ]);
+  djokovicPhoto = d?.image_url || '';
+  alcarazPhoto = a?.image_url || '';
+  swiatekPhoto = s?.image_url || '';
+} catch {}
 
 // Fetch real ranked players from Supabase
 let atpRankings = await getLatestRankings('atp', 20);
@@ -25,7 +38,7 @@ function mapRanking(r: any) {
     points: r.points || 0,
     career_titles: p?.career_titles || fb?.career_titles || 0,
     grand_slam_titles: p?.grand_slam_titles || fb?.grand_slam_titles || 0,
-    image_url: fb?.image_url?.replace('w=800', 'w=400') || p?.image_url || PLACEHOLDER_IMG,
+    image_url: p?.image_url || fb?.image_url?.replace('w=800', 'w=400') || PLACEHOLDER_IMG,
   };
 }
 
@@ -63,23 +76,38 @@ if (wtaRankings.length > 0) {
 <BaseLayout
   title="Tennis Players — Profiles, Rankings & Stats"
   description="Explore profiles of top ATP and WTA tennis players. Career stats, Grand Slam titles, rankings, net worth, and equipment."
+  ogImage="/og/players.png"
 >
   <div class="players-page">
     <div class="container">
+      <nav class="breadcrumbs"><a href="/">Home</a> <span class="sep">/</span> <span class="current">Players</span></nav>
       <section class="page-hero">
         <h1>Tennis Players</h1>
         <p class="subtitle">Profiles, rankings, stats and stories of the world's best tennis players</p>
       </section>
 
+      <!-- Search & Filter -->
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="player-search" placeholder="Search players..." autocomplete="off" />
+        </div>
+        <div class="tour-filters">
+          <button class="tour-filter active" data-tour="all">All</button>
+          <button class="tour-filter" data-tour="atp">ATP</button>
+          <button class="tour-filter" data-tour="wta">WTA</button>
+        </div>
+      </div>
+
       <!-- ATP Section -->
-      <section class="tour-section">
+      <section class="tour-section" data-tour="atp">
         <div class="tour-header">
           <h2>ATP Tour <span class="tour-badge atp">Men's</span></h2>
           <a href="/rankings/" class="view-all">Full Rankings →</a>
         </div>
         <div class="players-grid">
           {atpPlayers.map((player, i) => (
-            <a href={`/players/${player.slug}/`} class="player-card">
+            <a href={`/players/${player.slug}/`} class="player-card" data-name={`${player.first_name} ${player.last_name}`.toLowerCase()}>
               <div class="player-rank">#{player.ranking}</div>
               <div class="player-photo">
                 <img
@@ -91,7 +119,7 @@ if (wtaRankings.length > 0) {
                 />
               </div>
               <div class="player-info">
-                <span class="player-flag">{countryFlags[player.country_code || ''] || '🏳️'}</span>
+                {getFlagUrl(player.country_code || '') ? (<img src={getFlagUrl(player.country_code || '', 24)} alt={player.country_code || ''} class="player-flag-img" width="24" height="18" loading="lazy" />) : (<span class="player-flag">{countryFlags[player.country_code || ''] || ''}</span>)}
                 <h3>{player.first_name} <strong>{player.last_name}</strong></h3>
                 <div class="player-stats">
                   <span class="stat">
@@ -113,14 +141,14 @@ if (wtaRankings.length > 0) {
       </section>
 
       <!-- WTA Section -->
-      <section class="tour-section">
+      <section class="tour-section" data-tour="wta">
         <div class="tour-header">
           <h2>WTA Tour <span class="tour-badge wta">Women's</span></h2>
           <a href="/rankings/" class="view-all">Full Rankings →</a>
         </div>
         <div class="players-grid">
           {wtaPlayers.map((player, i) => (
-            <a href={`/players/${player.slug}/`} class="player-card">
+            <a href={`/players/${player.slug}/`} class="player-card" data-name={`${player.first_name} ${player.last_name}`.toLowerCase()}>
               <div class="player-rank">#{player.ranking}</div>
               <div class="player-photo">
                 <img
@@ -132,7 +160,7 @@ if (wtaRankings.length > 0) {
                 />
               </div>
               <div class="player-info">
-                <span class="player-flag">{countryFlags[player.country_code || ''] || '🏳️'}</span>
+                {getFlagUrl(player.country_code || '') ? (<img src={getFlagUrl(player.country_code || '', 24)} alt={player.country_code || ''} class="player-flag-img" width="24" height="18" loading="lazy" />) : (<span class="player-flag">{countryFlags[player.country_code || ''] || ''}</span>)}
                 <h3>{player.first_name} <strong>{player.last_name}</strong></h3>
                 <div class="player-stats">
                   <span class="stat">
@@ -158,15 +186,15 @@ if (wtaRankings.length > 0) {
         <h2>Popular Player Articles</h2>
         <div class="articles-row">
           <a href="/players/novak-djokovic/net-worth/" class="article-card">
-            <img src="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=600&h=400&fit=crop" alt="Djokovic net worth" loading="lazy" />
+            <img src={djokovicPhoto || PLACEHOLDER_IMG} alt="Djokovic net worth" loading="lazy" />
             <h3>Novak Djokovic Net Worth in 2026</h3>
           </a>
           <a href="/players/carlos-alcaraz/racket/" class="article-card">
-            <img src="https://images.unsplash.com/photo-1617883861744-13b534e1a5e6?w=600&h=400&fit=crop" alt="Alcaraz racket" loading="lazy" />
+            <img src={alcarazPhoto || PLACEHOLDER_IMG} alt="Alcaraz racket" loading="lazy" />
             <h3>What Racket Does Carlos Alcaraz Use?</h3>
           </a>
           <a href="/players/iga-swiatek/" class="article-card">
-            <img src="https://images.unsplash.com/photo-1542144582-1ba00456b5e3?w=600&h=400&fit=crop" alt="Swiatek profile" loading="lazy" />
+            <img src={swiatekPhoto || PLACEHOLDER_IMG} alt="Swiatek profile" loading="lazy" />
             <h3>Iga Swiatek — Complete Player Profile</h3>
           </a>
         </div>
@@ -280,6 +308,7 @@ if (wtaRankings.length > 0) {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: top;
     transition: transform 0.3s;
   }
   .player-card:hover .player-photo img {
@@ -293,6 +322,11 @@ if (wtaRankings.length > 0) {
     font-size: 1.2rem;
     margin-bottom: 4px;
     display: inline-block;
+  }
+  .player-flag-img {
+    margin-bottom: 4px;
+    display: inline-block;
+    border-radius: 2px;
   }
   .player-info h3 {
     font-family: var(--font-body);
@@ -355,6 +389,7 @@ if (wtaRankings.length > 0) {
     width: 100%;
     aspect-ratio: 3/2;
     object-fit: cover;
+    object-position: top;
   }
   .article-card h3 {
     padding: 12px 14px 16px;
@@ -373,9 +408,139 @@ if (wtaRankings.length > 0) {
     .articles-row { grid-template-columns: 1fr; }
     .page-hero h1 { font-size: 2rem; }
   }
+  /* Search & Filter */
+  .search-bar {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .search-input-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+  }
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-400);
+    pointer-events: none;
+  }
+  #player-search {
+    width: 100%;
+    padding: 12px 16px 12px 42px;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    font-family: var(--font-body);
+    background: white;
+    transition: border-color 0.2s;
+  }
+  #player-search:focus {
+    outline: none;
+    border-color: var(--court-green);
+  }
+  #player-search::placeholder {
+    color: var(--gray-400);
+  }
+  .tour-filters {
+    display: flex;
+    gap: 4px;
+    background: var(--gray-100);
+    border-radius: var(--radius);
+    padding: 4px;
+  }
+  .tour-filter {
+    padding: 8px 18px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: var(--radius-sm);
+    color: var(--gray-600);
+    transition: all 0.2s;
+    font-family: var(--font-body);
+  }
+  .tour-filter:hover {
+    color: var(--gray-900);
+  }
+  .tour-filter.active {
+    background: white;
+    color: var(--court-green);
+    box-shadow: var(--shadow);
+  }
+  .no-results {
+    display: none;
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--gray-500);
+    font-size: 1rem;
+    grid-column: 1 / -1;
+  }
+  .no-results.visible {
+    display: block;
+  }
+
   @media (max-width: 480px) {
     .players-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
     .player-info { padding: 10px 12px 14px; }
     .player-info h3 { font-size: 0.9rem; }
+    .search-bar { flex-direction: column; gap: 12px; }
+    .search-input-wrap { width: 100%; }
+  }
+  @media (max-width: 360px) {
+    .players-grid { grid-template-columns: 1fr; gap: 16px; }
   }
 </style>
+
+<script>
+  const searchInput = document.getElementById('player-search') as HTMLInputElement;
+  const tourFilters = document.querySelectorAll('.tour-filter');
+  const tourSections = document.querySelectorAll<HTMLElement>('.tour-section[data-tour]');
+  let activeTour = 'all';
+
+  function filterPlayers() {
+    const query = searchInput?.value.toLowerCase().trim() || '';
+
+    tourSections.forEach(section => {
+      const tour = section.dataset.tour || '';
+      const showSection = activeTour === 'all' || activeTour === tour;
+      section.style.display = showSection ? '' : 'none';
+
+      if (showSection) {
+        const cards = section.querySelectorAll<HTMLElement>('.player-card');
+        let visibleCount = 0;
+        cards.forEach(card => {
+          const name = card.dataset.name || '';
+          const matches = !query || name.includes(query);
+          card.style.display = matches ? '' : 'none';
+          if (matches) visibleCount++;
+        });
+
+        // Show/hide no results message
+        let noResults = section.querySelector('.no-results') as HTMLElement;
+        if (!noResults) {
+          noResults = document.createElement('div');
+          noResults.className = 'no-results';
+          noResults.textContent = 'No players found';
+          section.querySelector('.players-grid')?.appendChild(noResults);
+        }
+        noResults.classList.toggle('visible', visibleCount === 0 && query.length > 0);
+      }
+    });
+  }
+
+  searchInput?.addEventListener('input', filterPlayers);
+
+  tourFilters.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tourFilters.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeTour = (btn as HTMLElement).dataset.tour || 'all';
+      filterPlayers();
+    });
+  });
+</script>

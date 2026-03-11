@@ -1,0 +1,246 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import LiteYouTube from '../../components/LiteYouTube.astro';
+import { videoCategories, getChannelFeaturedVideos } from '../../data/youtube-channels';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Tennis Videos — Best YouTube Channels to Watch',
+  description: 'Curated collection of the best tennis YouTube channels. Official tours, coaching tips, player vlogs, and highlights.',
+  url: 'https://super.tennis/video/',
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+  },
+};
+---
+
+<BaseLayout
+  title="Tennis Videos — Best YouTube Channels to Watch"
+  description="Curated collection of the best tennis YouTube channels. Official tour highlights, coaching tips, player vlogs, analysis, and entertainment."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <div class="video-page container">
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs">
+      <a href="/">Home</a>
+      <span class="sep">/</span>
+      <span class="current">Videos</span>
+    </nav>
+
+    <!-- Hero -->
+    <section class="page-hero">
+      <h1>Tennis Videos</h1>
+      <p class="subtitle">The best tennis YouTube channels — highlights, coaching, player vlogs & entertainment</p>
+    </section>
+
+    <!-- Category Quick Nav -->
+    <nav class="cat-nav">
+      {videoCategories.map(cat => (
+        <a href={`#${cat.id}`} class="cat-pill" style={`--cat-color: ${cat.accentColor}`}>
+          {cat.label}
+        </a>
+      ))}
+    </nav>
+
+    <!-- Categories -->
+    {videoCategories.map(cat => (
+      <section class="video-category" id={cat.id}>
+        <div class="cat-header" style={`border-left-color: ${cat.accentColor}`}>
+          <h2 class="cat-header__title">{cat.label}</h2>
+          <p class="cat-header__desc">{cat.description}</p>
+        </div>
+
+        <div class="channels-list">
+          {cat.channels.map(channel => {
+            const featured = getChannelFeaturedVideos(channel.videos);
+            return (
+              <div class="channel-card">
+                <div class="channel-info">
+                  <div class="channel-info__top">
+                    <h3 class="channel-name">{channel.name}</h3>
+                    <span class="channel-subs">{channel.subscriberCount} subscribers</span>
+                  </div>
+                  <p class="channel-desc">{channel.description}</p>
+                </div>
+
+                {featured.length > 0 && (
+                  <div class="channel-videos">
+                    {featured.map(video => (
+                      <div class="channel-video">
+                        <LiteYouTube videoId={video.id} title={video.title} />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .video-page {
+    padding-bottom: 60px;
+  }
+
+  /* Breadcrumbs */
+  .breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: var(--gray-400);
+    padding: 20px 0 0;
+  }
+  .breadcrumbs a {
+    color: var(--gray-500);
+    transition: var(--transition);
+  }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { color: var(--gray-300); }
+  .current { color: var(--gray-600); }
+
+  /* Hero — matches other section pages */
+  .page-hero {
+    padding: 48px 0 32px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 32px;
+  }
+  .page-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0;
+    letter-spacing: 1px;
+  }
+  .subtitle {
+    font-size: 1rem;
+    color: var(--gray-500);
+    margin-top: 8px;
+    line-height: 1.6;
+  }
+
+  /* Category Quick Nav */
+  .cat-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 0 0 40px;
+  }
+  .cat-pill {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--cat-color);
+    border: 1.5px solid var(--cat-color);
+    transition: var(--transition);
+    text-decoration: none;
+  }
+  .cat-pill:hover {
+    background: var(--cat-color);
+    color: #fff;
+  }
+
+  /* Category Section */
+  .video-category {
+    margin-bottom: 48px;
+  }
+  .cat-header {
+    border-left: 4px solid;
+    padding-left: 16px;
+    margin-bottom: 24px;
+  }
+  .cat-header__title {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gray-900);
+    margin: 0 0 6px;
+  }
+  .cat-header__desc {
+    font-size: 0.88rem;
+    color: var(--gray-500);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* Channel Cards */
+  .channels-list {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .channel-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+    padding: 24px;
+    transition: var(--transition);
+  }
+  .channel-card:hover {
+    box-shadow: var(--shadow);
+  }
+  .channel-info {
+    margin-bottom: 16px;
+  }
+  .channel-info__top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .channel-name {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-900);
+    margin: 0;
+  }
+  .channel-subs {
+    font-size: 0.72rem;
+    color: var(--gray-400);
+    background: var(--gray-100);
+    padding: 2px 10px;
+    border-radius: 10px;
+  }
+  .channel-desc {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* Channel Videos Grid */
+  .channel-videos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  @media (max-width: 1024px) {
+    .channel-videos {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 768px) {
+    .page-hero h1 { font-size: 2rem; }
+    .channel-videos {
+      grid-template-columns: 1fr;
+    }
+    .channel-card { padding: 16px; }
+  }
+</style>

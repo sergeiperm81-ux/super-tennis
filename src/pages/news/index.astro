@@ -1,0 +1,1014 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import LiteYouTube from '../../components/LiteYouTube.astro';
+import { getActiveNews, getArticles, getLatestRankings, getPlayerBySlug } from '../../lib/supabase';
+import { countryFlags, fallbackPlayers, getFlagUrl } from '../../lib/fallback-data';
+import { getHomepageVideos } from '../../data/youtube-channels';
+import { marked } from 'marked';
+
+// Fetch all active news (with body)
+let allNews: any[] = [];
+try {
+  const raw = await getActiveNews(100);
+  allNews = raw.filter((n: any) => n.body && n.body.length > 50);
+} catch (e) {
+  console.warn('News page: Failed to fetch news');
+}
+
+// Category config
+const categoryColors: Record<string, string> = {
+  buzz: '#16a34a',
+  scandal: '#dc2626',
+  business: '#d4a017',
+  fashion: '#ec4899',
+  funny: '#f97316',
+  wellness: '#0891b2',
+};
+const categoryLabels: Record<string, string> = {
+  buzz: 'Buzz',
+  scandal: 'Scandal',
+  business: 'Business',
+  fashion: 'Fashion',
+  funny: 'LOL',
+  wellness: 'Wellness',
+};
+
+// Get unique categories
+const cats = [...new Set(allNews.map(n => n.category))].filter(Boolean);
+
+// Time ago helper
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  if (hours < 1) return 'Just now';
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days === 1) return 'Yesterday';
+  if (days < 7) return `${days}d ago`;
+  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// Format date
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    month: 'long', day: 'numeric', year: 'numeric'
+  });
+}
+
+// Render markdown body to HTML, stripping the first h2 and AI metadata tags
+function renderBody(md: string): string {
+  let cleaned = md
+    .replace(/^##\s+[^\n]+\n*/m, '')           // Remove first h2 (repeats the title)
+    .replace(/\*\*Category\*\*:\s*\w+\s*/gi, '')  // Remove **Category**: xxx
+    .replace(/\*\*Main Player\*\*:\s*[^\n]+\s*/gi, ''); // Remove **Main Player**: xxx
+  return marked.parse(cleaned.trim(), { breaks: true }) as string;
+}
+
+// JSON-LD
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Tennis News — SUPER.TENNIS',
+  description: 'Latest tennis news, scandals, fashion, and off-court stories.',
+  url: 'https://super.tennis/news/',
+  publisher: { '@type': 'Organization', name: 'SUPER.TENNIS' },
+};
+
+// ========== SIDEBAR DATA ==========
+
+// 1. Videos (2 random)
+const allVideos = getHomepageVideos();
+const sidebarVideos = allVideos.slice(0, 2);
+
+// 2. Featured player
+let sidebarPlayer: any = null;
+try {
+  sidebarPlayer = await getPlayerBySlug('jannik-sinner');
+} catch {}
+if (!sidebarPlayer) {
+  sidebarPlayer = fallbackPlayers['jannik-sinner'] || {
+    first_name: 'Jannik', last_name: 'Sinner', country_code: 'ITA',
+    career_titles: 19, grand_slam_titles: 3, slug: 'jannik-sinner', image_url: '',
+  };
+}
+
+// 3. Rankings top 5
+let atpTop5: any[] = [];
+try {
+  const rankings = await getLatestRankings('atp', 5);
+  atpTop5 = rankings.map((r: any) => ({
+    rank: r.ranking,
+    name: `${r.players?.first_name} ${r.players?.last_name}`,
+    slug: r.players?.slug,
+    country: r.players?.country_code || '',
+    points: r.points?.toLocaleString() || '0',
+  }));
+} catch {}
+if (atpTop5.length === 0) {
+  atpTop5 = [
+    { rank: 1, name: 'Jannik Sinner', slug: 'jannik-sinner', country: 'ITA', points: '11,830' },
+    { rank: 2, name: 'Alexander Zverev', slug: 'alexander-zverev', country: 'GER', points: '9,855' },
+    { rank: 3, name: 'Carlos Alcaraz', slug: 'carlos-alcaraz', country: 'ESP', points: '7,190' },
+    { rank: 4, name: 'Novak Djokovic', slug: 'novak-djokovic', country: 'SRB', points: '6,875' },
+    { rank: 5, name: 'Daniil Medvedev', slug: 'daniil-medvedev', country: 'RUS', points: '6,445' },
+  ];
+}
+
+// 4. Articles from various sections
+let sidebarArticles: any[] = [];
+try {
+  const artCats = ['players', 'records', 'gear', 'lifestyle', 'vs', 'tournaments'];
+  const perCat = await Promise.all(artCats.map(c => getArticles({ category: c, limit: 3 })));
+  const all = perCat.flat().filter(a => a.title);
+  for (let i = all.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [all[i], all[j]] = [all[j], all[i]];
+  }
+  sidebarArticles = all.slice(0, 6);
+} catch {}
+
+// Article URL helpers
+const categoryUrl: Record<string, string> = {
+  players: '/players/', records: '/records/', gear: '/gear/',
+  lifestyle: '/lifestyle/', tournaments: '/tournaments/', vs: '/vs/',
+};
+function articleUrl(art: { category: string; slug: string }): string {
+  if (art.category === 'players') {
+    if (art.slug.endsWith('-racket')) return `/players/${art.slug.replace(/-racket$/, '')}/racket/`;
+    if (art.slug.endsWith('-net-worth')) return `/players/${art.slug.replace(/-net-worth$/, '')}/net-worth/`;
+    return `/players/${art.slug}/`;
+  }
+  return `${categoryUrl[art.category] || '/'}${art.slug}/`;
+}
+const sbCatColors: Record<string, string> = {
+  players: '#4CAF50', records: '#FF9800', gear: '#2196F3',
+  lifestyle: '#E91E63', tournaments: '#00BCD4', vs: '#FF5722',
+};
+const sbCatLabels: Record<string, string> = {
+  players: 'Players', records: 'Records', gear: 'Gear',
+  lifestyle: 'Lifestyle', tournaments: 'Tournaments', vs: 'H2H',
+};
+---
+
+<BaseLayout title="Tennis News" description="Latest tennis news, scandals, fashion, and off-court stories for casual fans." jsonLd={jsonLd}>
+  <div class="news-page-wrap">
+    <div class="container">
+
+      <!-- Breadcrumbs -->
+      <nav class="breadcrumbs">
+        <a href="/">Home</a>
+        <span class="sep">/</span>
+        <span class="current">News</span>
+      </nav>
+
+      <!-- Page Header -->
+      <section class="page-hero">
+        <h1>Tennis News</h1>
+        <p class="subtitle">Scandals, drama, fashion & everything off-court</p>
+      </section>
+
+      <!-- TWO-COLUMN LAYOUT like homepage -->
+      <div class="np-layout">
+
+        <!-- ========== MAIN: Accordion List ========== -->
+        <main class="np-main">
+
+          <!-- Filters -->
+          {cats.length > 1 && (
+            <div class="np-filters">
+              <button class="np-filter active" data-cat="all">All</button>
+              {cats.map(cat => (
+                <button
+                  class="np-filter"
+                  data-cat={cat}
+                  style={`--cat-color: ${categoryColors[cat] || '#666'}`}
+                >
+                  {categoryLabels[cat] || cat}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <!-- News List -->
+          {allNews.length === 0 ? (
+            <div class="np-empty">
+              <p>No news yet. Check back soon!</p>
+            </div>
+          ) : (
+            <div class="np-list" id="np-list">
+              {allNews.map((item: any) => (
+                <details class="np-item" data-cat={item.category} id={item.slug}>
+                  <summary class="np-item__header">
+                    <a href={item.source_url} target="_blank" rel="noopener noreferrer" class="np-item__thumb" onclick="event.stopPropagation()">
+                      {item.image_url ? (
+                        <img
+                          src={item.image_url}
+                          alt=""
+                          loading="lazy"
+                          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+                        />
+                      ) : null}
+                      <div class="np-item__thumb-fallback" style={item.image_url ? 'display:none' : ''}>
+                        <span>&#127934;</span>
+                      </div>
+                      <span class="np-item__thumb-source">{item.source_name || 'Source'}</span>
+                    </a>
+                    <div class="np-item__info">
+                      <div class="np-item__meta">
+                        <span
+                          class="np-cat-badge"
+                          style={`background: ${categoryColors[item.category] || '#666'}`}
+                        >
+                          {categoryLabels[item.category] || 'News'}
+                        </span>
+                        <span class="np-item__time">{timeAgo(item.published_at)}</span>
+                      </div>
+                      <h2 class="np-item__title">{item.title}</h2>
+                      <p class="np-item__summary">{item.summary}</p>
+                    </div>
+                    <span class="np-item__chevron" aria-hidden="true">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M6 8l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                  </summary>
+
+                  <div class="np-item__body">
+                    <article class="np-article">
+                      <div class="np-article__content" set:html={renderBody(item.body)} />
+
+                      <!-- Source credit -->
+                      <div class="np-source">
+                        <div class="np-source__info">
+                          <span class="np-source__label">Source</span>
+                          <a href={item.source_url} target="_blank" rel="noopener noreferrer" class="np-source__link">
+                            {item.source_name || 'Original article'} &nearr;
+                          </a>
+                          <span class="np-source__date">{formatDate(item.published_at)}</span>
+                        </div>
+                      </div>
+                    </article>
+                  </div>
+                </details>
+              ))}
+            </div>
+          )}
+
+        </main>
+
+        <!-- ========== SIDEBAR ========== -->
+        <aside class="sb">
+
+          <!-- WATCH TENNIS — 2 videos -->
+          {sidebarVideos.length > 0 && (
+            <div class="sb-block">
+              <div class="sb-block__header">
+                <span class="sb-block__label">Watch Tennis</span>
+                <a href="/video/" class="sb-link">All channels &rarr;</a>
+              </div>
+              <div class="sb-videos">
+                {sidebarVideos.map(({ video, category }) => (
+                  <div class="sb-video">
+                    <LiteYouTube videoId={video.id} title={video.title} />
+                    <div class="sb-video__meta">
+                      <span class="sb-video__cat" style={`color: ${category.accentColor}`}>{category.label}</span>
+                      <span class="sb-video__ch">{video.channelName}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <!-- FEATURED PLAYER -->
+          <div class="sb-profile">
+            <div class="sb-profile__header">
+              <span class="sb-profile__label">Featured Player</span>
+              <a href="/players/" class="sb-link">View all &rarr;</a>
+            </div>
+            <a href={`/players/${sidebarPlayer.slug}/`} class="sb-profile__card">
+              <div class="sb-profile__img">
+                {sidebarPlayer.image_url && (
+                  <img src={sidebarPlayer.image_url} alt={`${sidebarPlayer.first_name} ${sidebarPlayer.last_name}`} loading="lazy" />
+                )}
+                <div class="sb-profile__name">
+                  {getFlagUrl(sidebarPlayer.country_code) ? (
+                    <img src={getFlagUrl(sidebarPlayer.country_code, 20)} alt={sidebarPlayer.country_code} class="sb-flag" width="20" height="15" loading="lazy" />
+                  ) : null}
+                  {sidebarPlayer.first_name} {sidebarPlayer.last_name}
+                </div>
+              </div>
+              <div class="sb-profile__stats">
+                <div class="sb-profile__row"><span>Grand Slams</span><span>{sidebarPlayer.grand_slam_titles || 0}</span></div>
+                <div class="sb-profile__row"><span>Career Titles</span><span>{sidebarPlayer.career_titles || 0}</span></div>
+              </div>
+            </a>
+          </div>
+
+          <!-- ATP RANKINGS -->
+          <div class="sb-rankings">
+            <div class="sb-rankings__header">
+              <span class="sb-rankings__label">ATP Rankings</span>
+              <a href="/rankings/" class="sb-link">Full table &rarr;</a>
+            </div>
+            <table class="sb-rankings__table">
+              <tbody>
+                {atpTop5.map(r => (
+                  <tr>
+                    <td class="sb-rankings__rank">{r.rank}</td>
+                    <td class="sb-rankings__name">
+                      <a href={`/players/${r.slug}/`}>
+                        {getFlagUrl(r.country) ? (
+                          <img src={getFlagUrl(r.country, 20)} alt={r.country} class="sb-flag" width="20" height="15" loading="lazy" />
+                        ) : (
+                          <span>{countryFlags[r.country] || ''}</span>
+                        )}
+                        {r.name}
+                      </a>
+                    </td>
+                    <td class="sb-rankings__pts">{r.points}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- MORE ON SUPER.TENNIS — article links -->
+          {sidebarArticles.length > 0 && (
+            <div class="sb-articles">
+              <div class="sb-articles__header">
+                <span class="sb-articles__label">Explore</span>
+              </div>
+              <div class="sb-articles__list">
+                {sidebarArticles.map((art: any) => (
+                  <a href={articleUrl(art)} class="sb-articles__item">
+                    <span class="sb-articles__cat" style={`background: ${sbCatColors[art.category] || '#666'}`}>
+                      {sbCatLabels[art.category] || art.category}
+                    </span>
+                    <span class="sb-articles__link">{art.title}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+        </aside>
+
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .news-page-wrap {
+    padding-top: 8px;
+    padding-bottom: 80px;
+    min-height: 100vh;
+    background: var(--gray-50);
+  }
+
+  /* Page Header — matches other section pages */
+  .page-hero {
+    padding: 48px 0 32px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 16px;
+  }
+  .page-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0;
+    letter-spacing: 1px;
+  }
+  .subtitle {
+    font-size: 1rem;
+    color: var(--gray-500);
+    margin-top: 8px;
+    line-height: 1.6;
+  }
+
+  /* ===== TWO-COLUMN LAYOUT ===== */
+  .np-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 32px;
+    align-items: start;
+    margin-top: 8px;
+  }
+
+  /* ===== MAIN COLUMN ===== */
+  .np-main {
+    min-width: 0;
+  }
+
+  /* Filters */
+  .np-filters {
+    display: flex;
+    gap: 8px;
+    padding: 0 0 20px;
+    flex-wrap: wrap;
+  }
+  .np-filter {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--gray-100);
+    color: var(--gray-600);
+    transition: all 0.2s;
+    border: 1px solid transparent;
+  }
+  .np-filter:hover {
+    background: var(--gray-200);
+    color: var(--gray-800);
+  }
+  .np-filter.active {
+    background: var(--gray-900);
+    color: var(--white);
+  }
+
+  /* Empty state */
+  .np-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--gray-500);
+    font-size: 1.1rem;
+  }
+
+  /* News List */
+  .np-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  /* Each news item */
+  .np-item {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+    scroll-margin-top: calc(var(--header-height) + 12px);
+  }
+  .np-item:hover {
+    box-shadow: var(--shadow);
+  }
+  .np-item[open] {
+    box-shadow: var(--shadow-md);
+    border-color: var(--gray-300);
+  }
+
+  /* Hide default marker */
+  .np-item summary {
+    list-style: none;
+  }
+  .np-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  /* Summary / closed state */
+  .np-item__header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .np-item__header:hover {
+    background: var(--gray-50);
+  }
+
+  /* Thumbnail — big, prominent */
+  .np-item__thumb {
+    width: 260px;
+    height: 180px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--gray-100);
+    position: relative;
+    display: block;
+    transition: opacity 0.2s;
+  }
+  .np-item__thumb:hover {
+    opacity: 0.85;
+  }
+  .np-item__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .np-item__thumb-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
+  }
+  .np-item__thumb-source {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2px 6px;
+    background: rgba(0,0,0,0.65);
+    color: rgba(255,255,255,0.9);
+    font-size: 0.62rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Info column */
+  .np-item__info {
+    flex: 1;
+    min-width: 0;
+  }
+  .np-item__meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .np-cat-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: white;
+    line-height: 1.4;
+  }
+  .np-item__time {
+    font-size: 0.78rem;
+    color: var(--gray-500);
+  }
+  .np-item__title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    line-height: 1.3;
+    color: var(--gray-900);
+    margin: 0;
+  }
+  .np-item__summary {
+    font-size: 0.82rem;
+    color: var(--gray-600);
+    margin-top: 4px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Chevron */
+  .np-item__chevron {
+    flex-shrink: 0;
+    color: var(--gray-400);
+    transition: transform 0.2s;
+  }
+  .np-item[open] .np-item__chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Expanded body */
+  .np-item__body {
+    border-top: 1px solid var(--gray-200);
+    padding: 20px 24px 24px;
+    background: var(--gray-50);
+  }
+
+  /* Article content — now full width within its column */
+  .np-article {
+    min-width: 0;
+  }
+  .np-article__content {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--gray-800);
+  }
+  .np-article__content :global(h2) {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    margin: 20px 0 8px;
+    color: var(--gray-900);
+  }
+  .np-article__content :global(h3) {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    margin: 16px 0 6px;
+    color: var(--gray-900);
+  }
+  .np-article__content :global(p) {
+    margin: 0 0 12px;
+  }
+  .np-article__content :global(strong) {
+    color: var(--gray-900);
+    font-weight: 600;
+  }
+  .np-article__content :global(ul),
+  .np-article__content :global(ol) {
+    margin: 8px 0 12px 20px;
+    list-style: disc;
+  }
+  .np-article__content :global(li) {
+    margin-bottom: 4px;
+  }
+
+  /* Source credit */
+  .np-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+    padding: 12px;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+  }
+  .np-source__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .np-source__label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-500);
+  }
+  .np-source__link {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--court-green);
+    transition: color 0.2s;
+  }
+  .np-source__link:hover {
+    color: var(--court-green-dark);
+  }
+  .np-source__date {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+  }
+
+  /* Hidden items via filter */
+  .np-item.hidden {
+    display: none;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sb {
+    position: sticky;
+    top: calc(var(--header-height) + 8px);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .sb-link {
+    font-size: 0.72rem;
+    color: var(--court-green);
+    font-weight: 600;
+  }
+  .sb-link:hover {
+    text-decoration: underline;
+  }
+  .sb-flag {
+    vertical-align: middle;
+    margin-right: 4px;
+    border-radius: 2px;
+  }
+
+  /* Sidebar block — generic */
+  .sb-block {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .sb-block__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: var(--gray-900);
+  }
+  .sb-block__label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+
+  /* Sidebar: Videos */
+  .sb-videos {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+  .sb-video__meta {
+    padding: 6px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sb-video__cat {
+    font-family: var(--font-heading);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+  }
+  .sb-video__ch {
+    font-size: 0.68rem;
+    color: var(--gray-500);
+  }
+
+  /* Sidebar: Player Profile */
+  .sb-profile {
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .sb-profile__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: var(--gray-900);
+  }
+  .sb-profile__label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+  .sb-profile__card {
+    display: block;
+  }
+  .sb-profile__img {
+    position: relative;
+    height: 160px;
+    overflow: hidden;
+  }
+  .sb-profile__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+  .sb-profile__name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sb-profile__stats {
+    padding: 4px 0;
+  }
+  .sb-profile__row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 0.8rem;
+  }
+  .sb-profile__row:last-child {
+    border-bottom: none;
+  }
+  .sb-profile__row span:first-child {
+    color: var(--gray-500);
+  }
+  .sb-profile__row span:last-child {
+    font-weight: 700;
+    color: var(--gray-900);
+  }
+
+  /* Sidebar: Rankings */
+  .sb-rankings {
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .sb-rankings__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: var(--gray-900);
+  }
+  .sb-rankings__label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+  .sb-rankings__table {
+    width: 100%;
+    border-collapse: collapse;
+    display: table;
+    overflow-x: visible;
+  }
+  .sb-rankings__table tr {
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .sb-rankings__table tr:last-child {
+    border-bottom: none;
+  }
+  .sb-rankings__table tr:hover td {
+    background: var(--gray-50);
+  }
+  .sb-rankings__rank {
+    padding: 10px 16px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--court-green);
+    width: 36px;
+  }
+  .sb-rankings__name {
+    padding: 10px 8px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--gray-900);
+  }
+  .sb-rankings__name a {
+    color: var(--gray-900);
+    transition: color 0.2s;
+  }
+  .sb-rankings__name a:hover {
+    color: var(--court-green);
+  }
+  .sb-rankings__pts {
+    padding: 10px 16px;
+    text-align: right;
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gray-500);
+  }
+
+  /* Sidebar: Articles */
+  .sb-articles {
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .sb-articles__header {
+    padding: 14px 16px;
+    background: var(--gray-900);
+  }
+  .sb-articles__label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+  .sb-articles__list {
+    display: flex;
+    flex-direction: column;
+  }
+  .sb-articles__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gray-100);
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .sb-articles__item:last-child {
+    border-bottom: none;
+  }
+  .sb-articles__item:hover {
+    background: var(--gray-50);
+  }
+  .sb-articles__cat {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .sb-articles__link {
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--gray-800);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .sb-articles__item:hover .sb-articles__link {
+    color: var(--court-green);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1024px) {
+    .np-layout {
+      grid-template-columns: 1fr 280px;
+      gap: 24px;
+    }
+  }
+  @media (max-width: 900px) {
+    .np-layout {
+      grid-template-columns: 1fr;
+    }
+    .sb {
+      position: static;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+  }
+  @media (max-width: 768px) {
+    .np-item__thumb { width: 180px; height: 125px; }
+    .np-item__summary { -webkit-line-clamp: 1; }
+  }
+  @media (max-width: 768px) {
+    .page-hero h1 { font-size: 2rem; }
+  }
+  @media (max-width: 640px) {
+    .np-item__header { padding: 12px; gap: 12px; }
+    .np-item__thumb { width: 120px; height: 85px; }
+    .np-item__title { font-size: 0.95rem; }
+    .np-item__summary { display: none; }
+    .np-item__body { padding: 16px; }
+    .np-source { flex-direction: column; align-items: flex-start; }
+    .sb {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  // Category filters
+  const filters = document.querySelectorAll('.np-filter');
+  const items = document.querySelectorAll('.np-item');
+
+  filters.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cat = btn.getAttribute('data-cat');
+      filters.forEach(f => f.classList.remove('active'));
+      btn.classList.add('active');
+      items.forEach(item => {
+        if (cat === 'all' || item.getAttribute('data-cat') === cat) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+    });
+  });
+
+  // Handle anchor links (from homepage: /news/#slug)
+  if (window.location.hash) {
+    const slug = window.location.hash.slice(1);
+    const target = document.getElementById(slug);
+    if (target && target.tagName === 'DETAILS') {
+      target.setAttribute('open', '');
+      setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+  }
+</script>

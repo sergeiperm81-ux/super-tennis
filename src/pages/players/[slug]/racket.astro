@@ -1,7 +1,9 @@
 ---
 import ArticleLayout from '../../../layouts/ArticleLayout.astro';
+import ArticleFooter from '../../../components/ArticleFooter.astro';
 import { getPlayerBySlug, getTopPlayerSlugs, getArticleBySlug } from '../../../lib/supabase';
-import { fallbackPlayers, countryNames, countryFlags, handLabels } from '../../../lib/fallback-data';
+import { fallbackPlayers, countryNames, countryFlags, handLabels, getFlagUrl } from '../../../lib/fallback-data';
+import { addInterlinks } from '../../../lib/interlinks';
 import { marked } from 'marked';
 
 export async function getStaticPaths() {
@@ -43,7 +45,8 @@ try {
   console.warn(`racket: article not found for ${articleSlug}`);
 }
 
-const bodyHtml = article?.body ? marked.parse(article.body) : null;
+const rawHtml = article?.body ? marked.parse(article.body) : null;
+const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/players/${slug}/racket/`) : null;
 ---
 
 <ArticleLayout
@@ -74,7 +77,14 @@ const bodyHtml = article?.body ? marked.parse(article.body) : null;
     </div>
     <div class="eq-stat">
       <span class="eq-stat-label">Country</span>
-      <span class="eq-stat-value">{flag} {country}</span>
+      <span class="eq-stat-value">
+        {getFlagUrl(player.country_code || '') ? (
+          <img src={getFlagUrl(player.country_code || '')} alt={player.country_code || ''} class="stat-flag" width="20" height="15" loading="lazy" />
+        ) : (
+          <span>{flag}</span>
+        )}
+        {country}
+      </span>
     </div>
   </div>
 
@@ -109,11 +119,16 @@ const bodyHtml = article?.body ? marked.parse(article.body) : null;
     </div>
   )}
 
-  <!-- Back to Profile -->
-  <div class="back-link">
-    <a href={`/players/${slug}/`}>← Back to {name}'s Profile</a>
-    <a href={`/players/${slug}/net-worth/`}>💰 {name}'s Net Worth →</a>
-  </div>
+  <ArticleFooter
+    backLabel={`${name}'s Profile`}
+    backHref={`/players/${slug}/`}
+    relatedLinks={[
+      { label: `${name}'s Net Worth`, href: `/players/${slug}/net-worth/` },
+      { label: 'All Players', href: '/players/' },
+      { label: 'Gear Guides', href: '/gear/' },
+      { label: 'Rankings', href: '/rankings/' },
+    ]}
+  />
 </ArticleLayout>
 
 <style>
@@ -150,20 +165,11 @@ const bodyHtml = article?.body ? marked.parse(article.body) : null;
     color: var(--gray-700);
   }
 
-  .back-link {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-    margin-top: 40px;
-    padding-top: 24px;
-    border-top: 2px solid var(--gray-200);
+  .stat-flag {
+    vertical-align: middle;
+    margin-right: 4px;
+    border-radius: 2px;
   }
-  .back-link a {
-    color: var(--court-green);
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-  .back-link a:hover { text-decoration: underline; }
 
   @media (max-width: 480px) {
     .eq-banner { grid-template-columns: 1fr 1fr; }

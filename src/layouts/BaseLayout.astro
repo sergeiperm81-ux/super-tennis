@@ -7,16 +7,20 @@ interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  jsonLd?: Record<string, any>;
 }
 
 const {
   title,
   description = 'Tennis for everyone. Players, records, gear, lifestyle — the world of tennis beyond the court.',
-  ogImage = '/og-default.jpg',
+  ogImage = '/og/default.png',
+  jsonLd,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const fullTitle = title === 'Home' ? 'SUPER.TENNIS — Tennis for Everyone' : `${title} | SUPER.TENNIS`;
+// Avoid duplicate SUPER.TENNIS in title tag
+const cleanTitle = title.replace(/\s*[—|]\s*SUPER\.TENNIS\s*/gi, '').trim();
+const fullTitle = cleanTitle === 'Home' ? 'SUPER.TENNIS — Tennis for Everyone' : `${cleanTitle} | SUPER.TENNIS`;
 ---
 
 <!DOCTYPE html>
@@ -43,10 +47,20 @@ const fullTitle = title === 'Home' ? 'SUPER.TENNIS — Tennis for Everyone' : `$
   <meta name="twitter:description" content={description} />
   <meta name="twitter:image" content={new URL(ogImage, Astro.site)} />
 
-  <!-- Fonts -->
+  <!-- Preconnect to external domains -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://upload.wikimedia.org" />
+  <link rel="preconnect" href="https://flagcdn.com" />
+  <link rel="dns-prefetch" href="https://upload.wikimedia.org" />
+  <link rel="dns-prefetch" href="https://flagcdn.com" />
+  <link rel="preconnect" href="https://i.ytimg.com" />
+  <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
+
+  <!-- Fonts (display=swap for better LCP) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 </head>
 <body>
   <Header />
@@ -54,5 +68,40 @@ const fullTitle = title === 'Home' ? 'SUPER.TENNIS — Tennis for Everyone' : `$
     <slot />
   </main>
   <Footer />
+
+  <!-- Back to top button -->
+  <button class="back-to-top" id="back-to-top" aria-label="Back to top" title="Back to top">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M10 4L4 10h4v6h4v-6h4L10 4z" fill="currentColor"/>
+    </svg>
+  </button>
+
+  <!-- Flag image fallback: show country code text if flagcdn is down -->
+  <script is:inline>
+    document.addEventListener('error', function(e) {
+      var t = e.target;
+      if (t && t.tagName === 'IMG' && t.src && t.src.includes('flagcdn.com')) {
+        var code = t.alt || '';
+        var span = document.createElement('span');
+        span.textContent = code;
+        span.style.cssText = 'font-size:0.7rem;color:#6b7280;font-weight:600;';
+        t.replaceWith(span);
+      }
+    }, true);
+  </script>
+
+  <!-- Back to top button logic -->
+  <script is:inline>
+    (function() {
+      var btn = document.getElementById('back-to-top');
+      if (!btn) return;
+      window.addEventListener('scroll', function() {
+        btn.classList.toggle('visible', window.scrollY > 600);
+      }, { passive: true });
+      btn.addEventListener('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    })();
+  </script>
 </body>
 </html>

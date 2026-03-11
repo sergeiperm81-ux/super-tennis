@@ -1,6 +1,9 @@
 ---
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import ArticleFooter from '../../components/ArticleFooter.astro';
 import { getArticleBySlug, getArticleSlugs } from '../../lib/supabase';
+import { addInterlinks } from '../../lib/interlinks';
+import { getArticlePhotoUrl } from '../../lib/player-photos';
 import { marked } from 'marked';
 
 export async function getStaticPaths() {
@@ -48,7 +51,10 @@ if (!article) {
   return Astro.redirect('/records/');
 }
 
-const bodyHtml = article.body ? marked.parse(article.body) : '';
+const heroImage = await getArticlePhotoUrl(slug as string, 'records');
+
+const rawHtml = article.body ? marked.parse(article.body) : '';
+const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/records/${slug}/`) : '';
 
 // JSON-LD for the article
 const jsonLd = {
@@ -77,49 +83,15 @@ const jsonLd = {
     { label: 'Records', href: '/records/' },
     { label: article.title },
   ]}
+  image={heroImage || undefined}
+  category="records"
+  categoryLabel="Tennis Records"
+  categoryHref="/records/"
 >
   <!-- JSON-LD -->
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <div set:html={bodyHtml} />
 
-  <!-- Navigation Links -->
-  <div class="article-nav">
-    <a href="/records/" class="nav-back">← All Tennis Records</a>
-    <div class="nav-related">
-      <a href="/players/">👥 Player Profiles</a>
-      <a href="/rankings/">📊 Rankings</a>
-    </div>
-  </div>
+  <ArticleFooter backLabel="All Tennis Records" backHref="/records/" />
 </ArticleLayout>
-
-<style>
-  .article-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-top: 40px;
-    padding-top: 24px;
-    border-top: 2px solid var(--gray-200);
-  }
-  .nav-back {
-    color: var(--court-green);
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-  .nav-back:hover { text-decoration: underline; }
-
-  .nav-related {
-    display: flex;
-    gap: 16px;
-  }
-  .nav-related a {
-    color: var(--gray-600);
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-  .nav-related a:hover { color: var(--court-green); }
-</style>

@@ -7,12 +7,80 @@ interface Props {
   breadcrumbs: { label: string; href?: string }[];
   image?: string;
   publishedDate?: string;
+  category?: string;
+  categoryLabel?: string;
+  categoryHref?: string;
 }
 
-const { title, description, breadcrumbs, image, publishedDate } = Astro.props;
+const { title, description, breadcrumbs, image, publishedDate, category, categoryLabel, categoryHref } = Astro.props;
+
+// Portrait detection is now handled client-side via JS (works for ALL image sources)
+
+// BreadcrumbList JSON-LD
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: breadcrumbs
+    .filter(c => c.href)
+    .map((c, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: c.label,
+      item: `https://super.tennis${c.href}`,
+    }))
+    .concat([{
+      '@type': 'ListItem',
+      position: breadcrumbs.length,
+      name: breadcrumbs[breadcrumbs.length - 1].label,
+    }]),
+};
+
+// Article JSON-LD
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  ...(image && { image }),
+  ...(publishedDate && { datePublished: publishedDate }),
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+  },
+};
+
+// Category color mapping
+const categoryColors: Record<string, string> = {
+  vs: '#d4a017',
+  records: '#dc2626',
+  gear: '#2563eb',
+  lifestyle: '#7c3aed',
+  tournaments: '#059669',
+  news: '#16a34a',
+};
+const accentColor = categoryColors[category || ''] || 'var(--court-green)';
+
+// OG image per category
+const categoryOgImages: Record<string, string> = {
+  vs: '/og/vs.png',
+  records: '/og/records.png',
+  gear: '/og/gear.png',
+  lifestyle: '/og/lifestyle.png',
+  tournaments: '/og/tournaments.png',
+};
+const ogImage = categoryOgImages[category || ''] || '/og/default.png';
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} ogImage={ogImage}>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+
+  <!-- Reading Progress Bar -->
+  <div class="reading-progress" id="reading-progress" aria-hidden="true">
+    <div class="reading-progress__bar" id="reading-progress-bar" style={`background: ${accentColor}`}></div>
+  </div>
+
   <article class="article-page">
     <!-- Breadcrumbs -->
     <nav class="breadcrumbs">
@@ -28,22 +96,123 @@ const { title, description, breadcrumbs, image, publishedDate } = Astro.props;
       ))}
     </nav>
 
-    <!-- Article Header -->
-    <header class="article-header">
-      <h1>{title}</h1>
-      {publishedDate && (
-        <time class="article-date">{new Date(publishedDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</time>
+    <!-- Article Hero -->
+    <header class="article-hero" style={`--accent: ${accentColor}`}>
+      {image && (
+        <div class="hero-image">
+          <img src={image} alt="" loading="eager" onerror="this.parentElement.style.display='none'" />
+          <div class="hero-image-overlay"></div>
+        </div>
       )}
+      <div class="hero-text">
+        {categoryLabel && (
+          <a href={categoryHref || '#'} class="hero-category">{categoryLabel}</a>
+        )}
+        <h1>{title}</h1>
+        {description && <p class="hero-description">{description}</p>}
+        <div class="hero-meta">
+          {publishedDate && (
+            <time class="article-date">{new Date(publishedDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</time>
+          )}
+          <span class="reading-time" id="reading-time"></span>
+        </div>
+      </div>
     </header>
 
+    <!-- Table of Contents (auto-generated via JS) -->
+    <nav class="toc" id="toc" aria-label="Table of Contents" style="display:none;">
+      <h2 class="toc__title">Contents</h2>
+      <ol class="toc__list" id="toc-list"></ol>
+    </nav>
+
     <!-- Article Content -->
-    <div class="article-body">
+    <div class="article-body" id="article-body">
       <slot />
     </div>
   </article>
+
+  <script>
+    // Auto-generate Table of Contents from H2 headings
+    const articleBody = document.getElementById('article-body');
+    const tocNav = document.getElementById('toc');
+    const tocList = document.getElementById('toc-list');
+    const readingTimeEl = document.getElementById('reading-time');
+
+    if (articleBody && tocList && tocNav) {
+      const headings = articleBody.querySelectorAll('h2');
+      if (headings.length >= 3) {
+        headings.forEach((h2, i) => {
+          const id = h2.id || 'section-' + (i + 1);
+          h2.id = id;
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = '#' + id;
+          a.textContent = h2.textContent || '';
+          a.className = 'toc__link';
+          li.appendChild(a);
+          tocList.appendChild(li);
+        });
+        tocNav.style.display = '';
+      }
+    }
+
+    // Reading time
+    if (articleBody && readingTimeEl) {
+      const text = articleBody.textContent || '';
+      const words = text.trim().split(/\s+/).length;
+      const minutes = Math.max(1, Math.round(words / 200));
+      readingTimeEl.textContent = minutes + ' min read';
+    }
+
+    // Hero image: detect portrait orientation → side layout (image left, text right)
+    const heroImg = document.querySelector('.hero-image img') as HTMLImageElement | null;
+    if (heroImg) {
+      function handleHeroLoad() {
+        if (!heroImg) return;
+        if (heroImg.naturalHeight > heroImg.naturalWidth * 1.2) {
+          heroImg.closest('.article-hero')?.classList.add('hero--portrait');
+        }
+        heroImg.classList.add('loaded');
+      }
+      if (heroImg.complete && heroImg.naturalHeight > 0) {
+        handleHeroLoad();
+      } else {
+        heroImg.addEventListener('load', handleHeroLoad);
+      }
+    }
+
+    // Reading progress bar
+    const progressBar = document.getElementById('reading-progress-bar');
+    if (progressBar && articleBody) {
+      window.addEventListener('scroll', function() {
+        const rect = articleBody.getBoundingClientRect();
+        const total = articleBody.scrollHeight;
+        const scrolled = Math.max(0, -rect.top);
+        const pct = Math.min(100, (scrolled / (total - window.innerHeight)) * 100);
+        progressBar.style.width = pct + '%';
+      }, { passive: true });
+    }
+  </script>
 </BaseLayout>
 
 <style>
+  /* Reading Progress */
+  .reading-progress {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: transparent;
+    z-index: 999;
+  }
+  .reading-progress__bar {
+    height: 100%;
+    width: 0;
+    transition: width 0.1s linear;
+    border-radius: 0 2px 2px 0;
+  }
+
   .article-page {
     max-width: 800px;
     margin: 0 auto;
@@ -52,7 +221,7 @@ const { title, description, breadcrumbs, image, publishedDate } = Astro.props;
 
   .breadcrumbs {
     padding: 20px 0;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: var(--gray-500);
   }
   .breadcrumbs a {
@@ -63,12 +232,84 @@ const { title, description, breadcrumbs, image, publishedDate } = Astro.props;
   .sep { margin: 0 8px; }
   .current { color: var(--gray-800); font-weight: 500; }
 
-  .article-header {
-    padding: 32px 0 24px;
-    border-bottom: 3px solid var(--court-green);
-    margin-bottom: 32px;
+  /* Hero Image — default: full-width landscape banner */
+  .hero-image {
+    position: relative;
+    margin: 0 -24px 24px;
+    height: 440px;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--gray-100);
   }
-  .article-header h1 {
+  .hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .hero-image img.loaded {
+    opacity: 1;
+  }
+  .hero-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.15) 100%);
+  }
+
+  /* Hero section */
+  .article-hero {
+    padding: 32px 0 28px;
+    border-bottom: 3px solid var(--accent, var(--court-green));
+    margin-bottom: 36px;
+  }
+
+  /* Portrait mode: image left, text right (like a magazine) */
+  .article-hero.hero--portrait {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  .hero--portrait .hero-image {
+    margin: 0;
+    height: 380px;
+    border-radius: var(--radius);
+  }
+  .hero--portrait .hero-image-overlay {
+    background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.1) 100%);
+  }
+  .hero--portrait .hero-text {
+    padding-top: 4px;
+  }
+  .hero--portrait h1 {
+    font-size: 2rem;
+  }
+  .hero--portrait .hero-description {
+    max-width: none;
+  }
+
+  .hero-category {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 4px 12px;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--accent);
+    margin-bottom: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .hero-category:hover {
+    background: color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+
+  .article-hero h1 {
     font-family: var(--font-heading);
     font-size: 2.4rem;
     text-transform: uppercase;
@@ -76,13 +317,73 @@ const { title, description, breadcrumbs, image, publishedDate } = Astro.props;
     margin: 0;
     line-height: 1.15;
   }
-  .article-date {
-    display: block;
-    font-size: 0.85rem;
-    color: var(--gray-500);
+
+  .hero-description {
+    color: var(--gray-600);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin: 14px 0 0;
+    max-width: 600px;
+  }
+
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
     margin-top: 12px;
   }
 
+  .article-date {
+    font-size: 0.82rem;
+    color: var(--gray-500);
+  }
+
+  .reading-time {
+    font-size: 0.82rem;
+    color: var(--gray-500);
+  }
+  .reading-time:not(:empty)::before {
+    content: '·';
+    margin-right: 16px;
+  }
+
+  /* Table of Contents */
+  .toc {
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 36px;
+    border-left: 4px solid var(--accent, var(--court-green));
+  }
+  .toc__title {
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-600);
+    margin: 0 0 12px;
+  }
+  .toc__list {
+    margin: 0;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .toc__list :global(li) {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  .toc__list :global(a) {
+    color: var(--gray-700);
+    transition: color 0.2s;
+    text-decoration: none;
+  }
+  .toc__list :global(a:hover) {
+    color: var(--court-green);
+  }
+
+  /* Article Body */
   .article-body {
     font-size: 1.05rem;
     line-height: 1.8;
@@ -94,9 +395,10 @@ const { title, description, breadcrumbs, image, publishedDate } = Astro.props;
     font-size: 1.4rem;
     text-transform: uppercase;
     color: var(--gray-900);
-    margin: 40px 0 16px;
-    padding-bottom: 8px;
+    margin: 44px 0 16px;
+    padding-bottom: 10px;
     border-bottom: 2px solid var(--gray-200);
+    scroll-margin-top: calc(var(--header-height) + 16px);
   }
 
   .article-body :global(h3) {
@@ -135,9 +437,9 @@ const { title, description, breadcrumbs, image, publishedDate } = Astro.props;
   }
 
   .article-body :global(blockquote) {
-    border-left: 4px solid var(--court-green);
-    padding: 12px 20px;
-    margin: 24px 0;
+    border-left: 4px solid var(--accent, var(--court-green));
+    padding: 16px 24px;
+    margin: 28px 0;
     background: var(--gray-50);
     border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
     font-style: italic;
@@ -147,28 +449,61 @@ const { title, description, breadcrumbs, image, publishedDate } = Astro.props;
   .article-body :global(table) {
     width: 100%;
     border-collapse: collapse;
-    margin: 24px 0;
+    margin: 28px 0;
     border: 1px solid var(--gray-200);
     border-radius: var(--radius-sm);
     overflow: hidden;
+    font-size: 0.92rem;
   }
   .article-body :global(th) {
     background: var(--gray-100);
     padding: 10px 14px;
     text-align: left;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
     color: var(--gray-600);
     font-weight: 600;
+    letter-spacing: 0.04em;
   }
   .article-body :global(td) {
     padding: 10px 14px;
     border-top: 1px solid var(--gray-100);
-    font-size: 0.95rem;
+  }
+  .article-body :global(tr:hover) {
+    background: var(--gray-50);
+  }
+
+  /* Code blocks */
+  .article-body :global(code) {
+    background: var(--gray-100);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.88em;
+  }
+
+  /* Horizontal rules */
+  .article-body :global(hr) {
+    border: none;
+    border-top: 2px solid var(--gray-200);
+    margin: 40px 0;
   }
 
   @media (max-width: 768px) {
-    .article-header h1 { font-size: 1.8rem; }
+    .article-hero h1 { font-size: 1.8rem; }
     .article-body { font-size: 1rem; }
+    .hero-description { font-size: 0.95rem; }
+    /* Portrait: stack on mobile */
+    .article-hero.hero--portrait {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .hero--portrait .hero-image {
+      margin: 0 -24px;
+      height: 320px;
+      border-radius: 0;
+    }
+    .hero--portrait h1 {
+      font-size: 1.8rem;
+    }
   }
 </style>

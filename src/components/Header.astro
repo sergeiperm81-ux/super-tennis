@@ -1,13 +1,23 @@
 ---
 const navLinks = [
+  { href: '/video/', label: 'Videos' },
+  { href: '/news/', label: 'News' },
   { href: '/players/', label: 'Players' },
   { href: '/rankings/', label: 'Rankings' },
   { href: '/vs/', label: 'H2H' },
   { href: '/records/', label: 'Records' },
   { href: '/tournaments/', label: 'Tournaments' },
+  { href: '/calendar/', label: 'Calendar' },
   { href: '/gear/', label: 'Gear' },
   { href: '/lifestyle/', label: 'Lifestyle' },
 ];
+
+// Determine which nav link is active based on current URL
+const currentPath = Astro.url.pathname;
+function isActive(href: string): boolean {
+  if (href === '/') return currentPath === '/';
+  return currentPath.startsWith(href);
+}
 ---
 
 <header class="header" id="header">
@@ -26,7 +36,7 @@ const navLinks = [
 
     <nav class="nav" id="nav">
       {navLinks.map(link => (
-        <a href={link.href} class="nav__link">{link.label}</a>
+        <a href={link.href} class={`nav__link ${isActive(link.href) ? 'nav__link--active' : ''}`}>{link.label}</a>
       ))}
     </nav>
 
@@ -76,7 +86,7 @@ const navLinks = [
 
   .nav {
     display: flex;
-    gap: 28px;
+    gap: 22px;
   }
   .nav__link {
     font-weight: 500;
@@ -104,12 +114,22 @@ const navLinks = [
   .nav__link:hover::after {
     width: 100%;
   }
+  .nav__link--active {
+    color: var(--court-green);
+  }
+  .nav__link--active::after {
+    width: 100%;
+  }
 
   .burger {
     display: none;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 5px;
     padding: 4px;
+    min-width: 44px;
+    min-height: 44px;
   }
   .burger span {
     display: block;
@@ -119,7 +139,7 @@ const navLinks = [
     transition: var(--transition);
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     .burger { display: flex; }
     .nav {
       display: none;
@@ -130,11 +150,14 @@ const navLinks = [
       background: var(--white);
       flex-direction: column;
       padding: 16px 24px;
-      gap: 12px;
+      gap: 4px;
       border-bottom: 1px solid var(--gray-200);
       box-shadow: var(--shadow-md);
     }
     .nav.open { display: flex; }
+    .nav__link {
+      padding: 12px 0;
+    }
   }
 </style>
 
@@ -154,6 +177,30 @@ const navLinks = [
     burger.addEventListener('click', () => {
       const isOpen = nav.classList.toggle('open');
       burger.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    // Close menu on nav link click
+    nav.querySelectorAll('.nav__link').forEach(link => {
+      link.addEventListener('click', () => {
+        nav.classList.remove('open');
+        burger.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // Close menu on outside click
+    document.addEventListener('click', (e) => {
+      if (!header?.contains(e.target as Node) && nav.classList.contains('open')) {
+        nav.classList.remove('open');
+        burger.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Close menu on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && nav.classList.contains('open')) {
+        nav.classList.remove('open');
+        burger.setAttribute('aria-expanded', 'false');
+      }
     });
   }
 </script>

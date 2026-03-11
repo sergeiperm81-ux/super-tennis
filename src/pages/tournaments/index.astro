@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getArticles } from '../../lib/supabase';
+import { stripMarkdown } from '../../lib/fallback-data';
 
 // Fetch real tournament articles from Supabase
 let tournamentArticles: any[] = [];
@@ -10,27 +11,38 @@ try {
   console.warn('Tournaments index: Supabase unavailable');
 }
 
-// Icon/emoji mapping for tournament articles
-const iconMap: Record<string, string> = {
-  'australian-open': '🇦🇺',
-  'roland-garros-french-open': '🇫🇷',
-  'wimbledon': '🇬🇧',
-  'us-open': '🇺🇸',
-  'indian-wells': '🌴',
-  'miami-open': '🌊',
-  'atp-finals': '🏅',
-  'wta-finals': '🏅',
-  'davis-cup': '🏳️',
-  'monte-carlo-masters': '🇲🇨',
-  'shanghai-masters': '🇨🇳',
-  'laver-cup': '🌍',
+// Grand Slam venue photos
+const gsPhotos: Record<string, string> = {
+  'australian-open': '/images/tournaments/melbourne-park.jpg',
+  'roland-garros': '/images/tournaments/roland-garros.jpg',
+  'wimbledon': '/images/tournaments/wimbledon.jpg',
+  'us-open': '/images/tournaments/us-open.jpg',
 };
+
+// Surface mapping for gradient colors
+const surfaceMap: Record<string, string> = {
+  'australian-open': 'hard',
+  'roland-garros': 'clay',
+  'wimbledon': 'grass',
+  'us-open': 'hard',
+  'indian-wells': 'hard',
+  'miami-open': 'hard',
+  'monte-carlo': 'clay',
+  'shanghai': 'hard',
+};
+
+function getSurface(slug: string): string {
+  for (const [key, surface] of Object.entries(surfaceMap)) {
+    if (slug.includes(key)) return surface;
+  }
+  return 'hard';
+}
 
 // Category labeling
 function getLevel(slug: string): string {
-  if (['australian-open', 'roland-garros-french-open', 'wimbledon', 'us-open'].includes(slug)) return 'Grand Slam';
-  if (['atp-finals', 'wta-finals'].includes(slug)) return 'Finals';
-  if (['davis-cup', 'laver-cup'].includes(slug)) return 'Team Event';
+  if (/australian-open|roland-garros|wimbledon|us-open/.test(slug)) return 'Grand Slam';
+  if (/atp-finals|wta-finals/.test(slug)) return 'Finals';
+  if (/davis-cup|laver-cup/.test(slug)) return 'Team Event';
   return 'Masters 1000';
 }
 
@@ -42,9 +54,36 @@ function getLevelClass(slug: string): string {
   return 'masters';
 }
 
-// Sort: Grand Slams first, then Finals, then Masters, then Team
-const levelOrder: Record<string, number> = { 'Grand Slam': 0, 'Finals': 1, 'Masters 1000': 2, 'Team Event': 3 };
-const sortedArticles = [...tournamentArticles].sort((a, b) => {
+function getIcon(slug: string): string {
+  if (/australian-open/.test(slug)) return '🇦🇺';
+  if (/roland-garros|french-open/.test(slug)) return '🇫🇷';
+  if (/wimbledon/.test(slug)) return '🇬🇧';
+  if (/us-open/.test(slug)) return '🇺🇸';
+  if (/indian-wells/.test(slug)) return '🌴';
+  if (/miami-open/.test(slug)) return '🌊';
+  if (/atp-finals/.test(slug)) return '🏅';
+  if (/wta-finals/.test(slug)) return '🏅';
+  if (/davis-cup/.test(slug)) return '🏳️';
+  if (/monte-carlo/.test(slug)) return '🇲🇨';
+  if (/shanghai/.test(slug)) return '🇨🇳';
+  if (/laver-cup/.test(slug)) return '🌍';
+  return '🎾';
+}
+
+function getVenuePhoto(slug: string): string | null {
+  for (const [key, photo] of Object.entries(gsPhotos)) {
+    if (slug.includes(key)) return photo;
+  }
+  return null;
+}
+
+// Separate Grand Slams from other tournaments
+const grandSlams = tournamentArticles.filter(a => getLevel(a.slug) === 'Grand Slam');
+const otherTournaments = tournamentArticles.filter(a => getLevel(a.slug) !== 'Grand Slam');
+
+// Sort others: Finals first, then Masters, then Team
+const levelOrder: Record<string, number> = { 'Finals': 0, 'Masters 1000': 1, 'Team Event': 2 };
+const sortedOthers = [...otherTournaments].sort((a, b) => {
   return (levelOrder[getLevel(a.slug)] ?? 9) - (levelOrder[getLevel(b.slug)] ?? 9);
 });
 ---
@@ -52,29 +91,66 @@ const sortedArticles = [...tournamentArticles].sort((a, b) => {
 <BaseLayout
   title="Tennis Tournaments — Grand Slams, Masters & More"
   description="Complete guides to every major tennis tournament. Grand Slam history, Masters 1000 events, ATP & WTA Finals, and team competitions."
+  ogImage="/og/tournaments.png"
 >
   <div class="tournaments-page">
     <div class="container">
+      <nav class="breadcrumbs"><a href="/">Home</a> <span class="sep">/</span> <span class="current">Tournaments</span></nav>
       <section class="page-hero">
         <h1>Tennis Tournaments</h1>
-        <p class="subtitle">Complete guides to Grand Slams, Masters 1000, and the biggest events in tennis</p>
+        <p class="subtitle">Complete guides to Grand Slams, Masters 1000, and the biggest events in tennis{tournamentArticles.length > 0 && ` — ${tournamentArticles.length} tournament guides`}</p>
       </section>
 
-      {sortedArticles.length > 0 ? (
-        <div class="tournaments-grid">
-          {sortedArticles.map(article => (
-            <a href={`/tournaments/${article.slug}/`} class={`tournament-card ${getLevelClass(article.slug)}`}>
-              <div class="card-header">
-                <span class="tournament-icon">{iconMap[article.slug] || '🎾'}</span>
-                <span class={`level-badge ${getLevelClass(article.slug)}`}>{getLevel(article.slug)}</span>
-              </div>
-              <h2>{article.title}</h2>
-              <p>{article.excerpt || article.meta_description || ''}</p>
-              <span class="read-more">Read Guide →</span>
-            </a>
-          ))}
-        </div>
-      ) : (
+      {/* Grand Slam Section with Venue Photos */}
+      {grandSlams.length > 0 && (
+        <section class="gs-section">
+          <h2 class="section-title">Grand Slam Tournaments</h2>
+          <div class="gs-grid">
+            {grandSlams.map(article => {
+              const photo = getVenuePhoto(article.slug);
+              const surface = getSurface(article.slug);
+              return (
+                <a href={`/tournaments/${article.slug}/`} class={`gs-card surface-${surface}`}>
+                  {photo && (
+                    <div class="gs-card-img">
+                      <img src={photo} alt={article.title} loading="eager" onerror="this.parentElement.style.display='none'" />
+                      <span class="level-badge gs">Grand Slam</span>
+                    </div>
+                  )}
+                  <div class="gs-card-body">
+                    <span class="gs-icon">{getIcon(article.slug)}</span>
+                    <h3>{article.title}</h3>
+                    <p>{stripMarkdown(article.excerpt || article.meta_description || '')}</p>
+                    <span class="read-more">Read Guide →</span>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Other Tournaments */}
+      {sortedOthers.length > 0 && (
+        <section class="others-section">
+          <h2 class="section-title">Masters, Finals & Team Events</h2>
+          <div class="tournaments-grid">
+            {sortedOthers.map(article => (
+              <a href={`/tournaments/${article.slug}/`} class={`tournament-card ${getLevelClass(article.slug)} surface-${getSurface(article.slug)}`}>
+                <div class="card-header">
+                  <span class="tournament-icon">{getIcon(article.slug)}</span>
+                  <span class={`level-badge ${getLevelClass(article.slug)}`}>{getLevel(article.slug)}</span>
+                </div>
+                <h2>{article.title}</h2>
+                <p>{stripMarkdown(article.excerpt || article.meta_description || '')}</p>
+                <span class="read-more">Read Guide →</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {tournamentArticles.length === 0 && (
         <div class="empty-state">
           <p>Tournament guides are coming soon. Check back shortly!</p>
         </div>
@@ -83,21 +159,18 @@ const sortedArticles = [...tournamentArticles].sort((a, b) => {
       <section class="related-section">
         <div class="related-links">
           <a href="/calendar/" class="related-card">
-            <span class="related-icon">📅</span>
             <div>
               <h3>Tournament Calendar</h3>
               <p>See the full 2026 ATP & WTA schedule</p>
             </div>
           </a>
           <a href="/rankings/" class="related-card">
-            <span class="related-icon">📊</span>
             <div>
               <h3>Live Rankings</h3>
               <p>Current ATP & WTA ranking tables</p>
             </div>
           </a>
           <a href="/players/" class="related-card">
-            <span class="related-icon">👥</span>
             <div>
               <h3>Player Profiles</h3>
               <p>Stats, bios, and career highlights</p>
@@ -119,7 +192,7 @@ const sortedArticles = [...tournamentArticles].sort((a, b) => {
   .page-hero {
     padding: 48px 0 32px;
     border-bottom: 3px solid var(--court-green);
-    margin-bottom: 40px;
+    margin-bottom: 32px;
   }
   .page-hero h1 {
     font-family: var(--font-heading);
@@ -134,11 +207,99 @@ const sortedArticles = [...tournamentArticles].sort((a, b) => {
     margin: 8px 0 0;
   }
 
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    text-transform: uppercase;
+    color: var(--gray-800);
+    margin: 0 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--gray-200);
+  }
+
+  /* ===== GRAND SLAM PHOTO CARDS ===== */
+  .gs-section {
+    margin-bottom: 40px;
+  }
+  .gs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .gs-card {
+    text-decoration: none;
+    color: inherit;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+  .gs-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  }
+
+  .gs-card-img {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    position: relative;
+  }
+  .gs-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .gs-card-img .level-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+  }
+
+  .gs-card-body {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .gs-icon {
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+  }
+  .gs-card-body h3 {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+    line-height: 1.3;
+  }
+  .gs-card-body p {
+    color: var(--gray-600);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin: 0;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Surface accent borders */
+  .gs-card.surface-clay { border-top: 3px solid #d97706; }
+  .gs-card.surface-grass { border-top: 3px solid #16a34a; }
+  .gs-card.surface-hard { border-top: 3px solid #2563eb; }
+
+  /* ===== OTHER TOURNAMENT CARDS ===== */
+  .others-section {
+    margin-bottom: 48px;
+  }
   .tournaments-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-    margin-bottom: 48px;
   }
 
   .tournament-card {
@@ -156,18 +317,15 @@ const sortedArticles = [...tournamentArticles].sort((a, b) => {
     transform: translateY(-2px);
     box-shadow: var(--shadow);
   }
-  .tournament-card.gs {
-    border-left: 4px solid #d4a017;
-  }
-  .tournament-card.finals {
-    border-left: 4px solid #8b5cf6;
-  }
-  .tournament-card.masters {
-    border-left: 4px solid var(--court-green);
-  }
-  .tournament-card.team {
-    border-left: 4px solid #3b82f6;
-  }
+  .tournament-card.gs { border-left: 4px solid #d4a017; }
+  .tournament-card.finals { border-left: 4px solid #8b5cf6; }
+  .tournament-card.masters { border-left: 4px solid var(--court-green); }
+  .tournament-card.team { border-left: 4px solid #3b82f6; }
+
+  /* Surface gradient accent on card top */
+  .tournament-card.surface-clay { border-top: 2px solid #d97706; }
+  .tournament-card.surface-grass { border-top: 2px solid #16a34a; }
+  .tournament-card.surface-hard { border-top: 2px solid #2563eb; }
 
   .card-header {
     display: flex;
@@ -175,10 +333,7 @@ const sortedArticles = [...tournamentArticles].sort((a, b) => {
     align-items: center;
     margin-bottom: 12px;
   }
-
-  .tournament-icon {
-    font-size: 2rem;
-  }
+  .tournament-icon { font-size: 2rem; }
 
   .level-badge {
     font-family: var(--font-heading);
@@ -188,22 +343,10 @@ const sortedArticles = [...tournamentArticles].sort((a, b) => {
     border-radius: 4px;
     letter-spacing: 0.05em;
   }
-  .level-badge.gs {
-    background: #fef3c7;
-    color: #92400e;
-  }
-  .level-badge.finals {
-    background: #ede9fe;
-    color: #6d28d9;
-  }
-  .level-badge.masters {
-    background: #dcfce7;
-    color: #166534;
-  }
-  .level-badge.team {
-    background: #dbeafe;
-    color: #1e40af;
-  }
+  .level-badge.gs { background: #fef3c7; color: #92400e; }
+  .level-badge.finals { background: #ede9fe; color: #6d28d9; }
+  .level-badge.masters { background: #dcfce7; color: #166534; }
+  .level-badge.team { background: #dbeafe; color: #1e40af; }
 
   .tournament-card h2 {
     font-family: var(--font-body);
@@ -240,16 +383,12 @@ const sortedArticles = [...tournamentArticles].sort((a, b) => {
     margin-bottom: 48px;
   }
 
-  .related-section {
-    margin-top: 16px;
-  }
-
+  .related-section { margin-top: 16px; }
   .related-links {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
   }
-
   .related-card {
     display: flex;
     gap: 14px;
@@ -261,15 +400,7 @@ const sortedArticles = [...tournamentArticles].sort((a, b) => {
     color: inherit;
     transition: all 0.2s;
   }
-  .related-card:hover {
-    background: #f0fdf4;
-  }
-
-  .related-icon {
-    font-size: 1.8rem;
-    flex-shrink: 0;
-  }
-
+  .related-card:hover { background: #f0fdf4; }
   .related-card h3 {
     font-family: var(--font-heading);
     font-size: 0.9rem;
@@ -287,8 +418,10 @@ const sortedArticles = [...tournamentArticles].sort((a, b) => {
     .tournaments-grid { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 768px) {
+    .gs-grid { grid-template-columns: 1fr; }
     .tournaments-grid { grid-template-columns: 1fr; }
     .related-links { grid-template-columns: 1fr; }
     .page-hero h1 { font-size: 2rem; }
+    .gs-card-img { aspect-ratio: 4 / 3; }
   }
 </style>

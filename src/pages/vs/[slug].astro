@@ -1,6 +1,9 @@
 ---
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import ArticleFooter from '../../components/ArticleFooter.astro';
 import { getArticleBySlug, getArticleSlugs } from '../../lib/supabase';
+import { addInterlinks } from '../../lib/interlinks';
+import { getVsPhotos, vsPlayerSlugs, slugToName } from '../../lib/player-photos';
 import { marked } from 'marked';
 
 export async function getStaticPaths() {
@@ -41,7 +44,14 @@ if (!article) {
   return Astro.redirect('/vs/');
 }
 
-const bodyHtml = article.body ? marked.parse(article.body) : '';
+// Get both player photos for the split-screen hero
+const [photo1, photo2] = await getVsPhotos(slug as string);
+const pair = vsPlayerSlugs[slug as string];
+const name1 = pair ? slugToName(pair[0]) : '';
+const name2 = pair ? slugToName(pair[1]) : '';
+
+const rawHtml = article.body ? marked.parse(article.body) : '';
+const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/vs/${slug}/`) : '';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -69,44 +79,140 @@ const jsonLd = {
     { label: 'Head to Head', href: '/vs/' },
     { label: article.title },
   ]}
+  category="vs"
+  categoryLabel="Head to Head"
+  categoryHref="/vs/"
 >
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
+  {(photo1 || photo2) && (
+    <div class="vs-hero">
+      <div class="vs-side">
+        {photo1 ? (
+          <img src={photo1} alt={name1} class="vs-photo" loading="eager" onerror="this.style.display='none'" />
+        ) : (
+          <div class="vs-placeholder"></div>
+        )}
+        <div class="vs-name-overlay">
+          <span class="vs-player-name">{name1}</span>
+        </div>
+      </div>
+      <div class="vs-badge">VS</div>
+      <div class="vs-side">
+        {photo2 ? (
+          <img src={photo2} alt={name2} class="vs-photo" loading="eager" onerror="this.style.display='none'" />
+        ) : (
+          <div class="vs-placeholder"></div>
+        )}
+        <div class="vs-name-overlay">
+          <span class="vs-player-name">{name2}</span>
+        </div>
+      </div>
+    </div>
+  )}
+
   <div set:html={bodyHtml} />
 
-  <div class="article-nav">
-    <a href="/vs/" class="nav-back">← All Rivalries</a>
-    <div class="nav-related">
-      <a href="/players/">👥 Player Profiles</a>
-      <a href="/records/">🏆 Records</a>
-      <a href="/rankings/">📊 Rankings</a>
-    </div>
-  </div>
+  <ArticleFooter backLabel="All Rivalries" backHref="/vs/" />
 </ArticleLayout>
 
 <style>
-  .article-nav {
+  .vs-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    margin: 0 -24px 32px;
+    height: 400px;
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .vs-side {
+    position: relative;
+    overflow: hidden;
+    background: var(--gray-200);
+  }
+
+  .vs-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    transition: transform 0.4s ease;
+  }
+  .vs-side:hover .vs-photo {
+    transform: scale(1.04);
+  }
+
+  .vs-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--gray-200), var(--gray-300));
+  }
+
+  .vs-name-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 32px 16px 16px;
+    background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+    text-align: center;
+  }
+
+  .vs-player-name {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  }
+
+  .vs-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #d4a017;
+    color: white;
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 800;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-top: 40px;
-    padding-top: 24px;
-    border-top: 2px solid var(--gray-200);
+    justify-content: center;
+    letter-spacing: 0.05em;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    border: 3px solid white;
   }
-  .nav-back {
-    color: var(--court-green);
-    font-weight: 600;
-    font-size: 0.95rem;
+
+  @media (max-width: 768px) {
+    .vs-hero {
+      height: 280px;
+    }
+    .vs-player-name {
+      font-size: 0.9rem;
+    }
+    .vs-badge {
+      width: 48px;
+      height: 48px;
+      font-size: 0.95rem;
+    }
   }
-  .nav-back:hover { text-decoration: underline; }
-  .nav-related { display: flex; gap: 16px; }
-  .nav-related a {
-    color: var(--gray-600);
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: color 0.2s;
+
+  @media (max-width: 480px) {
+    .vs-hero {
+      height: 220px;
+      margin: 0 -24px 24px;
+    }
+    .vs-player-name {
+      font-size: 0.78rem;
+    }
   }
-  .nav-related a:hover { color: var(--court-green); }
 </style>

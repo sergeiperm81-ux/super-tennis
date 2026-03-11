@@ -640,6 +640,87 @@ Structure:
 ## Rackets That Hold Value
 ## When to Buy New Instead`,
   },
+  // ── New gear articles (batch 2) ──
+  {
+    slug: 'tennis-racket-string-tension-guide',
+    title: 'Tennis String Tension Guide — How Tight Should You String?',
+    prompt: `Write a gear guide (500-700 words) about tennis racket string tension.
+
+Structure:
+## Tennis String Tension Explained
+## What Does Tension Affect? (Power, Control, Spin, Feel)
+## Recommended Tension Ranges by Racket Type
+## High Tension vs Low Tension: Pros and Cons
+## How Temperature Affects String Tension
+## Pro Player Tension Preferences
+## Finding Your Ideal Tension
+
+Be practical and help recreational players understand tension choices.`,
+  },
+  {
+    slug: 'best-tennis-ball-machines-2026',
+    title: 'Best Tennis Ball Machines 2026 — Practice Like a Pro',
+    prompt: `Write a gear guide (500-700 words) about the best tennis ball machines.
+
+Structure:
+## Best Tennis Ball Machines 2026
+## Why Ball Machines Are Worth the Investment
+## Top Picks: Lobster, Spinfire, Slinger Bag
+## Budget Options Under $500
+## Premium Machines With Programming
+## Portable vs Stationary
+## Key Features to Consider
+
+Include price ranges and key features for each category.`,
+  },
+  {
+    slug: 'tennis-grip-tape-guide',
+    title: 'Tennis Grip Tape & Overgrip Guide — Everything You Need to Know',
+    prompt: `Write a gear guide (500-600 words) about tennis grip tape and overgrips.
+
+Structure:
+## Tennis Grip & Overgrip Guide
+## Replacement Grips vs Overgrips
+## Best Overgrips: Tourna, Wilson Pro, Yonex Super Grap
+## Tacky vs Dry Overgrips
+## How Often to Change Your Overgrip
+## Grip Size and Customization
+## Pro Player Grip Preferences
+
+Be practical with specific product recommendations.`,
+  },
+  {
+    slug: 'best-tennis-watches-fitness-trackers',
+    title: 'Best Watches & Fitness Trackers for Tennis Players 2026',
+    prompt: `Write a gear guide (500-700 words) about the best smartwatches and fitness trackers for tennis.
+
+Structure:
+## Best Watches for Tennis 2026
+## Apple Watch Ultra 2 for Tennis
+## Garmin Venu 3 — Tennis-Specific Tracking
+## WHOOP 4.0 for Recovery Tracking
+## Samsung Galaxy Watch for Android Users
+## What Metrics Matter for Tennis Players
+## Are Tennis-Specific Tracking Apps Worth It?
+
+Focus on features useful for tennis: heart rate zones, shot tracking, recovery.`,
+  },
+  {
+    slug: 'tennis-court-equipment-setup',
+    title: 'Tennis Court Equipment — Nets, Posts, Lines & Accessories',
+    prompt: `Write a gear guide (500-600 words) about tennis court equipment for home or club setup.
+
+Structure:
+## Tennis Court Equipment Guide
+## Tennis Nets: Portable vs Permanent
+## Court Surfaces: What to Know
+## Training Aids: Rebounders, Targets, Cones
+## Court Maintenance Equipment
+## Mini Tennis & Backyard Court Options
+## Budget Setup for Home Practice
+
+Practical guide for people setting up courts or practice areas.`,
+  },
 ];
 
 // ============================================================
@@ -780,6 +861,88 @@ Structure:
 ## Head-to-Head Records
 ## How Rankings Work (ATP vs WTA Points System)
 ## Advanced Stats: Return Points Won, Break Point Conversion`,
+  },
+  // ── New lifestyle articles (batch 2) ──
+  {
+    slug: 'tennis-coaching-legends',
+    title: 'The Greatest Tennis Coaches of All Time',
+    prompt: `Write a lifestyle article (700-900 words) about legendary tennis coaches.
+
+Structure:
+## The Coaches Behind the Champions
+## Toni Nadal — Building a Legend
+## Nick Bollettieri — The Academy Pioneer
+## Brad Gilbert — The Strategic Mind
+## Patrick Mouratoglou — The Modern Coach
+## Darren Cahill — The Players' Coach
+## Juan Carlos Ferrero — Coaching the Next Gen (Alcaraz)
+## What Makes a Great Tennis Coach?
+
+Focus on their coaching philosophies and famous students.`,
+  },
+  {
+    slug: 'tennis-wags-power-couples',
+    title: 'Tennis Power Couples — Love On & Off the Court',
+    prompt: `Write a lifestyle article (600-800 words) about famous tennis relationships and couples.
+
+Structure:
+## Tennis Power Couples
+## On-Court Romances: Sinner & Kalinskaya, Auger-Aliassime & Berrettini's sister
+## All-Time Famous Couples: Agassi & Graf, Connors & Evert
+## The Challenge of Touring as a Couple
+## Tennis Player Families: Djokovic, Federer, Serena
+## Behind Every Champion: The Support System
+
+Keep it respectful and focus on public knowledge.`,
+  },
+  {
+    slug: 'tennis-superstitions-rituals',
+    title: 'Tennis Superstitions & Pre-Match Rituals — From Nadal to Djokovic',
+    prompt: `Write a lifestyle article (600-800 words) about tennis superstitions and rituals.
+
+Structure:
+## Tennis Superstitions & Rituals
+## Nadal's Famous Routines (water bottles, towels, touching face)
+## Djokovic's Bouncing Ball Routine & Diet Beliefs
+## Serena's Lucky Socks & Rituals
+## Sharapova's Turn-Away Between Points
+## Bizarre Superstitions Through History
+## Do Rituals Actually Help? Sports Psychology Perspective
+
+Keep tone fun and engaging.`,
+  },
+  {
+    slug: 'tennis-injuries-common',
+    title: 'Most Common Tennis Injuries — Prevention & Recovery',
+    prompt: `Write a lifestyle/health article (600-800 words) about common tennis injuries.
+
+Structure:
+## Common Tennis Injuries
+## Tennis Elbow (Lateral Epicondylitis)
+## Shoulder Injuries in Tennis
+## Knee and Ankle Problems
+## Back Pain on the Court
+## Famous Injury Comebacks: Nadal, Murray, Del Potro
+## Prevention Tips for Recreational Players
+
+Be informative but not medical advice. Reference how pros deal with these injuries.`,
+  },
+  {
+    slug: 'tennis-trophies-prizes',
+    title: 'Iconic Tennis Trophies — From the Renshaw Cup to the Daphne Akhurst',
+    prompt: `Write a lifestyle article (500-700 words) about the most iconic tennis trophies.
+
+Structure:
+## The Most Iconic Tennis Trophies
+## The Wimbledon Challenge Cup & Venus Rosewater Dish
+## The Coupe des Mousquetaires (French Open)
+## The Norman Brookes Cup & Daphne Akhurst (Australian Open)
+## The US Open Trophies
+## The Davis Cup — The Largest Trophy in Tennis
+## Year-End Championship Trophies
+## Trophy Traditions and Customs
+
+Include fun facts about trophy weight, history, and traditions.`,
   },
 ];
 
@@ -1044,6 +1207,88 @@ Structure:
 ## Most Doubles Grand Slam Titles
 ## Mixed Doubles Records
 ## The Decline and Revival of Doubles`,
+  },
+  // ── New records articles (batch 3) ──
+  {
+    slug: 'tennis-comebacks-greatest',
+    title: 'Greatest Comebacks in Tennis History',
+    category: 'records',
+    prompt: `Write an article (600-800 words) about the greatest comebacks in tennis history.
+
+Structure:
+## Greatest Comebacks in Tennis
+## Match Point Saves: Federer at 2009 Wimbledon, Djokovic at 2011 US Open SF
+## Injury Comebacks: Nadal, Federer, Del Potro, Seles
+## Career Revivals: Wawrinka's Late Peak, Connors at 39
+## Women's Comebacks: Clijsters, Capriati, Serena
+## Against All Odds: The Mental Strength Required`,
+  },
+  {
+    slug: 'tennis-first-time-records',
+    title: 'Tennis Firsts — Historic Milestones in the Sport',
+    category: 'records',
+    prompt: `Write an article (600-800 words) about historic firsts in tennis.
+
+Structure:
+## Historic Firsts in Tennis
+## First Open Era Champions (1968)
+## First $1 Million Prize Money
+## First to 100 Titles, 200 Weeks at No.1
+## Technology Firsts: Hawkeye, Shot Clock, Electronic Line Calling
+## First Slam Titles for Different Countries
+## Women's Tennis Firsts: Equal Pay, Professional Tour
+
+Include facts about first Grand Slam winners in Open Era, first electronic line calling, first use of Hawkeye.`,
+  },
+  {
+    slug: 'tennis-streaks-records',
+    title: 'Incredible Streaks & Runs in Tennis History',
+    category: 'records',
+    prompt: `Write an article (600-800 words) about amazing streaks in tennis.
+
+Structure:
+## Incredible Streaks in Tennis
+## Consecutive Match Wins: Navratilova 74, Federer 65 on Grass, Nadal 81 on Clay
+## Consecutive Sets Won Records
+## Consecutive Grand Slam Titles: Djokovic 4 in a Row
+## Consecutive Weeks at No. 1: Djokovic 373
+## Longest Active Streak Records
+## Streaks That May Never Be Broken
+
+Focus on factual data. Martina Navratilova's 74-match winning streak in 1984.`,
+  },
+  {
+    slug: 'tennis-olympic-records',
+    title: 'Tennis at the Olympics — Records, Medals & Historic Moments',
+    category: 'records',
+    prompt: `Write an article (600-800 words) about tennis at the Olympics.
+
+Structure:
+## Tennis at the Olympics
+## History: Dropped 1924, Returned 1988
+## Most Olympic Medals in Tennis
+## Career Golden Slam Achievers: Agassi, Nadal, Graf, Serena
+## Paris 2024 Results
+## LA 2028 Preview
+## The Unique Challenge of Olympic Tennis
+
+Include: Agassi (1996 gold), Nadal (2008 gold), Murray (2012 & 2016 gold), Graf (1988 gold), Serena 4 golds.`,
+  },
+  {
+    slug: 'tennis-tiebreak-records',
+    title: 'Greatest Tiebreaks & Tiebreak Records in Tennis',
+    category: 'records',
+    prompt: `Write an article (500-700 words) about tiebreak records in tennis.
+
+Structure:
+## Tiebreak Records in Tennis
+## Longest Tiebreaks in History
+## Most Tiebreaks Won in a Career
+## The Isner-Mahut Marathon and Rule Changes
+## Fifth-Set Tiebreak Rules Across Grand Slams
+## Players Who Thrive in Tiebreaks
+
+Include: Isner-Mahut 70-68 fifth set (2010), new final-set tiebreak rules at all Slams.`,
   },
 ];
 

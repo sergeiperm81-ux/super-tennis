@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getArticles } from '../../lib/supabase';
+import { stripMarkdown } from '../../lib/fallback-data';
+import { getArticlePhotosForCategory } from '../../lib/player-photos';
 
 // Fetch real lifestyle articles from Supabase
 let lifestyleArticles: any[] = [];
@@ -10,45 +12,78 @@ try {
   console.warn('Lifestyle index: Supabase unavailable');
 }
 
-// Icon mapping for lifestyle article slugs
-const iconMap: Record<string, string> = {
-  'richest-tennis-players': '💰',
-  'tennis-fashion-iconic-outfits': '👗',
-  'tennis-player-diet-nutrition': '🥗',
-  'tennis-fitness-training-guide': '💪',
-  'life-after-tennis-retirement': '🌟',
-  'best-tennis-movies-documentaries': '🎬',
-  'tennis-travel-bucket-list': '✈️',
-  'tennis-mental-health-pressure': '🧠',
-  'tennis-beginners-guide': '📖',
-  'tennis-stats-analytics-guide': '📊',
-};
+// Batch-fetch all article photos (player photos + local)
+const articlePhotos = await getArticlePhotosForCategory(lifestyleArticles, 'lifestyle');
+
+// Detect if a photo URL is a player photo (Wikimedia)
+function isPlayerPhoto(url: string | null | undefined): boolean {
+  return !!url && (url.includes('wikimedia') || url.includes('wikipedia'));
+}
+
+// First 2 articles go into the top row (bigger), rest into the grid
+const topArticles = lifestyleArticles.slice(0, 2);
+const gridArticles = lifestyleArticles.slice(2);
 ---
 
 <BaseLayout
   title="Tennis Lifestyle — Net Worth, Culture & Stories"
   description="Tennis lifestyle content: player net worth rankings, behind-the-scenes stories, fitness, fashion, rivalries, and the culture of professional tennis."
+  ogImage="/og/lifestyle.png"
 >
   <div class="lifestyle-page">
     <div class="container">
+      <nav class="breadcrumbs"><a href="/">Home</a> <span class="sep">/</span> <span class="current">Lifestyle</span></nav>
       <section class="page-hero">
         <h1>Tennis Lifestyle</h1>
-        <p class="subtitle">Net worth, culture, rivalries, and stories from the world of professional tennis</p>
+        <p class="subtitle">Net worth, culture, rivalries, and stories from the world of professional tennis{lifestyleArticles.length > 0 && ` — ${lifestyleArticles.length} articles`}</p>
       </section>
 
       {lifestyleArticles.length > 0 ? (
-        <div class="articles-grid">
-          {lifestyleArticles.map((article, i) => (
-            <a href={`/lifestyle/${article.slug}/`} class={`article-card ${i === 0 ? 'featured' : ''}`}>
-              <div class="article-icon">{iconMap[article.slug] || '🎾'}</div>
-              <div class="article-content">
-                <h2>{article.title}</h2>
-                <p>{article.excerpt || article.meta_description || ''}</p>
-              </div>
-              <span class="read-link">Read Article →</span>
-            </a>
-          ))}
-        </div>
+        <>
+          {/* Top row — 2 large cards side by side */}
+          <div class="top-row">
+            {topArticles.map((article) => {
+              const photo = articlePhotos.get(article.slug);
+              return (
+                <a href={`/lifestyle/${article.slug}/`} class="top-card">
+                  <div class={`top-card-img ${isPlayerPhoto(photo) ? 'player-photo' : ''}`}>
+                    {photo ? (
+                      <img src={photo} alt="" loading="eager" onerror="this.parentElement.classList.add('no-img')" />
+                    ) : (
+                      <div class="img-placeholder"></div>
+                    )}
+                    <div class="top-card-overlay">
+                      <h2>{article.title}</h2>
+                    </div>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+
+          {/* Main grid — uniform cards with square photos */}
+          <div class="card-grid">
+            {gridArticles.map((article) => {
+              const photo = articlePhotos.get(article.slug);
+              return (
+                <a href={`/lifestyle/${article.slug}/`} class="card">
+                  <div class={`card-img ${isPlayerPhoto(photo) ? 'player-photo' : ''}`}>
+                    {photo ? (
+                      <img src={photo} alt="" loading="lazy" onerror="this.parentElement.classList.add('no-img')" />
+                    ) : (
+                      <div class="img-placeholder"></div>
+                    )}
+                  </div>
+                  <div class="card-body">
+                    <h3>{article.title}</h3>
+                    <p>{stripMarkdown(article.excerpt || article.meta_description || '')}</p>
+                    <span class="card-link">Read Article →</span>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </>
       ) : (
         <div class="empty-state">
           <p>Lifestyle articles are coming soon. Check back shortly!</p>
@@ -58,10 +93,10 @@ const iconMap: Record<string, string> = {
       <section class="related-section">
         <h2>Explore More</h2>
         <div class="cta-links">
-          <a href="/players/">👥 Player Profiles</a>
-          <a href="/records/">🏆 Tennis Records</a>
-          <a href="/gear/">🎾 Gear Reviews</a>
-          <a href="/rankings/">📊 Rankings</a>
+          <a href="/players/">Player Profiles</a>
+          <a href="/records/">Tennis Records</a>
+          <a href="/gear/">Gear Reviews</a>
+          <a href="/rankings/">Rankings</a>
         </div>
       </section>
     </div>
@@ -70,7 +105,7 @@ const iconMap: Record<string, string> = {
 
 <style>
   .lifestyle-page {
-    max-width: 900px;
+    max-width: 1100px;
     margin: 0 auto;
     padding: 0 24px 60px;
   }
@@ -78,7 +113,7 @@ const iconMap: Record<string, string> = {
   .page-hero {
     padding: 48px 0 32px;
     border-bottom: 3px solid var(--court-green);
-    margin-bottom: 40px;
+    margin-bottom: 28px;
   }
   .page-hero h1 {
     font-family: var(--font-heading);
@@ -93,74 +128,142 @@ const iconMap: Record<string, string> = {
     margin: 8px 0 0;
   }
 
-  .articles-grid {
+  /* ── Top row: 2 large cards ── */
+  .top-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .top-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .top-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  }
+
+  .top-card-img {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background: var(--gray-100);
+  }
+  .top-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+  }
+  .top-card-img.player-photo img {
+    object-position: top;
+  }
+  .top-card-img.no-img img { display: none; }
+
+  .top-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 50%, transparent 100%);
     display: flex;
-    flex-direction: column;
-    gap: 16px;
+    align-items: flex-end;
+    padding: 24px;
+  }
+  .top-card-overlay h2 {
+    color: white;
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  /* ── Main grid: uniform cards ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
     margin-bottom: 48px;
   }
 
-  .article-card {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    padding: 24px;
+  .card {
+    text-decoration: none;
+    color: inherit;
     background: white;
     border: 1px solid var(--gray-200);
     border-radius: var(--radius);
-    text-decoration: none;
-    color: inherit;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     transition: all 0.2s;
   }
-  .article-card:hover {
+  .card:hover {
     border-color: var(--court-green);
     box-shadow: var(--shadow);
-  }
-  .article-card.featured {
-    background: linear-gradient(135deg, #f0fdf4 0%, white 100%);
-    border-color: var(--court-green);
-    padding: 28px;
+    transform: translateY(-2px);
   }
 
-  .article-icon {
-    font-size: 2.2rem;
-    flex-shrink: 0;
-    line-height: 1;
-    padding-top: 4px;
+  /* Square image */
+  .card-img {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--gray-100);
+  }
+  .card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+  }
+  .card-img.player-photo img {
+    object-position: top;
+  }
+  .card-img.no-img img { display: none; }
+
+  .img-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
   }
 
-  .article-content {
+  /* Card body */
+  .card-body {
+    padding: 16px 18px 20px;
     flex: 1;
+    display: flex;
+    flex-direction: column;
   }
-  .article-content h2 {
+  .card-body h3 {
     font-family: var(--font-body);
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 700;
     margin: 0 0 8px;
-    line-height: 1.35;
+    line-height: 1.4;
+    color: var(--gray-900);
   }
-  .article-card.featured .article-content h2 {
-    font-size: 1.2rem;
-  }
-  .article-content p {
+  .card-body p {
     color: var(--gray-600);
-    font-size: 0.9rem;
+    font-size: 0.82rem;
     line-height: 1.6;
     margin: 0;
+    flex: 1;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-
-  .read-link {
+  .card-link {
     color: var(--court-green);
     font-weight: 600;
-    font-size: 0.85rem;
-    flex-shrink: 0;
-    align-self: center;
+    font-size: 0.82rem;
+    margin-top: 12px;
   }
 
+  /* ── Related / footer ── */
   .empty-state {
     text-align: center;
     padding: 60px 24px;
@@ -196,9 +299,17 @@ const iconMap: Record<string, string> = {
   }
   .cta-links a:hover { text-decoration: underline; }
 
+  /* ── Responsive ── */
+  @media (max-width: 1024px) {
+    .card-grid { grid-template-columns: repeat(2, 1fr); }
+  }
   @media (max-width: 768px) {
     .page-hero h1 { font-size: 2rem; }
-    .article-card { flex-direction: column; gap: 12px; }
-    .read-link { align-self: flex-start; }
+    .top-row { grid-template-columns: 1fr; }
+    .card-grid { grid-template-columns: 1fr 1fr; }
+    .top-card-overlay h2 { font-size: 1.1rem; }
+  }
+  @media (max-width: 480px) {
+    .card-grid { grid-template-columns: 1fr; }
   }
 </style>

@@ -135,9 +135,32 @@ export async function getLatestRankings(tour: 'atp' | 'wta', limit = 100) {
 }
 
 // Helper: get top player slugs for static path generation
-export async function getTopPlayerSlugs(limit = 100): Promise<string[]> {
+export async function getTopPlayerSlugs(limit = 200): Promise<string[]> {
   try {
-    const [atpRes, wtaRes] = await Promise.all([
+    // Three pools of notable players:
+    // 1. Players with photos (curated ~200)
+    // 2. Players with prize money data (imported ~125)
+    // 3. Top players by career titles per tour (fallback)
+    const [photoTitlesRes, photoWinsRes, prizeRes, atpRes, wtaRes, rankedAtpRes, rankedWtaRes] = await Promise.all([
+      // Players with photos AND career titles (notable players only)
+      supabase
+        .from('players')
+        .select('slug')
+        .not('image_url', 'is', null)
+        .gt('career_titles', 0)
+        .limit(1000),
+      // Players with photos AND significant wins (catches young stars)
+      supabase
+        .from('players')
+        .select('slug')
+        .not('image_url', 'is', null)
+        .gt('career_win', 20)
+        .limit(1000),
+      supabase
+        .from('players')
+        .select('slug')
+        .gt('career_prize_usd', 0)
+        .limit(500),
       supabase
         .from('players')
         .select('slug')
@@ -152,11 +175,50 @@ export async function getTopPlayerSlugs(limit = 100): Promise<string[]> {
         .gt('career_titles', 0)
         .order('career_titles', { ascending: false })
         .limit(limit),
+      // All ranked players (both tours) — ensures every player on rankings page has a profile
+      // First get the latest ranking date for each tour, then fetch all slugs
+      (async () => {
+        const { data: dateData } = await supabase
+          .from('rankings')
+          .select('ranking_date')
+          .eq('tour', 'atp')
+          .order('ranking_date', { ascending: false })
+          .limit(1);
+        if (!dateData?.[0]) return { data: [], error: null };
+        return supabase
+          .from('rankings')
+          .select('players!inner(slug)')
+          .eq('tour', 'atp')
+          .eq('ranking_date', dateData[0].ranking_date)
+          .order('ranking', { ascending: true })
+          .limit(100);
+      })(),
+      (async () => {
+        const { data: dateData } = await supabase
+          .from('rankings')
+          .select('ranking_date')
+          .eq('tour', 'wta')
+          .order('ranking_date', { ascending: false })
+          .limit(1);
+        if (!dateData?.[0]) return { data: [], error: null };
+        return supabase
+          .from('rankings')
+          .select('players!inner(slug)')
+          .eq('tour', 'wta')
+          .eq('ranking_date', dateData[0].ranking_date)
+          .order('ranking', { ascending: true })
+          .limit(100);
+      })(),
     ]);
 
     const slugs = [
+      ...(photoTitlesRes.data || []).map(p => p.slug),
+      ...(photoWinsRes.data || []).map(p => p.slug),
+      ...(prizeRes.data || []).map(p => p.slug),
       ...(atpRes.data || []).map(p => p.slug),
       ...(wtaRes.data || []).map(p => p.slug),
+      ...(rankedAtpRes.data || []).map((r: any) => r.players?.slug).filter(Boolean),
+      ...(rankedWtaRes.data || []).map((r: any) => r.players?.slug).filter(Boolean),
     ].filter(Boolean);
 
     return [...new Set(slugs)];
@@ -189,7 +251,7 @@ export async function getLeaderboard(
 ) {
   let query = supabase
     .from('players')
-    .select('first_name, last_name, slug, country_code, tour, career_titles, grand_slam_titles, career_win, career_loss, career_prize_usd')
+    .select('first_name, last_name, slug, country_code, tour, career_titles, grand_slam_titles, career_win, career_loss, career_prize_usd, image_url')
     .gt(field, 0)
     .order(field, { ascending: false })
     .limit(limit);
@@ -233,6 +295,68 @@ export async function getArticleBySlug(slug: string) {
 
   if (error) return null;
   return data as Article;
+}
+
+// ============================================================
+// NEWS
+// ============================================================
+export interface NewsItem {
+  id: number;
+  slug: string;
+  title: string;
+  summary: string;
+  body: string | null;
+  category: string;
+  image_url: string | null;
+  source_name: string;
+  source_url: string;
+  player_slugs: string[];
+  published_at: string;
+}
+
+export async function getActiveNews(limit = 6): Promise<NewsItem[]> {
+  try {
+    const { data, error } = await supabase
+      .from('news')
+      .select('*')
+      .eq('is_active', true)
+      .order('published_at', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error('getActiveNews error:', error.message);
+      return [];
+    }
+    return (data as NewsItem[]) || [];
+  } catch (e) {
+    console.warn('getActiveNews: Supabase unavailable');
+    return [];
+  }
+}
+
+export async function getNewsBySlug(slug: string): Promise<NewsItem | null> {
+  try {
+    const { data, error } = await supabase
+      .from('news')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+    if (error) return null;
+    return data as NewsItem;
+  } catch { return null; }
+}
+
+export async function getAllNewsSlugs(): Promise<string[]> {
+  try {
+    const { data, error } = await supabase
+      .from('news')
+      .select('slug')
+      .eq('is_active', true)
+      .order('published_at', { ascending: false })
+      .limit(200);
+    if (error) return [];
+    return (data || []).map((r: any) => r.slug);
+  } catch { return []; }
 }
 
 // Helper: get all article slugs for static path generation

@@ -110,7 +110,34 @@ export const fallbackPlayers: Record<string, any> = {
   },
 };
 
-// Country flags mapping
+// IOC code → ISO 3166-1 alpha-2 (for flag CDN)
+export const iocToIso2: Record<string, string> = {
+  ITA: 'it', ESP: 'es', SRB: 'rs', GER: 'de', RUS: 'ru',
+  USA: 'us', NOR: 'no', AUS: 'au', POL: 'pl', BLR: 'by', KAZ: 'kz',
+  FRA: 'fr', GBR: 'gb', ARG: 'ar', CAN: 'ca', GRE: 'gr',
+  SUI: 'ch', JPN: 'jp', CHN: 'cn', CZE: 'cz', ROU: 'ro',
+  BRA: 'br', CRO: 'hr', BUL: 'bg', DEN: 'dk', RSA: 'za',
+  CHI: 'cl', COL: 'co', TUN: 'tn', IND: 'in', KOR: 'kr',
+  BEL: 'be', UKR: 'ua', NED: 'nl', SWE: 'se', AUT: 'at',
+  GEO: 'ge', ISR: 'il', HAI: 'ht', TPE: 'tw', THA: 'th',
+  LAT: 'lv', EST: 'ee', LTU: 'lt', PUR: 'pr', ECU: 'ec',
+  PER: 'pe', URU: 'uy', MEX: 'mx', PAR: 'py', VEN: 've',
+  DOM: 'do', BOL: 'bo', POR: 'pt', IRL: 'ie', FIN: 'fi',
+  HUN: 'hu', SVK: 'sk', SLO: 'si', MNE: 'me', BIH: 'ba',
+  MKD: 'mk', ALB: 'al', CYP: 'cy', LUX: 'lu', MON: 'mc',
+  UZB: 'uz', PHI: 'ph', INA: 'id', MAS: 'my', VIE: 'vn',
+  NZL: 'nz', RSA: 'za', NGR: 'ng', EGY: 'eg', MAR: 'ma',
+  ZIM: 'zw', BOT: 'bw', KEN: 'ke', ARM: 'am', TUR: 'tr',
+};
+
+// Country flag as <img> tag URL helper
+export function getFlagUrl(ioc: string, width = 24): string {
+  const iso = iocToIso2[ioc];
+  if (!iso) return '';
+  return `https://flagcdn.com/w${width}/${iso}.png`;
+}
+
+// Country flags emoji mapping (fallback for systems that support it)
 export const countryFlags: Record<string, string> = {
   ITA: '🇮🇹', ESP: '🇪🇸', SRB: '🇷🇸', GER: '🇩🇪', RUS: '🇷🇺',
   USA: '🇺🇸', NOR: '🇳🇴', AUS: '🇦🇺', POL: '🇵🇱', BLR: '🇧🇾', KAZ: '🇰🇿',
@@ -118,6 +145,16 @@ export const countryFlags: Record<string, string> = {
   SUI: '🇨🇭', JPN: '🇯🇵', CHN: '🇨🇳', CZE: '🇨🇿', ROU: '🇷🇴',
   BRA: '🇧🇷', CRO: '🇭🇷', BUL: '🇧🇬', DEN: '🇩🇰', RSA: '🇿🇦',
   CHI: '🇨🇱', COL: '🇨🇴', TUN: '🇹🇳', IND: '🇮🇳', KOR: '🇰🇷',
+  BEL: '🇧🇪', UKR: '🇺🇦', NED: '🇳🇱', SWE: '🇸🇪', AUT: '🇦🇹',
+  GEO: '🇬🇪', ISR: '🇮🇱', THA: '🇹🇭', LAT: '🇱🇻', EST: '🇪🇪',
+  LTU: '🇱🇹', POR: '🇵🇹', IRL: '🇮🇪', FIN: '🇫🇮', HUN: '🇭🇺',
+  SVK: '🇸🇰', SLO: '🇸🇮', MNE: '🇲🇪', BIH: '🇧🇦', MKD: '🇲🇰',
+  ALB: '🇦🇱', CYP: '🇨🇾', LUX: '🇱🇺', MON: '🇲🇨', UZB: '🇺🇿',
+  PHI: '🇵🇭', INA: '🇮🇩', MAS: '🇲🇾', VIE: '🇻🇳', NZL: '🇳🇿',
+  NGR: '🇳🇬', EGY: '🇪🇬', MAR: '🇲🇦', ZIM: '🇿🇼', KEN: '🇰🇪',
+  MEX: '🇲🇽', PER: '🇵🇪', ECU: '🇪🇨', DOM: '🇩🇴', PUR: '🇵🇷',
+  TPE: '🇹🇼', HAI: '🇭🇹', URU: '🇺🇾', PAR: '🇵🇾', VEN: '🇻🇪',
+  BOL: '🇧🇴', BOT: '🇧🇼', ARM: '🇦🇲', TUR: '🇹🇷',
 };
 
 // Country names mapping
@@ -129,7 +166,13 @@ export const countryNames: Record<string, string> = {
   JPN: 'Japan', CHN: 'China', CZE: 'Czech Republic', ROU: 'Romania',
   BRA: 'Brazil', CRO: 'Croatia', BUL: 'Bulgaria', DEN: 'Denmark',
   RSA: 'South Africa', CHI: 'Chile', COL: 'Colombia', TUN: 'Tunisia',
-  IND: 'India', KOR: 'South Korea',
+  IND: 'India', KOR: 'South Korea', BEL: 'Belgium', UKR: 'Ukraine',
+  NED: 'Netherlands', SWE: 'Sweden', AUT: 'Austria', GEO: 'Georgia',
+  ISR: 'Israel', THA: 'Thailand', LAT: 'Latvia', EST: 'Estonia',
+  LTU: 'Lithuania', POR: 'Portugal', IRL: 'Ireland', FIN: 'Finland',
+  HUN: 'Hungary', SVK: 'Slovakia', SLO: 'Slovenia', MNE: 'Montenegro',
+  BIH: 'Bosnia & Herzegovina', NZL: 'New Zealand', MEX: 'Mexico',
+  EGY: 'Egypt', TUR: 'Turkey', ARM: 'Armenia', MAR: 'Morocco',
 };
 
 // Hand labels
@@ -139,3 +182,24 @@ export const handLabels: Record<string, string> = {
   U: 'Unknown',
   A: 'Ambidextrous',
 };
+
+// Strip markdown syntax from text (for excerpts/descriptions)
+export function stripMarkdown(text: string): string {
+  if (!text) return '';
+  return text
+    .replace(/#{1,6}\s+/g, '')           // Remove heading markers (anywhere in text)
+    .replace(/\*\*(.+?)\*\*/g, '$1')    // Remove bold
+    .replace(/\*(.+?)\*/g, '$1')        // Remove italic
+    .replace(/__(.+?)__/g, '$1')        // Remove bold (alt)
+    .replace(/_(.+?)_/g, '$1')          // Remove italic (alt)
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove links, keep text
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, '') // Remove images
+    .replace(/`{1,3}[^`]*`{1,3}/g, '')  // Remove code
+    .replace(/^[-*+]\s+/gm, '')          // Remove list markers
+    .replace(/^\d+\.\s+/gm, '')          // Remove numbered list markers
+    .replace(/^>\s+/gm, '')              // Remove blockquote markers
+    .replace(/---+/g, '')                // Remove horizontal rules
+    .replace(/\n{3,}/g, '\n\n')          // Collapse excessive newlines
+    .replace(/\s{2,}/g, ' ')            // Collapse multiple spaces
+    .trim();
+}

@@ -1,7 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getLatestRankings } from '../../lib/supabase';
-import { countryFlags, countryNames } from '../../lib/fallback-data';
+import LiteYouTube from '../../components/LiteYouTube.astro';
+import { getLatestRankings, getActiveNews, getArticles } from '../../lib/supabase';
+import { countryFlags, countryNames, getFlagUrl } from '../../lib/fallback-data';
+import { getHomepageVideos } from '../../data/youtube-channels';
 
 // Fetch real data from Supabase
 let atpRankings = await getLatestRankings('atp', 100);
@@ -11,123 +13,291 @@ let wtaRankings = await getLatestRankings('wta', 100);
 const rankingDate = atpRankings[0]?.ranking_date
   ? new Date(atpRankings[0].ranking_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
   : 'Latest';
+const rankingsJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'ATP Tennis Rankings',
+  description: 'Current ATP and WTA tennis rankings',
+  numberOfItems: atpRankings.length,
+  itemListElement: atpRankings.slice(0, 10).map((r: any, i: number) => ({
+    '@type': 'ListItem',
+    position: r.ranking,
+    name: `${r.players?.first_name} ${r.players?.last_name}`,
+    url: `https://super.tennis/players/${r.players?.slug}/`,
+  })),
+};
+
+// ========== SIDEBAR DATA ==========
+
+// 1. News (2 items)
+let sidebarNews: any[] = [];
+try {
+  const raw = await getActiveNews(4);
+  sidebarNews = raw.filter((n: any) => n.title).slice(0, 2);
+} catch (e) {
+  console.warn('Rankings: Failed to fetch news for sidebar');
+}
+
+// Time ago helper
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  if (hours < 1) return 'Just now';
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days === 1) return 'Yesterday';
+  if (days < 7) return `${days}d ago`;
+  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// News category config
+const categoryColors: Record<string, string> = {
+  buzz: '#16a34a',
+  scandal: '#dc2626',
+  business: '#d4a017',
+  fashion: '#ec4899',
+  funny: '#f97316',
+  wellness: '#0891b2',
+};
+const categoryLabels: Record<string, string> = {
+  buzz: 'Buzz',
+  scandal: 'Scandal',
+  business: 'Business',
+  fashion: 'Fashion',
+  funny: 'LOL',
+  wellness: 'Wellness',
+};
+
+// 2. Video (1)
+const allVideos = getHomepageVideos();
+const sidebarVideo = allVideos.length > 0 ? allVideos[0] : null;
+
+// 3. Explore articles (5 random from lifestyle + gear)
+let sidebarArticles: any[] = [];
+try {
+  const [gearArts, lifeArts] = await Promise.all([
+    getArticles({ category: 'gear', limit: 10 }),
+    getArticles({ category: 'lifestyle', limit: 10 }),
+  ]);
+  const all = [...gearArts, ...lifeArts].filter(a => a.title);
+  // Shuffle
+  for (let i = all.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [all[i], all[j]] = [all[j], all[i]];
+  }
+  sidebarArticles = all.slice(0, 5);
+} catch {}
+
+// Article URL helper
+const categoryUrl: Record<string, string> = {
+  gear: '/gear/', lifestyle: '/lifestyle/',
+};
+function articleUrl(art: { category: string; slug: string }): string {
+  return `${categoryUrl[art.category] || '/'}${art.slug}/`;
+}
+const sbCatColors: Record<string, string> = {
+  gear: '#2196F3', lifestyle: '#E91E63',
+};
+const sbCatLabels: Record<string, string> = {
+  gear: 'Gear', lifestyle: 'Lifestyle',
+};
 ---
 
 <BaseLayout
   title="ATP & WTA Rankings — Live Tennis Rankings"
   description="Current ATP and WTA tennis rankings. Updated weekly with points, country, and links to player profiles."
+  ogImage="/og/rankings.png"
+  jsonLd={rankingsJsonLd}
 >
   <div class="rankings-page">
     <div class="container">
+      <nav class="breadcrumbs"><a href="/">Home</a> <span class="sep">/</span> <span class="current">Rankings</span></nav>
       <section class="page-hero">
         <h1>Tennis Rankings</h1>
         <p class="subtitle">Official ATP & WTA rankings as of {rankingDate}</p>
       </section>
 
-      <!-- Tour Tabs -->
-      <div class="tour-tabs" id="tour-tabs">
-        <button class="tab active" data-tour="atp" onclick="switchTour('atp')">
-          ATP <span class="tab-badge atp">Men's</span>
-        </button>
-        <button class="tab" data-tour="wta" onclick="switchTour('wta')">
-          WTA <span class="tab-badge wta">Women's</span>
-        </button>
-      </div>
+      <!-- TWO-COLUMN LAYOUT -->
+      <div class="rankings-layout">
 
-      <!-- ATP Rankings Table -->
-      <div class="rankings-table-wrap" id="atp-table">
-        {atpRankings.length > 0 ? (
-          <table class="rankings-table">
-            <thead>
-              <tr>
-                <th class="col-rank">#</th>
-                <th class="col-player">Player</th>
-                <th class="col-country">Country</th>
-                <th class="col-points">Points</th>
-              </tr>
-            </thead>
-            <tbody>
-              {atpRankings.map((r: any) => {
-                const p = r.players;
-                const slug = p?.slug || '';
-                const name = `${p?.first_name || ''} ${p?.last_name || ''}`.trim();
-                const cc = p?.country_code || '';
-                const flag = countryFlags[cc] || '🏳️';
-                return (
-                  <tr class={r.ranking <= 10 ? 'top-ten' : ''}>
-                    <td class="col-rank">
-                      <span class="rank-num">{r.ranking}</span>
-                    </td>
-                    <td class="col-player">
-                      <a href={`/players/${slug}/`} class="player-link">
-                        <span class="player-flag">{flag}</span>
-                        <span class="player-name">
-                          {p?.first_name} <strong>{p?.last_name?.toUpperCase()}</strong>
-                        </span>
-                      </a>
-                    </td>
-                    <td class="col-country">{cc}</td>
-                    <td class="col-points">
-                      <strong>{r.points?.toLocaleString()}</strong>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        ) : (
-          <div class="empty-state">
-            <p>Rankings data is loading. Please check back shortly.</p>
-          </div>
-        )}
-      </div>
+        <!-- ========== MAIN COLUMN ========== -->
+        <main class="rankings-main">
 
-      <!-- WTA Rankings Table -->
-      <div class="rankings-table-wrap" id="wta-table" style="display: none;">
-        {wtaRankings.length > 0 ? (
-          <table class="rankings-table">
-            <thead>
-              <tr>
-                <th class="col-rank">#</th>
-                <th class="col-player">Player</th>
-                <th class="col-country">Country</th>
-                <th class="col-points">Points</th>
-              </tr>
-            </thead>
-            <tbody>
-              {wtaRankings.map((r: any) => {
-                const p = r.players;
-                const slug = p?.slug || '';
-                const name = `${p?.first_name || ''} ${p?.last_name || ''}`.trim();
-                const cc = p?.country_code || '';
-                const flag = countryFlags[cc] || '🏳️';
-                return (
-                  <tr class={r.ranking <= 10 ? 'top-ten' : ''}>
-                    <td class="col-rank">
-                      <span class="rank-num">{r.ranking}</span>
-                    </td>
-                    <td class="col-player">
-                      <a href={`/players/${slug}/`} class="player-link">
-                        <span class="player-flag">{flag}</span>
-                        <span class="player-name">
-                          {p?.first_name} <strong>{p?.last_name?.toUpperCase()}</strong>
-                        </span>
-                      </a>
-                    </td>
-                    <td class="col-country">{cc}</td>
-                    <td class="col-points">
-                      <strong>{r.points?.toLocaleString()}</strong>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        ) : (
-          <div class="empty-state">
-            <p>Rankings data is loading. Please check back shortly.</p>
+          <!-- Tour Tabs -->
+          <div class="tour-tabs" id="tour-tabs">
+            <button class="tab active" data-tour="atp" onclick="switchTour('atp')">
+              ATP <span class="tab-badge atp">Men's</span>
+            </button>
+            <button class="tab" data-tour="wta" onclick="switchTour('wta')">
+              WTA <span class="tab-badge wta">Women's</span>
+            </button>
           </div>
-        )}
+
+          <!-- ATP Rankings Table -->
+          <div class="rankings-table-wrap" id="atp-table">
+            {atpRankings.length > 0 ? (
+              <table class="rankings-table">
+                <thead>
+                  <tr>
+                    <th class="col-rank">#</th>
+                    <th class="col-player">Player</th>
+                    <th class="col-country">Country</th>
+                    <th class="col-points">Points</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {atpRankings.map((r: any) => {
+                    const p = r.players;
+                    const slug = p?.slug || '';
+                    const cc = p?.country_code || '';
+                    const flagSrc = getFlagUrl(cc, 20);
+                    return (
+                      <tr class={r.ranking <= 10 ? 'top-ten' : ''}>
+                        <td class="col-rank">
+                          <span class="rank-num">{r.ranking}</span>
+                        </td>
+                        <td class="col-player">
+                          <a href={`/players/${slug}/`} class="player-link">
+                            {flagSrc ? (<img src={flagSrc} alt={cc} class="player-flag-img" width="20" height="15" loading="lazy" />) : (<span class="player-flag">{countryFlags[cc] || ''}</span>)}
+                            <span class="player-name">
+                              {p?.first_name} <strong>{p?.last_name?.toUpperCase()}</strong>
+                            </span>
+                          </a>
+                        </td>
+                        <td class="col-country">{cc}</td>
+                        <td class="col-points">
+                          <strong>{r.points?.toLocaleString()}</strong>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            ) : (
+              <div class="empty-state">
+                <p>Rankings data is loading. Please check back shortly.</p>
+              </div>
+            )}
+          </div>
+
+          <!-- WTA Rankings Table -->
+          <div class="rankings-table-wrap" id="wta-table" style="display: none;">
+            {wtaRankings.length > 0 ? (
+              <table class="rankings-table">
+                <thead>
+                  <tr>
+                    <th class="col-rank">#</th>
+                    <th class="col-player">Player</th>
+                    <th class="col-country">Country</th>
+                    <th class="col-points">Points</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {wtaRankings.map((r: any) => {
+                    const p = r.players;
+                    const slug = p?.slug || '';
+                    const cc = p?.country_code || '';
+                    const flagSrc = getFlagUrl(cc, 20);
+                    return (
+                      <tr class={r.ranking <= 10 ? 'top-ten' : ''}>
+                        <td class="col-rank">
+                          <span class="rank-num">{r.ranking}</span>
+                        </td>
+                        <td class="col-player">
+                          <a href={`/players/${slug}/`} class="player-link">
+                            {flagSrc ? (<img src={flagSrc} alt={cc} class="player-flag-img" width="20" height="15" loading="lazy" />) : (<span class="player-flag">{countryFlags[cc] || ''}</span>)}
+                            <span class="player-name">
+                              {p?.first_name} <strong>{p?.last_name?.toUpperCase()}</strong>
+                            </span>
+                          </a>
+                        </td>
+                        <td class="col-country">{cc}</td>
+                        <td class="col-points">
+                          <strong>{r.points?.toLocaleString()}</strong>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            ) : (
+              <div class="empty-state">
+                <p>Rankings data is loading. Please check back shortly.</p>
+              </div>
+            )}
+          </div>
+
+        </main>
+
+        <!-- ========== SIDEBAR ========== -->
+        <aside class="sb">
+
+          <!-- NEWS — 2 items -->
+          {sidebarNews.length > 0 && (
+            <div class="sb-block">
+              <div class="sb-block__header">
+                <span class="sb-block__label">Latest News</span>
+                <a href="/news/" class="sb-link">All news &rarr;</a>
+              </div>
+              <div class="sb-news">
+                {sidebarNews.map((item: any) => (
+                  <a href={`/news/#${item.slug}`} class="sb-news__item">
+                    <div class="sb-news__meta">
+                      <span
+                        class="sb-news__cat"
+                        style={`background: ${categoryColors[item.category] || '#666'}`}
+                      >
+                        {categoryLabels[item.category] || 'News'}
+                      </span>
+                      <span class="sb-news__time">{timeAgo(item.published_at)}</span>
+                    </div>
+                    <span class="sb-news__title">{item.title}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <!-- VIDEO — 1 video -->
+          {sidebarVideo && (
+            <div class="sb-block">
+              <div class="sb-block__header">
+                <span class="sb-block__label">Watch Tennis</span>
+                <a href="/video/" class="sb-link">All channels &rarr;</a>
+              </div>
+              <div class="sb-videos">
+                <div class="sb-video">
+                  <LiteYouTube videoId={sidebarVideo.video.id} title={sidebarVideo.video.title} />
+                  <div class="sb-video__meta">
+                    <span class="sb-video__cat" style={`color: ${sidebarVideo.category.accentColor}`}>{sidebarVideo.category.label}</span>
+                    <span class="sb-video__ch">{sidebarVideo.video.channelName}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <!-- EXPLORE — 5 articles from lifestyle + gear -->
+          {sidebarArticles.length > 0 && (
+            <div class="sb-articles">
+              <div class="sb-articles__header">
+                <span class="sb-articles__label">Explore</span>
+              </div>
+              <div class="sb-articles__list">
+                {sidebarArticles.map((art: any) => (
+                  <a href={articleUrl(art)} class="sb-articles__item">
+                    <span class="sb-articles__cat" style={`background: ${sbCatColors[art.category] || '#666'}`}>
+                      {sbCatLabels[art.category] || art.category}
+                    </span>
+                    <span class="sb-articles__link">{art.title}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+        </aside>
+
       </div>
     </div>
   </div>
@@ -145,8 +315,6 @@ const rankingDate = atpRankings[0]?.ranking_date
 
 <style>
   .rankings-page {
-    max-width: 900px;
-    margin: 0 auto;
     padding: 0 24px 60px;
   }
 
@@ -166,6 +334,20 @@ const rankingDate = atpRankings[0]?.ranking_date
     color: var(--gray-600);
     font-size: 1.05rem;
     margin: 8px 0 0;
+  }
+
+  /* ===== TWO-COLUMN LAYOUT ===== */
+  .rankings-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 32px;
+    align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .rankings-main {
+    min-width: 0;
   }
 
   /* Tour Tabs */
@@ -209,10 +391,17 @@ const rankingDate = atpRankings[0]?.ranking_date
   .tab-badge.wta { background: #7b2d8e; color: white; }
 
   /* Rankings Table */
-  .rankings-table {
+  .rankings-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     border: 1px solid var(--gray-200);
     border-radius: var(--radius);
-    overflow: hidden;
+  }
+  .rankings-table {
+    display: table;
+    overflow: visible;
+    border: none;
+    border-radius: 0;
   }
   .rankings-table thead th {
     background: var(--gray-100);
@@ -267,6 +456,7 @@ const rankingDate = atpRankings[0]?.ranking_date
   .player-link:hover { color: var(--court-green); }
 
   .player-flag { font-size: 1.2rem; }
+  .player-flag-img { border-radius: 1px; vertical-align: middle; }
   .player-name {
     font-size: 0.9rem;
   }
@@ -297,11 +487,216 @@ const rankingDate = atpRankings[0]?.ranking_date
     font-size: 1rem;
   }
 
-  /* Responsive */
+  /* ===== SIDEBAR ===== */
+  .sb {
+    position: sticky;
+    top: calc(var(--header-height) + 8px);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .sb-link {
+    font-size: 0.72rem;
+    color: var(--court-green);
+    font-weight: 600;
+  }
+  .sb-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Sidebar block — generic */
+  .sb-block {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .sb-block__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: var(--gray-900);
+  }
+  .sb-block__label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+
+  /* Sidebar: News */
+  .sb-news {
+    display: flex;
+    flex-direction: column;
+  }
+  .sb-news__item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--gray-100);
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .sb-news__item:last-child {
+    border-bottom: none;
+  }
+  .sb-news__item:hover {
+    background: var(--gray-50);
+  }
+  .sb-news__meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sb-news__cat {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .sb-news__time {
+    font-size: 0.7rem;
+    color: var(--gray-500);
+  }
+  .sb-news__title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--gray-800);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .sb-news__item:hover .sb-news__title {
+    color: var(--court-green);
+  }
+
+  /* Sidebar: Videos */
+  .sb-videos {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+  .sb-video__meta {
+    padding: 6px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sb-video__cat {
+    font-family: var(--font-heading);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+  }
+  .sb-video__ch {
+    font-size: 0.68rem;
+    color: var(--gray-500);
+  }
+
+  /* Sidebar: Articles */
+  .sb-articles {
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .sb-articles__header {
+    padding: 14px 16px;
+    background: var(--gray-900);
+  }
+  .sb-articles__label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+  .sb-articles__list {
+    display: flex;
+    flex-direction: column;
+  }
+  .sb-articles__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gray-100);
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .sb-articles__item:last-child {
+    border-bottom: none;
+  }
+  .sb-articles__item:hover {
+    background: var(--gray-50);
+  }
+  .sb-articles__cat {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .sb-articles__link {
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--gray-800);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .sb-articles__item:hover .sb-articles__link {
+    color: var(--court-green);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1024px) {
+    .rankings-layout {
+      grid-template-columns: 1fr 280px;
+      gap: 24px;
+    }
+  }
+  @media (max-width: 900px) {
+    .rankings-layout {
+      grid-template-columns: 1fr;
+    }
+    .sb {
+      position: static;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+  }
   @media (max-width: 640px) {
     .page-hero h1 { font-size: 2rem; }
     .col-country { display: none; }
     .rankings-table td { padding: 8px 10px; }
     .tab { padding: 8px 16px; font-size: 0.9rem; }
+    .sb {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

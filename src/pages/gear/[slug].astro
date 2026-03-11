@@ -1,6 +1,9 @@
 ---
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import ArticleFooter from '../../components/ArticleFooter.astro';
 import { getArticleBySlug, getArticleSlugs } from '../../lib/supabase';
+import { addInterlinks } from '../../lib/interlinks';
+import { getArticlePhotoUrl } from '../../lib/player-photos';
 import { marked } from 'marked';
 
 export async function getStaticPaths() {
@@ -37,7 +40,10 @@ if (!article) {
   return Astro.redirect('/gear/');
 }
 
-const bodyHtml = article.body ? marked.parse(article.body) : '';
+const heroImage = await getArticlePhotoUrl(slug as string, 'gear');
+
+const rawHtml = article.body ? marked.parse(article.body) : '';
+const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/gear/${slug}/`) : '';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -65,43 +71,14 @@ const jsonLd = {
     { label: 'Gear', href: '/gear/' },
     { label: article.title },
   ]}
+  image={heroImage || undefined}
+  category="gear"
+  categoryLabel="Gear Guide"
+  categoryHref="/gear/"
 >
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <div set:html={bodyHtml} />
 
-  <div class="article-nav">
-    <a href="/gear/" class="nav-back">← All Gear Guides</a>
-    <div class="nav-related">
-      <a href="/players/">👥 Player Profiles</a>
-      <a href="/records/">🏆 Records</a>
-    </div>
-  </div>
+  <ArticleFooter backLabel="All Gear Guides" backHref="/gear/" />
 </ArticleLayout>
-
-<style>
-  .article-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-top: 40px;
-    padding-top: 24px;
-    border-top: 2px solid var(--gray-200);
-  }
-  .nav-back {
-    color: var(--court-green);
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-  .nav-back:hover { text-decoration: underline; }
-  .nav-related { display: flex; gap: 16px; }
-  .nav-related a {
-    color: var(--gray-600);
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-  .nav-related a:hover { color: var(--court-green); }
-</style>

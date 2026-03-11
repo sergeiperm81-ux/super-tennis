@@ -10,6 +10,7 @@ const sections = [
       { href: '/tournaments/', label: 'Tournaments' },
       { href: '/gear/', label: 'Gear' },
       { href: '/lifestyle/', label: 'Lifestyle' },
+      { href: '/video/', label: 'Videos' },
     ],
   },
   {
@@ -20,14 +21,33 @@ const sections = [
       { href: '/vs/', label: 'Head to Head' },
     ],
   },
+  {
+    title: 'Popular Players',
+    links: [
+      { href: '/players/novak-djokovic/', label: 'Novak Djokovic' },
+      { href: '/players/carlos-alcaraz/', label: 'Carlos Alcaraz' },
+      { href: '/players/jannik-sinner/', label: 'Jannik Sinner' },
+      { href: '/players/iga-swiatek/', label: 'Iga Swiatek' },
+      { href: '/players/aryna-sabalenka/', label: 'Aryna Sabalenka' },
+      { href: '/players/coco-gauff/', label: 'Coco Gauff' },
+    ],
+  },
 ];
 ---
 
 <footer class="footer">
   <div class="container footer__inner">
     <div class="footer__brand">
-      <span class="footer__logo">SUPER.TENNIS</span>
-      <p class="footer__tagline">Tennis for everyone.</p>
+      <a href="/" class="footer__logo">
+        SUPER
+        <svg class="footer__ball" width="14" height="14" viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="30" fill="#ccff00" stroke="#8B9A2B" stroke-width="2"/>
+          <path d="M10 32 C20 20, 44 20, 54 32" fill="none" stroke="#fff" stroke-width="3"/>
+          <path d="M10 32 C20 44, 44 44, 54 32" fill="none" stroke="#fff" stroke-width="3"/>
+        </svg>
+        TENNIS
+      </a>
+      <p class="footer__tagline">Tennis for everyone. The world of tennis beyond the court.</p>
     </div>
     <div class="footer__nav">
       {sections.map(section => (
@@ -43,8 +63,9 @@ const sections = [
     </div>
   </div>
   <div class="footer__bottom">
-    <div class="container">
+    <div class="container footer__bottom-inner">
       <p>&copy; {currentYear} SUPER.TENNIS. All rights reserved.</p>
+      <p class="footer__disclaimer">Player stats sourced from public records. Not affiliated with ATP, WTA, or ITF.</p>
     </div>
   </div>
 </footer>
@@ -66,26 +87,32 @@ const sections = [
   }
   .footer__logo {
     font-family: var(--font-heading);
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 700;
     color: var(--white);
     letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    text-decoration: none;
   }
+  .footer__ball { vertical-align: middle; margin: 0 1px; }
   .footer__tagline {
-    margin-top: 8px;
-    font-size: 0.9rem;
+    margin-top: 10px;
+    font-size: 0.88rem;
+    line-height: 1.5;
   }
   .footer__nav {
     display: flex;
-    gap: 64px;
+    gap: 56px;
   }
   .footer__heading {
     font-family: var(--font-heading);
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     color: var(--white);
-    margin-bottom: 12px;
+    margin-bottom: 14px;
   }
   .footer__list {
     display: flex;
@@ -93,7 +120,7 @@ const sections = [
     gap: 8px;
   }
   .footer__link {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     transition: var(--transition);
   }
   .footer__link:hover {
@@ -101,9 +128,18 @@ const sections = [
   }
   .footer__bottom {
     border-top: 1px solid var(--gray-800);
-    padding: 16px 0;
-    font-size: 0.8rem;
+    padding: 16px 24px;
+    font-size: 0.78rem;
     text-align: center;
+  }
+  .footer__bottom-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer__disclaimer {
+    color: var(--gray-600);
+    font-size: 0.72rem;
   }
 
   @media (max-width: 768px) {
@@ -113,6 +149,11 @@ const sections = [
     }
     .footer__nav {
       gap: 32px;
+      flex-wrap: wrap;
+    }
+    .footer__bottom-inner {
+      flex-direction: column;
+      gap: 8px;
     }
   }
 </style>

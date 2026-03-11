@@ -1,7 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getPlayerBySlug, getTopPlayerSlugs, getRelatedPlayers, getArticleBySlug } from '../../lib/supabase';
-import { fallbackPlayers, countryFlags, countryNames, handLabels } from '../../lib/fallback-data';
+import { fallbackPlayers, countryFlags, countryNames, handLabels, getFlagUrl } from '../../lib/fallback-data';
+import { addInterlinks } from '../../lib/interlinks';
 import { marked } from 'marked';
 
 // SSG: generate paths for all top players from Supabase + fallback
@@ -54,6 +55,7 @@ const winPct = player.career_win && player.career_loss
   ? ((player.career_win / (player.career_win + player.career_loss)) * 100).toFixed(1)
   : null;
 const flag = countryFlags[player.country_code || ''] || '🏳️';
+const flagImg = getFlagUrl(player.country_code || '', 40);
 const country = countryNames[player.country_code || ''] || player.country_code || 'Unknown';
 const tourLabel = player.tour === 'atp' ? 'ATP' : 'WTA';
 const tourColor = player.tour === 'atp' ? '#003580' : '#7b2d8e';
@@ -92,12 +94,62 @@ if (relatedSlugs.length === 0) {
     .slice(0, 4);
 }
 
+// H2H rivalry links
+const h2hMap: Record<string, { slug: string; vs: string }[]> = {
+  'novak-djokovic': [
+    { slug: 'djokovic-vs-nadal', vs: 'vs Nadal' },
+    { slug: 'djokovic-vs-federer', vs: 'vs Federer' },
+    { slug: 'djokovic-vs-alcaraz', vs: 'vs Alcaraz' },
+    { slug: 'djokovic-vs-murray', vs: 'vs Murray' },
+  ],
+  'rafael-nadal': [
+    { slug: 'djokovic-vs-nadal', vs: 'vs Djokovic' },
+    { slug: 'federer-vs-nadal', vs: 'vs Federer' },
+  ],
+  'roger-federer': [
+    { slug: 'federer-vs-nadal', vs: 'vs Nadal' },
+    { slug: 'djokovic-vs-federer', vs: 'vs Djokovic' },
+    { slug: 'federer-vs-murray', vs: 'vs Murray' },
+  ],
+  'carlos-alcaraz': [
+    { slug: 'alcaraz-vs-sinner', vs: 'vs Sinner' },
+    { slug: 'djokovic-vs-alcaraz', vs: 'vs Djokovic' },
+    { slug: 'zverev-vs-alcaraz', vs: 'vs Zverev' },
+  ],
+  'jannik-sinner': [
+    { slug: 'alcaraz-vs-sinner', vs: 'vs Alcaraz' },
+    { slug: 'medvedev-vs-sinner', vs: 'vs Medvedev' },
+  ],
+  'alexander-zverev': [{ slug: 'zverev-vs-alcaraz', vs: 'vs Alcaraz' }],
+  'daniil-medvedev': [
+    { slug: 'medvedev-vs-sinner', vs: 'vs Sinner' },
+    { slug: 'tsitsipas-vs-medvedev', vs: 'vs Tsitsipas' },
+  ],
+  'andy-murray': [
+    { slug: 'djokovic-vs-murray', vs: 'vs Djokovic' },
+    { slug: 'federer-vs-murray', vs: 'vs Federer' },
+  ],
+  'iga-swiatek': [
+    { slug: 'swiatek-vs-sabalenka', vs: 'vs Sabalenka' },
+    { slug: 'gauff-vs-swiatek', vs: 'vs Gauff' },
+  ],
+  'aryna-sabalenka': [{ slug: 'swiatek-vs-sabalenka', vs: 'vs Swiatek' }],
+  'coco-gauff': [{ slug: 'gauff-vs-swiatek', vs: 'vs Swiatek' }],
+  'serena-williams': [
+    { slug: 'williams-vs-williams', vs: 'vs Venus' },
+    { slug: 'sharapova-vs-williams', vs: 'vs Sharapova' },
+  ],
+  'nick-kyrgios': [{ slug: 'kyrgios-vs-djokovic', vs: 'vs Djokovic' }],
+};
+const playerH2h = h2hMap[slug as string] || [];
+
 // Try to load full profile article
 let profileArticleHtml: string | null = null;
 try {
   const profileArticle = await getArticleBySlug(player.slug);
   if (profileArticle?.body) {
-    profileArticleHtml = marked.parse(profileArticle.body) as string;
+    const rawHtml = marked.parse(profileArticle.body) as string;
+    profileArticleHtml = await addInterlinks(rawHtml, `/players/${player.slug}/`);
   }
 } catch (e) {
   // No article exists, that's fine
@@ -107,6 +159,7 @@ try {
 <BaseLayout
   title={`${player.first_name} ${player.last_name} — Profile, Stats & Bio`}
   description={player.bio_short || `${player.first_name} ${player.last_name} tennis player profile. Career stats, Grand Slam titles, rankings and more on SUPER.TENNIS.`}
+  ogImage={player.image_url || '/og/players.png'}
 >
   <!-- JSON-LD -->
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
@@ -125,7 +178,7 @@ try {
     <section class="hero">
       <div class="hero-photo">
         <img
-          src={player.image_url || 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800&h=800&fit=crop'}
+          src={player.image_url || '/placeholder-player.svg'}
           alt={`${player.first_name} ${player.last_name}`}
           width="400"
           height="400"
@@ -136,7 +189,11 @@ try {
 
       <div class="hero-info">
         <div class="hero-name-row">
-          <span class="hero-flag">{flag}</span>
+          {flagImg ? (
+            <img src={flagImg} alt={country} class="hero-flag-img" width="40" height="30" loading="eager" />
+          ) : (
+            <span class="hero-flag">{flag}</span>
+          )}
           <h1>
             {player.first_name}
             <strong>{player.last_name}</strong>
@@ -159,10 +216,12 @@ try {
             <span class="hero-stat-value">{player.career_win}-{player.career_loss}</span>
             <span class="hero-stat-label">Win-Loss ({winPct}%)</span>
           </div>
-          <div class="hero-stat">
-            <span class="hero-stat-value">{formatPrize(player.career_prize_usd || 0)}</span>
-            <span class="hero-stat-label">Prize Money</span>
-          </div>
+          {(player.career_prize_usd || 0) > 0 && (
+            <div class="hero-stat">
+              <span class="hero-stat-value">{formatPrize(player.career_prize_usd)}</span>
+              <span class="hero-stat-label">Prize Money</span>
+            </div>
+          )}
         </div>
       </div>
     </section>
@@ -200,7 +259,12 @@ try {
             )}
             <div class="fact">
               <span class="fact-label">Country</span>
-              <span class="fact-value">{flag} {country}</span>
+              <span class="fact-value">
+                {flagImg ? (
+                  <img src={getFlagUrl(player.country_code || '', 20)} alt={player.country_code || ''} style="vertical-align:middle;margin-right:4px;border-radius:2px;" width="20" height="15" loading="lazy" />
+                ) : null}
+                {country}
+              </span>
             </div>
             <div class="fact">
               <span class="fact-label">Tour</span>
@@ -256,10 +320,12 @@ try {
                     <td class="stat-val">{winPct}%</td>
                   </tr>
                 )}
-                <tr>
-                  <td>Career Prize Money</td>
-                  <td class="stat-val">${(player.career_prize_usd || 0).toLocaleString()}</td>
-                </tr>
+                {(player.career_prize_usd || 0) > 0 && (
+                  <tr>
+                    <td>Career Prize Money</td>
+                    <td class="stat-val">${player.career_prize_usd.toLocaleString()}</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -303,19 +369,44 @@ try {
                 />
                 <div>
                   <span class="sp-name">{p.first_name} <strong>{p.last_name}</strong></span>
-                  <span class="sp-country">{countryFlags[p.country_code || ''] || '🏳️'} {countryNames[p.country_code || ''] || ''}</span>
+                  <span class="sp-country">
+                    {getFlagUrl(p.country_code || '') ? (
+                      <img src={getFlagUrl(p.country_code || '', 16)} alt={p.country_code || ''} class="sp-flag" width="16" height="12" loading="lazy" />
+                    ) : null}
+                    {countryNames[p.country_code || ''] || p.country_code || ''}
+                  </span>
                 </div>
               </a>
             ))}
           </div>
         </div>
 
+        {playerH2h.length > 0 && (
+          <div class="sidebar-widget">
+            <h3>Head to Head</h3>
+            <div class="h2h-links">
+              {playerH2h.map(h => (
+                <a href={`/vs/${h.slug}/`} class="h2h-link">
+                  <span class="h2h-icon">&#9876;</span>
+                  <span>{player.last_name} {h.vs}</span>
+                </a>
+              ))}
+              <a href="/vs/" class="h2h-link h2h-all">
+                <span>All Rivalries →</span>
+              </a>
+            </div>
+          </div>
+        )}
+
         <div class="sidebar-widget">
           <h3>Quick Links</h3>
           <ul class="quick-links">
-            <li><a href="/rankings/">🏆 {tourLabel} Rankings</a></li>
-            <li><a href="/records/">📊 Tennis Records</a></li>
-            <li><a href="/players/">👥 All Players</a></li>
+            <li><a href="/rankings/">{tourLabel} Rankings</a></li>
+            <li><a href="/records/">Tennis Records</a></li>
+            <li><a href="/vs/">Head to Head</a></li>
+            <li><a href="/gear/">Gear Guides</a></li>
+            <li><a href="/tournaments/">Tournaments</a></li>
+            <li><a href="/players/">All Players</a></li>
           </ul>
         </div>
       </aside>
@@ -365,6 +456,7 @@ try {
     width: 100%;
     aspect-ratio: 1;
     object-fit: cover;
+    object-position: top;
   }
   .tour-badge {
     position: absolute;
@@ -390,6 +482,10 @@ try {
   .hero-flag {
     font-size: 2.5rem;
     line-height: 1;
+  }
+  .hero-flag-img {
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
   }
   .hero-info h1 {
     font-family: var(--font-body);
@@ -548,9 +644,14 @@ try {
 
   /* Career Stats Table */
   .career-stats { margin-bottom: 40px; }
+  .stats-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
   .stats-table table {
     border-radius: var(--radius-sm);
-    overflow: hidden;
+    overflow: visible;
+    display: table;
     border: 1px solid var(--gray-200);
   }
   .stats-table th {
@@ -656,6 +757,7 @@ try {
     height: 48px;
     border-radius: 50%;
     object-fit: cover;
+    object-position: top;
   }
   .sp-name {
     display: block;
@@ -667,10 +769,44 @@ try {
     font-size: 0.85rem;
   }
   .sp-country {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 4px;
     font-size: 0.75rem;
     color: var(--gray-500);
     margin-top: 2px;
+  }
+  .sp-flag {
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .h2h-links {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .h2h-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s;
+    color: var(--gray-800);
+  }
+  .h2h-link:hover { background: white; color: var(--court-green); }
+  .h2h-icon {
+    color: #d4a017;
+    font-size: 0.9rem;
+  }
+  .h2h-all {
+    font-size: 0.8rem;
+    color: var(--court-green);
+    margin-top: 4px;
+    justify-content: center;
   }
 
   .quick-links {

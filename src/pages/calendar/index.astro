@@ -1,10 +1,16 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import LiteYouTube from '../../components/LiteYouTube.astro';
+import { getHomepageVideos } from '../../data/youtube-channels';
+import { getLatestRankings, getActiveNews, getArticles } from '../../lib/supabase';
+import { countryFlags, getFlagUrl } from '../../lib/fallback-data';
 
 // Tournament calendar data (2026 season)
 const months = [
   {
     name: 'January',
+    abbr: 'JAN',
+    season: 'hard',
     tournaments: [
       { name: 'Australian Open', dates: 'Jan 19 – Feb 1', location: 'Melbourne, Australia', surface: 'Hard', level: 'Grand Slam', emoji: '🏆' },
       { name: 'Adelaide International', dates: 'Jan 6 – 12', location: 'Adelaide, Australia', surface: 'Hard', level: 'ATP 250', emoji: '🎾' },
@@ -13,6 +19,8 @@ const months = [
   },
   {
     name: 'February',
+    abbr: 'FEB',
+    season: 'hard',
     tournaments: [
       { name: 'Dubai Tennis Championships', dates: 'Feb 16 – 22', location: 'Dubai, UAE', surface: 'Hard', level: 'ATP 500', emoji: '⭐' },
       { name: 'Qatar Open', dates: 'Feb 9 – 15', location: 'Doha, Qatar', surface: 'Hard', level: 'WTA 500', emoji: '⭐' },
@@ -21,6 +29,8 @@ const months = [
   },
   {
     name: 'March',
+    abbr: 'MAR',
+    season: 'hard',
     tournaments: [
       { name: 'Indian Wells Masters', dates: 'Mar 5 – 16', location: 'Indian Wells, USA', surface: 'Hard', level: 'Masters 1000', emoji: '🏅' },
       { name: 'Miami Open', dates: 'Mar 19 – 30', location: 'Miami, USA', surface: 'Hard', level: 'Masters 1000', emoji: '🏅' },
@@ -28,6 +38,8 @@ const months = [
   },
   {
     name: 'April',
+    abbr: 'APR',
+    season: 'clay',
     tournaments: [
       { name: 'Monte-Carlo Masters', dates: 'Apr 6 – 13', location: 'Monte Carlo, Monaco', surface: 'Clay', level: 'Masters 1000', emoji: '🏅' },
       { name: 'Barcelona Open', dates: 'Apr 14 – 20', location: 'Barcelona, Spain', surface: 'Clay', level: 'ATP 500', emoji: '⭐' },
@@ -36,6 +48,8 @@ const months = [
   },
   {
     name: 'May',
+    abbr: 'MAY',
+    season: 'clay',
     tournaments: [
       { name: 'Madrid Open', dates: 'May 1 – 11', location: 'Madrid, Spain', surface: 'Clay', level: 'Masters 1000', emoji: '🏅' },
       { name: 'Italian Open', dates: 'May 12 – 18', location: 'Rome, Italy', surface: 'Clay', level: 'Masters 1000', emoji: '🏅' },
@@ -44,6 +58,8 @@ const months = [
   },
   {
     name: 'June–July',
+    abbr: 'JUN',
+    season: 'grass',
     tournaments: [
       { name: 'Queens Club', dates: 'Jun 16 – 22', location: 'London, UK', surface: 'Grass', level: 'ATP 500', emoji: '⭐' },
       { name: 'Wimbledon', dates: 'Jun 30 – Jul 13', location: 'London, UK', surface: 'Grass', level: 'Grand Slam', emoji: '🏆' },
@@ -52,6 +68,8 @@ const months = [
   },
   {
     name: 'August',
+    abbr: 'AUG',
+    season: 'hard',
     tournaments: [
       { name: 'Montreal / Toronto Masters', dates: 'Aug 4 – 10', location: 'Canada', surface: 'Hard', level: 'Masters 1000', emoji: '🏅' },
       { name: 'Cincinnati Masters', dates: 'Aug 11 – 17', location: 'Cincinnati, USA', surface: 'Hard', level: 'Masters 1000', emoji: '🏅' },
@@ -60,6 +78,8 @@ const months = [
   },
   {
     name: 'September–October',
+    abbr: 'SEP',
+    season: 'hard',
     tournaments: [
       { name: 'China Open', dates: 'Sep 22 – Oct 5', location: 'Beijing, China', surface: 'Hard', level: 'ATP/WTA 1000', emoji: '🏅' },
       { name: 'Shanghai Masters', dates: 'Oct 6 – 12', location: 'Shanghai, China', surface: 'Hard', level: 'Masters 1000', emoji: '🏅' },
@@ -68,6 +88,8 @@ const months = [
   },
   {
     name: 'November',
+    abbr: 'NOV',
+    season: 'indoor',
     tournaments: [
       { name: 'ATP Finals', dates: 'Nov 9 – 16', location: 'Turin, Italy', surface: 'Hard (Indoor)', level: 'Tour Finals', emoji: '🏆' },
       { name: 'WTA Finals', dates: 'Nov 2 – 9', location: 'Riyadh, Saudi Arabia', surface: 'Hard (Indoor)', level: 'Tour Finals', emoji: '🏆' },
@@ -76,64 +98,331 @@ const months = [
   },
 ];
 
+// Map tournament names to article slugs
+const tourneyLinkMap: Record<string, string> = {
+  'Australian Open': '/tournaments/australian-open-guide/',
+  'Roland Garros': '/tournaments/roland-garros-guide/',
+  'Wimbledon': '/tournaments/wimbledon-guide/',
+  'US Open': '/tournaments/us-open-guide/',
+  'Indian Wells Masters': '/tournaments/indian-wells-guide/',
+  'Miami Open': '/tournaments/miami-open-guide/',
+  'Monte-Carlo Masters': '/tournaments/monte-carlo-masters-guide/',
+  'Shanghai Masters': '/tournaments/shanghai-masters-guide/',
+  'ATP Finals': '/tournaments/atp-finals-guide/',
+  'WTA Finals': '/tournaments/wta-finals-guide/',
+  'Davis Cup Finals': '/tournaments/davis-cup-guide/',
+};
+
 const surfaceColors: Record<string, string> = {
   'Hard': '#2563eb',
   'Clay': '#dc6b20',
   'Grass': '#16a34a',
   'Hard (Indoor)': '#7c3aed',
 };
+
+// Country code mapping for flag images (flagcdn.com)
+function getCountryCode(location: string): string | null {
+  const map: Record<string, string> = {
+    'Australia': 'au',
+    'New Zealand': 'nz',
+    'UAE': 'ae',
+    'Qatar': 'qa',
+    'USA': 'us',
+    'Monaco': 'mc',
+    'Spain': 'es',
+    'Germany': 'de',
+    'Italy': 'it',
+    'France': 'fr',
+    'UK': 'gb',
+    'Canada': 'ca',
+    'China': 'cn',
+    'Saudi Arabia': 'sa',
+  };
+  for (const [country, code] of Object.entries(map)) {
+    if (location.includes(country) || location === country) return code;
+  }
+  // Special cases
+  if (location === 'Europe') return null;
+  if (location === 'TBD') return null;
+  return null;
+}
+
+// ========== SIDEBAR DATA ==========
+
+// 1. Video (1 video, different from homepage)
+const allVideos = getHomepageVideos();
+const sidebarVideos = allVideos.slice(4, 5);
+
+// 2. ATP Rankings Top 5
+let atpTop5: any[] = [];
+try {
+  const rankings = await getLatestRankings('atp', 5);
+  atpTop5 = rankings.map((r: any) => ({
+    rank: r.ranking,
+    name: `${r.players?.first_name} ${r.players?.last_name}`,
+    slug: r.players?.slug,
+    country: r.players?.country_code || '',
+    points: r.points?.toLocaleString() || '0',
+  }));
+} catch {}
+if (atpTop5.length === 0) {
+  atpTop5 = [
+    { rank: 1, name: 'Jannik Sinner', slug: 'jannik-sinner', country: 'ITA', points: '11,830' },
+    { rank: 2, name: 'Alexander Zverev', slug: 'alexander-zverev', country: 'GER', points: '9,855' },
+    { rank: 3, name: 'Carlos Alcaraz', slug: 'carlos-alcaraz', country: 'ESP', points: '7,190' },
+    { rank: 4, name: 'Novak Djokovic', slug: 'novak-djokovic', country: 'SRB', points: '6,875' },
+    { rank: 5, name: 'Daniil Medvedev', slug: 'daniil-medvedev', country: 'RUS', points: '6,445' },
+  ];
+}
+
+// 3. News items (3)
+let newsItems: any[] = [];
+try {
+  newsItems = await getActiveNews(3);
+} catch {}
+
+const buzzCatColors: Record<string, string> = {
+  buzz: '#16a34a', scandal: '#dc2626', business: '#d4a017',
+  fashion: '#ec4899', funny: '#f97316', wellness: '#0891b2',
+};
+const buzzCatLabels: Record<string, string> = {
+  buzz: 'Buzz', scandal: 'Scandal', business: 'Business',
+  fashion: 'Fashion', funny: 'LOL', wellness: 'Wellness',
+};
+
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  if (hours < 1) return 'Just now';
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days === 1) return 'Yesterday';
+  if (days < 7) return `${days}d ago`;
+  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// 4. Explore articles (4 random from tournaments and records)
+let sidebarArticles: any[] = [];
+try {
+  const [tournamentArts, recordArts] = await Promise.all([
+    getArticles({ category: 'tournaments', limit: 6 }),
+    getArticles({ category: 'records', limit: 6 }),
+  ]);
+  const all = [...tournamentArts, ...recordArts].filter(a => a.title);
+  for (let i = all.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [all[i], all[j]] = [all[j], all[i]];
+  }
+  sidebarArticles = all.slice(0, 4);
+} catch {}
+
+const sbCatColors: Record<string, string> = {
+  players: '#4CAF50', records: '#FF9800', gear: '#2196F3',
+  lifestyle: '#E91E63', tournaments: '#00BCD4', vs: '#FF5722',
+};
+const sbCatLabels: Record<string, string> = {
+  players: 'Players', records: 'Records', gear: 'Gear',
+  lifestyle: 'Lifestyle', tournaments: 'Tournaments', vs: 'H2H',
+};
+function articleUrl(art: { category: string; slug: string }): string {
+  const categoryUrl: Record<string, string> = {
+    players: '/players/', records: '/records/', gear: '/gear/',
+    lifestyle: '/lifestyle/', tournaments: '/tournaments/', vs: '/vs/',
+  };
+  if (art.category === 'players') {
+    if (art.slug.endsWith('-racket')) return `/players/${art.slug.replace(/-racket$/, '')}/racket/`;
+    if (art.slug.endsWith('-net-worth')) return `/players/${art.slug.replace(/-net-worth$/, '')}/net-worth/`;
+    return `/players/${art.slug}/`;
+  }
+  return `${categoryUrl[art.category] || '/'}${art.slug}/`;
+}
 ---
 
 <BaseLayout
   title="Tennis Calendar 2026 — Tournament Schedule"
   description="Complete 2026 tennis tournament calendar. Grand Slams, Masters 1000, ATP and WTA tour dates, locations, and surfaces."
+  ogImage="/og/calendar.png"
 >
   <div class="calendar-page">
     <div class="container">
+      <nav class="breadcrumbs"><a href="/">Home</a> <span class="sep">/</span> <span class="current">Calendar</span></nav>
       <section class="page-hero">
         <h1>2026 Tennis Calendar</h1>
         <p class="subtitle">Complete tournament schedule for the ATP and WTA tours</p>
       </section>
 
-      <!-- Surface Legend -->
-      <div class="surface-legend">
-        <span class="legend-item"><span class="legend-dot" style="background: #2563eb"></span> Hard</span>
-        <span class="legend-item"><span class="legend-dot" style="background: #dc6b20"></span> Clay</span>
-        <span class="legend-item"><span class="legend-dot" style="background: #16a34a"></span> Grass</span>
-        <span class="legend-item"><span class="legend-dot" style="background: #7c3aed"></span> Indoor</span>
-      </div>
+      <div class="calendar-layout">
+        <!-- ========== MAIN CONTENT ========== -->
+        <main class="calendar-main">
+          <!-- Surface Legend -->
+          <div class="surface-legend">
+            <span class="legend-item"><span class="legend-dot" style="background: #2563eb"></span> Hard Court</span>
+            <span class="legend-item"><span class="legend-dot" style="background: #dc6b20"></span> Clay</span>
+            <span class="legend-item"><span class="legend-dot" style="background: #16a34a"></span> Grass</span>
+            <span class="legend-item"><span class="legend-dot" style="background: #7c3aed"></span> Indoor</span>
+          </div>
 
-      {months.map(month => (
-        <section class="month-section">
-          <h2 class="month-name">{month.name}</h2>
-          <div class="tournaments-list">
-            {month.tournaments.map(t => (
-              <div class="tournament-card">
-                <div class="tourney-emoji">{t.emoji}</div>
-                <div class="tourney-info">
-                  <h3>{t.name}</h3>
-                  <div class="tourney-meta">
-                    <span class="tourney-dates">{t.dates}</span>
-                    <span class="tourney-location">📍 {t.location}</span>
+          <!-- Timeline -->
+          <div class="timeline">
+            {months.map(month => (
+              <section class={`timeline-month season-${month.season}`}>
+                <div class="month-marker">
+                  <div class="month-dot"></div>
+                  <span class="month-abbr">{month.abbr}</span>
+                </div>
+                <div class="month-content">
+                  <h2 class="month-name">{month.name}</h2>
+                  <div class="tournaments-list">
+                    {month.tournaments.map(t => {
+                      const isGS = t.level === 'Grand Slam' || t.level === 'Tour Finals';
+                      const cc = getCountryCode(t.location);
+                      return (
+                        <div class={`tournament-card ${isGS ? 'gs-highlight' : ''}`}>
+                          {cc && (
+                            <img
+                              src={`https://flagcdn.com/w40/${cc}.png`}
+                              srcset={`https://flagcdn.com/w80/${cc}.png 2x`}
+                              alt=""
+                              class="tourney-flag"
+                              loading="lazy"
+                              onerror="this.style.display='none'"
+                            />
+                          )}
+                          <div class="tourney-info">
+                            <h3>
+                              {tourneyLinkMap[t.name] ? (
+                                <a href={tourneyLinkMap[t.name]} class="tourney-name-link">{t.name}</a>
+                              ) : t.name}
+                            </h3>
+                            <div class="tourney-meta">
+                              <span class="tourney-dates">{t.dates}</span>
+                              <span class="tourney-location">{t.location}</span>
+                            </div>
+                          </div>
+                          <div class="tourney-badges">
+                            <span class="surface-badge" style={`background: ${surfaceColors[t.surface] || '#666'}`}>{t.surface}</span>
+                            <span class={`level-badge ${isGS ? 'gs' : ''}`}>{t.level}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-                <div class="tourney-badges">
-                  <span class="surface-badge" style={`background: ${surfaceColors[t.surface] || '#666'}`}>{t.surface}</span>
-                  <span class={`level-badge ${t.level === 'Grand Slam' ? 'gs' : ''}`}>{t.level}</span>
-                </div>
-              </div>
+              </section>
             ))}
           </div>
-        </section>
-      ))}
+
+          <section class="related-section">
+            <div class="related-links">
+              <a href="/tournaments/">Tournament Guides</a>
+              <a href="/rankings/">Current Rankings</a>
+              <a href="/players/">Player Profiles</a>
+            </div>
+          </section>
+        </main>
+
+        <!-- ========== SIDEBAR ========== -->
+        <aside class="sb">
+
+          <!-- VIDEO -->
+          {sidebarVideos.length > 0 && (
+            <div class="sb-block">
+              <div class="sb-block__header">
+                <span class="sb-block__label">Watch Tennis</span>
+                <a href="/video/" class="sb-link">All channels &rarr;</a>
+              </div>
+              <div class="sb-videos">
+                {sidebarVideos.map(({ video, category }) => (
+                  <div class="sb-video">
+                    <LiteYouTube videoId={video.id} title={video.title} />
+                    <div class="sb-video__meta">
+                      <span class="sb-video__cat" style={`color: ${category.accentColor}`}>{category.label}</span>
+                      <span class="sb-video__ch">{video.channelName}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <!-- ATP RANKINGS TOP 5 -->
+          <div class="sb-rankings">
+            <div class="sb-rankings__header">
+              <span class="sb-rankings__label">ATP Rankings</span>
+              <a href="/rankings/" class="sb-link">Full table &rarr;</a>
+            </div>
+            <table class="sb-rankings__table">
+              <tbody>
+                {atpTop5.map(r => (
+                  <tr>
+                    <td class="sb-rankings__rank">{r.rank}</td>
+                    <td class="sb-rankings__name">
+                      <a href={`/players/${r.slug}/`}>
+                        {getFlagUrl(r.country) ? (
+                          <img src={getFlagUrl(r.country, 20)} alt={r.country} class="sb-flag" width="20" height="15" loading="lazy" />
+                        ) : (
+                          <span>{countryFlags[r.country] || ''}</span>
+                        )}
+                        {r.name}
+                      </a>
+                    </td>
+                    <td class="sb-rankings__pts">{r.points}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- NEWS -->
+          {newsItems.length > 0 && (
+            <div class="sb-news">
+              <div class="sb-news__header">
+                <span class="sb-news__label">Latest News</span>
+                <a href="/news/" class="sb-link">All news &rarr;</a>
+              </div>
+              <div class="sb-news__list">
+                {newsItems.map((item: any) => (
+                  <a href={`/news/#${item.slug}`} class="sb-news__item">
+                    <div class="sb-news__meta">
+                      <span class="sb-news__cat" style={`background: ${buzzCatColors[item.category] || '#666'}`}>
+                        {buzzCatLabels[item.category] || 'News'}
+                      </span>
+                      <span class="sb-news__time">{timeAgo(item.published_at)}</span>
+                    </div>
+                    <span class="sb-news__title">{item.title}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <!-- EXPLORE ARTICLES -->
+          {sidebarArticles.length > 0 && (
+            <div class="sb-articles">
+              <div class="sb-articles__header">
+                <span class="sb-articles__label">Explore</span>
+              </div>
+              <div class="sb-articles__list">
+                {sidebarArticles.map((art: any) => (
+                  <a href={articleUrl(art)} class="sb-articles__item">
+                    <span class="sb-articles__cat" style={`background: ${sbCatColors[art.category] || '#666'}`}>
+                      {sbCatLabels[art.category] || art.category}
+                    </span>
+                    <span class="sb-articles__link">{art.title}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+        </aside>
+      </div>
     </div>
   </div>
 </BaseLayout>
 
 <style>
   .calendar-page {
-    max-width: 900px;
-    margin: 0 auto;
     padding: 0 24px 60px;
   }
 
@@ -153,6 +442,20 @@ const surfaceColors: Record<string, string> = {
     color: var(--gray-600);
     font-size: 1.1rem;
     margin: 8px 0 0;
+  }
+
+  /* ===== TWO-COLUMN GRID ===== */
+  .calendar-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: start;
+  }
+
+  .calendar-main {
+    min-width: 0;
   }
 
   .surface-legend {
@@ -178,43 +481,131 @@ const surfaceColors: Record<string, string> = {
     display: inline-block;
   }
 
-  .month-section {
+  /* ===== TIMELINE LAYOUT ===== */
+  .timeline {
+    position: relative;
+    padding-left: 60px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 24px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--gray-200);
+  }
+
+  .timeline-month {
+    position: relative;
     margin-bottom: 36px;
   }
+
+  /* Season background tints */
+  .timeline-month.season-clay .month-content {
+    background: linear-gradient(90deg, rgba(220, 107, 32, 0.04) 0%, transparent 100%);
+    border-left: 3px solid rgba(220, 107, 32, 0.3);
+    padding-left: 16px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .timeline-month.season-grass .month-content {
+    background: linear-gradient(90deg, rgba(22, 163, 74, 0.04) 0%, transparent 100%);
+    border-left: 3px solid rgba(22, 163, 74, 0.3);
+    padding-left: 16px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .timeline-month.season-indoor .month-content {
+    background: linear-gradient(90deg, rgba(124, 58, 237, 0.04) 0%, transparent 100%);
+    border-left: 3px solid rgba(124, 58, 237, 0.3);
+    padding-left: 16px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .timeline-month.season-hard .month-content {
+    padding-left: 0;
+  }
+
+  /* Month marker on timeline */
+  .month-marker {
+    position: absolute;
+    left: -60px;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 48px;
+  }
+  .month-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--court-green);
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px var(--court-green);
+    margin-bottom: 4px;
+  }
+  .month-abbr {
+    font-family: var(--font-heading);
+    font-size: 0.65rem;
+    color: var(--gray-500);
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+
+  .month-content {
+    padding: 4px 0 12px;
+  }
+
   .month-name {
     font-family: var(--font-heading);
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     text-transform: uppercase;
     color: var(--gray-900);
-    margin: 0 0 16px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid var(--gray-200);
+    margin: 0 0 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--gray-200);
   }
 
   .tournaments-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
   }
 
   .tournament-card {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 16px 20px;
+    padding: 14px 16px;
     background: white;
     border: 1px solid var(--gray-200);
     border-radius: var(--radius);
     transition: all 0.2s;
+  }
+
+  .tourney-flag {
+    width: 32px;
+    height: 22px;
+    object-fit: cover;
+    border-radius: 3px;
+    border: 1px solid var(--gray-200);
+    flex-shrink: 0;
+  }
+  .gs-highlight .tourney-flag {
+    width: 38px;
+    height: 26px;
   }
   .tournament-card:hover {
     border-color: var(--court-green);
     box-shadow: var(--shadow);
   }
 
-  .tourney-emoji {
-    font-size: 1.6rem;
-    flex-shrink: 0;
+  /* Grand Slam highlight */
+  .tournament-card.gs-highlight {
+    border-left: 4px solid #d4a017;
+    background: linear-gradient(90deg, #fefce8 0%, white 30%);
+  }
+  .tournament-card.gs-highlight h3 {
+    font-size: 1.05rem;
   }
 
   .tourney-info {
@@ -223,15 +614,22 @@ const surfaceColors: Record<string, string> = {
   }
   .tourney-info h3 {
     font-family: var(--font-body);
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 700;
     margin: 0 0 4px;
     color: var(--gray-900);
   }
+  .tourney-name-link {
+    color: var(--gray-900);
+    transition: color 0.2s;
+  }
+  .tourney-name-link:hover {
+    color: var(--court-green);
+  }
   .tourney-meta {
     display: flex;
     gap: 16px;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--gray-500);
     flex-wrap: wrap;
   }
@@ -240,14 +638,14 @@ const surfaceColors: Record<string, string> = {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 6px;
+    gap: 4px;
     flex-shrink: 0;
   }
 
   .surface-badge {
     color: white;
-    font-size: 0.65rem;
-    padding: 3px 10px;
+    font-size: 0.62rem;
+    padding: 2px 8px;
     border-radius: 4px;
     font-weight: 600;
     text-transform: uppercase;
@@ -255,8 +653,8 @@ const surfaceColors: Record<string, string> = {
     white-space: nowrap;
   }
   .level-badge {
-    font-size: 0.7rem;
-    color: var(--gray-600);
+    font-size: 0.68rem;
+    color: var(--gray-500);
     font-weight: 500;
     white-space: nowrap;
   }
@@ -265,21 +663,341 @@ const surfaceColors: Record<string, string> = {
     font-weight: 700;
   }
 
+  .related-section {
+    text-align: center;
+    padding: 32px;
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    margin-top: 16px;
+  }
+  .related-links {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .related-links a {
+    color: var(--court-green);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+  }
+  .related-links a:hover { text-decoration: underline; }
+
+  /* ===== SIDEBAR ===== */
+  .sb {
+    position: sticky;
+    top: calc(var(--header-height) + 8px);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .sb-link {
+    font-size: 0.72rem;
+    color: var(--court-green);
+    font-weight: 600;
+  }
+  .sb-link:hover {
+    text-decoration: underline;
+  }
+  .sb-flag {
+    vertical-align: middle;
+    margin-right: 4px;
+    border-radius: 2px;
+  }
+
+  /* Sidebar block — generic */
+  .sb-block {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .sb-block__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: var(--gray-900);
+  }
+  .sb-block__label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+
+  /* Sidebar: Videos */
+  .sb-videos {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+  .sb-video__meta {
+    padding: 6px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sb-video__cat {
+    font-family: var(--font-heading);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+  }
+  .sb-video__ch {
+    font-size: 0.68rem;
+    color: var(--gray-500);
+  }
+
+  /* Sidebar: Rankings */
+  .sb-rankings {
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .sb-rankings__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: var(--gray-900);
+  }
+  .sb-rankings__label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+  .sb-rankings__table {
+    width: 100%;
+    border-collapse: collapse;
+    display: table;
+    overflow-x: visible;
+  }
+  .sb-rankings__table tr {
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .sb-rankings__table tr:last-child {
+    border-bottom: none;
+  }
+  .sb-rankings__table tr:hover td {
+    background: var(--gray-50);
+  }
+  .sb-rankings__rank {
+    padding: 10px 16px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--court-green);
+    width: 36px;
+  }
+  .sb-rankings__name {
+    padding: 10px 8px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--gray-900);
+  }
+  .sb-rankings__name a {
+    color: var(--gray-900);
+    transition: color 0.2s;
+  }
+  .sb-rankings__name a:hover {
+    color: var(--court-green);
+  }
+  .sb-rankings__pts {
+    padding: 10px 16px;
+    text-align: right;
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gray-500);
+  }
+
+  /* Sidebar: News */
+  .sb-news {
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .sb-news__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: var(--gray-900);
+  }
+  .sb-news__label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+  .sb-news__list {
+    display: flex;
+    flex-direction: column;
+  }
+  .sb-news__item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gray-100);
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .sb-news__item:last-child {
+    border-bottom: none;
+  }
+  .sb-news__item:hover {
+    background: var(--gray-50);
+  }
+  .sb-news__meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sb-news__cat {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+    white-space: nowrap;
+  }
+  .sb-news__time {
+    font-size: 0.7rem;
+    color: var(--gray-500);
+  }
+  .sb-news__title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--gray-800);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .sb-news__item:hover .sb-news__title {
+    color: var(--court-green);
+  }
+
+  /* Sidebar: Articles */
+  .sb-articles {
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .sb-articles__header {
+    padding: 14px 16px;
+    background: var(--gray-900);
+  }
+  .sb-articles__label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+  .sb-articles__list {
+    display: flex;
+    flex-direction: column;
+  }
+  .sb-articles__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gray-100);
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .sb-articles__item:last-child {
+    border-bottom: none;
+  }
+  .sb-articles__item:hover {
+    background: var(--gray-50);
+  }
+  .sb-articles__cat {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .sb-articles__link {
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--gray-800);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .sb-articles__item:hover .sb-articles__link {
+    color: var(--court-green);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1024px) {
+    .calendar-layout {
+      grid-template-columns: 1fr 280px;
+      gap: 24px;
+    }
+  }
+  @media (max-width: 900px) {
+    .calendar-layout {
+      grid-template-columns: 1fr;
+    }
+    .sb {
+      position: static;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+  }
   @media (max-width: 768px) {
     .page-hero h1 { font-size: 2rem; }
-    .tournament-card {
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .tourney-badges {
-      flex-direction: row;
-      align-items: center;
+    .timeline { padding-left: 44px; }
+    .timeline::before { left: 16px; }
+    .month-marker { left: -44px; width: 32px; }
+    .month-dot { width: 10px; height: 10px; }
+    .month-abbr { font-size: 0.6rem; }
+    .tournament-card { flex-wrap: wrap; gap: 8px; }
+    .tourney-badges { flex-direction: row; align-items: center; }
+  }
+  @media (max-width: 640px) {
+    .sb {
+      grid-template-columns: 1fr;
     }
   }
 
   @media (max-width: 480px) {
-    .tournament-card { padding: 12px 14px; }
-    .tourney-info h3 { font-size: 0.9rem; }
-    .tourney-meta { flex-direction: column; gap: 4px; }
+    .tournament-card { padding: 10px 12px; }
+    .tourney-info h3 { font-size: 0.88rem; }
+    .tourney-meta { flex-direction: column; gap: 2px; }
   }
 </style>

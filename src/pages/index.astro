@@ -1,7 +1,18 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getLatestRankings, getPlayerBySlug } from '../lib/supabase';
-import { countryFlags, fallbackPlayers } from '../lib/fallback-data';
+import LiteYouTube from '../components/LiteYouTube.astro';
+import { getLatestRankings, getPlayerBySlug, getArticles, getActiveNews } from '../lib/supabase';
+import { countryFlags, fallbackPlayers, getFlagUrl } from '../lib/fallback-data';
+import { getHomepageVideos, type VideoCategory, type YouTubeVideo } from '../data/youtube-channels';
+
+// Helper to get player photo by slug
+async function getPlayerPhoto(slug: string): Promise<string> {
+  try {
+    const p = await getPlayerBySlug(slug);
+    if (p?.image_url) return p.image_url;
+  } catch {}
+  return fallbackPlayers[slug]?.image_url || '';
+}
 
 // Fetch real sidebar data from Supabase
 let atpTop5: any[] = [];
@@ -15,8 +26,6 @@ try {
     country: r.players?.country_code || '',
     points: r.points?.toLocaleString() || '0',
   }));
-
-  // Get featured player for sidebar
   sidebarPlayer = await getPlayerBySlug('jannik-sinner');
 } catch (e) {
   console.warn('Homepage: Supabase unavailable for sidebar');
@@ -37,13 +46,41 @@ if (!sidebarPlayer) {
   sidebarPlayer = fallbackPlayers['jannik-sinner'] || {
     first_name: 'Jannik', last_name: 'Sinner', country_code: 'ITA',
     career_titles: 19, grand_slam_titles: 3, slug: 'jannik-sinner',
-    image_url: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=300&fit=crop&q=80',
+    image_url: '',
   };
 }
 
-// All content data (will come from content collections later)
+// Fetch real player photos for homepage cards
+const [sinnerPhoto, djokovicPhoto, swiatekPhoto, alcarazPhoto, federerPhoto,
+       nadalPhoto, serenaPhoto, zverevPhoto, sabalenkaPhoto, gauffPhoto] = await Promise.all([
+  getPlayerPhoto('jannik-sinner'),
+  getPlayerPhoto('novak-djokovic'),
+  getPlayerPhoto('iga-swiatek'),
+  getPlayerPhoto('carlos-alcaraz'),
+  getPlayerPhoto('roger-federer'),
+  getPlayerPhoto('rafael-nadal'),
+  getPlayerPhoto('serena-williams'),
+  getPlayerPhoto('alexander-zverev'),
+  getPlayerPhoto('aryna-sabalenka'),
+  getPlayerPhoto('coco-gauff'),
+]);
+
+// Homepage JSON-LD
+const homepageJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'SUPER.TENNIS',
+  url: 'https://super.tennis',
+  description: 'Tennis for everyone. Players, records, gear, lifestyle — the world of tennis beyond the court.',
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+  },
+};
+
+// Badge colors
 const badgeColors: Record<string, string> = {
-  FEATURED: '#ccff00',
   PLAYERS: '#4CAF50',
   RECORDS: '#FF9800',
   GEAR: '#2196F3',
@@ -54,124 +91,241 @@ const badgeColors: Record<string, string> = {
   H2H: '#FF5722',
 };
 
-// Hero featured
-const hero = {
-  title: "Jannik Sinner Dominates 2026 Season with Record-Breaking Start",
-  badge: "FEATURED",
-  image: "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=1200&h=700&fit=crop&q=80",
-  href: "/players/jannik-sinner/",
-  desc: "The world No. 1 continues his extraordinary run with 28 consecutive wins.",
-};
-
-// Row of 3 vertical cards
+// 2. Row of 3 vertical cards
 const row3a = [
   {
     title: "Iga Swiatek Returns to World No. 1 After Miami Open Victory",
     badge: "PLAYERS",
-    image: "https://images.unsplash.com/photo-1542144582-1ba00456b5e3?w=600&h=400&fit=crop&q=80",
+    image: swiatekPhoto,
     href: "/players/iga-swiatek/",
   },
   {
-    title: "The Most Grand Slam Titles of All Time — Men's & Women's",
+    title: "Most Grand Slam Titles of All Time — Men's & Women's",
     badge: "RECORDS",
-    image: "https://images.unsplash.com/photo-1587280501635-68a0e82cd5ff?w=600&h=400&fit=crop&q=80",
-    href: "/records/most-grand-slams/",
+    image: nadalPhoto,
+    href: "/records/most-grand-slam-titles/",
   },
   {
-    title: "What Racket Does Novak Djokovic Actually Use?",
+    title: "Best Tennis Rackets for Beginners in 2026",
     badge: "GEAR",
-    image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=600&h=400&fit=crop&q=80",
-    href: "/players/novak-djokovic/racket/",
+    image: gauffPhoto,
+    href: "/gear/best-tennis-rackets-beginners/",
   },
 ];
 
-// Full-width heroes
+// 3. Full-width heroes
 const hero2 = {
-  title: "How Novak Djokovic Built a $250 Million Empire",
-  badge: "MONEY",
-  image: "https://images.unsplash.com/photo-1542144582-1ba00456b5e3?w=1200&h=600&fit=crop&q=80",
-  href: "/players/novak-djokovic/net-worth/",
-  desc: "From Belgrade to billionaire status — the business ventures behind the GOAT debate.",
+  title: "Djokovic vs Nadal — The Greatest Rivalry in Tennis History",
+  badge: "H2H",
+  image: nadalPhoto,
+  href: "/vs/djokovic-vs-nadal/",
+  desc: "60+ matches, 30+ Grand Slam titles between them. A rivalry that defined an era.",
 };
 const hero3 = {
-  title: "Most Grand Slam Titles of All Time — Complete List",
-  badge: "RECORDS",
-  image: "https://images.unsplash.com/photo-1530915534664-4ac6423816b7?w=1200&h=600&fit=crop&q=80",
-  href: "/records/most-grand-slam-titles/",
-  desc: "Who holds the record for most Grand Slam titles? The definitive ranking of men's and women's tennis legends.",
+  title: "Your Complete Guide to Wimbledon",
+  badge: "TOURNAMENTS",
+  image: federerPhoto,
+  href: "/tournaments/wimbledon-guide/",
+  desc: "Everything you need to know about the world's most prestigious tennis tournament.",
 };
 
-// Row of 2 vertical cards
+// 4. Row of 2 vertical cards
 const row2 = [
+  {
+    title: "How Novak Djokovic Built a $250 Million Empire",
+    badge: "MONEY",
+    image: djokovicPhoto,
+    href: "/players/novak-djokovic/net-worth/",
+  },
   {
     title: "Roger Federer's Net Worth — $550 Million Tennis Empire",
     badge: "MONEY",
-    image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=600&h=400&fit=crop&q=80",
+    image: federerPhoto,
     href: "/players/roger-federer/net-worth/",
-  },
-  {
-    title: "Carlos Alcaraz's Net Worth Surpasses $40 Million",
-    badge: "MONEY",
-    image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=600&h=400&fit=crop&q=80",
-    href: "/players/carlos-alcaraz/net-worth/",
   },
 ];
 
-// Compact horizontal cards (small thumb + title)
+// 5. Compact horizontal cards
 const compactCards = [
   {
     title: "Fastest Serves in Tennis History — Updated Rankings",
     badge: "RECORDS",
-    image: "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=200&h=140&fit=crop&q=80",
+    image: zverevPhoto,
     href: "/records/fastest-serve-tennis/",
   },
   {
-    title: "Most Weeks at World No. 1 — All-Time Record",
-    badge: "RECORDS",
-    image: "https://images.unsplash.com/photo-1530915534664-4ac6423816b7?w=200&h=140&fit=crop&q=80",
-    href: "/records/most-weeks-number-one/",
+    title: "Tennis Rules Explained — A Complete Beginner's Guide",
+    badge: "LIFESTYLE",
+    image: alcarazPhoto,
+    href: "/lifestyle/tennis-rules-explained/",
   },
 ];
 
-// Horizontal feature card (big photo left + title right)
+// 6. Horizontal feature card
 const featureCard = {
   title: "Serena Williams' Net Worth — From Tennis to Business Empire",
   badge: "MONEY",
-  image: "https://images.unsplash.com/photo-1560012057-4372e14c5085?w=600&h=400&fit=crop&q=80",
+  image: serenaPhoto,
   href: "/players/serena-williams/net-worth/",
   desc: "How the 23-time Grand Slam champion built a fortune beyond the court.",
 };
 
-// Hero 4
+// 7. Hero 4
 const hero4 = {
-  title: "The Longest Match in Tennis History — Isner vs Mahut",
-  badge: "RECORDS",
-  image: "https://images.unsplash.com/photo-1599586120429-48281b6f0ece?w=1200&h=600&fit=crop&q=80",
-  href: "/records/longest-match-tennis/",
-  desc: "11 hours, 5 minutes. A final set of 70-68. The match that redefined endurance in tennis.",
+  title: "Alcaraz vs Sinner — The New Rivalry Defining Tennis",
+  badge: "H2H",
+  image: sinnerPhoto,
+  href: "/vs/alcaraz-vs-sinner/",
+  desc: "Two generational talents battling for supremacy. The rivalry that will define the next decade.",
 };
 
-// Second row of 3 vertical cards
+// 8. Second row of 3 vertical cards
 const row3b = [
   {
     title: "What Racket Does Rafael Nadal Use?",
     badge: "GEAR",
-    image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=600&h=400&fit=crop&q=80",
+    image: nadalPhoto,
     href: "/players/rafael-nadal/racket/",
   },
   {
-    title: "Alexander Zverev — Player Profile & Stats",
+    title: "Aryna Sabalenka — Dominating Women's Tennis",
     badge: "PLAYERS",
-    image: "https://images.unsplash.com/photo-1542144582-1ba00456b5e3?w=600&h=400&fit=crop&q=80",
-    href: "/players/alexander-zverev/",
+    image: sabalenkaPhoto,
+    href: "/players/aryna-sabalenka/",
   },
   {
-    title: "Andy Murray's Net Worth & Career Earnings",
-    badge: "MONEY",
-    image: "https://images.unsplash.com/photo-1599586120429-48281b6f0ece?w=600&h=400&fit=crop&q=80",
-    href: "/players/andy-murray/net-worth/",
+    title: "The GOAT Debate — Who Is the Greatest Tennis Player?",
+    badge: "RECORDS",
+    image: djokovicPhoto,
+    href: "/records/tennis-goat-debate/",
   },
 ];
+
+// Fetch articles from each category to ensure representation in More Stories
+let latestArticles: any[] = [];
+try {
+  const editorialSlugs = new Set([
+    'most-grand-slam-titles', 'fastest-serve-tennis', 'most-weeks-number-one',
+    'tennis-goat-debate', 'best-tennis-rackets-beginners', 'tennis-rules-explained',
+  ]);
+  const cats = ['players', 'vs', 'records', 'gear', 'lifestyle', 'tournaments'];
+  const perCat = await Promise.all(
+    cats.map(c => getArticles({ category: c, limit: 5 }))
+  );
+  // Take 2 from each category, then fill remaining slots
+  const picked = new Set<string>();
+  const result: any[] = [];
+  for (const articles of perCat) {
+    let count = 0;
+    for (const a of articles) {
+      if (count >= 2) break;
+      if (!editorialSlugs.has(a.slug) && a.title && a.category && !picked.has(a.slug)) {
+        result.push(a);
+        picked.add(a.slug);
+        count++;
+      }
+    }
+  }
+  // Fill remaining slots up to 18 total (round-robin from leftovers)
+  for (const articles of perCat) {
+    for (const a of articles) {
+      if (result.length >= 18) break;
+      if (!editorialSlugs.has(a.slug) && a.title && a.category && !picked.has(a.slug)) {
+        result.push(a);
+        picked.add(a.slug);
+      }
+    }
+  }
+  latestArticles = result;
+} catch (e) {
+  console.warn('Homepage: Failed to fetch articles for news section');
+}
+
+// Fetch daily news ("Tennis Buzz")
+let buzzNews: any[] = [];
+try {
+  buzzNews = await getActiveNews(6);
+} catch (e) {
+  console.warn('Homepage: Failed to fetch buzz news');
+}
+
+// Fetch homepage videos (6 random, one per category — changes daily on rebuild)
+const featuredVideos = getHomepageVideos();
+const videoPair1 = featuredVideos.slice(0, 2);
+const videoPair2 = featuredVideos.slice(2, 4);
+const videoPair3 = featuredVideos.slice(4, 6);
+
+// Buzz category colors & labels
+const buzzCategoryColors: Record<string, string> = {
+  buzz: '#16a34a',
+  scandal: '#dc2626',
+  business: '#d4a017',
+  fashion: '#ec4899',
+  funny: '#f97316',
+  wellness: '#0891b2',
+};
+const buzzCategoryLabels: Record<string, string> = {
+  buzz: 'Buzz',
+  scandal: 'Scandal',
+  business: 'Business',
+  fashion: 'Fashion',
+  funny: 'Funny',
+  wellness: 'Wellness',
+};
+
+// Time ago helper
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  if (hours < 1) return 'Just now';
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days === 1) return 'Yesterday';
+  return `${days}d ago`;
+}
+
+// Map category to URL prefix
+const categoryUrl: Record<string, string> = {
+  players: '/players/',
+  records: '/records/',
+  gear: '/gear/',
+  lifestyle: '/lifestyle/',
+  tournaments: '/tournaments/',
+  vs: '/vs/',
+};
+
+// Build correct URL for an article (handles player sub-pages)
+function articleUrl(art: { category: string; slug: string }): string {
+  if (art.category === 'players') {
+    // Player sub-pages: "coco-gauff-racket" → /players/coco-gauff/racket/
+    if (art.slug.endsWith('-racket')) {
+      return `/players/${art.slug.replace(/-racket$/, '')}/racket/`;
+    }
+    if (art.slug.endsWith('-net-worth')) {
+      return `/players/${art.slug.replace(/-net-worth$/, '')}/net-worth/`;
+    }
+    return `/players/${art.slug}/`;
+  }
+  return `${categoryUrl[art.category] || '/'}${art.slug}/`;
+}
+
+// Category display labels & colors
+const categoryLabels: Record<string, string> = {
+  players: 'Players',
+  records: 'Records',
+  gear: 'Gear',
+  lifestyle: 'Lifestyle',
+  tournaments: 'Tournaments',
+  vs: 'H2H',
+};
+const categoryColors: Record<string, string> = {
+  players: '#4CAF50',
+  records: '#FF9800',
+  gear: '#2196F3',
+  lifestyle: '#E91E63',
+  tournaments: '#00BCD4',
+  vs: '#FF5722',
+};
 
 // Sidebar data
 const recentScores = [
@@ -185,53 +339,102 @@ const profilePlayer = sidebarPlayer || fallbackPlayers['jannik-sinner'];
 const playerProfile = profilePlayer ? {
   name: `${profilePlayer.first_name} ${profilePlayer.last_name}`,
   country: profilePlayer.country_code || '',
-  flag: countryFlags[profilePlayer.country_code || ''] || '🏳️',
+  flag: countryFlags[profilePlayer.country_code || ''] || '',
   ranking: 1,
   titles: profilePlayer.career_titles || 0,
   grandSlams: profilePlayer.grand_slam_titles || 0,
-  image: profilePlayer.image_url || "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=300&fit=crop&q=80",
+  image: profilePlayer.image_url || sinnerPhoto,
   href: `/players/${profilePlayer.slug}/`,
   wl: `${profilePlayer.career_win || 0}-${profilePlayer.career_loss || 0}`,
 } : {
-  name: 'Jannik Sinner', country: 'ITA', flag: '🇮🇹', ranking: 1, titles: 19, grandSlams: 3,
-  image: "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=300&fit=crop&q=80",
+  name: 'Jannik Sinner', country: 'ITA', flag: '', ranking: 1, titles: 19, grandSlams: 3,
+  image: sinnerPhoto,
   href: '/players/jannik-sinner/', wl: '0-0',
 };
-
-// Rankings uses atpTop5 (dynamic from Supabase, with fallback already set above)
 ---
 
-<BaseLayout title="Home">
+<BaseLayout title="Home" jsonLd={homepageJsonLd}>
   <div class="news-page">
     <div class="container">
-      <!-- Page header -->
-      <div class="news-page__header">
-        <h1 class="news-page__title">Latest</h1>
-      </div>
-
       <div class="news-layout">
         <!-- ========== MAIN CONTENT COLUMN ========== -->
         <main class="news-main">
 
-          <!-- 1. BIG HERO -->
-          <a href={hero.href} class="card-hero">
-            <img src={hero.image} alt="" loading="eager" />
-            <div class="card-hero__overlay"></div>
-            <div class="card-hero__content">
-              <span class="badge" style={`background: ${badgeColors[hero.badge]}; color: #000;`}>{hero.badge}</span>
-              <h2 class="card-hero__title">{hero.title}</h2>
-              <p class="card-hero__desc">{hero.desc}</p>
-            </div>
-          </a>
+          <!-- TENNIS BUZZ — Daily News -->
+          {buzzNews.length > 0 && (
+            <section class="buzz-section">
+              <div class="buzz-header">
+                <div class="buzz-header__left">
+                  <span class="buzz-dot"></span>
+                  <h2 class="buzz-title">Tennis Buzz</h2>
+                </div>
+                <a href="/news/" class="buzz-all">All news &rarr;</a>
+              </div>
+              <div class="buzz-grid">
+                {buzzNews.map((item: any) => {
+                  const newsHref = item.body ? `/news/#${item.slug}` : (item.source_url || '#');
+                  const isExternal = !item.body;
+                  return (
+                    <a href={newsHref} target={isExternal ? '_blank' : undefined} rel={isExternal ? 'noopener' : undefined} class="buzz-card">
+                      <div class="buzz-card__image">
+                        {item.image_url ? (
+                          <img src={item.image_url} alt="" loading="lazy" onerror="this.parentElement.classList.add('buzz-card__image--fallback')" />
+                        ) : (
+                          <div class="buzz-card__placeholder"></div>
+                        )}
+                        <span class="buzz-badge" style={`background: ${buzzCategoryColors[item.category] || '#16a34a'}`}>
+                          {buzzCategoryLabels[item.category] || 'Buzz'}
+                        </span>
+                      </div>
+                      <div class="buzz-card__body">
+                        <h3 class="buzz-card__title">{item.title}</h3>
+                        <p class="buzz-card__summary">{item.summary}</p>
+                        <div class="buzz-card__footer">
+                          <span class="buzz-card__source">{item.body ? 'Read more' : (item.source_name || 'Read more')} &rarr;</span>
+                          <span class="buzz-card__time">{timeAgo(item.published_at)}</span>
+                        </div>
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+            </section>
+          )}
 
-          <!-- 2. THREE VERTICAL CARDS -->
-          <div class="row-3">
+          <!-- WATCH TENNIS — Video Pair 1 -->
+          {videoPair1.length > 0 && (
+            <section class="videos-section">
+              <div class="videos-header">
+                <h2 class="videos-title">Watch Tennis</h2>
+                <a href="/video/" class="videos-all">All channels &rarr;</a>
+              </div>
+              <div class="video-pair">
+                {videoPair1.map(({ video, category }) => (
+                  <div class="video-thumb">
+                    <LiteYouTube videoId={video.id} title={video.title} />
+                    <div class="video-thumb__meta">
+                      <span class="video-thumb__cat" style={`color: ${category.accentColor}`}>
+                        {category.label}
+                      </span>
+                      <span class="video-thumb__channel">{video.channelName}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <!-- 2. THREE COMPACT CARDS -->
+          <div class="row-3-compact">
             {row3a.map(card => (
-              <a href={card.href} class="vcard">
-                <div class="vcard__img">
+              <a href={card.href} class="compact-card">
+                <div class="compact-card__img">
                   <img src={card.image} alt="" loading="lazy" />
                 </div>
-                <h3 class="vcard__title">{card.title}</h3>
+                <div class="compact-card__body">
+                  <span class="badge" style={`background: ${badgeColors[card.badge]}; color: #000;`}>{card.badge}</span>
+                  <h3 class="compact-card__title">{card.title}</h3>
+                </div>
               </a>
             ))}
           </div>
@@ -257,6 +460,23 @@ const playerProfile = profilePlayer ? {
               <p class="card-hero__desc">{hero3.desc}</p>
             </div>
           </a>
+
+          <!-- VIDEO PAIR 2 -->
+          {videoPair2.length > 0 && (
+            <div class="video-pair">
+              {videoPair2.map(({ video, category }) => (
+                <div class="video-thumb">
+                  <LiteYouTube videoId={video.id} title={video.title} />
+                  <div class="video-thumb__meta">
+                    <span class="video-thumb__cat" style={`color: ${category.accentColor}`}>
+                      {category.label}
+                    </span>
+                    <span class="video-thumb__channel">{video.channelName}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
           <!-- 5. TWO VERTICAL CARDS -->
           <div class="row-2">
@@ -319,6 +539,54 @@ const playerProfile = profilePlayer ? {
             ))}
           </div>
 
+          <!-- VIDEO PAIR 3 -->
+          {videoPair3.length > 0 && (
+            <div class="video-pair">
+              {videoPair3.map(({ video, category }) => (
+                <div class="video-thumb">
+                  <LiteYouTube videoId={video.id} title={video.title} />
+                  <div class="video-thumb__meta">
+                    <span class="video-thumb__cat" style={`color: ${category.accentColor}`}>
+                      {category.label}
+                    </span>
+                    <span class="video-thumb__channel">{video.channelName}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <!-- 10. LATEST ARTICLES FROM DATABASE -->
+          {latestArticles.length > 0 && (
+            <section class="news-section">
+              <div class="news-section__header">
+                <h2 class="news-section__title">More Stories</h2>
+                <div class="news-section__filters">
+                  <button class="nf-btn active" data-cat="all">All</button>
+                  <button class="nf-btn" data-cat="players">Players</button>
+                  <button class="nf-btn" data-cat="records">Records</button>
+                  <button class="nf-btn" data-cat="gear">Gear</button>
+                  <button class="nf-btn" data-cat="lifestyle">Lifestyle</button>
+                  <button class="nf-btn" data-cat="vs">H2H</button>
+                </div>
+              </div>
+              <div class="news-list" id="news-list">
+                {latestArticles.map((art: any) => (
+                  <a href={articleUrl(art)} class="news-item" data-cat={art.category}>
+                    <span class="news-cat" style={`background: ${categoryColors[art.category] || '#666'}`}>
+                      {categoryLabels[art.category] || art.category}
+                    </span>
+                    <h3 class="news-item__title">{art.title}</h3>
+                    {art.excerpt && (
+                      <p class="news-item__excerpt">{art.excerpt.replace(/#{1,6}\s+/g, '').replace(/\*\*(.+?)\*\*/g, '$1').slice(0, 120)}...</p>
+                    )}
+                    <span class="news-arrow">&rarr;</span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+
         </main>
 
         <!-- ========== SIDEBAR ========== -->
@@ -351,7 +619,14 @@ const playerProfile = profilePlayer ? {
             <a href={playerProfile.href} class="sb-profile__card">
               <div class="sb-profile__img">
                 <img src={playerProfile.image} alt={playerProfile.name} loading="lazy" />
-                <div class="sb-profile__name">{playerProfile.flag} {playerProfile.name}</div>
+                <div class="sb-profile__name">
+                  {getFlagUrl(playerProfile.country) ? (
+                    <img src={getFlagUrl(playerProfile.country, 20)} alt={playerProfile.country} class="sb-flag" width="20" height="15" loading="lazy" />
+                  ) : (
+                    <span>{playerProfile.flag}</span>
+                  )}
+                  {playerProfile.name}
+                </div>
               </div>
               <div class="sb-profile__stats">
                 <div class="sb-profile__row"><span>Grand Slams</span><span>{playerProfile.grandSlams}</span></div>
@@ -375,10 +650,22 @@ const playerProfile = profilePlayer ? {
                     <td class="sb-rankings__name">
                       {r.slug ? (
                         <a href={`/players/${r.slug}/`}>
-                          {countryFlags[r.country] || '🏳️'} {r.name}
+                          {getFlagUrl(r.country) ? (
+                            <img src={getFlagUrl(r.country, 20)} alt={r.country} class="sb-flag" width="20" height="15" loading="lazy" />
+                          ) : (
+                            <span>{countryFlags[r.country] || ''}</span>
+                          )}
+                          {r.name}
                         </a>
                       ) : (
-                        <span>{countryFlags[r.country] || '🏳️'} {r.name}</span>
+                        <span>
+                          {getFlagUrl(r.country) ? (
+                            <img src={getFlagUrl(r.country, 20)} alt={r.country} class="sb-flag" width="20" height="15" loading="lazy" />
+                          ) : (
+                            <span>{countryFlags[r.country] || ''}</span>
+                          )}
+                          {r.name}
+                        </span>
                       )}
                     </td>
                     <td class="sb-rankings__pts">{r.points}</td>
@@ -400,19 +687,6 @@ const playerProfile = profilePlayer ? {
     padding: 24px 0 64px;
     background: var(--gray-50);
     min-height: 100vh;
-  }
-  .news-page__header {
-    margin-bottom: 24px;
-    padding-bottom: 12px;
-    border-bottom: 3px solid var(--court-green);
-  }
-  .news-page__title {
-    font-family: var(--font-heading);
-    font-size: 1.5rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: var(--gray-900);
-    margin: 0;
   }
 
   /* Two-column: main + sidebar */
@@ -454,6 +728,7 @@ const playerProfile = profilePlayer ? {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: top;
     transition: transform 0.5s ease;
   }
   .card-hero:hover img {
@@ -502,12 +777,13 @@ const playerProfile = profilePlayer ? {
   }
   .vcard__img {
     overflow: hidden;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 1 / 1;
   }
   .vcard__img img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: top;
     transition: transform 0.4s ease;
   }
   .vcard:hover .vcard__img img {
@@ -547,6 +823,7 @@ const playerProfile = profilePlayer ? {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: top;
   }
   .hcard__title {
     font-size: 0.85rem;
@@ -575,6 +852,7 @@ const playerProfile = profilePlayer ? {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: top;
     transition: transform 0.4s ease;
   }
   .feature-card:hover .feature-card__img img {
@@ -605,10 +883,65 @@ const playerProfile = profilePlayer ? {
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
   }
+  .row-3-compact {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
   .row-2 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
+  }
+
+  /* ===== COMPACT CARD — small photo + badge + title ===== */
+  .compact-card {
+    display: flex;
+    gap: 12px;
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+    align-items: center;
+  }
+  .compact-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+  .compact-card__img {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .compact-card__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+  .compact-card__body {
+    flex: 1;
+    min-width: 0;
+  }
+  .compact-card__body .badge {
+    font-size: 0.5rem;
+    padding: 2px 7px;
+    margin-bottom: 4px;
+  }
+  .compact-card__title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--gray-900);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   /* ===== SIDEBAR ===== */
@@ -725,6 +1058,7 @@ const playerProfile = profilePlayer ? {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: top;
   }
   .sb-profile__name {
     position: absolute;
@@ -786,6 +1120,8 @@ const playerProfile = profilePlayer ? {
   .sb-rankings__table {
     width: 100%;
     border-collapse: collapse;
+    display: table;
+    overflow-x: visible;
   }
   .sb-rankings__table tr {
     border-bottom: 1px solid var(--gray-100);
@@ -817,12 +1153,216 @@ const playerProfile = profilePlayer ? {
   .sb-rankings__name a:hover {
     color: var(--court-green);
   }
+  .sb-flag {
+    vertical-align: middle;
+    margin-right: 4px;
+    border-radius: 2px;
+  }
   .sb-rankings__pts {
     padding: 10px 16px;
     text-align: right;
     font-family: var(--font-heading);
     font-size: 0.8rem;
     font-weight: 600;
+    color: var(--gray-500);
+  }
+
+  /* ===== TENNIS BUZZ ===== */
+  .buzz-section {
+    border-top: 3px solid #16a34a;
+    padding-top: 24px;
+  }
+  .buzz-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .buzz-header__left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .buzz-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #16a34a;
+    animation: buzz-pulse 2s ease-in-out infinite;
+  }
+  @keyframes buzz-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+  .buzz-title {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gray-900);
+    margin: 0;
+  }
+  .buzz-subtitle {
+    font-size: 0.78rem;
+    color: var(--court-green);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .buzz-subtitle:hover {
+    text-decoration: underline;
+  }
+  .buzz-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .buzz-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+  }
+  .buzz-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  .buzz-card__image {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--gray-100);
+  }
+  .buzz-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    transition: transform 0.4s ease;
+  }
+  .buzz-card:hover .buzz-card__image img {
+    transform: scale(1.05);
+  }
+  .buzz-card__image--fallback {
+    background: linear-gradient(135deg, var(--gray-200), var(--gray-100));
+  }
+  .buzz-card__placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--gray-200), var(--gray-100));
+  }
+  .buzz-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 0.58rem;
+    font-weight: 700;
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .buzz-card__body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .buzz-card__title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--gray-900);
+    margin: 0 0 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .buzz-card__summary {
+    font-size: 0.78rem;
+    color: var(--gray-500);
+    line-height: 1.5;
+    margin: 0;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .buzz-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--gray-100);
+  }
+  .buzz-card__source {
+    font-size: 0.72rem;
+    color: var(--court-green);
+    font-weight: 600;
+  }
+  .buzz-card__time {
+    font-size: 0.7rem;
+    color: var(--gray-400);
+  }
+
+  /* ===== FEATURED VIDEOS ===== */
+  .videos-section {
+    border-top: 3px solid #dc2626;
+    padding-top: 24px;
+    margin-top: 8px;
+  }
+  .videos-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .videos-title {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gray-900);
+    margin: 0;
+  }
+  .videos-all {
+    font-size: 0.78rem;
+    color: var(--court-green);
+    font-weight: 600;
+  }
+  .videos-all:hover { text-decoration: underline; }
+  .video-pair {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .video-thumb__meta {
+    padding: 10px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .video-thumb__cat {
+    font-family: var(--font-heading);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+  }
+  .video-thumb__channel {
+    font-size: 0.72rem;
     color: var(--gray-500);
   }
 
@@ -847,8 +1387,18 @@ const playerProfile = profilePlayer ? {
       grid-column: span 2;
     }
   }
+  @media (max-width: 1100px) {
+    .buzz-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 1024px) {
+    .row-3, .row-3-compact {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
   @media (max-width: 768px) {
-    .row-3 {
+    .row-3, .row-3-compact {
       grid-template-columns: 1fr;
     }
     .row-2 {
@@ -869,5 +1419,168 @@ const playerProfile = profilePlayer ? {
     .sb-scores {
       grid-column: span 1;
     }
+    .news-section__filters { flex-wrap: wrap; }
+    .buzz-grid {
+      grid-template-columns: 1fr;
+    }
+    .buzz-section {
+      padding-top: 18px;
+    }
+    .video-pair {
+      grid-template-columns: 1fr;
+    }
+    .videos-section {
+      padding-top: 18px;
+    }
+  }
+
+  /* ===== NEWS SECTION ===== */
+  .news-section {
+    border-top: 3px solid var(--court-green);
+    padding-top: 28px;
+  }
+  .news-section__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .news-section__title {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gray-900);
+    margin: 0;
+  }
+  .news-section__filters {
+    display: flex;
+    gap: 4px;
+    background: var(--gray-100);
+    border-radius: var(--radius);
+    padding: 3px;
+  }
+  .nf-btn {
+    padding: 6px 14px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: var(--radius-sm);
+    color: var(--gray-500);
+    font-family: var(--font-body);
+    transition: all 0.2s;
+  }
+  .nf-btn:hover { color: var(--gray-800); }
+  .nf-btn.active {
+    background: white;
+    color: var(--court-green);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+
+  .news-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .news-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 0 14px;
+    align-items: center;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--gray-200);
+    transition: background 0.15s;
+    text-decoration: none;
+    color: inherit;
+  }
+  .news-item:first-child {
+    border-top: 1px solid var(--gray-200);
+  }
+  .news-item:hover {
+    background: var(--gray-50);
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-left: -12px;
+    margin-right: -12px;
+    border-radius: var(--radius-sm);
+  }
+  .news-cat {
+    grid-row: 1 / 3;
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+    border-radius: 4px;
+    white-space: nowrap;
+    align-self: start;
+    margin-top: 2px;
+  }
+  .news-item__title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--gray-900);
+    margin: 0;
+    grid-column: 2;
+  }
+  .news-item__excerpt {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    margin: 4px 0 0;
+    line-height: 1.4;
+    grid-column: 2;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .news-arrow {
+    grid-row: 1 / 3;
+    font-size: 1.2rem;
+    color: var(--court-green);
+    font-weight: 700;
+    align-self: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .news-item:hover .news-arrow {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    .news-item { grid-template-columns: 1fr auto; }
+    .news-cat { grid-row: auto; grid-column: 1; margin-bottom: 6px; width: fit-content; }
+    .news-item__title { grid-column: 1; }
+    .news-item__excerpt { grid-column: 1; }
+    .news-arrow { grid-row: auto; }
   }
 </style>
+
+<script>
+  // News category filter
+  const nfBtns = document.querySelectorAll('.nf-btn');
+  const newsItems = document.querySelectorAll<HTMLElement>('.news-item');
+
+  nfBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      nfBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = (btn as HTMLElement).dataset.cat || 'all';
+      newsItems.forEach(item => {
+        if (cat === 'all' || item.dataset.cat === cat) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  });
+</script>

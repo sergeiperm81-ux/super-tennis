@@ -1,7 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getLeaderboard, getArticles } from '../../lib/supabase';
-import { countryFlags } from '../../lib/fallback-data';
+import LiteYouTube from '../../components/LiteYouTube.astro';
+import { getLeaderboard, getArticles, getPlayerBySlug, getActiveNews } from '../../lib/supabase';
+import { countryFlags, fallbackPlayers, getFlagUrl, stripMarkdown } from '../../lib/fallback-data';
+import { getHomepageVideos } from '../../data/youtube-channels';
 
 // Dynamic leaderboards from Supabase
 let mostTitlesATP: any[] = [];
@@ -35,6 +37,13 @@ let recordArticles: any[] = [];
 try {
   recordArticles = await getArticles({ category: 'records', limit: 10 });
 } catch (e) {}
+
+// Section break photos (between record categories)
+const sectionPhotos: { image: string; caption: string; credit: string }[] = [
+  { image: '/images/tournaments/wimbledon.jpg', caption: 'The All England Club — where history is made', credit: '' },
+  { image: '/images/records/tennis-court-aerial.jpg', caption: 'The path to No. 1 starts here', credit: '' },
+  { image: '/images/tournaments/roland-garros.jpg', caption: 'Roland Garros — the ultimate test of endurance', credit: '' },
+];
 
 // Curated records data (editorial, not in database)
 const records = [
@@ -87,285 +96,482 @@ const records = [
     ]
   },
 ];
+
+// ========== SIDEBAR DATA ==========
+
+// 1. Featured player (Djokovic for records page — the GOAT of records)
+let sidebarPlayer: any = null;
+try {
+  sidebarPlayer = await getPlayerBySlug('novak-djokovic');
+} catch {}
+if (!sidebarPlayer) {
+  sidebarPlayer = fallbackPlayers['novak-djokovic'] || {
+    first_name: 'Novak', last_name: 'Djokovic', country_code: 'SRB',
+    career_titles: 99, grand_slam_titles: 24, slug: 'novak-djokovic', image_url: '',
+  };
+}
+
+// 2. Videos — use slice(2, 4) for different videos than other pages
+const allVideos = getHomepageVideos();
+const sidebarVideos = allVideos.slice(2, 4);
+
+// 3. News items — fetch 4, show last 2 (slice 2,4)
+let sidebarNews: any[] = [];
+try {
+  const newsAll = await getActiveNews(4);
+  sidebarNews = newsAll.slice(2, 4);
+} catch {}
+
+// 4. Explore articles — 4 random from players and vs categories
+let sidebarArticles: any[] = [];
+try {
+  const [playersArts, vsArts] = await Promise.all([
+    getArticles({ category: 'players', limit: 6 }),
+    getArticles({ category: 'vs', limit: 6 }),
+  ]);
+  const combined = [...playersArts, ...vsArts].filter(a => a.title);
+  // Shuffle
+  for (let i = combined.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [combined[i], combined[j]] = [combined[j], combined[i]];
+  }
+  sidebarArticles = combined.slice(0, 4);
+} catch {}
+
+// Article URL helpers
+const categoryUrl: Record<string, string> = {
+  players: '/players/', records: '/records/', gear: '/gear/',
+  lifestyle: '/lifestyle/', tournaments: '/tournaments/', vs: '/vs/',
+};
+function articleUrl(art: { category: string; slug: string }): string {
+  if (art.category === 'players') {
+    if (art.slug.endsWith('-racket')) return `/players/${art.slug.replace(/-racket$/, '')}/racket/`;
+    if (art.slug.endsWith('-net-worth')) return `/players/${art.slug.replace(/-net-worth$/, '')}/net-worth/`;
+    return `/players/${art.slug}/`;
+  }
+  return `${categoryUrl[art.category] || '/'}${art.slug}/`;
+}
+const sbCatColors: Record<string, string> = {
+  players: '#4CAF50', records: '#FF9800', gear: '#2196F3',
+  lifestyle: '#E91E63', tournaments: '#00BCD4', vs: '#FF5722',
+};
+const sbCatLabels: Record<string, string> = {
+  players: 'Players', records: 'Records', gear: 'Gear',
+  lifestyle: 'Lifestyle', tournaments: 'Tournaments', vs: 'H2H',
+};
+
+// News category colors
+const newsCatColors: Record<string, string> = {
+  buzz: '#16a34a', scandal: '#dc2626', business: '#d4a017',
+  fashion: '#ec4899', funny: '#f97316', wellness: '#0891b2',
+};
+const newsCatLabels: Record<string, string> = {
+  buzz: 'Buzz', scandal: 'Scandal', business: 'Business',
+  fashion: 'Fashion', funny: 'LOL', wellness: 'Wellness',
+};
 ---
 
 <BaseLayout
   title="Tennis Records — All-Time Stats & Achievements"
   description="Complete list of tennis records. Grand Slam records, ranking milestones, serve speed records, and all-time achievements in men's and women's tennis."
+  ogImage="/og/records.png"
 >
   <div class="records-page">
     <div class="container">
+      <nav class="breadcrumbs"><a href="/">Home</a> <span class="sep">/</span> <span class="current">Records</span></nav>
       <section class="page-hero">
         <h1>Tennis Records</h1>
         <p class="subtitle">The greatest achievements and milestones in tennis history</p>
       </section>
 
-      <!-- Quick Nav -->
-      <nav class="category-nav">
-        {records.map(cat => (
-          <a href={`#${cat.category.toLowerCase().replace(/\s+/g, '-')}`} class="cat-link">
-            <span class="cat-icon">{cat.icon}</span>
-            {cat.category}
-          </a>
-        ))}
-        {mostTitlesATP.length > 0 && (
-          <a href="#career-titles-leaderboard" class="cat-link live-data">
-            <span class="cat-icon">👑</span>
-            Titles Leaderboard
-          </a>
-        )}
-        {mostGrandSlams.length > 0 && (
-          <a href="#grand-slam-leaderboard" class="cat-link live-data">
-            <span class="cat-icon">🏆</span>
-            GS Leaders
-          </a>
-        )}
-        {highestWinPct.length > 0 && (
-          <a href="#win-percentage-leaderboard" class="cat-link live-data">
-            <span class="cat-icon">📈</span>
-            Win %
-          </a>
-        )}
-      </nav>
-
-      <!-- Records Sections -->
-      {records.map(cat => (
-        <section class="records-section" id={cat.category.toLowerCase().replace(/\s+/g, '-')}>
-          <h2>
-            <span class="section-icon">{cat.icon}</span>
-            {cat.category}
-          </h2>
-
-          <div class="records-list">
-            {cat.items.map((rec, i) => (
-              <div class="record-card">
-                <div class="record-rank">#{i + 1}</div>
-                <div class="record-content">
-                  <h3>{rec.title}</h3>
-                  <div class="record-holder">
-                    {rec.slug ? (
-                      <a href={`/players/${rec.slug}/`} class="holder-link">{rec.holder}</a>
-                    ) : (
-                      <span class="holder-name">{rec.holder}</span>
-                    )}
-                  </div>
-                  <p class="record-detail">{rec.detail}</p>
-                </div>
-                <div class="record-value">{rec.value}</div>
-              </div>
-            ))}
+      <!-- Records Hero Banner -->
+      <div class="records-hero">
+        <img src="/images/records/tennis-trophy-gold.jpg" alt="Tennis championship trophy" class="records-hero-img" loading="eager" onerror="this.parentElement.style.display='none'" />
+        <div class="records-hero-overlay">
+          <div class="records-hero-stat">
+            <span class="hero-stat-value">24</span>
+            <span class="hero-stat-label">Grand Slam titles — the men's all-time record held by Novak Djokovic</span>
           </div>
-        </section>
-      ))}
+        </div>
+      </div>
 
-      <!-- Dynamic Leaderboards from Real Data -->
-      {mostTitlesATP.length > 0 && (
-        <section class="records-section leaderboard-section" id="career-titles-leaderboard">
-          <h2>
-            <span class="section-icon">👑</span>
-            Career Titles Leaderboard
-          </h2>
+      <!-- TWO-COLUMN LAYOUT -->
+      <div class="records-layout">
 
-          <div class="leaderboard-grid">
-            <!-- ATP Most Titles -->
-            <div class="leaderboard-table">
-              <h3 class="lb-title">ATP — Most Career Titles</h3>
-              <table>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Player</th>
-                    <th>Titles</th>
-                    <th>GS</th>
-                    <th>W-L</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {mostTitlesATP.map((p: any, i: number) => (
-                    <tr class={i < 3 ? 'top-3' : ''}>
-                      <td class="lb-rank">{i + 1}</td>
-                      <td class="lb-player">
-                        <a href={`/players/${p.slug}/`}>
-                          <span class="lb-flag">{countryFlags[p.country_code || ''] || '🏳️'}</span>
-                          {p.first_name} <strong>{p.last_name}</strong>
-                        </a>
-                      </td>
-                      <td class="lb-value">{p.career_titles}</td>
-                      <td class="lb-gs">{p.grand_slam_titles || 0}</td>
-                      <td class="lb-wl">{p.career_win}-{p.career_loss}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+        <!-- ========== MAIN CONTENT ========== -->
+        <main class="records-main">
 
-            <!-- WTA Most Titles -->
-            <div class="leaderboard-table">
-              <h3 class="lb-title">WTA — Most Career Titles</h3>
-              <table>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Player</th>
-                    <th>Titles</th>
-                    <th>GS</th>
-                    <th>W-L</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {mostTitlesWTA.map((p: any, i: number) => (
-                    <tr class={i < 3 ? 'top-3' : ''}>
-                      <td class="lb-rank">{i + 1}</td>
-                      <td class="lb-player">
-                        <a href={`/players/${p.slug}/`}>
-                          <span class="lb-flag">{countryFlags[p.country_code || ''] || '🏳️'}</span>
-                          {p.first_name} <strong>{p.last_name}</strong>
-                        </a>
-                      </td>
-                      <td class="lb-value">{p.career_titles}</td>
-                      <td class="lb-gs">{p.grand_slam_titles || 0}</td>
-                      <td class="lb-wl">{p.career_win}-{p.career_loss}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {mostGrandSlams.length > 0 && (
-        <section class="records-section leaderboard-section" id="grand-slam-leaderboard">
-          <h2>
-            <span class="section-icon">🏆</span>
-            Grand Slam Titles — All-Time Leaders
-          </h2>
-
-          <div class="leaderboard-single">
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Player</th>
-                  <th>Tour</th>
-                  <th>Grand Slams</th>
-                  <th>Total Titles</th>
-                  <th>W-L</th>
-                </tr>
-              </thead>
-              <tbody>
-                {mostGrandSlams.map((p: any, i: number) => (
-                  <tr class={i < 3 ? 'top-3' : ''}>
-                    <td class="lb-rank">{i + 1}</td>
-                    <td class="lb-player">
-                      <a href={`/players/${p.slug}/`}>
-                        <span class="lb-flag">{countryFlags[p.country_code || ''] || '🏳️'}</span>
-                        {p.first_name} <strong>{p.last_name}</strong>
-                      </a>
-                    </td>
-                    <td><span class={`tour-mini ${p.tour}`}>{p.tour?.toUpperCase()}</span></td>
-                    <td class="lb-value gs-val">{p.grand_slam_titles}</td>
-                    <td>{p.career_titles}</td>
-                    <td class="lb-wl">{p.career_win}-{p.career_loss}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      )}
-
-      {highestWinPct.length > 0 && (
-        <section class="records-section leaderboard-section" id="win-percentage-leaderboard">
-          <h2>
-            <span class="section-icon">📈</span>
-            Highest Career Win Percentage (200+ matches)
-          </h2>
-
-          <div class="leaderboard-single">
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Player</th>
-                  <th>Tour</th>
-                  <th>Win %</th>
-                  <th>W-L</th>
-                  <th>Titles</th>
-                </tr>
-              </thead>
-              <tbody>
-                {highestWinPct.map((p: any, i: number) => (
-                  <tr class={i < 3 ? 'top-3' : ''}>
-                    <td class="lb-rank">{i + 1}</td>
-                    <td class="lb-player">
-                      <a href={`/players/${p.slug}/`}>
-                        <span class="lb-flag">{countryFlags[p.country_code || ''] || '🏳️'}</span>
-                        {p.first_name} <strong>{p.last_name}</strong>
-                      </a>
-                    </td>
-                    <td><span class={`tour-mini ${p.tour}`}>{p.tour?.toUpperCase()}</span></td>
-                    <td class="lb-value">{p.win_pct}%</td>
-                    <td class="lb-wl">{p.career_win}-{p.career_loss}</td>
-                    <td>{p.career_titles}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      )}
-
-      <!-- Deep Dive Articles -->
-      {recordArticles.length > 0 && (
-        <section class="records-section" id="deep-dive">
-          <h2>
-            <span class="section-icon">📖</span>
-            Deep Dive Articles
-          </h2>
-          <div class="articles-list">
-            {recordArticles.map((art: any) => (
-              <a href={`/records/${art.slug}/`} class="article-card-link">
-                <div class="article-card-content">
-                  <h3>{art.title}</h3>
-                  <p>{art.excerpt}</p>
-                </div>
-                <span class="article-arrow">→</span>
+          <!-- Quick Nav -->
+          <nav class="category-nav">
+            {records.map(cat => (
+              <a href={`#${cat.category.toLowerCase().replace(/\s+/g, '-')}`} class="cat-link">
+                <span class="cat-icon">{cat.icon}</span>
+                {cat.category}
               </a>
             ))}
-          </div>
-        </section>
-      )}
+            {mostTitlesATP.length > 0 && (
+              <a href="#career-titles-leaderboard" class="cat-link live-data">
+                <span class="cat-icon">👑</span>
+                Titles Leaderboard
+              </a>
+            )}
+            {mostGrandSlams.length > 0 && (
+              <a href="#grand-slam-leaderboard" class="cat-link live-data">
+                <span class="cat-icon">🏆</span>
+                GS Leaders
+              </a>
+            )}
+            {highestWinPct.length > 0 && (
+              <a href="#win-percentage-leaderboard" class="cat-link live-data">
+                <span class="cat-icon">📈</span>
+                Win %
+              </a>
+            )}
+          </nav>
 
-      <!-- Related Content -->
-      <section class="related-content">
-        <h2>Explore More</h2>
-        <div class="explore-grid">
-          <a href="/players/" class="explore-card">
-            <span class="explore-icon">👥</span>
-            <h3>Player Profiles</h3>
-            <p>Career stats, bios, and rankings for top ATP & WTA players</p>
-          </a>
-          <a href="/rankings/" class="explore-card">
-            <span class="explore-icon">📈</span>
-            <h3>Live Rankings</h3>
-            <p>Current ATP and WTA rankings updated weekly</p>
-          </a>
-          <a href="/gear/" class="explore-card">
-            <span class="explore-icon">🎾</span>
-            <h3>Player Gear</h3>
-            <p>Rackets, shoes, and equipment used by the pros</p>
-          </a>
-        </div>
-      </section>
+          <!-- Records Sections (with photo banners between them) -->
+          {records.map((cat, catIdx) => (
+            <>
+              {catIdx > 0 && sectionPhotos[catIdx - 1] && (
+                <div class="section-photo-break">
+                  <img src={sectionPhotos[catIdx - 1].image} alt="" loading="lazy" />
+                  <div class="section-photo-caption">{sectionPhotos[catIdx - 1].caption}</div>
+                </div>
+              )}
+              <section class="records-section" id={cat.category.toLowerCase().replace(/\s+/g, '-')}>
+                <h2>
+                  <span class="section-icon">{cat.icon}</span>
+                  {cat.category}
+                </h2>
+
+                <div class="records-list">
+                  {cat.items.map((rec, i) => (
+                    <div class="record-card">
+                      <div class="record-rank">#{i + 1}</div>
+                      <div class="record-content">
+                        <h3>{rec.title}</h3>
+                        <div class="record-holder">
+                          {rec.slug ? (
+                            <a href={`/players/${rec.slug}/`} class="holder-link">{rec.holder}</a>
+                          ) : (
+                            <span class="holder-name">{rec.holder}</span>
+                          )}
+                        </div>
+                        <p class="record-detail">{rec.detail}</p>
+                      </div>
+                      <div class="record-value">{rec.value}</div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </>
+          ))}
+
+          <!-- Dynamic Leaderboards from Real Data -->
+          {mostTitlesATP.length > 0 && (
+            <section class="records-section leaderboard-section" id="career-titles-leaderboard">
+              <h2>
+                <span class="section-icon">👑</span>
+                Career Titles Leaderboard
+              </h2>
+
+              <div class="leaderboard-grid">
+                <!-- ATP Most Titles -->
+                <div class="leaderboard-table">
+                  <h3 class="lb-title">ATP — Most Career Titles</h3>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Player</th>
+                        <th>Titles</th>
+                        <th>GS</th>
+                        <th>W-L</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {mostTitlesATP.map((p: any, i: number) => (
+                        <tr class={i < 3 ? 'top-3' : ''}>
+                          <td class="lb-rank">{i + 1}</td>
+                          <td class="lb-player">
+                            <a href={`/players/${p.slug}/`}>
+                              {p.image_url ? (<img src={p.image_url} alt="" class="lb-avatar" width="28" height="28" loading="lazy" onerror="this.style.display='none'" />) : null}
+                              {getFlagUrl(p.country_code || '') ? (<img src={getFlagUrl(p.country_code || '', 20)} alt={p.country_code || ''} class="lb-flag-img" width="20" height="15" loading="lazy" />) : (<span class="lb-flag">{countryFlags[p.country_code || ''] || ''}</span>)}
+                              {p.first_name} <strong>{p.last_name}</strong>
+                            </a>
+                          </td>
+                          <td class="lb-value">{p.career_titles}</td>
+                          <td class="lb-gs">{p.grand_slam_titles || 0}</td>
+                          <td class="lb-wl">{p.career_win}-{p.career_loss}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- WTA Most Titles -->
+                <div class="leaderboard-table">
+                  <h3 class="lb-title">WTA — Most Career Titles</h3>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Player</th>
+                        <th>Titles</th>
+                        <th>GS</th>
+                        <th>W-L</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {mostTitlesWTA.map((p: any, i: number) => (
+                        <tr class={i < 3 ? 'top-3' : ''}>
+                          <td class="lb-rank">{i + 1}</td>
+                          <td class="lb-player">
+                            <a href={`/players/${p.slug}/`}>
+                              {p.image_url ? (<img src={p.image_url} alt="" class="lb-avatar" width="28" height="28" loading="lazy" onerror="this.style.display='none'" />) : null}
+                              {getFlagUrl(p.country_code || '') ? (<img src={getFlagUrl(p.country_code || '', 20)} alt={p.country_code || ''} class="lb-flag-img" width="20" height="15" loading="lazy" />) : (<span class="lb-flag">{countryFlags[p.country_code || ''] || ''}</span>)}
+                              {p.first_name} <strong>{p.last_name}</strong>
+                            </a>
+                          </td>
+                          <td class="lb-value">{p.career_titles}</td>
+                          <td class="lb-gs">{p.grand_slam_titles || 0}</td>
+                          <td class="lb-wl">{p.career_win}-{p.career_loss}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {mostGrandSlams.length > 0 && (
+            <section class="records-section leaderboard-section" id="grand-slam-leaderboard">
+              <h2>
+                <span class="section-icon">🏆</span>
+                Grand Slam Titles — All-Time Leaders
+              </h2>
+
+              <div class="leaderboard-single">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Player</th>
+                      <th>Tour</th>
+                      <th>Grand Slams</th>
+                      <th>Total Titles</th>
+                      <th>W-L</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {mostGrandSlams.map((p: any, i: number) => (
+                      <tr class={i < 3 ? 'top-3' : ''}>
+                        <td class="lb-rank">{i + 1}</td>
+                        <td class="lb-player">
+                          <a href={`/players/${p.slug}/`}>
+                            {getFlagUrl(p.country_code || '') ? (<img src={getFlagUrl(p.country_code || '', 20)} alt={p.country_code || ''} class="lb-flag-img" width="20" height="15" loading="lazy" />) : (<span class="lb-flag">{countryFlags[p.country_code || ''] || ''}</span>)}
+                            {p.first_name} <strong>{p.last_name}</strong>
+                          </a>
+                        </td>
+                        <td><span class={`tour-mini ${p.tour}`}>{p.tour?.toUpperCase()}</span></td>
+                        <td class="lb-value gs-val">{p.grand_slam_titles}</td>
+                        <td>{p.career_titles}</td>
+                        <td class="lb-wl">{p.career_win}-{p.career_loss}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
+
+          {highestWinPct.length > 0 && (
+            <section class="records-section leaderboard-section" id="win-percentage-leaderboard">
+              <h2>
+                <span class="section-icon">📈</span>
+                Highest Career Win Percentage (200+ matches)
+              </h2>
+
+              <div class="leaderboard-single">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Player</th>
+                      <th>Tour</th>
+                      <th>Win %</th>
+                      <th>W-L</th>
+                      <th>Titles</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {highestWinPct.map((p: any, i: number) => (
+                      <tr class={i < 3 ? 'top-3' : ''}>
+                        <td class="lb-rank">{i + 1}</td>
+                        <td class="lb-player">
+                          <a href={`/players/${p.slug}/`}>
+                            {getFlagUrl(p.country_code || '') ? (<img src={getFlagUrl(p.country_code || '', 20)} alt={p.country_code || ''} class="lb-flag-img" width="20" height="15" loading="lazy" />) : (<span class="lb-flag">{countryFlags[p.country_code || ''] || ''}</span>)}
+                            {p.first_name} <strong>{p.last_name}</strong>
+                          </a>
+                        </td>
+                        <td><span class={`tour-mini ${p.tour}`}>{p.tour?.toUpperCase()}</span></td>
+                        <td class="lb-value">{p.win_pct}%</td>
+                        <td class="lb-wl">{p.career_win}-{p.career_loss}</td>
+                        <td>{p.career_titles}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
+
+          <!-- Deep Dive Articles -->
+          {recordArticles.length > 0 && (
+            <section class="records-section" id="deep-dive">
+              <h2>
+                <span class="section-icon">📖</span>
+                Deep Dive Articles
+              </h2>
+              <div class="articles-list">
+                {recordArticles.map((art: any) => (
+                  <a href={`/records/${art.slug}/`} class="article-card-link">
+                    <div class="article-card-content">
+                      <h3>{art.title}</h3>
+                      <p>{stripMarkdown(art.excerpt || '')}</p>
+                    </div>
+                    <span class="article-arrow">&rarr;</span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <!-- Related Content -->
+          <section class="related-content">
+            <h2>Explore More</h2>
+            <div class="explore-grid">
+              <a href="/players/" class="explore-card">
+                <span class="explore-icon">&#128101;</span>
+                <h3>Player Profiles</h3>
+                <p>Career stats, bios, and rankings for top ATP & WTA players</p>
+              </a>
+              <a href="/rankings/" class="explore-card">
+                <span class="explore-icon">&#128200;</span>
+                <h3>Live Rankings</h3>
+                <p>Current ATP and WTA rankings updated weekly</p>
+              </a>
+              <a href="/gear/" class="explore-card">
+                <span class="explore-icon">&#127934;</span>
+                <h3>Player Gear</h3>
+                <p>Rackets, shoes, and equipment used by the pros</p>
+              </a>
+            </div>
+          </section>
+
+        </main>
+
+        <!-- ========== SIDEBAR ========== -->
+        <aside class="sb">
+
+          <!-- 1. FEATURED PLAYER -->
+          <div class="sb-profile">
+            <div class="sb-profile__header">
+              <span class="sb-profile__label">Featured Player</span>
+              <a href="/players/" class="sb-link">View all &rarr;</a>
+            </div>
+            <a href={`/players/${sidebarPlayer.slug}/`} class="sb-profile__card">
+              <div class="sb-profile__img">
+                {sidebarPlayer.image_url && (
+                  <img src={sidebarPlayer.image_url} alt={`${sidebarPlayer.first_name} ${sidebarPlayer.last_name}`} loading="lazy" />
+                )}
+                <div class="sb-profile__name">
+                  {getFlagUrl(sidebarPlayer.country_code) ? (
+                    <img src={getFlagUrl(sidebarPlayer.country_code, 20)} alt={sidebarPlayer.country_code} class="sb-flag" width="20" height="15" loading="lazy" />
+                  ) : null}
+                  {sidebarPlayer.first_name} {sidebarPlayer.last_name}
+                </div>
+              </div>
+              <div class="sb-profile__stats">
+                <div class="sb-profile__row"><span>Grand Slams</span><span>{sidebarPlayer.grand_slam_titles || 0}</span></div>
+                <div class="sb-profile__row"><span>Career Titles</span><span>{sidebarPlayer.career_titles || 0}</span></div>
+              </div>
+            </a>
+          </div>
+
+          <!-- 2. WATCH TENNIS — 2 videos -->
+          {sidebarVideos.length > 0 && (
+            <div class="sb-block">
+              <div class="sb-block__header">
+                <span class="sb-block__label">Watch Tennis</span>
+                <a href="/video/" class="sb-link">All channels &rarr;</a>
+              </div>
+              <div class="sb-videos">
+                {sidebarVideos.map(({ video, category }) => (
+                  <div class="sb-video">
+                    <LiteYouTube videoId={video.id} title={video.title} />
+                    <div class="sb-video__meta">
+                      <span class="sb-video__cat" style={`color: ${category.accentColor}`}>{category.label}</span>
+                      <span class="sb-video__ch">{video.channelName}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <!-- 3. NEWS -->
+          {sidebarNews.length > 0 && (
+            <div class="sb-news">
+              <div class="sb-news__header">
+                <span class="sb-news__label">Tennis Buzz</span>
+                <a href="/news/" class="sb-link">All news &rarr;</a>
+              </div>
+              <div class="sb-news__list">
+                {sidebarNews.map((item: any) => {
+                  const newsHref = item.body ? `/news/#${item.slug}` : (item.source_url || '#');
+                  return (
+                    <a href={newsHref} class="sb-news__item">
+                      <span class="sb-news__cat" style={`background: ${newsCatColors[item.category] || '#16a34a'}`}>
+                        {newsCatLabels[item.category] || 'Buzz'}
+                      </span>
+                      <span class="sb-news__title">{item.title}</span>
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          <!-- 4. EXPLORE ARTICLES -->
+          {sidebarArticles.length > 0 && (
+            <div class="sb-articles">
+              <div class="sb-articles__header">
+                <span class="sb-articles__label">Explore</span>
+              </div>
+              <div class="sb-articles__list">
+                {sidebarArticles.map((art: any) => (
+                  <a href={articleUrl(art)} class="sb-articles__item">
+                    <span class="sb-articles__cat" style={`background: ${sbCatColors[art.category] || '#666'}`}>
+                      {sbCatLabels[art.category] || art.category}
+                    </span>
+                    <span class="sb-articles__link">{art.title}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+        </aside>
+
+      </div>
     </div>
   </div>
 </BaseLayout>
 
 <style>
   .records-page {
-    max-width: 1200px;
-    margin: 0 auto;
     padding: 0 24px 60px;
   }
 
@@ -385,6 +591,75 @@ const records = [
     color: var(--gray-600);
     font-size: 1.1rem;
     margin: 8px 0 0;
+  }
+
+  /* Records Hero Banner */
+  .records-hero {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 32px;
+    height: 200px;
+  }
+  .records-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+  }
+  .records-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .records-hero-stat {
+    text-align: center;
+    color: white;
+  }
+  .hero-stat-value {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--ball-yellow);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .hero-stat-label {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.9);
+    max-width: 400px;
+    display: block;
+  }
+
+  /* ===== TWO-COLUMN LAYOUT ===== */
+  .records-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 32px;
+    max-width: 1300px;
+    margin: 0 auto;
+    align-items: start;
+  }
+
+  .records-main {
+    min-width: 0;
+  }
+
+  /* Leaderboard Avatars */
+  .lb-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top;
+    margin-right: 6px;
+    vertical-align: middle;
+    border: 1px solid var(--gray-200);
   }
 
   /* Category Nav */
@@ -420,6 +695,39 @@ const records = [
     background: white;
   }
   .cat-icon { font-size: 1rem; }
+
+  /* Section Photo Breaks */
+  .section-photo-break {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 48px;
+    aspect-ratio: 21 / 7;
+  }
+  .section-photo-break img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  .section-photo-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 24px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    color: #fff;
+    font-size: 0.85rem;
+    font-style: italic;
+    opacity: 0.9;
+  }
+  @media (max-width: 768px) {
+    .section-photo-break {
+      aspect-ratio: 16 / 7;
+      margin-bottom: 32px;
+    }
+  }
 
   /* Sections */
   .records-section {
@@ -607,7 +915,7 @@ const records = [
     font-weight: 700;
   }
 
-  /* Responsive */
+  /* Responsive — existing record content */
   @media (max-width: 768px) {
     .page-hero h1 { font-size: 2rem; }
     .category-nav { gap: 8px; }
@@ -669,7 +977,8 @@ const records = [
     background: white;
     border: 1px solid var(--gray-200);
     border-radius: var(--radius);
-    overflow: hidden;
+    overflow: visible;
+    display: table;
     font-size: 0.9rem;
   }
 
@@ -720,6 +1029,11 @@ const records = [
     margin-right: 4px;
     font-size: 0.9rem;
   }
+  .lb-flag-img {
+    margin-right: 4px;
+    vertical-align: middle;
+    border-radius: 1px;
+  }
 
   .lb-value {
     font-family: var(--font-heading);
@@ -760,5 +1074,303 @@ const records = [
     .leaderboard-single th,
     .leaderboard-table td,
     .leaderboard-single td { padding: 8px 8px; }
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sb {
+    position: sticky;
+    top: calc(var(--header-height) + 8px);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .sb-link {
+    font-size: 0.72rem;
+    color: var(--court-green);
+    font-weight: 600;
+  }
+  .sb-link:hover {
+    text-decoration: underline;
+  }
+  .sb-flag {
+    vertical-align: middle;
+    margin-right: 4px;
+    border-radius: 2px;
+  }
+
+  /* Sidebar: generic block */
+  .sb-block {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .sb-block__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: var(--gray-900);
+  }
+  .sb-block__label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+
+  /* Sidebar: Videos */
+  .sb-videos {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+  .sb-video__meta {
+    padding: 6px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sb-video__cat {
+    font-family: var(--font-heading);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+  }
+  .sb-video__ch {
+    font-size: 0.68rem;
+    color: var(--gray-500);
+  }
+
+  /* Sidebar: Player Profile */
+  .sb-profile {
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .sb-profile__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: var(--gray-900);
+  }
+  .sb-profile__label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+  .sb-profile__card {
+    display: block;
+  }
+  .sb-profile__img {
+    position: relative;
+    height: 160px;
+    overflow: hidden;
+  }
+  .sb-profile__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+  .sb-profile__name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sb-profile__stats {
+    padding: 4px 0;
+  }
+  .sb-profile__row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 0.8rem;
+  }
+  .sb-profile__row:last-child {
+    border-bottom: none;
+  }
+  .sb-profile__row span:first-child {
+    color: var(--gray-500);
+  }
+  .sb-profile__row span:last-child {
+    font-weight: 700;
+    color: var(--gray-900);
+  }
+
+  /* Sidebar: News */
+  .sb-news {
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .sb-news__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: var(--gray-900);
+  }
+  .sb-news__label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+  .sb-news__list {
+    display: flex;
+    flex-direction: column;
+  }
+  .sb-news__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gray-100);
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .sb-news__item:last-child {
+    border-bottom: none;
+  }
+  .sb-news__item:hover {
+    background: var(--gray-50);
+  }
+  .sb-news__cat {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .sb-news__title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--gray-800);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .sb-news__item:hover .sb-news__title {
+    color: var(--court-green);
+  }
+
+  /* Sidebar: Articles */
+  .sb-articles {
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .sb-articles__header {
+    padding: 14px 16px;
+    background: var(--gray-900);
+  }
+  .sb-articles__label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+  .sb-articles__list {
+    display: flex;
+    flex-direction: column;
+  }
+  .sb-articles__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gray-100);
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .sb-articles__item:last-child {
+    border-bottom: none;
+  }
+  .sb-articles__item:hover {
+    background: var(--gray-50);
+  }
+  .sb-articles__cat {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .sb-articles__link {
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--gray-800);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .sb-articles__item:hover .sb-articles__link {
+    color: var(--court-green);
+  }
+
+  /* ===== RESPONSIVE: Two-column layout ===== */
+  @media (max-width: 1024px) {
+    .records-layout {
+      grid-template-columns: 1fr 280px;
+      gap: 24px;
+    }
+  }
+  @media (max-width: 900px) {
+    .records-layout {
+      grid-template-columns: 1fr;
+    }
+    .sb {
+      position: static;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+  }
+  @media (max-width: 640px) {
+    .sb {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

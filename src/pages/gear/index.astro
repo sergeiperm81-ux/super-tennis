@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getArticles } from '../../lib/supabase';
+import { stripMarkdown } from '../../lib/fallback-data';
+import { getArticlePhotosForCategory } from '../../lib/player-photos';
 
 // Fetch real gear articles from Supabase
 let gearArticles: any[] = [];
@@ -10,7 +12,30 @@ try {
   console.warn('Gear index: Supabase unavailable');
 }
 
-// Icon mapping for gear article slugs
+// Batch-fetch all article photos (player photos + local)
+const articlePhotos = await getArticlePhotosForCategory(gearArticles, 'gear');
+
+// Category grouping
+function getCategory(slug: string): string {
+  if (slug.includes('racket') || slug.includes('head-vs-wilson') || slug.includes('junior')) return 'Rackets';
+  if (slug.includes('string') || slug.includes('gut') || slug.includes('tension')) return 'Strings';
+  if (slug.includes('shoe') || slug.includes('apparel')) return 'Clothing & Shoes';
+  if (slug.includes('ball-machine')) return 'Equipment';
+  if (slug.includes('court') || slug.includes('surface')) return 'Courts';
+  return 'Accessories';
+}
+
+function getCategoryColor(slug: string): string {
+  const cat = getCategory(slug);
+  if (cat === 'Rackets') return '#16a34a';
+  if (cat === 'Strings') return '#2563eb';
+  if (cat === 'Clothing & Shoes') return '#d97706';
+  if (cat === 'Equipment') return '#dc2626';
+  if (cat === 'Courts') return '#059669';
+  return '#7c3aed';
+}
+
+// Icon mapping
 const iconMap: Record<string, string> = {
   'best-tennis-rackets-2026': '🎾',
   'best-tennis-strings-guide': '🔧',
@@ -28,38 +53,47 @@ const iconMap: Record<string, string> = {
   'natural-gut-vs-synthetic-strings': '🧵',
   'tennis-apparel-brands-2026': '👕',
 };
-
-// Category grouping for articles
-function getCategory(slug: string): string {
-  if (slug.includes('racket') || slug.includes('head-vs-wilson') || slug.includes('junior')) return 'Rackets';
-  if (slug.includes('string') || slug.includes('gut')) return 'Strings';
-  if (slug.includes('shoe') || slug.includes('apparel')) return 'Clothing & Shoes';
-  return 'Accessories';
-}
 ---
 
 <BaseLayout
   title="Tennis Gear — Rackets, Shoes & Equipment Reviews"
   description="Expert tennis gear reviews and guides. Find the best rackets, shoes, strings, and equipment for your game. Pro player setups and recommendations."
+  ogImage="/og/gear.png"
 >
   <div class="gear-page">
     <div class="container">
+      <nav class="breadcrumbs"><a href="/">Home</a> <span class="sep">/</span> <span class="current">Gear</span></nav>
       <section class="page-hero">
         <h1>Tennis Gear</h1>
-        <p class="subtitle">Expert reviews, pro player setups, and buying guides for every level</p>
+        <p class="subtitle">Expert reviews, pro player setups, and buying guides for every level{gearArticles.length > 0 && ` — ${gearArticles.length} guides`}</p>
       </section>
+
+      {/* Hero Banner */}
+      <div class="gear-hero">
+        <img src="/images/gear/tennis-rackets.jpg" alt="Tennis rackets and equipment" loading="eager" onerror="this.parentElement.style.display='none'" />
+        <div class="gear-hero-overlay">
+          <h2>Find Your Perfect Setup</h2>
+          <p>Rackets, strings, shoes, and accessories — reviewed by tennis experts</p>
+        </div>
+      </div>
 
       {gearArticles.length > 0 ? (
         <div class="articles-grid">
-          {gearArticles.map(article => (
-            <a href={`/gear/${article.slug}/`} class="gear-card">
-              <div class="gear-icon">{iconMap[article.slug] || '🎾'}</div>
+          {gearArticles.map((article, i) => (
+            <a href={`/gear/${article.slug}/`} class={`gear-card ${i === 0 ? 'featured' : ''}`}>
+              {articlePhotos.get(article.slug) ? (
+                <div class="gear-card-img">
+                  <img src={articlePhotos.get(article.slug)!} alt="" loading="lazy" onerror="this.parentElement.classList.add('no-img')" />
+                </div>
+              ) : (
+                <div class="gear-card-icon">{iconMap[article.slug] || '🎾'}</div>
+              )}
               <div class="card-content">
-                <span class="card-category">{getCategory(article.slug)}</span>
+                <span class="card-category" style={`color: ${getCategoryColor(article.slug)}`}>{getCategory(article.slug)}</span>
                 <h2>{article.title}</h2>
-                <p>{article.excerpt || article.meta_description || ''}</p>
+                <p>{stripMarkdown(article.excerpt || article.meta_description || '')}</p>
+                <span class="read-more">Read Guide →</span>
               </div>
-              <span class="read-more">Read Guide →</span>
             </a>
           ))}
         </div>
@@ -92,7 +126,7 @@ function getCategory(slug: string): string {
   .page-hero {
     padding: 48px 0 32px;
     border-bottom: 3px solid var(--court-green);
-    margin-bottom: 40px;
+    margin-bottom: 32px;
   }
   .page-hero h1 {
     font-family: var(--font-heading);
@@ -107,6 +141,43 @@ function getCategory(slug: string): string {
     margin: 8px 0 0;
   }
 
+  /* Gear Hero Banner */
+  .gear-hero {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 32px;
+    height: 180px;
+  }
+  .gear-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .gear-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px;
+  }
+  .gear-hero-overlay h2 {
+    color: white;
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+  }
+  .gear-hero-overlay p {
+    color: rgba(255,255,255,0.85);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  /* Articles Grid */
   .articles-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -120,7 +191,7 @@ function getCategory(slug: string): string {
     background: white;
     border: 1px solid var(--gray-200);
     border-radius: var(--radius);
-    padding: 24px;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     transition: all 0.2s;
@@ -131,20 +202,55 @@ function getCategory(slug: string): string {
     transform: translateY(-2px);
   }
 
-  .gear-icon {
-    font-size: 2.2rem;
-    margin-bottom: 12px;
+  /* Featured first card spans 2 columns */
+  .gear-card.featured {
+    grid-column: span 2;
+  }
+  .gear-card.featured .gear-card-img {
+    aspect-ratio: 16 / 9;
+  }
+  .gear-card.featured h2 {
+    font-size: 1.2rem;
+  }
+
+  .gear-card-img {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+  .gear-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+  }
+  .gear-card-img.no-img {
+    display: none;
+  }
+
+  .gear-card-icon {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    background: var(--gray-50);
+  }
+  .gear-card.featured .gear-card-icon {
+    aspect-ratio: 16 / 9;
+    font-size: 4rem;
   }
 
   .card-content {
+    padding: 16px 20px 20px;
     flex: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   .card-category {
     font-family: var(--font-heading);
     font-size: 0.65rem;
     text-transform: uppercase;
-    color: var(--court-green);
     letter-spacing: 0.05em;
     margin-bottom: 6px;
     display: block;
@@ -152,18 +258,19 @@ function getCategory(slug: string): string {
 
   .card-content h2 {
     font-family: var(--font-body);
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 700;
     margin: 0 0 8px;
     line-height: 1.35;
   }
   .card-content p {
     color: var(--gray-600);
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     line-height: 1.6;
     margin: 0;
+    flex: 1;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -172,7 +279,7 @@ function getCategory(slug: string): string {
     color: var(--court-green);
     font-weight: 600;
     font-size: 0.85rem;
-    margin-top: 16px;
+    margin-top: 14px;
   }
 
   .empty-state {
@@ -215,9 +322,11 @@ function getCategory(slug: string): string {
 
   @media (max-width: 1024px) {
     .articles-grid { grid-template-columns: repeat(2, 1fr); }
+    .gear-card.featured { grid-column: span 2; }
   }
   @media (max-width: 768px) {
     .articles-grid { grid-template-columns: 1fr; }
+    .gear-card.featured { grid-column: span 1; }
     .page-hero h1 { font-size: 2rem; }
   }
 </style>

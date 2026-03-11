@@ -1,6 +1,11 @@
 ---
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import ArticleFooter from '../../components/ArticleFooter.astro';
+import LiteYouTube from '../../components/LiteYouTube.astro';
 import { getArticleBySlug, getArticleSlugs } from '../../lib/supabase';
+import { addInterlinks } from '../../lib/interlinks';
+import { getArticlePhotoUrl } from '../../lib/player-photos';
+import { tournamentVideos } from '../../data/youtube-channels';
 import { marked } from 'marked';
 
 export async function getStaticPaths() {
@@ -35,7 +40,12 @@ if (!article) {
   return Astro.redirect('/tournaments/');
 }
 
-const bodyHtml = article.body ? marked.parse(article.body) : '';
+const heroImage = await getArticlePhotoUrl(slug as string, 'tournaments');
+
+const rawHtml = article.body ? marked.parse(article.body) : '';
+const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/tournaments/${slug}/`) : '';
+
+const videos = tournamentVideos[slug as string] || [];
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -64,44 +74,66 @@ const jsonLd = {
     { label: 'Tournaments', href: '/tournaments/' },
     { label: article.title },
   ]}
+  image={heroImage || undefined}
+  category="tournaments"
+  categoryLabel="Tournament Guide"
+  categoryHref="/tournaments/"
 >
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <div set:html={bodyHtml} />
 
-  <div class="article-nav">
-    <a href="/tournaments/" class="nav-back">← All Tournaments</a>
-    <div class="nav-related">
-      <a href="/calendar/">📅 Calendar</a>
-      <a href="/rankings/">📊 Rankings</a>
-      <a href="/players/">👥 Players</a>
-    </div>
-  </div>
+  {videos.length > 0 && (
+    <section class="tournament-videos">
+      <h2>Videos</h2>
+      <div class="tournament-videos__grid">
+        {videos.map(v => (
+          <div class="tournament-video">
+            <LiteYouTube videoId={v.id} title={v.title} />
+            <p class="tournament-video__source">{v.channelName}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <ArticleFooter
+    backLabel="All Tournaments"
+    backHref="/tournaments/"
+    relatedLinks={[
+      { label: 'Calendar', href: '/calendar/' },
+      { label: 'Rankings', href: '/rankings/' },
+      { label: 'Player Profiles', href: '/players/' },
+      { label: 'Head to Head', href: '/vs/' },
+    ]}
+  />
 </ArticleLayout>
 
 <style>
-  .article-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-top: 40px;
-    padding-top: 24px;
+  .tournament-videos {
+    margin-top: 48px;
+    padding-top: 32px;
     border-top: 2px solid var(--gray-200);
   }
-  .nav-back {
-    color: var(--court-green);
-    font-weight: 600;
-    font-size: 0.95rem;
+  .tournament-videos h2 {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-900);
+    margin: 0 0 20px;
   }
-  .nav-back:hover { text-decoration: underline; }
-  .nav-related { display: flex; gap: 16px; }
-  .nav-related a {
-    color: var(--gray-600);
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: color 0.2s;
+  .tournament-videos__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
-  .nav-related a:hover { color: var(--court-green); }
+  .tournament-video__source {
+    font-size: 0.78rem;
+    color: var(--gray-500);
+    margin: 8px 0 0;
+  }
+  @media (max-width: 768px) {
+    .tournament-videos__grid { grid-template-columns: 1fr; }
+  }
 </style>
