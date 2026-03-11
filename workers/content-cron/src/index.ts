@@ -1,11 +1,15 @@
 /**
  * SUPER.TENNIS Content Cron Worker
  *
- * Runs on Cloudflare Workers with cron triggers:
- * - Daily 06:00 UTC (08:00 Sofia): Generate tennis news → Supabase
- * - Every 3 days 07:00 UTC: Update YouTube video IDs → Supabase
+ * Cron schedule (daily 06:00 UTC):
+ * - DAILY:  Generate 20 tennis news → Supabase (no rebuild, client-side fetch)
+ * - EVERY 3 DAYS: Update YouTube video IDs → Supabase (no rebuild)
+ * - WEEKLY (Monday): Generate 1 evergreen article → Supabase → rebuild
+ * - MONTHLY (1st): Update ATP/WTA rankings → Supabase → rebuild
  *
- * After data generation, triggers a site rebuild via deploy hook.
+ * API endpoints (client-side fetch, no rebuild needed):
+ * - /api/news   → JSON with active news
+ * - /api/videos → JSON with 6 featured videos (1 per category, rotated)
  */
 
 export interface Env {
@@ -348,7 +352,7 @@ For each story provide:
         },
       ],
       temperature: 0.7,
-      max_tokens: 6000,
+      max_tokens: 16000,
     }),
   });
 
@@ -363,7 +367,7 @@ For each story provide:
 // NEWS GENERATION
 // ============================================================
 async function generateNews(env: Env): Promise<string> {
-  const LIMIT = 8;
+  const LIMIT = 20;
   const HOURS = 48;
   const logs: string[] = [];
   const log = (msg: string) => { logs.push(msg); console.log(msg); };
@@ -584,38 +588,397 @@ async function triggerRebuild(env: Env): Promise<void> {
 }
 
 // ============================================================
+// SEEDED RANDOM (deterministic per period)
+// ============================================================
+function seededPick<T>(arr: T[], seed: number): T {
+  let s = seed;
+  s = (s * 1103515245 + 12345) & 0x7fffffff;
+  return arr[s % arr.length];
+}
+
+// ============================================================
+// CORS HELPERS
+// ============================================================
+const CORS_HEADERS: Record<string, string> = {
+  'Access-Control-Allow-Origin': 'https://super.tennis',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Max-Age': '86400',
+};
+
+function jsonResponse(data: any, cacheSeconds: number = 300): Response {
+  return new Response(JSON.stringify(data), {
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': `public, max-age=${cacheSeconds}`,
+      ...CORS_HEADERS,
+    },
+  });
+}
+
+// ============================================================
+// VIDEO CATEGORY METADATA
+// ============================================================
+const VIDEO_CATEGORIES = ['highlights', 'grand-slams', 'analysis', 'coaching', 'vlogs', 'entertainment'] as const;
+const VIDEO_CAT_META: Record<string, { label: string; color: string }> = {
+  'highlights':    { label: 'Tour Highlights',  color: '#2563eb' },
+  'grand-slams':   { label: 'Grand Slams',      color: '#059669' },
+  'analysis':      { label: 'News & Analysis',  color: '#7c3aed' },
+  'coaching':      { label: 'Training',         color: '#0891b2' },
+  'vlogs':         { label: 'Player Vlogs',     color: '#dc2626' },
+  'entertainment': { label: 'Entertainment',    color: '#d97706' },
+};
+
+// ============================================================
+// WEEKLY ARTICLE GENERATION
+// ============================================================
+const ARTICLE_SECTIONS = ['tournaments', 'gear', 'lifestyle'] as const;
+
+const ARTICLE_SYSTEM_PROMPTS: Record<string, string> = {
+  tournaments: `You are a tennis travel and tournament expert writing for super.tennis, a website for casual fans who love tennis culture.
+Write an engaging, evergreen article that will stay relevant for years. Focus on history, atmosphere, spectator tips, venue guides, or cultural aspects of tournaments.
+Use markdown formatting with ## headers. Write 800-1200 words. Be informative and entertaining.`,
+
+  gear: `You are a tennis equipment specialist writing for super.tennis, a website for casual fans and recreational players.
+Write an engaging, evergreen guide about tennis equipment, technology, or gear choices. Make it practical and useful for club players.
+Use markdown formatting with ## headers. Write 800-1200 words. Include actionable advice.`,
+
+  lifestyle: `You are a tennis lifestyle and culture writer for super.tennis, a website for casual fans.
+Write an engaging, evergreen article about tennis culture, fashion, travel, fitness, movies, books, or the social side of tennis.
+Use markdown formatting with ## headers. Write 800-1200 words. Be entertaining and insightful.`,
+};
+
+async function generateWeeklyArticle(env: Env): Promise<string> {
+  const logs: string[] = [];
+  const log = (msg: string) => { logs.push(msg); console.log(msg); };
+
+  const weekNum = Math.floor(Date.now() / (7 * 86400000));
+  const section = ARTICLE_SECTIONS[weekNum % 3];
+  log(`📝 Weekly article: section="${section}" (week ${weekNum})`);
+
+  // 1. Get existing articles to avoid duplication
+  let existingTitles = '';
+  try {
+    const existing = await supabaseQuery(env, 'articles', 'GET', {
+      'category': `eq.${section}`,
+      'select': 'title',
+      'limit': '100',
+    });
+    existingTitles = (existing || []).map((a: any) => a.title).join('\n- ');
+    log(`   Found ${existing.length} existing ${section} articles`);
+  } catch (e: any) {
+    log(`   ⚠️ Could not fetch existing articles: ${e.message}`);
+  }
+
+  // 2. Generate article via OpenAI
+  log('🤖 Calling OpenAI for article generation...');
+  const userPrompt = `Write a NEW evergreen article for the "${section}" section of super.tennis.
+The article must be relevant for months or years — avoid references to specific recent events or dates.
+
+${existingTitles ? `EXISTING articles in this section (DO NOT duplicate these topics):\n- ${existingTitles}\n` : ''}
+Return ONLY a JSON object (no markdown fences, no extra text):
+{"slug":"kebab-case-slug-max-60-chars","title":"Article Title","body":"full markdown article 800-1200 words","excerpt":"first 150-200 chars summary","meta_title":"SEO title max 60 chars","meta_description":"SEO description max 155 chars"}`;
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: ARTICLE_SYSTEM_PROMPTS[section] },
+          { role: 'user', content: userPrompt },
+        ],
+        temperature: 0.8,
+        max_tokens: 4000,
+      }),
+    });
+
+    if (!res.ok) throw new Error(`OpenAI ${res.status}: ${await res.text()}`);
+    const data = await res.json() as any;
+    const content = data.choices[0]?.message?.content || '';
+    const jsonStr = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const article = JSON.parse(jsonStr);
+
+    // 3. Insert into articles table
+    await supabaseQuery(env, 'articles', 'POST', { 'on_conflict': 'slug' }, [{
+      slug: article.slug,
+      title: article.title,
+      category: section,
+      subcategory: null,
+      body: article.body,
+      excerpt: article.excerpt || article.body.slice(0, 200),
+      meta_title: article.meta_title || article.title,
+      meta_description: article.meta_description || article.excerpt,
+      image_url: null,
+      image_alt: null,
+      status: 'published',
+      published_at: new Date().toISOString(),
+    }]);
+
+    log(`   ✅ Generated: "${article.title}" (${section}/${article.slug})`);
+  } catch (e: any) {
+    log(`   ❌ Article generation failed: ${e.message}`);
+  }
+
+  return logs.join('\n');
+}
+
+// ============================================================
+// MONTHLY RANKINGS UPDATE
+// ============================================================
+function parseRankingsHtml(html: string, tour: string): { rank: number; name: string; country: string; points: number }[] {
+  const players: { rank: number; name: string; country: string; points: number }[] = [];
+  const rowRegex = /<tr[^>]*>\s*<td[^>]*>(\d+)<\/td>\s*<td[^>]*>[^<]*<\/td>\s*<td[^>]*>(?:<a[^>]*>)?([^<]+)(?:<\/a>)?<\/td>\s*<td[^>]*>([A-Z]{3})<\/td>\s*<td[^>]*>([\d,]+)<\/td>/g;
+
+  let match;
+  while ((match = rowRegex.exec(html)) !== null) {
+    const rank = parseInt(match[1]);
+    const name = match[2].trim();
+    const country = match[3];
+    const points = parseInt(match[4].replace(/,/g, ''));
+    if (rank <= 200) {
+      players.push({ rank, name, country, points });
+    }
+  }
+  return players;
+}
+
+function nameToSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+function matchPlayer(name: string, players: any[]): any | null {
+  const slug = nameToSlug(name);
+  // Exact slug match
+  const bySlug = players.find((p: any) => p.slug === slug);
+  if (bySlug) return bySlug;
+  // Full name match
+  const lower = name.toLowerCase();
+  const byName = players.find((p: any) => p.full_name?.toLowerCase() === lower);
+  if (byName) return byName;
+  // Last name + first initial
+  const parts = name.split(/\s+/);
+  if (parts.length >= 2) {
+    const lastName = parts[parts.length - 1].toLowerCase();
+    const firstName = parts[0].toLowerCase();
+    const byLastFirst = players.find((p: any) => {
+      const pName = (p.full_name || '').toLowerCase();
+      return pName.includes(lastName) && pName.includes(firstName.slice(0, 3));
+    });
+    if (byLastFirst) return byLastFirst;
+  }
+  return null;
+}
+
+async function updateRankings(env: Env): Promise<string> {
+  const logs: string[] = [];
+  const log = (msg: string) => { logs.push(msg); console.log(msg); };
+
+  log('🏆 Starting monthly rankings update...');
+
+  // Fetch all players once
+  let allPlayers: any[] = [];
+  try {
+    allPlayers = await supabaseQuery(env, 'players', 'GET', {
+      'select': 'id,slug,full_name',
+      'limit': '1000',
+    });
+    log(`   Loaded ${allPlayers.length} players from DB`);
+  } catch (e: any) {
+    log(`   ❌ Failed to fetch players: ${e.message}`);
+    return logs.join('\n');
+  }
+
+  const today = new Date().toISOString().split('T')[0];
+
+  for (const tour of ['atp', 'wta'] as const) {
+    const url = tour === 'atp'
+      ? 'https://tennisabstract.com/reports/atpRankings.html'
+      : 'https://tennisabstract.com/reports/wtaRankings.html';
+
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+      const res = await fetch(url, {
+        signal: controller.signal,
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; SuperTennisBot/1.0)' },
+      });
+      clearTimeout(timeout);
+
+      if (!res.ok) {
+        log(`   ⚠️ ${tour.toUpperCase()}: HTTP ${res.status}`);
+        continue;
+      }
+
+      const html = await res.text();
+      const parsed = parseRankingsHtml(html, tour);
+      log(`   📊 ${tour.toUpperCase()}: parsed ${parsed.length} players`);
+
+      if (parsed.length === 0) {
+        log(`   ⚠️ ${tour.toUpperCase()}: no rankings parsed, skipping`);
+        continue;
+      }
+
+      // Match and build rows
+      const rows: any[] = [];
+      let matched = 0;
+      for (const r of parsed) {
+        const player = matchPlayer(r.name, allPlayers);
+        if (player) {
+          matched++;
+          rows.push({
+            ranking_date: today,
+            player_id: player.slug,
+            tour,
+            ranking: r.rank,
+            points: r.points,
+          });
+        }
+      }
+      log(`   🔗 ${tour.toUpperCase()}: matched ${matched}/${parsed.length} players`);
+
+      // Batch upsert
+      for (let i = 0; i < rows.length; i += 100) {
+        const batch = rows.slice(i, i + 100);
+        await supabaseQuery(env, 'rankings', 'POST',
+          { 'on_conflict': 'ranking_date,player_id,tour' },
+          batch,
+        );
+      }
+      log(`   ✅ ${tour.toUpperCase()}: upserted ${rows.length} rankings`);
+    } catch (e: any) {
+      log(`   ❌ ${tour.toUpperCase()}: ${e.message}`);
+    }
+  }
+
+  return logs.join('\n');
+}
+
+// ============================================================
 // WORKER ENTRY POINT
 // ============================================================
 export default {
-  // Single cron trigger handler — runs daily at 06:00 UTC (08:00 Sofia)
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
     console.log(`⏰ Cron fired at ${new Date().toISOString()}`);
+    const now = new Date();
 
-    // Always generate news (daily)
+    // DAILY: News (client-side fetch — no rebuild needed)
     await generateNews(env);
 
-    // Update videos every 3 days (check day of year % 3)
-    const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
+    // EVERY 3 DAYS: Videos (client-side fetch — no rebuild needed)
+    const dayOfYear = Math.floor((Date.now() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000);
     if (dayOfYear % 3 === 0) {
       console.log('🎬 Video update day (every 3 days)');
       await updateVideos(env);
     }
 
-    ctx.waitUntil(triggerRebuild(env));
+    // WEEKLY (Monday): New evergreen article → REBUILD
+    const dayOfWeek = now.getUTCDay(); // 0=Sun, 1=Mon
+    if (dayOfWeek === 1) {
+      console.log('📝 Weekly article generation (Monday)');
+      await generateWeeklyArticle(env);
+      ctx.waitUntil(triggerRebuild(env));
+      return;
+    }
+
+    // MONTHLY (1st of month): Rankings update → REBUILD
+    if (now.getUTCDate() === 1) {
+      console.log('🏆 Monthly rankings update (1st of month)');
+      await updateRankings(env);
+      ctx.waitUntil(triggerRebuild(env));
+      return;
+    }
+
+    // Regular day — no rebuild needed (news/videos are client-side)
+    console.log('✅ Daily update done — no rebuild needed');
   },
 
-  // HTTP handler for manual triggers
+  // HTTP handler for manual triggers + API
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
+    // CORS preflight
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { headers: CORS_HEADERS });
+    }
+
+    // ── API ENDPOINTS (client-side fetch, no rebuild) ──
+
+    if (url.pathname === '/api/news') {
+      try {
+        const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 50);
+        const data = await supabaseQuery(env, 'news', 'GET', {
+          'is_active': 'eq.true',
+          'order': 'published_at.desc',
+          'limit': String(limit),
+        });
+        return jsonResponse(data, 300); // cache 5 min
+      } catch (e: any) {
+        return jsonResponse({ error: e.message }, 60);
+      }
+    }
+
+    if (url.pathname === '/api/videos') {
+      try {
+        const dayNum = Math.floor(Date.now() / 86400000);
+        const results: any[] = [];
+
+        for (let i = 0; i < VIDEO_CATEGORIES.length; i++) {
+          const cat = VIDEO_CATEGORIES[i];
+          const videos = await supabaseQuery(env, 'youtube_videos', 'GET', {
+            'category': `eq.${cat}`,
+            'order': 'published_at.desc',
+            'limit': '30',
+          });
+          if (videos.length > 0) {
+            // Staggered rotation: 3 groups of 2, each group changes every 3 days
+            const group = Math.floor(i / 2); // 0,0,1,1,2,2
+            const seed = Math.floor((dayNum - group) / 3);
+            const picked = seededPick(videos, seed + i * 7);
+            const meta = VIDEO_CAT_META[cat];
+            results.push({
+              video_id: picked.video_id,
+              title: picked.title,
+              channel_name: picked.channel_name,
+              category: cat,
+              label: meta.label,
+              accentColor: meta.color,
+            });
+          }
+        }
+        return jsonResponse(results, 3600); // cache 1 hour
+      } catch (e: any) {
+        return jsonResponse({ error: e.message }, 60);
+      }
+    }
+
+    // ── MANUAL TRIGGERS (with rebuild) ──
+
     if (url.pathname === '/trigger/news') {
       const result = await generateNews(env);
-      await triggerRebuild(env);
       return new Response(result, { headers: { 'Content-Type': 'text/plain' } });
     }
 
     if (url.pathname === '/trigger/videos') {
       const result = await updateVideos(env);
+      return new Response(result, { headers: { 'Content-Type': 'text/plain' } });
+    }
+
+    if (url.pathname === '/trigger/article') {
+      const result = await generateWeeklyArticle(env);
+      await triggerRebuild(env);
+      return new Response(result, { headers: { 'Content-Type': 'text/plain' } });
+    }
+
+    if (url.pathname === '/trigger/rankings') {
+      const result = await updateRankings(env);
       await triggerRebuild(env);
       return new Response(result, { headers: { 'Content-Type': 'text/plain' } });
     }
@@ -623,13 +986,23 @@ export default {
     if (url.pathname === '/trigger/all') {
       const newsResult = await generateNews(env);
       const videoResult = await updateVideos(env);
-      await triggerRebuild(env);
       return new Response(`${newsResult}\n\n---\n\n${videoResult}`, {
         headers: { 'Content-Type': 'text/plain' },
       });
     }
 
-    return new Response('SuperTennis Content Cron Worker\n\nEndpoints:\n  /trigger/news\n  /trigger/videos\n  /trigger/all', {
+    return new Response(`SuperTennis Content Cron Worker
+
+API (client-side, no rebuild):
+  /api/news          GET active news JSON
+  /api/videos        GET 6 featured videos JSON
+
+Manual triggers:
+  /trigger/news      Generate news
+  /trigger/videos    Update videos
+  /trigger/article   Generate weekly article + rebuild
+  /trigger/rankings  Update rankings + rebuild
+  /trigger/all       News + videos (no rebuild)`, {
       headers: { 'Content-Type': 'text/plain' },
     });
   },

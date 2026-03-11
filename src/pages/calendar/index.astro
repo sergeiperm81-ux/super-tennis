@@ -1,8 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import LiteYouTube from '../../components/LiteYouTube.astro';
-import { getHomepageVideos } from '../../data/youtube-channels';
-import { getLatestRankings, getActiveNews, getArticles } from '../../lib/supabase';
+import { getLatestRankings, getArticles } from '../../lib/supabase';
 import { countryFlags, getFlagUrl } from '../../lib/fallback-data';
 
 // Tournament calendar data (2026 season)
@@ -149,9 +148,7 @@ function getCountryCode(location: string): string | null {
 
 // ========== SIDEBAR DATA ==========
 
-// 1. Video (1 video, different from homepage)
-const allVideos = getHomepageVideos();
-const sidebarVideos = allVideos.slice(4, 5);
+// Videos are loaded client-side via dynamic-content.js
 
 // 2. ATP Rankings Top 5
 let atpTop5: any[] = [];
@@ -175,31 +172,7 @@ if (atpTop5.length === 0) {
   ];
 }
 
-// 3. News items (3)
-let newsItems: any[] = [];
-try {
-  newsItems = await getActiveNews(3);
-} catch {}
-
-const buzzCatColors: Record<string, string> = {
-  buzz: '#16a34a', scandal: '#dc2626', business: '#d4a017',
-  fashion: '#ec4899', funny: '#f97316', wellness: '#0891b2',
-};
-const buzzCatLabels: Record<string, string> = {
-  buzz: 'Buzz', scandal: 'Scandal', business: 'Business',
-  fashion: 'Fashion', funny: 'LOL', wellness: 'Wellness',
-};
-
-function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  if (hours < 1) return 'Just now';
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days === 1) return 'Yesterday';
-  if (days < 7) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
+// News items are loaded client-side via dynamic-content.js
 
 // 4. Explore articles (4 random from tournaments and records)
 let sidebarArticles: any[] = [];
@@ -324,26 +297,8 @@ function articleUrl(art: { category: string; slug: string }): string {
         <!-- ========== SIDEBAR ========== -->
         <aside class="sb">
 
-          <!-- VIDEO -->
-          {sidebarVideos.length > 0 && (
-            <div class="sb-block">
-              <div class="sb-block__header">
-                <span class="sb-block__label">Watch Tennis</span>
-                <a href="/video/" class="sb-link">All channels &rarr;</a>
-              </div>
-              <div class="sb-videos">
-                {sidebarVideos.map(({ video, category }) => (
-                  <div class="sb-video">
-                    <LiteYouTube videoId={video.id} title={video.title} />
-                    <div class="sb-video__meta">
-                      <span class="sb-video__cat" style={`color: ${category.accentColor}`}>{category.label}</span>
-                      <span class="sb-video__ch">{video.channelName}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <!-- VIDEO — loaded client-side -->
+          <div class="sb-block" data-dynamic="sidebar-videos" data-slots="4"></div>
 
           <!-- ATP RANKINGS TOP 5 -->
           <div class="sb-rankings">
@@ -373,28 +328,8 @@ function articleUrl(art: { category: string; slug: string }): string {
             </table>
           </div>
 
-          <!-- NEWS -->
-          {newsItems.length > 0 && (
-            <div class="sb-news">
-              <div class="sb-news__header">
-                <span class="sb-news__label">Latest News</span>
-                <a href="/news/" class="sb-link">All news &rarr;</a>
-              </div>
-              <div class="sb-news__list">
-                {newsItems.map((item: any) => (
-                  <a href={`/news/#${item.slug}`} class="sb-news__item">
-                    <div class="sb-news__meta">
-                      <span class="sb-news__cat" style={`background: ${buzzCatColors[item.category] || '#666'}`}>
-                        {buzzCatLabels[item.category] || 'News'}
-                      </span>
-                      <span class="sb-news__time">{timeAgo(item.published_at)}</span>
-                    </div>
-                    <span class="sb-news__title">{item.title}</span>
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
+          <!-- NEWS — loaded client-side -->
+          <div class="sb-block" data-dynamic="sidebar-news" data-limit="3"></div>
 
           <!-- EXPLORE ARTICLES -->
           {sidebarArticles.length > 0 && (
@@ -1001,3 +936,4 @@ function articleUrl(art: { category: string; slug: string }): string {
     .tourney-meta { flex-direction: column; gap: 2px; }
   }
 </style>
+<script src="/js/dynamic-content.js" defer></script>

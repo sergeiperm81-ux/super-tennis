@@ -1,9 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import LiteYouTube from '../components/LiteYouTube.astro';
-import { getLatestRankings, getPlayerBySlug, getArticles, getActiveNews } from '../lib/supabase';
+import { getLatestRankings, getPlayerBySlug, getArticles } from '../lib/supabase';
 import { countryFlags, fallbackPlayers, getFlagUrl } from '../lib/fallback-data';
-import { getHomepageVideos, type VideoCategory, type YouTubeVideo } from '../data/youtube-channels';
 
 // Helper to get player photo by slug
 async function getPlayerPhoto(slug: string): Promise<string> {
@@ -241,48 +240,8 @@ try {
   console.warn('Homepage: Failed to fetch articles for news section');
 }
 
-// Fetch daily news ("Tennis Buzz")
-let buzzNews: any[] = [];
-try {
-  buzzNews = await getActiveNews(6);
-} catch (e) {
-  console.warn('Homepage: Failed to fetch buzz news');
-}
-
-// Fetch homepage videos (6 random, one per category — changes daily on rebuild)
-const featuredVideos = getHomepageVideos();
-const videoPair1 = featuredVideos.slice(0, 2);
-const videoPair2 = featuredVideos.slice(2, 4);
-const videoPair3 = featuredVideos.slice(4, 6);
-
-// Buzz category colors & labels
-const buzzCategoryColors: Record<string, string> = {
-  buzz: '#16a34a',
-  scandal: '#dc2626',
-  business: '#d4a017',
-  fashion: '#ec4899',
-  funny: '#f97316',
-  wellness: '#0891b2',
-};
-const buzzCategoryLabels: Record<string, string> = {
-  buzz: 'Buzz',
-  scandal: 'Scandal',
-  business: 'Business',
-  fashion: 'Fashion',
-  funny: 'Funny',
-  wellness: 'Wellness',
-};
-
-// Time ago helper
-function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  if (hours < 1) return 'Just now';
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days === 1) return 'Yesterday';
-  return `${days}d ago`;
-}
+// News and videos are now loaded client-side via dynamic-content.js
+// No SSG fetch needed — data comes from Worker API at runtime
 
 // Map category to URL prefix
 const categoryUrl: Record<string, string> = {
@@ -360,69 +319,33 @@ const playerProfile = profilePlayer ? {
         <!-- ========== MAIN CONTENT COLUMN ========== -->
         <main class="news-main">
 
-          <!-- TENNIS BUZZ — Daily News -->
-          {buzzNews.length > 0 && (
-            <section class="buzz-section">
-              <div class="buzz-header">
-                <div class="buzz-header__left">
-                  <span class="buzz-dot"></span>
-                  <h2 class="buzz-title">Tennis Buzz</h2>
-                </div>
-                <a href="/news/" class="buzz-all">All news &rarr;</a>
+          <!-- TENNIS BUZZ — Daily News (loaded client-side) -->
+          <section class="buzz-section">
+            <div class="buzz-header">
+              <div class="buzz-header__left">
+                <span class="buzz-dot"></span>
+                <h2 class="buzz-title">Tennis Buzz</h2>
               </div>
-              <div class="buzz-grid">
-                {buzzNews.map((item: any) => {
-                  const newsHref = item.body ? `/news/#${item.slug}` : (item.source_url || '#');
-                  const isExternal = !item.body;
-                  return (
-                    <a href={newsHref} target={isExternal ? '_blank' : undefined} rel={isExternal ? 'noopener' : undefined} class="buzz-card">
-                      <div class="buzz-card__image">
-                        {item.image_url ? (
-                          <img src={item.image_url} alt="" loading="lazy" onerror="this.parentElement.classList.add('buzz-card__image--fallback')" />
-                        ) : (
-                          <div class="buzz-card__placeholder"></div>
-                        )}
-                        <span class="buzz-badge" style={`background: ${buzzCategoryColors[item.category] || '#16a34a'}`}>
-                          {buzzCategoryLabels[item.category] || 'Buzz'}
-                        </span>
-                      </div>
-                      <div class="buzz-card__body">
-                        <h3 class="buzz-card__title">{item.title}</h3>
-                        <p class="buzz-card__summary">{item.summary}</p>
-                        <div class="buzz-card__footer">
-                          <span class="buzz-card__source">{item.body ? 'Read more' : (item.source_name || 'Read more')} &rarr;</span>
-                          <span class="buzz-card__time">{timeAgo(item.published_at)}</span>
-                        </div>
-                      </div>
-                    </a>
-                  );
-                })}
-              </div>
-            </section>
-          )}
+              <a href="/news/" class="buzz-all">All news &rarr;</a>
+            </div>
+            <div class="buzz-grid" data-dynamic="news" data-limit="6">
+              <div class="buzz-card skeleton"></div>
+              <div class="buzz-card skeleton"></div>
+              <div class="buzz-card skeleton"></div>
+              <div class="buzz-card skeleton"></div>
+              <div class="buzz-card skeleton"></div>
+              <div class="buzz-card skeleton"></div>
+            </div>
+          </section>
 
-          <!-- WATCH TENNIS — Video Pair 1 -->
-          {videoPair1.length > 0 && (
-            <section class="videos-section">
-              <div class="videos-header">
-                <h2 class="videos-title">Watch Tennis</h2>
-                <a href="/video/" class="videos-all">All channels &rarr;</a>
-              </div>
-              <div class="video-pair">
-                {videoPair1.map(({ video, category }) => (
-                  <div class="video-thumb">
-                    <LiteYouTube videoId={video.id} title={video.title} />
-                    <div class="video-thumb__meta">
-                      <span class="video-thumb__cat" style={`color: ${category.accentColor}`}>
-                        {category.label}
-                      </span>
-                      <span class="video-thumb__channel">{video.channelName}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
+          <!-- WATCH TENNIS — Video Pair 1 (loaded client-side) -->
+          <section class="videos-section">
+            <div class="videos-header">
+              <h2 class="videos-title">Watch Tennis</h2>
+              <a href="/video/" class="videos-all">All channels &rarr;</a>
+            </div>
+            <div class="video-pair" data-dynamic="videos" data-slots="0,1"></div>
+          </section>
 
           <!-- 2. THREE COMPACT CARDS -->
           <div class="row-3-compact">
@@ -461,22 +384,8 @@ const playerProfile = profilePlayer ? {
             </div>
           </a>
 
-          <!-- VIDEO PAIR 2 -->
-          {videoPair2.length > 0 && (
-            <div class="video-pair">
-              {videoPair2.map(({ video, category }) => (
-                <div class="video-thumb">
-                  <LiteYouTube videoId={video.id} title={video.title} />
-                  <div class="video-thumb__meta">
-                    <span class="video-thumb__cat" style={`color: ${category.accentColor}`}>
-                      {category.label}
-                    </span>
-                    <span class="video-thumb__channel">{video.channelName}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <!-- VIDEO PAIR 2 (loaded client-side) -->
+          <div class="video-pair" data-dynamic="videos" data-slots="2,3"></div>
 
           <!-- 5. TWO VERTICAL CARDS -->
           <div class="row-2">
@@ -539,22 +448,8 @@ const playerProfile = profilePlayer ? {
             ))}
           </div>
 
-          <!-- VIDEO PAIR 3 -->
-          {videoPair3.length > 0 && (
-            <div class="video-pair">
-              {videoPair3.map(({ video, category }) => (
-                <div class="video-thumb">
-                  <LiteYouTube videoId={video.id} title={video.title} />
-                  <div class="video-thumb__meta">
-                    <span class="video-thumb__cat" style={`color: ${category.accentColor}`}>
-                      {category.label}
-                    </span>
-                    <span class="video-thumb__channel">{video.channelName}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <!-- VIDEO PAIR 3 (loaded client-side) -->
+          <div class="video-pair" data-dynamic="videos" data-slots="4,5"></div>
 
           <!-- 10. LATEST ARTICLES FROM DATABASE -->
           {latestArticles.length > 0 && (
@@ -1218,6 +1113,16 @@ const playerProfile = profilePlayer ? {
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
   }
+  .buzz-card.skeleton {
+    min-height: 280px;
+    background: linear-gradient(110deg, #f0f0f0 8%, #e8e8e8 18%, #f0f0f0 33%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s linear infinite;
+    border-radius: var(--radius, 12px);
+  }
+  @keyframes skeleton-shimmer {
+    to { background-position: -200% 0; }
+  }
   .buzz-card {
     display: flex;
     flex-direction: column;
@@ -1584,3 +1489,4 @@ const playerProfile = profilePlayer ? {
     });
   });
 </script>
+<script src="/js/dynamic-content.js" defer></script>

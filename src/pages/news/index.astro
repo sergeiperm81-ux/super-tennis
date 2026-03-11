@@ -1,68 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import LiteYouTube from '../../components/LiteYouTube.astro';
-import { getActiveNews, getArticles, getLatestRankings, getPlayerBySlug } from '../../lib/supabase';
+import { getArticles, getLatestRankings, getPlayerBySlug } from '../../lib/supabase';
 import { countryFlags, fallbackPlayers, getFlagUrl } from '../../lib/fallback-data';
-import { getHomepageVideos } from '../../data/youtube-channels';
-import { marked } from 'marked';
 
-// Fetch all active news (with body)
-let allNews: any[] = [];
-try {
-  const raw = await getActiveNews(100);
-  allNews = raw.filter((n: any) => n.body && n.body.length > 50);
-} catch (e) {
-  console.warn('News page: Failed to fetch news');
-}
-
-// Category config
-const categoryColors: Record<string, string> = {
-  buzz: '#16a34a',
-  scandal: '#dc2626',
-  business: '#d4a017',
-  fashion: '#ec4899',
-  funny: '#f97316',
-  wellness: '#0891b2',
-};
-const categoryLabels: Record<string, string> = {
-  buzz: 'Buzz',
-  scandal: 'Scandal',
-  business: 'Business',
-  fashion: 'Fashion',
-  funny: 'LOL',
-  wellness: 'Wellness',
-};
-
-// Get unique categories
-const cats = [...new Set(allNews.map(n => n.category))].filter(Boolean);
-
-// Time ago helper
-function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  if (hours < 1) return 'Just now';
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days === 1) return 'Yesterday';
-  if (days < 7) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-// Format date
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    month: 'long', day: 'numeric', year: 'numeric'
-  });
-}
-
-// Render markdown body to HTML, stripping the first h2 and AI metadata tags
-function renderBody(md: string): string {
-  let cleaned = md
-    .replace(/^##\s+[^\n]+\n*/m, '')           // Remove first h2 (repeats the title)
-    .replace(/\*\*Category\*\*:\s*\w+\s*/gi, '')  // Remove **Category**: xxx
-    .replace(/\*\*Main Player\*\*:\s*[^\n]+\s*/gi, ''); // Remove **Main Player**: xxx
-  return marked.parse(cleaned.trim(), { breaks: true }) as string;
-}
+// News is now loaded client-side via dynamic-content.js — no SSG fetch needed
 
 // JSON-LD
 const jsonLd = {
@@ -76,9 +18,7 @@ const jsonLd = {
 
 // ========== SIDEBAR DATA ==========
 
-// 1. Videos (2 random)
-const allVideos = getHomepageVideos();
-const sidebarVideos = allVideos.slice(0, 2);
+// Videos are loaded client-side via dynamic-content.js
 
 // 2. Featured player
 let sidebarPlayer: any = null;
@@ -173,112 +113,29 @@ const sbCatLabels: Record<string, string> = {
         <!-- ========== MAIN: Accordion List ========== -->
         <main class="np-main">
 
-          <!-- Filters -->
-          {cats.length > 1 && (
-            <div class="np-filters">
-              <button class="np-filter active" data-cat="all">All</button>
-              {cats.map(cat => (
-                <button
-                  class="np-filter"
-                  data-cat={cat}
-                  style={`--cat-color: ${categoryColors[cat] || '#666'}`}
-                >
-                  {categoryLabels[cat] || cat}
-                </button>
-              ))}
-            </div>
-          )}
+          <!-- Filters (populated by client-side script) -->
+          <div class="np-filters" id="np-filters">
+            <button class="np-filter active" data-cat="all">All</button>
+            <button class="np-filter" data-cat="buzz" style="--cat-color: #16a34a">Buzz</button>
+            <button class="np-filter" data-cat="scandal" style="--cat-color: #dc2626">Scandal</button>
+            <button class="np-filter" data-cat="business" style="--cat-color: #d4a017">Business</button>
+            <button class="np-filter" data-cat="fashion" style="--cat-color: #ec4899">Fashion</button>
+            <button class="np-filter" data-cat="funny" style="--cat-color: #f97316">LOL</button>
+            <button class="np-filter" data-cat="wellness" style="--cat-color: #0891b2">Wellness</button>
+          </div>
 
-          <!-- News List -->
-          {allNews.length === 0 ? (
-            <div class="np-empty">
-              <p>No news yet. Check back soon!</p>
-            </div>
-          ) : (
-            <div class="np-list" id="np-list">
-              {allNews.map((item: any) => (
-                <details class="np-item" data-cat={item.category} id={item.slug}>
-                  <summary class="np-item__header">
-                    <a href={item.source_url} target="_blank" rel="noopener noreferrer" class="np-item__thumb" onclick="event.stopPropagation()">
-                      {item.image_url ? (
-                        <img
-                          src={item.image_url}
-                          alt=""
-                          loading="lazy"
-                          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
-                        />
-                      ) : null}
-                      <div class="np-item__thumb-fallback" style={item.image_url ? 'display:none' : ''}>
-                        <span>&#127934;</span>
-                      </div>
-                      <span class="np-item__thumb-source">{item.source_name || 'Source'}</span>
-                    </a>
-                    <div class="np-item__info">
-                      <div class="np-item__meta">
-                        <span
-                          class="np-cat-badge"
-                          style={`background: ${categoryColors[item.category] || '#666'}`}
-                        >
-                          {categoryLabels[item.category] || 'News'}
-                        </span>
-                        <span class="np-item__time">{timeAgo(item.published_at)}</span>
-                      </div>
-                      <h2 class="np-item__title">{item.title}</h2>
-                      <p class="np-item__summary">{item.summary}</p>
-                    </div>
-                    <span class="np-item__chevron" aria-hidden="true">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M6 8l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </span>
-                  </summary>
-
-                  <div class="np-item__body">
-                    <article class="np-article">
-                      <div class="np-article__content" set:html={renderBody(item.body)} />
-
-                      <!-- Source credit -->
-                      <div class="np-source">
-                        <div class="np-source__info">
-                          <span class="np-source__label">Source</span>
-                          <a href={item.source_url} target="_blank" rel="noopener noreferrer" class="np-source__link">
-                            {item.source_name || 'Original article'} &nearr;
-                          </a>
-                          <span class="np-source__date">{formatDate(item.published_at)}</span>
-                        </div>
-                      </div>
-                    </article>
-                  </div>
-                </details>
-              ))}
-            </div>
-          )}
+          <!-- News List (loaded client-side) -->
+          <div class="np-list" id="np-list" data-dynamic="news-full" data-limit="100">
+            <div class="np-loading" style="text-align:center;padding:3rem;color:var(--gray-500)">Loading news...</div>
+          </div>
 
         </main>
 
         <!-- ========== SIDEBAR ========== -->
         <aside class="sb">
 
-          <!-- WATCH TENNIS — 2 videos -->
-          {sidebarVideos.length > 0 && (
-            <div class="sb-block">
-              <div class="sb-block__header">
-                <span class="sb-block__label">Watch Tennis</span>
-                <a href="/video/" class="sb-link">All channels &rarr;</a>
-              </div>
-              <div class="sb-videos">
-                {sidebarVideos.map(({ video, category }) => (
-                  <div class="sb-video">
-                    <LiteYouTube videoId={video.id} title={video.title} />
-                    <div class="sb-video__meta">
-                      <span class="sb-video__cat" style={`color: ${category.accentColor}`}>{category.label}</span>
-                      <span class="sb-video__ch">{video.channelName}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <!-- WATCH TENNIS — 2 videos (loaded client-side) -->
+          <div class="sb-block" data-dynamic="sidebar-videos" data-slots="0,1"></div>
 
           <!-- FEATURED PLAYER -->
           <div class="sb-profile">
@@ -983,32 +840,22 @@ const sbCatLabels: Record<string, string> = {
 </style>
 
 <script>
-  // Category filters
-  const filters = document.querySelectorAll('.np-filter');
-  const items = document.querySelectorAll('.np-item');
-
-  filters.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const cat = btn.getAttribute('data-cat');
-      filters.forEach(f => f.classList.remove('active'));
-      btn.classList.add('active');
-      items.forEach(item => {
-        if (cat === 'all' || item.getAttribute('data-cat') === cat) {
-          item.classList.remove('hidden');
-        } else {
-          item.classList.add('hidden');
-        }
-      });
+  // Category filters — uses event delegation since items are loaded dynamically
+  document.getElementById('np-filters')?.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('.np-filter');
+    if (!btn) return;
+    const cat = btn.getAttribute('data-cat');
+    document.querySelectorAll('.np-filter').forEach(f => f.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.np-item').forEach(item => {
+      if (cat === 'all' || item.getAttribute('data-cat') === cat) {
+        (item as HTMLElement).classList.remove('hidden');
+      } else {
+        (item as HTMLElement).classList.add('hidden');
+      }
     });
   });
 
-  // Handle anchor links (from homepage: /news/#slug)
-  if (window.location.hash) {
-    const slug = window.location.hash.slice(1);
-    const target = document.getElementById(slug);
-    if (target && target.tagName === 'DETAILS') {
-      target.setAttribute('open', '');
-      setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-    }
-  }
+  // Hash navigation is handled by dynamic-content.js after items load
 </script>
+<script src="/js/dynamic-content.js" defer></script>

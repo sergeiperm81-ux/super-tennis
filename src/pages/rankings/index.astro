@@ -1,9 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import LiteYouTube from '../../components/LiteYouTube.astro';
-import { getLatestRankings, getActiveNews, getArticles } from '../../lib/supabase';
+import { getLatestRankings, getArticles } from '../../lib/supabase';
 import { countryFlags, countryNames, getFlagUrl } from '../../lib/fallback-data';
-import { getHomepageVideos } from '../../data/youtube-channels';
 
 // Fetch real data from Supabase
 let atpRankings = await getLatestRankings('atp', 100);
@@ -29,48 +28,7 @@ const rankingsJsonLd = {
 
 // ========== SIDEBAR DATA ==========
 
-// 1. News (2 items)
-let sidebarNews: any[] = [];
-try {
-  const raw = await getActiveNews(4);
-  sidebarNews = raw.filter((n: any) => n.title).slice(0, 2);
-} catch (e) {
-  console.warn('Rankings: Failed to fetch news for sidebar');
-}
-
-// Time ago helper
-function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  if (hours < 1) return 'Just now';
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days === 1) return 'Yesterday';
-  if (days < 7) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-// News category config
-const categoryColors: Record<string, string> = {
-  buzz: '#16a34a',
-  scandal: '#dc2626',
-  business: '#d4a017',
-  fashion: '#ec4899',
-  funny: '#f97316',
-  wellness: '#0891b2',
-};
-const categoryLabels: Record<string, string> = {
-  buzz: 'Buzz',
-  scandal: 'Scandal',
-  business: 'Business',
-  fashion: 'Fashion',
-  funny: 'LOL',
-  wellness: 'Wellness',
-};
-
-// 2. Video (1)
-const allVideos = getHomepageVideos();
-const sidebarVideo = allVideos.length > 0 ? allVideos[0] : null;
+// News and videos are loaded client-side via dynamic-content.js
 
 // 3. Explore articles (5 random from lifestyle + gear)
 let sidebarArticles: any[] = [];
@@ -232,50 +190,11 @@ const sbCatLabels: Record<string, string> = {
         <!-- ========== SIDEBAR ========== -->
         <aside class="sb">
 
-          <!-- NEWS — 2 items -->
-          {sidebarNews.length > 0 && (
-            <div class="sb-block">
-              <div class="sb-block__header">
-                <span class="sb-block__label">Latest News</span>
-                <a href="/news/" class="sb-link">All news &rarr;</a>
-              </div>
-              <div class="sb-news">
-                {sidebarNews.map((item: any) => (
-                  <a href={`/news/#${item.slug}`} class="sb-news__item">
-                    <div class="sb-news__meta">
-                      <span
-                        class="sb-news__cat"
-                        style={`background: ${categoryColors[item.category] || '#666'}`}
-                      >
-                        {categoryLabels[item.category] || 'News'}
-                      </span>
-                      <span class="sb-news__time">{timeAgo(item.published_at)}</span>
-                    </div>
-                    <span class="sb-news__title">{item.title}</span>
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
+          <!-- NEWS — loaded client-side -->
+          <div class="sb-block" data-dynamic="sidebar-news" data-limit="3"></div>
 
-          <!-- VIDEO — 1 video -->
-          {sidebarVideo && (
-            <div class="sb-block">
-              <div class="sb-block__header">
-                <span class="sb-block__label">Watch Tennis</span>
-                <a href="/video/" class="sb-link">All channels &rarr;</a>
-              </div>
-              <div class="sb-videos">
-                <div class="sb-video">
-                  <LiteYouTube videoId={sidebarVideo.video.id} title={sidebarVideo.video.title} />
-                  <div class="sb-video__meta">
-                    <span class="sb-video__cat" style={`color: ${sidebarVideo.category.accentColor}`}>{sidebarVideo.category.label}</span>
-                    <span class="sb-video__ch">{sidebarVideo.video.channelName}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          <!-- VIDEO — loaded client-side -->
+          <div class="sb-block" data-dynamic="sidebar-videos" data-slots="0"></div>
 
           <!-- EXPLORE — 5 articles from lifestyle + gear -->
           {sidebarArticles.length > 0 && (
@@ -700,3 +619,4 @@ const sbCatLabels: Record<string, string> = {
     }
   }
 </style>
+<script src="/js/dynamic-content.js" defer></script>

@@ -1,9 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import LiteYouTube from '../../components/LiteYouTube.astro';
-import { getLeaderboard, getArticles, getPlayerBySlug, getActiveNews } from '../../lib/supabase';
+import { getLeaderboard, getArticles, getPlayerBySlug } from '../../lib/supabase';
 import { countryFlags, fallbackPlayers, getFlagUrl, stripMarkdown } from '../../lib/fallback-data';
-import { getHomepageVideos } from '../../data/youtube-channels';
 
 // Dynamic leaderboards from Supabase
 let mostTitlesATP: any[] = [];
@@ -111,16 +110,7 @@ if (!sidebarPlayer) {
   };
 }
 
-// 2. Videos — use slice(2, 4) for different videos than other pages
-const allVideos = getHomepageVideos();
-const sidebarVideos = allVideos.slice(2, 4);
-
-// 3. News items — fetch 4, show last 2 (slice 2,4)
-let sidebarNews: any[] = [];
-try {
-  const newsAll = await getActiveNews(4);
-  sidebarNews = newsAll.slice(2, 4);
-} catch {}
+// News and videos are loaded client-side via dynamic-content.js
 
 // 4. Explore articles — 4 random from players and vs categories
 let sidebarArticles: any[] = [];
@@ -500,49 +490,11 @@ const newsCatLabels: Record<string, string> = {
             </a>
           </div>
 
-          <!-- 2. WATCH TENNIS — 2 videos -->
-          {sidebarVideos.length > 0 && (
-            <div class="sb-block">
-              <div class="sb-block__header">
-                <span class="sb-block__label">Watch Tennis</span>
-                <a href="/video/" class="sb-link">All channels &rarr;</a>
-              </div>
-              <div class="sb-videos">
-                {sidebarVideos.map(({ video, category }) => (
-                  <div class="sb-video">
-                    <LiteYouTube videoId={video.id} title={video.title} />
-                    <div class="sb-video__meta">
-                      <span class="sb-video__cat" style={`color: ${category.accentColor}`}>{category.label}</span>
-                      <span class="sb-video__ch">{video.channelName}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <!-- WATCH TENNIS — loaded client-side -->
+          <div class="sb-block" data-dynamic="sidebar-videos" data-slots="2,3"></div>
 
-          <!-- 3. NEWS -->
-          {sidebarNews.length > 0 && (
-            <div class="sb-news">
-              <div class="sb-news__header">
-                <span class="sb-news__label">Tennis Buzz</span>
-                <a href="/news/" class="sb-link">All news &rarr;</a>
-              </div>
-              <div class="sb-news__list">
-                {sidebarNews.map((item: any) => {
-                  const newsHref = item.body ? `/news/#${item.slug}` : (item.source_url || '#');
-                  return (
-                    <a href={newsHref} class="sb-news__item">
-                      <span class="sb-news__cat" style={`background: ${newsCatColors[item.category] || '#16a34a'}`}>
-                        {newsCatLabels[item.category] || 'Buzz'}
-                      </span>
-                      <span class="sb-news__title">{item.title}</span>
-                    </a>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+          <!-- NEWS — loaded client-side -->
+          <div class="sb-block" data-dynamic="sidebar-news" data-limit="2"></div>
 
           <!-- 4. EXPLORE ARTICLES -->
           {sidebarArticles.length > 0 && (
@@ -1374,3 +1326,4 @@ const newsCatLabels: Record<string, string> = {
     }
   }
 </style>
+<script src="/js/dynamic-content.js" defer></script>
