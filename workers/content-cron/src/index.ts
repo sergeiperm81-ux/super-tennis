@@ -611,17 +611,20 @@ export default {
 
     if (url.pathname === '/trigger/news') {
       const result = await generateNews(env);
+      await triggerRebuild(env);
       return new Response(result, { headers: { 'Content-Type': 'text/plain' } });
     }
 
     if (url.pathname === '/trigger/videos') {
       const result = await updateVideos(env);
+      await triggerRebuild(env);
       return new Response(result, { headers: { 'Content-Type': 'text/plain' } });
     }
 
     if (url.pathname === '/trigger/all') {
       const newsResult = await generateNews(env);
       const videoResult = await updateVideos(env);
+      await triggerRebuild(env);
       return new Response(`${newsResult}\n\n---\n\n${videoResult}`, {
         headers: { 'Content-Type': 'text/plain' },
       });
