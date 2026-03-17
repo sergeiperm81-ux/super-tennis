@@ -113,7 +113,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
             <span class="stats-kpi__value" id="pub-total">—</span>
           </div>
           <div class="stats-kpi__card">
-            <span class="stats-kpi__label">Queued</span>
+            <span class="stats-kpi__label">In Queue</span>
             <span class="stats-kpi__value" id="pub-queued">—</span>
           </div>
           <div class="stats-kpi__card">
@@ -306,31 +306,37 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     document.getElementById('devices-bars').innerHTML = devicesHtml;
     document.getElementById('devices-section').hidden = false;
   }
-  // ===== TAB SWITCHING =====
-  document.querySelectorAll('.stats-tab').forEach(function(tab) {
-    tab.addEventListener('click', function() {
-      document.querySelectorAll('.stats-tab').forEach(function(t) { t.classList.remove('active'); });
-      document.querySelectorAll('.stats-tab-panel').forEach(function(p) { p.hidden = true; });
-      tab.classList.add('active');
-      document.getElementById('tab-' + tab.dataset.tab).hidden = false;
+  // ===== TAB SWITCHING with URL hash persistence =====
+  function switchTab(tabName) {
+    document.querySelectorAll('.stats-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.stats-tab-panel').forEach(function(p) { p.hidden = true; });
+    var btn = document.querySelector('[data-tab="' + tabName + '"]');
+    if (btn) btn.classList.add('active');
+    document.getElementById('tab-' + tabName).hidden = false;
+    location.hash = tabName;
 
-      // Load publications data when switching to that tab
-      if (tab.dataset.tab === 'publications' && !pubLoaded) {
-        var sp = sessionStorage.getItem('stats_pwd') || '';
-        if (sp) {
-          document.getElementById('pub-login-form').hidden = true;
-          document.getElementById('pub-dashboard').hidden = false;
-          loadPublications();
-        }
+    if (tabName === 'publications' && !pubLoaded) {
+      var sp = sessionStorage.getItem('stats_pwd') || '';
+      if (sp) {
+        document.getElementById('pub-login-form').hidden = true;
+        document.getElementById('pub-dashboard').hidden = false;
+        loadPublications();
       }
-    });
+    }
+  }
+
+  document.querySelectorAll('.stats-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() { switchTab(tab.dataset.tab); });
   });
+
+  // Restore tab from URL hash on page load
+  var hashTab = location.hash.replace('#', '');
+  if (hashTab === 'publications') switchTab('publications');
 
   // ===== PUBLICATIONS TAB =====
   var pubLoaded = false;
   var allPubs = [];
 
-  // Auto-login for publications if already authenticated (but don't load data yet)
   var pubPwd = sessionStorage.getItem('stats_pwd') || '';
   if (pubPwd) {
     document.getElementById('pub-login-form').hidden = true;
@@ -341,18 +347,16 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     e.preventDefault();
     pubPwd = document.getElementById('pub-pwd-input').value;
     sessionStorage.setItem('stats_pwd', pubPwd);
-    pwd = pubPwd; // sync with analytics password
+    pwd = pubPwd;
     document.getElementById('pub-login-form').hidden = true;
     document.getElementById('pub-dashboard').hidden = false;
     loadPublications();
   });
 
-  // Refresh button — stays on publications tab
   document.getElementById('pub-refresh').addEventListener('click', function() {
     loadPublications();
   });
 
-  // Filter buttons
   document.querySelectorAll('.pub-filter').forEach(function(btn) {
     btn.addEventListener('click', function() {
       document.querySelectorAll('.pub-filter').forEach(function(b) { b.classList.remove('active'); });
@@ -360,6 +364,13 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       filterPublications(btn.dataset.status);
     });
   });
+
+  function fmtDate(dateStr) {
+    if (!dateStr || dateStr === '—') return '—';
+    var parts = dateStr.split('-');
+    if (parts.length !== 3) return dateStr;
+    return parts[2] + '.' + parts[1] + '.' + parts[0];
+  }
 
   function loadPublications() {
     var list = document.getElementById('pub-list');
@@ -386,7 +397,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           };
         });
 
-        // KPIs
         var published = allPubs.filter(function(p) { return p.youtube_id; });
         var queued = allPubs.filter(function(p) { return !p.youtube_id; });
         document.getElementById('pub-total').textContent = published.length;
@@ -416,34 +426,44 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     }
 
     var catColors = { scandal:'#ef4444', love:'#ec4899', money:'#f59e0b', fashion:'#8b5cf6', viral:'#06b6d4', buzz:'#22c55e', wellness:'#06b6d4', funny:'#f97316', business:'#d4a017' };
+    var catLabels = { scandal:'Scandal', love:'Love', money:'Money', fashion:'Fashion', viral:'Viral', buzz:'News', wellness:'Wellness', funny:'LOL', business:'Business' };
 
-    // Sort: queued first, then published (newest first within each group)
-    var queued = pubs.filter(function(p) { return !p.youtube_id; });
+    // Sort: PUBLISHED first (newest), then queued (newest)
     var published = pubs.filter(function(p) { return p.youtube_id; });
-    var sorted = queued.concat(published);
+    var queued = pubs.filter(function(p) { return !p.youtube_id; });
+    var sorted = published.concat(queued);
 
-    var html = '<table class="pub-table"><thead><tr>' +
-      '<th style="width:80px">Preview</th>' +
-      '<th style="width:90px">Category</th>' +
-      '<th>Title & Lead</th>' +
-      '<th style="width:100px">Date</th>' +
-      '<th style="width:120px">Status</th>' +
-      '</tr></thead><tbody>';
+    var html = '';
 
-    sorted.forEach(function(p) {
+    // Published section
+    if (published.length > 0) {
+      html += '<div class="pub-section-header pub-section-header--published">Published (' + published.length + ')</div>';
+    }
+
+    html += '<table class="pub-table"><tbody>';
+
+    sorted.forEach(function(p, i) {
       var catColor = catColors[p.category] || catColors.buzz;
+      var catLabel = catLabels[p.category] || 'News';
       var isPublished = !!p.youtube_id;
 
-      // Thumbnail: YouTube thumbnail if published, else news image or placeholder
+      // Insert "In Queue" header before first queued item
+      if (!isPublished && (i === 0 || sorted[i - 1].youtube_id)) {
+        html += '</tbody></table>';
+        html += '<div class="pub-section-header pub-section-header--queued">In Queue (' + queued.length + ')</div>';
+        html += '<table class="pub-table"><tbody>';
+      }
+
+      // Thumbnail
       var thumb = '';
       if (isPublished) {
-        thumb = '<a href="https://youtube.com/shorts/' + p.youtube_id + '" target="_blank" rel="noopener" title="Watch on YouTube">' +
+        thumb = '<a href="https://youtube.com/shorts/' + p.youtube_id + '" target="_blank" rel="noopener">' +
           '<img src="https://i.ytimg.com/vi/' + p.youtube_id + '/default.jpg" alt="" class="pub-thumb" />' +
           '</a>';
       } else if (p.image_url) {
-        thumb = '<img src="' + p.image_url + '" alt="" class="pub-thumb" />';
+        thumb = '<img src="' + p.image_url + '" alt="" class="pub-thumb" onerror="this.style.display=\'none\'" />';
       } else {
-        thumb = '<div class="pub-thumb pub-thumb--empty">🎬</div>';
+        thumb = '<div class="pub-thumb pub-thumb--empty"></div>';
       }
 
       // Status
@@ -451,31 +471,22 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       if (isPublished) {
         statusCell = '<a href="https://youtube.com/shorts/' + p.youtube_id + '" target="_blank" rel="noopener" class="pub-yt-link">▶ YouTube</a>';
       } else {
-        statusCell = '<span class="pub-badge pub-badge--queued">Queued</span>';
+        statusCell = '<span class="pub-badge pub-badge--queued">In Queue</span>';
       }
 
       html += '<tr class="' + (isPublished ? 'pub-row--published' : 'pub-row--queued') + '">' +
-        '<td>' + thumb + '</td>' +
-        '<td><span class="pub-cat-badge" style="background:' + catColor + '">' + (p.category || 'buzz').toUpperCase() + '</span></td>' +
-        '<td><strong class="pub-row-title">' + p.title + '</strong>' +
-          (p.summary ? '<br><span class="pub-row-summary">' + p.summary.slice(0, 120) + '</span>' : '') +
+        '<td class="pub-td-thumb">' + thumb + '</td>' +
+        '<td class="pub-td-cat"><span class="pub-cat-badge" style="background:' + catColor + '">' + catLabel + '</span></td>' +
+        '<td class="pub-td-content"><div class="pub-row-title">' + p.title + '</div>' +
+          (p.summary ? '<div class="pub-row-summary">' + p.summary.slice(0, 100) + '</div>' : '') +
         '</td>' +
-        '<td class="pub-row-date">' + p.date + '</td>' +
-        '<td>' + statusCell + '</td>' +
+        '<td class="pub-td-date">' + fmtDate(p.date) + '</td>' +
+        '<td class="pub-td-status">' + statusCell + '</td>' +
         '</tr>';
     });
 
     html += '</tbody></table>';
-
-    // Section headers
-    var queuedCount = queued.length;
-    var publishedCount = published.length;
-    var header = '';
-    if (queuedCount > 0) {
-      header += '<div class="pub-section-header pub-section-header--queued">Queued for publication (' + queuedCount + ')</div>';
-    }
-
-    list.innerHTML = header + html;
+    list.innerHTML = html;
   }
 
 })();
@@ -624,61 +635,72 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   /* Publications table */
   .pub-table {
     width: 100%; border-collapse: collapse; font-size: 0.88rem;
-  }
-  .pub-table th {
-    text-align: left; color: #9ca3af; font-size: 0.72rem;
-    text-transform: uppercase; letter-spacing: 1px;
-    padding: 10px 12px; border-bottom: 2px solid #e5e7eb;
-    background: #f9fafb;
+    table-layout: fixed;
   }
   .pub-table :global(td) {
-    padding: 10px 12px; border-bottom: 1px solid #f3f4f6;
+    padding: 12px 10px; border-bottom: 1px solid #f3f4f6;
     color: #374151; vertical-align: middle;
   }
   .pub-table :global(tr:hover) { background: #f9fafb; }
   .pub-row--queued { background: #fffbeb; }
   .pub-row--queued:hover { background: #fef3c7 !important; }
 
+  /* Column widths */
+  .pub-td-thumb { width: 80px; padding-right: 12px !important; }
+  .pub-td-cat { width: 80px; padding-right: 14px !important; }
+  .pub-td-content { /* flex fill */ }
+  .pub-td-date { width: 90px; text-align: center; white-space: nowrap; }
+  .pub-td-status { width: 100px; text-align: center; }
+
   .pub-thumb {
-    width: 64px; height: 48px; object-fit: cover; border-radius: 6px;
+    width: 68px; height: 48px; object-fit: cover; border-radius: 6px;
     display: block; background: #e5e7eb;
   }
   .pub-thumb--empty {
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem; color: #9ca3af;
+    width: 68px; height: 48px; border-radius: 6px; background: #e5e7eb;
   }
   .pub-cat-badge {
+    display: inline-block;
     color: #fff; font-size: 0.65rem; font-weight: 700;
-    padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px;
-    white-space: nowrap;
+    padding: 3px 8px; border-radius: 4px; letter-spacing: 0.5px;
+    white-space: nowrap; text-transform: uppercase;
   }
   .pub-row-title {
-    font-size: 0.88rem; color: #1a1a2e; line-height: 1.35;
+    font-size: 0.85rem; color: #1a1a2e; line-height: 1.35;
+    font-weight: 600;
   }
   .pub-row-summary {
-    font-size: 0.78rem; color: #6b7280; line-height: 1.4;
+    font-size: 0.75rem; color: #6b7280; line-height: 1.35;
+    margin-top: 3px;
+    overflow: hidden; text-overflow: ellipsis;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
   }
-  .pub-row-date { font-size: 0.78rem; color: #9ca3af; white-space: nowrap; }
   .pub-yt-link {
     display: inline-flex; align-items: center; gap: 4px;
     color: #dc2626; font-size: 0.78rem; font-weight: 600;
     text-decoration: none; padding: 4px 10px; border-radius: 6px;
     background: #fef2f2; transition: background 0.15s;
+    white-space: nowrap;
   }
   .pub-yt-link:hover { background: #fee2e2; }
 
   .pub-badge {
     font-size: 0.72rem; font-weight: 600; padding: 3px 10px;
-    border-radius: 10px;
+    border-radius: 10px; white-space: nowrap;
   }
   .pub-badge--queued { background: #fef3c7; color: #92400e; }
 
   .pub-section-header {
-    padding: 10px 16px; font-size: 0.78rem; font-weight: 700;
+    padding: 12px 16px; font-size: 0.78rem; font-weight: 700;
     text-transform: uppercase; letter-spacing: 1px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .pub-section-header--published {
+    background: #f0fdf4; color: #166534; border-bottom-color: #bbf7d0;
   }
   .pub-section-header--queued {
-    background: #fffbeb; color: #92400e; border-bottom: 1px solid #fde68a;
+    background: #fffbeb; color: #92400e; border-bottom-color: #fde68a;
+    margin-top: 8px;
   }
 
   .pub-filter {
@@ -693,8 +715,11 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     .stats-columns { grid-template-columns: 1fr; }
     .stats-login__form { flex-direction: column; }
     .stats-tabs { max-width: 100%; }
-    .pub-table { font-size: 0.78rem; }
-    .pub-table th:nth-child(3), .pub-table :global(td:nth-child(3)) { max-width: 200px; }
-    .pub-thumb { width: 48px; height: 36px; }
+    .pub-table { font-size: 0.78rem; table-layout: auto; }
+    .pub-td-thumb { width: 56px; }
+    .pub-td-cat { width: 64px; }
+    .pub-td-date { display: none; }
+    .pub-thumb { width: 50px; height: 36px; }
+    .pub-thumb--empty { width: 50px; height: 36px; }
   }
 </style>
