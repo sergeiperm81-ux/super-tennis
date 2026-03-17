@@ -123,7 +123,7 @@ const hero2 = {
 const hero3 = {
   title: "Your Complete Guide to Wimbledon",
   badge: "TOURNAMENTS",
-  image: federerPhoto,
+  image: '/images/tournaments/wimbledon.jpg',
   href: "/tournaments/wimbledon-guide/",
   desc: "Everything you need to know about the world's most prestigious tennis tournament.",
 };
@@ -313,6 +313,16 @@ const playerProfile = profilePlayer ? {
 ---
 
 <BaseLayout title="Home" jsonLd={homepageJsonLd}>
+  <!-- TRENDING NOW ticker bar -->
+  <div class="trending-bar" id="trending-bar">
+    <div class="trending-bar__label">TRENDING</div>
+    <div class="trending-bar__track">
+      <div class="trending-bar__scroll" id="trending-scroll">
+        <!-- Populated by JS from latest news -->
+      </div>
+    </div>
+  </div>
+
   <div class="news-page">
     <div class="container">
       <div class="news-layout">
@@ -324,7 +334,7 @@ const playerProfile = profilePlayer ? {
             <div class="buzz-header">
               <div class="buzz-header__left">
                 <span class="buzz-dot"></span>
-                <h2 class="buzz-title">Tennis Buzz</h2>
+                <h2 class="buzz-title">What's Hot</h2>
               </div>
               <a href="/news/" class="buzz-all">All news &rarr;</a>
             </div>
@@ -516,7 +526,7 @@ const playerProfile = profilePlayer ? {
                 <img src={playerProfile.image} alt={playerProfile.name} loading="lazy" />
                 <div class="sb-profile__name">
                   {getFlagUrl(playerProfile.country) ? (
-                    <img src={getFlagUrl(playerProfile.country, 20)} alt={playerProfile.country} class="sb-flag" width="20" height="15" loading="lazy" />
+                    <img src={getFlagUrl(playerProfile.country, 40)} alt={playerProfile.country} class="sb-flag" width="20" height="15" loading="lazy" />
                   ) : (
                     <span>{playerProfile.flag}</span>
                   )}
@@ -529,6 +539,14 @@ const playerProfile = profilePlayer ? {
                 <div class="sb-profile__row"><span>Record</span><span>{playerProfile.wl}</span></div>
               </div>
             </a>
+          </div>
+
+          <!-- TRENDING NEWS (loaded client-side) -->
+          <div class="sb-trending">
+            <div class="sb-trending__header">
+              <span class="sb-trending__label">Hot Right Now</span>
+            </div>
+            <div class="sb-trending__list" data-dynamic="sidebar-news" data-limit="5"></div>
           </div>
 
           <!-- RANKINGS -->
@@ -577,6 +595,71 @@ const playerProfile = profilePlayer ? {
 </BaseLayout>
 
 <style>
+  /* ===== TRENDING BAR ===== */
+  .trending-bar {
+    display: flex;
+    align-items: center;
+    background: var(--gray-900, #111);
+    border-bottom: 2px solid var(--ball-yellow, #e6d14c);
+    overflow: hidden;
+    height: 38px;
+  }
+  .trending-bar__label {
+    flex-shrink: 0;
+    background: var(--ball-yellow, #e6d14c);
+    color: var(--gray-900, #111);
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    padding: 0 16px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+  .trending-bar__track {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+  }
+  .trending-bar__scroll {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: 100%;
+    white-space: nowrap;
+    animation: trending-scroll 30s linear infinite;
+    padding-left: 16px;
+  }
+  .trending-bar__scroll:hover {
+    animation-play-state: paused;
+  }
+  :global(.trending-item) {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.15s;
+    flex-shrink: 0;
+  }
+  :global(.trending-item:hover) {
+    color: var(--ball-yellow, #e6d14c);
+  }
+  :global(.trending-dot) {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  @keyframes trending-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
   /* ===== NEWS PAGE LAYOUT ===== */
   .news-page {
     padding: 24px 0 64px;
@@ -949,7 +1032,7 @@ const playerProfile = profilePlayer ? {
     height: 160px;
     overflow: hidden;
   }
-  .sb-profile__img img {
+  .sb-profile__img > img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -988,6 +1071,29 @@ const playerProfile = profilePlayer ? {
   .sb-profile__row span:last-child {
     font-weight: 700;
     color: var(--gray-900);
+  }
+
+  /* Sidebar: Trending News */
+  .sb-trending {
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+  .sb-trending__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #dc2626, #e11d7e);
+  }
+  .sb-trending__label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
   }
 
   /* Sidebar: Rankings */
@@ -1252,6 +1358,10 @@ const playerProfile = profilePlayer ? {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
+  }
+  .video-pair--single {
+    grid-template-columns: 1fr;
+    max-width: 50%;
   }
   .video-thumb__meta {
     padding: 10px 0 0;

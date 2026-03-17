@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /stats/
 
 Sitemap: https://super.tennis/sitemap-index.xml
 

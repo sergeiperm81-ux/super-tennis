@@ -2,7 +2,7 @@
  * SUPER.TENNIS Content Cron Worker
  *
  * Cron schedule (daily 06:00 UTC):
- * - DAILY:  Generate 20 tennis news → Supabase (no rebuild, client-side fetch)
+ * - DAILY:  Generate 25 tennis news → Supabase (no rebuild, client-side fetch)
  * - EVERY 3 DAYS: Update YouTube video IDs → Supabase (no rebuild)
  * - WEEKLY (Monday): Generate 1 evergreen article → Supabase → rebuild
  * - MONTHLY (1st): Update ATP/WTA rankings → Supabase → rebuild
@@ -17,18 +17,41 @@ export interface Env {
   SUPABASE_SERVICE_KEY: string;
   OPENAI_API_KEY: string;
   GITHUB_TOKEN?: string; // GitHub PAT for triggering repository_dispatch
+  ANALYTICS_PASSWORD?: string; // Password for /stats/ dashboard
+  CF_API_TOKEN?: string; // Cloudflare API token with Analytics:Read
+  CF_ZONE_ID?: string; // Cloudflare zone ID for super.tennis
 }
 
 // ============================================================
 // RSS FEEDS
 // ============================================================
-const RSS_FEEDS = [
+// --- Tennis-specific sources ---
+const TENNIS_FEEDS = [
   { name: 'Essentially Sports', url: 'https://www.essentiallysports.com/category/tennis/feed/' },
   { name: 'ESPN Tennis', url: 'https://www.espn.com/espn/rss/tennis/news' },
   { name: 'BBC Sport Tennis', url: 'https://feeds.bbci.co.uk/sport/tennis/rss.xml' },
   { name: 'Google News Tennis', url: 'https://news.google.com/rss/search?q=tennis+player+when:2d&hl=en-US&gl=US&ceid=US:en' },
-  { name: 'Google News Tennis Buzz', url: 'https://news.google.com/rss/search?q=tennis+(scandal+OR+fashion+OR+engagement+OR+controversy+OR+dating+OR+wedding+OR+injury+OR+retire)&hl=en-US&gl=US&ceid=US:en' },
 ];
+
+// --- Lifestyle / celebrity / business sources (need tennis keyword filtering) ---
+const LIFESTYLE_FEEDS = [
+  { name: 'TMZ', url: 'https://www.tmz.com/rss.xml' },
+  { name: 'Daily Mail Sport', url: 'https://www.dailymail.co.uk/sport/tennis/index.rss' },
+  { name: 'People Magazine', url: 'https://feeds.people.com/people/rss' },
+  { name: 'GQ', url: 'https://www.gq.com/feed/rss' },
+  { name: 'Bleacher Report', url: 'https://bleacherreport.com/tennis.rss' },
+];
+
+// --- Google News lifestyle queries (pre-filtered for tennis + drama/lifestyle) ---
+const GOOGLE_NEWS_LIFESTYLE_FEEDS = [
+  { name: 'GN Tennis Drama', url: 'https://news.google.com/rss/search?q=tennis+(scandal+OR+controversy+OR+drama+OR+cheating+OR+doping+OR+banned+OR+fine+OR+argument)&hl=en-US&gl=US&ceid=US:en' },
+  { name: 'GN Tennis Lifestyle', url: 'https://news.google.com/rss/search?q=tennis+player+(dating+OR+wedding+OR+divorce+OR+girlfriend+OR+boyfriend+OR+wife+OR+husband+OR+baby+OR+engaged)&hl=en-US&gl=US&ceid=US:en' },
+  { name: 'GN Tennis Money', url: 'https://news.google.com/rss/search?q=tennis+(endorsement+OR+sponsorship+OR+net+worth+OR+salary+OR+prize+money+OR+contract+OR+million+OR+billion+OR+richest)&hl=en-US&gl=US&ceid=US:en' },
+  { name: 'GN Tennis Fashion', url: 'https://news.google.com/rss/search?q=tennis+(fashion+OR+outfit+OR+style+OR+Nike+OR+Adidas+OR+Gucci+OR+Vogue+OR+photoshoot+OR+red+carpet)&hl=en-US&gl=US&ceid=US:en' },
+  { name: 'GN Tennis Social', url: 'https://news.google.com/rss/search?q=tennis+player+(instagram+OR+tiktok+OR+viral+OR+meme+OR+funny+OR+video+OR+reaction+OR+celebrity)&hl=en-US&gl=US&ceid=US:en' },
+];
+
+const RSS_FEEDS = [...TENNIS_FEEDS, ...LIFESTYLE_FEEDS, ...GOOGLE_NEWS_LIFESTYLE_FEEDS];
 
 // ============================================================
 // PLAYER KEYWORDS → SLUGS
@@ -68,6 +91,8 @@ const YOUTUBE_CHANNELS = [
   { id: 'UCT4PpIx1TWzgzi4gZKaZamA', name: 'Top Tennis Training', category: 'coaching' },
   { id: 'UC5LvAVo8fSKuEMsBN7s7ZhA', name: 'Functional Tennis', category: 'coaching' },
   { id: 'UCNes26KJrwooRadnxzJfcPA', name: 'Ben Shelton', category: 'vlogs' },
+  { id: 'UCEnQWmFQmLRdAzTMYT11pBQ', name: 'Aryna Sabalenka', category: 'entertainment' },
+  { id: 'UCXQ-a9jN5DkWtSYKjVXqsew', name: 'Fuzzy Yellow Balls', category: 'entertainment' },
 ];
 
 // ============================================================
@@ -233,10 +258,29 @@ async function fetchFeed(feed: { name: string; url: string }): Promise<RssItem[]
 const MATCH_SCORE_RE = /\d{1,2}-\d{1,2}[,\s]+\d{1,2}-\d{1,2}/;
 const BORING_RE = /\b(draw|bracket|seeds|qualifying|prediction|preview|odds|betting|pick|tip)\b/i;
 
+// Tennis keywords for filtering lifestyle sources — must mention tennis or a known player
+const TENNIS_KEYWORDS_RE = new RegExp(
+  '\\b(' +
+  'tennis|' +
+  Object.keys(PLAYER_KEYWORDS).filter(k => k.length > 3).join('|') + // skip short names like 'iga', 'rafa'
+  ')\\b',
+  'i',
+);
+
+// Names of lifestyle feeds that need tennis keyword filtering
+const LIFESTYLE_FEED_NAMES = new Set(LIFESTYLE_FEEDS.map(f => f.name));
+
 function isGoodHeadline(item: RssItem, hoursAgo: number): boolean {
   if (!item.title || item.title.length < 10) return false;
   if (MATCH_SCORE_RE.test(item.title)) return false;
   if (BORING_RE.test(item.title)) return false;
+
+  // Lifestyle sources must mention tennis or a known player in title/description
+  if (LIFESTYLE_FEED_NAMES.has(item.sourceName)) {
+    const text = `${item.title} ${item.description}`;
+    if (!TENNIS_KEYWORDS_RE.test(text)) return false;
+  }
+
   if (item.pubDate) {
     try {
       const pub = new Date(item.pubDate).getTime();
@@ -250,16 +294,30 @@ function isGoodHeadline(item: RssItem, hoursAgo: number): boolean {
 // ============================================================
 // OG:IMAGE EXTRACTION
 // ============================================================
-async function fetchOgImage(url: string, rssImage: string | null): Promise<string | null> {
-  if (rssImage && rssImage.startsWith('http') && !rssImage.includes('1x1') && !rssImage.includes('pixel')) {
+// Reject generic site logos/banners that aren't real article images
+const OG_IMAGE_BLACKLIST = [
+  'th-banner', 'og-default', 'logo', 'site-banner', 'default-share',
+  'placeholder', 'favicon', 'brand-', 'social-share', 'og_image',
+];
+
+function isGenericOgImage(imageUrl: string): boolean {
+  const lower = imageUrl.toLowerCase();
+  return OG_IMAGE_BLACKLIST.some(term => lower.includes(term));
+}
+
+async function fetchOgImage(url: string, rssImage: string | null, realUrl?: string | null): Promise<string | null> {
+  if (rssImage && rssImage.startsWith('http') && !rssImage.includes('1x1') && !rssImage.includes('pixel') && !isGenericOgImage(rssImage)) {
     return rssImage;
   }
-  if (!url || url.includes('news.google.com')) return null; // Skip Google News URLs (redirect issues)
+
+  // For Google News URLs, try the real source URL instead
+  const fetchUrl = (url && url.includes('news.google.com') && realUrl) ? realUrl : url;
+  if (!fetchUrl) return null;
 
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
-    const res = await fetch(url, {
+    const res = await fetch(fetchUrl, {
       signal: controller.signal,
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; SuperTennisBot/1.0)' },
       redirect: 'follow',
@@ -276,7 +334,7 @@ async function fetchOgImage(url: string, rssImage: string | null): Promise<strin
     ];
     for (const pattern of patterns) {
       const match = html.match(pattern);
-      if (match?.[1] && match[1].startsWith('http')) {
+      if (match?.[1] && match[1].startsWith('http') && !isGenericOgImage(match[1])) {
         return match[1].replace(/&amp;/g, '&');
       }
     }
@@ -287,8 +345,11 @@ async function fetchOgImage(url: string, rssImage: string | null): Promise<strin
 // ============================================================
 // PLAYER PHOTO LOOKUP
 // ============================================================
+const _playerPhotoCache = new Map<string, string | null>();
 async function findPlayerPhoto(env: Env, playerName: string | null): Promise<string | null> {
   if (!playerName) return null;
+  const cacheKey = playerName.trim().toLowerCase();
+  if (_playerPhotoCache.has(cacheKey)) return _playerPhotoCache.get(cacheKey)!;
   try {
     const parts = playerName.trim().split(/\s+/);
     const lastName = parts[parts.length - 1];
@@ -298,12 +359,17 @@ async function findPlayerPhoto(env: Env, playerName: string | null): Promise<str
       'image_url': 'not.is.null',
       'limit': '5',
     });
-    if (!data || data.length === 0) return null;
-    if (data.length === 1) return data[0].image_url;
-    const firstName = parts.slice(0, -1).join(' ').toLowerCase();
-    const exact = data.find((p: any) => p.first_name.toLowerCase().startsWith(firstName));
-    return exact?.image_url || data[0].image_url;
-  } catch { return null; }
+    if (!data || data.length === 0) { _playerPhotoCache.set(cacheKey, null); return null; }
+    let result: string;
+    if (data.length === 1) { result = data[0].image_url; }
+    else {
+      const firstName = parts.slice(0, -1).join(' ').toLowerCase();
+      const exact = data.find((p: any) => p.first_name.toLowerCase().startsWith(firstName));
+      result = exact?.image_url || data[0].image_url;
+    }
+    _playerPhotoCache.set(cacheKey, result);
+    return result;
+  } catch { _playerPhotoCache.set(cacheKey, null); return null; }
 }
 
 function findPlayerSlugs(text: string): string[] {
@@ -321,19 +387,36 @@ function findPlayerSlugs(text: string): string[] {
 async function curateWithOpenAI(env: Env, headlines: RssItem[], limit: number): Promise<any[]> {
   const headlineList = headlines.map((h, i) => `${i + 1}. [${h.sourceName}] ${h.title}`).join('\n');
 
-  const systemPrompt = `You are an editorial writer for SUPER.TENNIS, a tennis website for casual fans who love the drama and lifestyle around tennis — not just match scores.
+  const systemPrompt = `You are the editor-in-chief of SUPER.TENNIS — the glossiest tennis lifestyle magazine on the internet. Think Vanity Fair meets TMZ meets Vogue, but entirely about the world of tennis. Our readers are NOT tennis nerds — they're people who love celebrity culture, fashion, money, drama, and glamour, and tennis happens to be their lens into that world.
 
-Select the ${limit} most interesting stories, then write an original article for each.
+Select the ${limit} most entertaining stories, then write an original article for each.
 
-WANT: Scandals, controversies, drama, fashion, style, business deals, endorsements, relationships, engagements, unusual/funny stories, injuries, comebacks, retirement news, off-court lifestyle, record-breaking achievements.
+CATEGORY TARGETS — aim for this MIX in every batch:
+- "scandal" (3-4 stories): controversies, feuds, arguments, fines, doping, cheating, meltdowns, heated rivalries
+- "love" (2-3 stories): dating, engagements, weddings, breakups, divorces, WAGs, couples spotted together, player romances
+- "money" (2-3 stories): net worth, endorsement deals, prize money milestones, luxury purchases, mansions, cars, investments, sponsorships
+- "fashion" (1-2 stories): outfits, brand deals, Nike/Adidas/Gucci collabs, red carpet, photoshoots, style evolution
+- "viral" (1-2 stories): social media moments, Instagram/TikTok, memes, funny incidents, celebrity crossovers, viral clips
+- "buzz" (remaining): major upsets with drama, comebacks, injuries, retirements, record-breaking — but ONLY if genuinely exciting
 
-DON'T WANT: Regular match results, tournament draws, predictions, betting odds, routine press conferences, technical analysis.
+PRIORITY ORDER: scandal > love > money > fashion > viral > buzz
+If multiple headlines cover the same event, pick the most dramatic angle and SKIP the rest.
+
+DON'T WANT: Regular match results, tournament draws, predictions, betting odds, routine press conferences, technical analysis, coaching tips. A match is ONLY interesting if there's drama (meltdown, upset, controversy, rivalry beef).
+
+TONE: Glossy magazine meets tabloid. Engaging, bold, slightly gossipy but not mean-spirited. Use vivid, punchy language. Think headlines that make people STOP scrolling. Our brand is "tennis for people who don't play tennis."
+
+HEADLINE RULES:
+- Max 75 chars, must provoke curiosity or emotion
+- Use power words: "Shocking", "Revealed", "Secret", "Stunning", "Exclusive"
+- Name-drop the player in the headline when possible
+- NO generic headlines like "A New Era in Tennis" or "Rising Star"
 
 For each story provide:
-1. A catchy headline (max 80 chars)
-2. A short summary (2-3 sentences, ~50 words)
-3. A full article body (300-500 words) in markdown. Do NOT include "Category:" or "Main Player:" tags in the body.
-4. Category: one of "buzz", "scandal", "business", "fashion", "funny", "wellness"
+1. A catchy, click-worthy headline (max 75 chars)
+2. A short summary (2-3 punchy sentences, ~50 words)
+3. A full article body (300-500 words) in markdown. Write in magazine style — vivid descriptions, quotes where relevant, personality. Do NOT include "Category:" or "Main Player:" tags in the body.
+4. Category: one of "scandal", "love", "money", "fashion", "viral", "buzz"
 5. The FULL NAME of the main player (or null if no specific player)`;
 
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -348,11 +431,11 @@ For each story provide:
         { role: 'system', content: systemPrompt },
         {
           role: 'user',
-          content: `Select ${limit} most interesting headlines and write articles:\n\n${headlineList}\n\nRespond with JSON array (no markdown fences):\n[{"original_index":1,"title":"...","summary":"...","body":"...","category":"buzz","main_player":"Full Name"}]`,
+          content: `Select ${limit} most entertaining headlines and write articles:\n\n${headlineList}\n\nRespond with JSON array (no markdown fences):\n[{"original_index":1,"title":"...","summary":"...","body":"...","category":"scandal|love|money|fashion|viral|buzz","main_player":"Full Name"}]`,
         },
       ],
       temperature: 0.7,
-      max_tokens: 16000,
+      max_tokens: 16384,
     }),
   });
 
@@ -367,7 +450,7 @@ For each story provide:
 // NEWS GENERATION
 // ============================================================
 async function generateNews(env: Env): Promise<string> {
-  const LIMIT = 20;
+  const LIMIT = 25;
   const HOURS = 48;
   const logs: string[] = [];
   const log = (msg: string) => { logs.push(msg); console.log(msg); };
@@ -408,22 +491,46 @@ async function generateNews(env: Env): Promise<string> {
   log(`   After dedup: ${newItems.length} new items`);
   if (newItems.length === 0) { log('✅ All news already in DB'); return logs.join('\n'); }
 
-  // 5. OpenAI curation
-  const candidates = newItems.slice(0, 25);
-  log('🤖 Calling OpenAI...');
-  let curated: any[];
+  // 5. OpenAI curation (split into two batches — gpt-4o-mini max 16384 tokens)
+  const allCandidates = newItems.slice(0, 50);
+  const batchA = allCandidates.slice(0, 25);
+  const batchB = allCandidates.slice(25, 50);
+  const limitA = Math.ceil(LIMIT / 2);  // 13
+  const limitB = LIMIT - limitA;         // 12
+
+  log(`🤖 Calling OpenAI (batch A: ${batchA.length} candidates → ${limitA} articles)...`);
+  let curated: any[] = [];
   try {
-    curated = await curateWithOpenAI(env, candidates, LIMIT);
+    const curatedA = await curateWithOpenAI(env, batchA, limitA);
+    curated.push(...curatedA);
+    log(`   Batch A: ${curatedA.length} stories`);
   } catch (e: any) {
-    log(`❌ OpenAI failed: ${e.message}`);
-    return logs.join('\n');
+    log(`❌ OpenAI batch A failed: ${e.message}`);
   }
-  log(`   Selected ${curated.length} stories`);
+
+  if (batchB.length > 0) {
+    log(`🤖 Calling OpenAI (batch B: ${batchB.length} candidates → ${limitB} articles)...`);
+    try {
+      const curatedB = await curateWithOpenAI(env, batchB, limitB);
+      // Adjust original_index to account for batch B offset
+      for (const item of curatedB) {
+        if (item.original_index) item.original_index += 25;
+      }
+      curated.push(...curatedB);
+      log(`   Batch B: ${curatedB.length} stories`);
+    } catch (e: any) {
+      log(`❌ OpenAI batch B failed: ${e.message}`);
+    }
+  }
+
+  if (curated.length === 0) { log('❌ No stories from OpenAI'); return logs.join('\n'); }
+  log(`   Total: ${curated.length} stories`);
+  const candidates = allCandidates; // for image lookup below
 
   // 6. Build news rows
   const today = new Date().toISOString().split('T')[0];
   const newsRows: any[] = [];
-  const usedPhotos = new Set<string>();
+  const usedImages = new Set<string>(); // Track ALL used image URLs to prevent duplicates
 
   for (let i = 0; i < curated.length; i++) {
     const c = curated[i];
@@ -431,15 +538,55 @@ async function generateNews(env: Env): Promise<string> {
     const original = candidates[origIdx] || candidates[i] || candidates[0];
     const playerSlugs = findPlayerSlugs(`${c.title} ${c.summary} ${c.body || ''}`);
 
-    // Image: RSS → og:image → player photo → null
-    let imageUrl = await fetchOgImage(original.link, original.imageUrl);
-    if (!imageUrl && c.main_player) {
+    // Image priority: player photo FIRST (recognizable faces) → RSS og:image → stock
+    let imageUrl: string | null = null;
+
+    // Priority 1: player photo from main_player field (best — always recognizable)
+    if (c.main_player) {
       const photo = await findPlayerPhoto(env, c.main_player);
-      if (photo && !usedPhotos.has(photo)) {
+      if (photo && !usedImages.has(photo)) {
         imageUrl = photo;
-        usedPhotos.add(photo);
       }
     }
+
+    // Priority 2: scan title for known player names → use their photo
+    if (!imageUrl) {
+      const titleLower = c.title.toLowerCase();
+      for (const [keyword, slug] of Object.entries(PLAYER_KEYWORDS)) {
+        if (keyword.length > 3 && titleLower.includes(keyword)) {
+          const nameParts = slug.split('-');
+          const lastName = nameParts[nameParts.length - 1];
+          const photo = await findPlayerPhoto(env, lastName);
+          if (photo && !usedImages.has(photo)) {
+            imageUrl = photo;
+            break;
+          }
+        }
+      }
+    }
+
+    // Priority 3: RSS image from feed (no extra fetch — saves subrequests)
+    if (!imageUrl && original.imageUrl && !usedImages.has(original.imageUrl)) {
+      const lowerImg = original.imageUrl.toLowerCase();
+      const isGeneric = /placeholder|default|logo|icon|favicon|blank|spacer|1x1|pixel/i.test(lowerImg);
+      if (!isGeneric) {
+        imageUrl = original.imageUrl;
+      }
+    }
+
+    // Priority 4: curated stock tennis photos from our site (never leave blank)
+    if (!imageUrl) {
+      const STOCK_PHOTOS = [
+        'court-01','court-02','court-03','court-04','court-05','court-06','court-07','court-08','court-09','court-10',
+        'court-11','court-12','court-13','court-14','court-15',
+        'equip-01','equip-02','equip-03','equip-04','equip-05','equip-06','equip-07','equip-08','equip-09','equip-10',
+        'equip-11','equip-12','equip-13','equip-14','equip-15',
+      ];
+      const pick = STOCK_PHOTOS[i % STOCK_PHOTOS.length];
+      imageUrl = `https://super.tennis/images/news/${pick}.jpg`;
+    }
+
+    if (imageUrl) usedImages.add(imageUrl);
 
     const titleSlug = c.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
     const slug = `${today}-${titleSlug}`;
@@ -599,18 +746,26 @@ function seededPick<T>(arr: T[], seed: number): T {
 // ============================================================
 // CORS HELPERS
 // ============================================================
-const CORS_HEADERS: Record<string, string> = {
-  'Access-Control-Allow-Origin': 'https://super.tennis',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Max-Age': '86400',
-};
+function getCorsOrigin(request: Request): string {
+  const origin = request.headers.get('Origin') || '';
+  if (origin === 'https://super.tennis' || origin.startsWith('http://localhost')) return origin;
+  return 'https://super.tennis';
+}
 
-function jsonResponse(data: any, cacheSeconds: number = 300): Response {
+function corsHeaders(request: Request): Record<string, string> {
+  return {
+    'Access-Control-Allow-Origin': getCorsOrigin(request),
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Max-Age': '86400',
+  };
+}
+
+function jsonResponse(data: any, cacheSeconds: number = 300, request?: Request): Response {
   return new Response(JSON.stringify(data), {
     headers: {
       'Content-Type': 'application/json',
       'Cache-Control': `public, max-age=${cacheSeconds}`,
-      ...CORS_HEADERS,
+      ...(request ? corsHeaders(request) : { 'Access-Control-Allow-Origin': 'https://super.tennis', 'Access-Control-Allow-Methods': 'GET, OPTIONS', 'Access-Control-Max-Age': '86400' }),
     },
   });
 }
@@ -862,6 +1017,148 @@ async function updateRankings(env: Env): Promise<string> {
 }
 
 // ============================================================
+// CLOUDFLARE ANALYTICS API
+// ============================================================
+async function fetchCloudflareAnalytics(env: Env, dateStart: string, dateEnd: string): Promise<any> {
+  // httpRequests1dGroups works for any date range — use for totals, chart, countries, status codes
+  // httpRequestsAdaptiveGroups limited to 1 day (86400s) on free plan — use for top pages & devices
+  const now = new Date();
+  const adaptiveEnd = now.toISOString();
+  const adaptiveStart = new Date(now.getTime() - 82800000).toISOString(); // 23 hours ago (< 86400s)
+
+  const query = `query {
+    viewer {
+      zones(filter: { zoneTag: "${env.CF_ZONE_ID}" }) {
+        httpRequests1dGroups(
+          filter: { date_geq: "${dateStart}", date_leq: "${dateEnd}" }
+          orderBy: [date_ASC]
+          limit: 100
+        ) {
+          dimensions { date }
+          sum {
+            requests
+            pageViews
+            bytes
+            countryMap { clientCountryName requests }
+            responseStatusMap { edgeResponseStatus requests }
+          }
+          uniq { uniques }
+        }
+        topPaths: httpRequestsAdaptiveGroups(
+          filter: { datetime_geq: "${adaptiveStart}", datetime_leq: "${adaptiveEnd}", requestSource: "eyeball" }
+          orderBy: [count_DESC]
+          limit: 30
+        ) {
+          count
+          dimensions { clientRequestPath }
+        }
+        topDevices: httpRequestsAdaptiveGroups(
+          filter: { datetime_geq: "${adaptiveStart}", datetime_leq: "${adaptiveEnd}", requestSource: "eyeball" }
+          orderBy: [count_DESC]
+          limit: 10
+        ) {
+          count
+          dimensions { clientDeviceType }
+        }
+      }
+    }
+  }`;
+
+  const res = await fetch('https://api.cloudflare.com/client/v4/graphql', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${env.CF_API_TOKEN}`,
+    },
+    body: JSON.stringify({ query }),
+  });
+
+  if (!res.ok) throw new Error(`Cloudflare Analytics API: ${res.status}`);
+  const json = await res.json() as any;
+
+  if (json.errors?.length) {
+    throw new Error(`CF Analytics: ${json.errors[0].message}`);
+  }
+
+  const zone = json.data?.viewer?.zones?.[0];
+  if (!zone) throw new Error('No zone data returned');
+
+  // Aggregate daily data
+  const daily = zone.httpRequests1dGroups || [];
+  const totals = {
+    requests: 0,
+    pageViews: 0,
+    uniques: 0,
+    bytes: 0,
+  };
+  const chartData: { date: string; requests: number; pageViews: number; uniques: number; bytes: number }[] = [];
+
+  for (const day of daily) {
+    totals.requests += day.sum.requests;
+    totals.pageViews += day.sum.pageViews;
+    totals.uniques += day.uniq.uniques;
+    totals.bytes += day.sum.bytes;
+    chartData.push({
+      date: day.dimensions.date,
+      requests: day.sum.requests,
+      pageViews: day.sum.pageViews,
+      uniques: day.uniq.uniques,
+      bytes: day.sum.bytes,
+    });
+  }
+
+  // Top pages — filter out assets (from adaptive groups, last 24h)
+  const topPages = (zone.topPaths || [])
+    .filter((p: any) => {
+      const path = p.dimensions.clientRequestPath;
+      return !path.match(/\.(js|css|png|jpg|jpeg|svg|ico|webp|woff2?|gif|map)$/i);
+    })
+    .slice(0, 20)
+    .map((p: any) => ({ path: p.dimensions.clientRequestPath, count: p.count }));
+
+  // Countries — aggregate from daily countryMap across all days
+  const countryAgg: Record<string, number> = {};
+  for (const day of daily) {
+    for (const c of (day.sum.countryMap || [])) {
+      if (c.clientCountryName) {
+        countryAgg[c.clientCountryName] = (countryAgg[c.clientCountryName] || 0) + c.requests;
+      }
+    }
+  }
+  const countries = Object.entries(countryAgg)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 30)
+    .map(([country, count]) => ({ country, count }));
+
+  // Devices (from adaptive groups, last 24h)
+  const devices = (zone.topDevices || [])
+    .filter((d: any) => d.dimensions.clientDeviceType)
+    .map((d: any) => ({ type: d.dimensions.clientDeviceType, count: d.count }));
+
+  // Status codes — aggregate from daily responseStatusMap
+  const statusAgg: Record<number, number> = {};
+  for (const day of daily) {
+    for (const s of (day.sum.responseStatusMap || [])) {
+      statusAgg[s.edgeResponseStatus] = (statusAgg[s.edgeResponseStatus] || 0) + s.requests;
+    }
+  }
+  const statusCodes = Object.entries(statusAgg)
+    .sort((a, b) => (b[1] as number) - (a[1] as number))
+    .slice(0, 10)
+    .map(([status, count]) => ({ status: Number(status), count }));
+
+  return {
+    period: { start: dateStart, end: dateEnd },
+    totals,
+    chartData,
+    topPages,
+    countries,
+    devices,
+    statusCodes,
+  };
+}
+
+// ============================================================
 // WORKER ENTRY POINT
 // ============================================================
 export default {
@@ -906,7 +1203,7 @@ export default {
 
     // CORS preflight
     if (request.method === 'OPTIONS') {
-      return new Response(null, { headers: CORS_HEADERS });
+      return new Response(null, { headers: corsHeaders(request) });
     }
 
     // ── API ENDPOINTS (client-side fetch, no rebuild) ──
@@ -919,9 +1216,9 @@ export default {
           'order': 'published_at.desc',
           'limit': String(limit),
         });
-        return jsonResponse(data, 300); // cache 5 min
+        return jsonResponse(data, 300, request); // cache 5 min
       } catch (e: any) {
-        return jsonResponse({ error: e.message }, 60);
+        return jsonResponse({ error: e.message }, 60, request);
       }
     }
 
@@ -953,9 +1250,36 @@ export default {
             });
           }
         }
-        return jsonResponse(results, 3600); // cache 1 hour
+        return jsonResponse(results, 3600, request); // cache 1 hour
       } catch (e: any) {
-        return jsonResponse({ error: e.message }, 60);
+        return jsonResponse({ error: e.message }, 60, request);
+      }
+    }
+
+    // ── ANALYTICS API (password-protected) ──
+
+    if (url.pathname === '/api/analytics') {
+      const pwd = url.searchParams.get('pwd');
+      if (!env.ANALYTICS_PASSWORD || !pwd || pwd !== env.ANALYTICS_PASSWORD) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
+        });
+      }
+      if (!env.CF_API_TOKEN || !env.CF_ZONE_ID) {
+        return jsonResponse({ error: 'Analytics not configured (missing CF_API_TOKEN or CF_ZONE_ID)' }, 0, request);
+      }
+
+      const period = url.searchParams.get('period') || '7d';
+      const days = period === '90d' ? 90 : period === '30d' ? 30 : 7;
+      const dateEnd = new Date().toISOString().split('T')[0];
+      const dateStart = new Date(Date.now() - days * 86400000).toISOString().split('T')[0];
+
+      try {
+        const analyticsData = await fetchCloudflareAnalytics(env, dateStart, dateEnd);
+        return jsonResponse(analyticsData, 3600, request); // cache 1 hour
+      } catch (e: any) {
+        return jsonResponse({ error: e.message }, 0, request);
       }
     }
 
@@ -996,6 +1320,7 @@ export default {
 API (client-side, no rebuild):
   /api/news          GET active news JSON
   /api/videos        GET 6 featured videos JSON
+  /api/analytics     GET site analytics (password-protected)
 
 Manual triggers:
   /trigger/news      Generate news

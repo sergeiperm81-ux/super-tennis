@@ -116,12 +116,12 @@ const sbCatLabels: Record<string, string> = {
           <!-- Filters (populated by client-side script) -->
           <div class="np-filters" id="np-filters">
             <button class="np-filter active" data-cat="all">All</button>
-            <button class="np-filter" data-cat="buzz" style="--cat-color: #16a34a">Buzz</button>
             <button class="np-filter" data-cat="scandal" style="--cat-color: #dc2626">Scandal</button>
-            <button class="np-filter" data-cat="business" style="--cat-color: #d4a017">Business</button>
-            <button class="np-filter" data-cat="fashion" style="--cat-color: #ec4899">Fashion</button>
-            <button class="np-filter" data-cat="funny" style="--cat-color: #f97316">LOL</button>
-            <button class="np-filter" data-cat="wellness" style="--cat-color: #0891b2">Wellness</button>
+            <button class="np-filter" data-cat="love" style="--cat-color: #e11d7e">Love</button>
+            <button class="np-filter" data-cat="money" style="--cat-color: #d4a017">Money</button>
+            <button class="np-filter" data-cat="fashion" style="--cat-color: #9333ea">Fashion</button>
+            <button class="np-filter" data-cat="viral" style="--cat-color: #f97316">Viral</button>
+            <button class="np-filter" data-cat="buzz" style="--cat-color: #16a34a">Buzz</button>
           </div>
 
           <!-- News List (loaded client-side) -->
@@ -150,7 +150,7 @@ const sbCatLabels: Record<string, string> = {
                 )}
                 <div class="sb-profile__name">
                   {getFlagUrl(sidebarPlayer.country_code) ? (
-                    <img src={getFlagUrl(sidebarPlayer.country_code, 20)} alt={sidebarPlayer.country_code} class="sb-flag" width="20" height="15" loading="lazy" />
+                    <img src={getFlagUrl(sidebarPlayer.country_code, 40)} alt={sidebarPlayer.country_code} class="sb-flag" width="20" height="15" loading="lazy" />
                   ) : null}
                   {sidebarPlayer.first_name} {sidebarPlayer.last_name}
                 </div>
@@ -628,7 +628,7 @@ const sbCatLabels: Record<string, string> = {
     height: 160px;
     overflow: hidden;
   }
-  .sb-profile__img img {
+  .sb-profile__img > img {
     width: 100%;
     height: 100%;
     object-fit: cover;

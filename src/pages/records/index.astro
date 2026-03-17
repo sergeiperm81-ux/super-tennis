@@ -478,7 +478,7 @@ const newsCatLabels: Record<string, string> = {
                 )}
                 <div class="sb-profile__name">
                   {getFlagUrl(sidebarPlayer.country_code) ? (
-                    <img src={getFlagUrl(sidebarPlayer.country_code, 20)} alt={sidebarPlayer.country_code} class="sb-flag" width="20" height="15" loading="lazy" />
+                    <img src={getFlagUrl(sidebarPlayer.country_code, 40)} alt={sidebarPlayer.country_code} class="sb-flag" width="20" height="15" loading="lazy" />
                   ) : null}
                   {sidebarPlayer.first_name} {sidebarPlayer.last_name}
                 </div>
@@ -1128,7 +1128,7 @@ const newsCatLabels: Record<string, string> = {
     height: 160px;
     overflow: hidden;
   }
-  .sb-profile__img img {
+  .sb-profile__img > img {
     width: 100%;
     height: 100%;
     object-fit: cover;

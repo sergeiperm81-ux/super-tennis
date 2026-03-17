@@ -60,8 +60,8 @@
   }
 
   // ── Category config ──
-  var catColors = { buzz: '#16a34a', scandal: '#dc2626', business: '#d4a017', fashion: '#ec4899', funny: '#f97316', wellness: '#0891b2' };
-  var catLabels = { buzz: 'Buzz', scandal: 'Scandal', business: 'Business', fashion: 'Fashion', funny: 'LOL', wellness: 'Wellness' };
+  var catColors = { buzz: '#16a34a', scandal: '#dc2626', love: '#e11d7e', money: '#d4a017', fashion: '#9333ea', viral: '#f97316', business: '#d4a017', funny: '#f97316', wellness: '#0891b2' };
+  var catLabels = { buzz: 'Buzz', scandal: 'Scandal', love: 'Love', money: 'Money', fashion: 'Fashion', viral: 'Viral', business: 'Money', funny: 'Viral', wellness: 'Wellness' };
 
   // ── Render: buzz card (homepage) ──
   function renderBuzzCard(item) {
@@ -241,7 +241,9 @@
       else if (type === 'sidebar-news') {
         var items = news.slice(0, limit);
         if (items.length > 0) {
-          el.innerHTML = '<div class="sb-block__header"><span class="sb-block__label">Tennis Buzz</span><a href="/news/" class="sb-link">All news &rarr;</a></div>' +
+          var hasParentHeader = el.closest('.sb-trending') || el.closest('.sb-block');
+          var header = hasParentHeader ? '' : '<div class="sb-block__header"><span class="sb-block__label">What\'s Hot</span><a href="/news/" class="sb-link">All news &rarr;</a></div>';
+          el.innerHTML = header +
             '<div class="sb-news-list">' + items.map(renderSidebarNews).join('') + '</div>';
         }
       }
@@ -250,6 +252,7 @@
         var slots = (el.getAttribute('data-slots') || '').split(',').map(Number);
         var selected = slots.map(function (i) { return videos[i]; }).filter(Boolean);
         if (selected.length > 0) {
+          if (selected.length === 1) el.classList.add('video-pair--single');
           el.innerHTML = selected.map(renderVideoThumb).join('');
         }
       }
@@ -265,10 +268,34 @@
     });
   }
 
+  // ── Trending Bar ──
+  async function populateTrending() {
+    var scroll = document.getElementById('trending-scroll');
+    if (!scroll) return;
+    var news = await fetchNews();
+    if (!news || news.length === 0) {
+      var bar = document.getElementById('trending-bar');
+      if (bar) bar.style.display = 'none';
+      return;
+    }
+    var items = news.slice(0, 10);
+    var html = items.map(function (n) {
+      var color = catColors[n.category] || '#16a34a';
+      var href = n.body ? '/news/#' + esc(n.slug) : (n.source_url || '#');
+      var target = n.body ? '' : ' target="_blank" rel="noopener"';
+      return '<a class="trending-item" href="' + href + '"' + target + '>' +
+        '<span class="trending-dot" style="background:' + color + '"></span>' +
+        esc(n.title) + '</a>';
+    }).join('');
+    // Duplicate for seamless loop
+    scroll.innerHTML = html + html;
+  }
+
   // Run on DOM ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', hydrate);
+    document.addEventListener('DOMContentLoaded', function () { hydrate(); populateTrending(); });
   } else {
     hydrate();
+    populateTrending();
   }
 })();

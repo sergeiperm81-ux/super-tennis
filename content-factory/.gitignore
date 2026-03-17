@@ -1,0 +1,15 @@
+# Output videos & frames
+output/
+# Background videos (stored in GitHub Release)
+backgrounds/*.mp4
+# Fonts (downloaded in CI)
+fonts/
+# Music source (only bg-loop.aac needed, stored in release)
+music/bg-music.mp3
+# Environment
+.env
+# Node
+node_modules/
+# Runtime state
+bg-history.json
+published-log.json

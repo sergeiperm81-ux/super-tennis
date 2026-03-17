@@ -1,0 +1,700 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Site Analytics" description="SUPER.TENNIS traffic analytics dashboard">
+
+<section class="stats-page">
+  <div class="container">
+    <h1 class="stats-page__title">Dashboard</h1>
+
+    <!-- Tab navigation -->
+    <div class="stats-tabs">
+      <button class="stats-tab active" data-tab="analytics">📊 Analytics</button>
+      <button class="stats-tab" data-tab="publications">🎬 Video Publications</button>
+    </div>
+
+    <!-- ===== TAB: ANALYTICS ===== -->
+    <div id="tab-analytics" class="stats-tab-panel">
+
+    <!-- Login form -->
+    <div id="login-form" class="stats-login">
+      <p class="stats-login__text">Enter password to view analytics</p>
+      <form id="auth-form" class="stats-login__form">
+        <input type="password" id="pwd-input" class="stats-login__input" placeholder="Password" autocomplete="off" />
+        <button type="submit" class="stats-login__btn">View Stats</button>
+      </form>
+      <p id="login-error" class="stats-login__error" hidden>Invalid password</p>
+    </div>
+
+    <!-- Dashboard (hidden until authenticated) -->
+    <div id="dashboard" class="stats-dash" hidden>
+
+      <!-- Period selector -->
+      <div class="stats-dash__toolbar">
+        <div class="stats-dash__periods">
+          <button class="stats-period active" data-period="7d">7 Days</button>
+          <button class="stats-period" data-period="30d">30 Days</button>
+          <button class="stats-period" data-period="90d">90 Days</button>
+        </div>
+        <span id="period-label" class="stats-dash__range"></span>
+      </div>
+
+      <!-- Loading -->
+      <div id="loading" class="stats-loading">Loading analytics...</div>
+
+      <!-- KPI cards -->
+      <div id="kpi-grid" class="stats-kpi" hidden>
+        <div class="stats-kpi__card">
+          <span class="stats-kpi__label">Total Requests</span>
+          <span class="stats-kpi__value" id="kpi-requests">—</span>
+        </div>
+        <div class="stats-kpi__card">
+          <span class="stats-kpi__label">Page Views</span>
+          <span class="stats-kpi__value" id="kpi-pageviews">—</span>
+        </div>
+        <div class="stats-kpi__card">
+          <span class="stats-kpi__label">Unique Visitors</span>
+          <span class="stats-kpi__value" id="kpi-uniques">—</span>
+        </div>
+        <div class="stats-kpi__card">
+          <span class="stats-kpi__label">Bandwidth</span>
+          <span class="stats-kpi__value" id="kpi-bandwidth">—</span>
+        </div>
+      </div>
+
+      <!-- Daily Traffic TABLE -->
+      <div id="traffic-section" class="stats-section" hidden>
+        <h2 class="stats-section__title">Daily Traffic</h2>
+        <table class="stats-table">
+          <thead><tr><th>Date</th><th>Page Views</th><th>Unique Visitors</th><th>Requests</th><th>Bandwidth</th></tr></thead>
+          <tbody id="traffic-body"></tbody>
+        </table>
+      </div>
+
+      <!-- Two column layout: Devices + Countries -->
+      <div class="stats-columns">
+        <div id="devices-section" class="stats-section" hidden>
+          <h2 class="stats-section__title">Devices</h2>
+          <div id="devices-bars" class="stats-bars"></div>
+        </div>
+
+        <div id="countries-section" class="stats-section" hidden>
+          <h2 class="stats-section__title">Countries</h2>
+          <table class="stats-table">
+            <thead><tr><th>Country</th><th>Visits</th><th>%</th></tr></thead>
+            <tbody id="countries-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    </div><!-- end tab-analytics -->
+
+    <!-- ===== TAB: VIDEO PUBLICATIONS ===== -->
+    <div id="tab-publications" class="stats-tab-panel" hidden>
+
+      <div id="pub-login-form" class="stats-login">
+        <p class="stats-login__text">Enter password to view publications</p>
+        <form id="pub-auth-form" class="stats-login__form">
+          <input type="password" id="pub-pwd-input" class="stats-login__input" placeholder="Password" autocomplete="off" />
+          <button type="submit" class="stats-login__btn">View</button>
+        </form>
+        <p id="pub-login-error" class="stats-login__error" hidden>Invalid password</p>
+      </div>
+
+      <div id="pub-dashboard" hidden>
+
+        <!-- Summary cards -->
+        <div class="stats-kpi" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+          <div class="stats-kpi__card">
+            <span class="stats-kpi__label">Published</span>
+            <span class="stats-kpi__value" id="pub-total">—</span>
+          </div>
+          <div class="stats-kpi__card">
+            <span class="stats-kpi__label">Queued</span>
+            <span class="stats-kpi__value" id="pub-queued">—</span>
+          </div>
+          <div class="stats-kpi__card">
+            <span class="stats-kpi__label">This Week</span>
+            <span class="stats-kpi__value" id="pub-week">—</span>
+          </div>
+        </div>
+
+        <!-- Filter -->
+        <div class="stats-dash__toolbar">
+          <div class="stats-dash__periods">
+            <button class="pub-filter active" data-status="all">All</button>
+            <button class="pub-filter" data-status="published">Published</button>
+            <button class="pub-filter" data-status="queued">Queued</button>
+          </div>
+          <button id="pub-refresh" class="stats-login__btn" style="padding:6px 14px;font-size:0.82rem;">Refresh</button>
+        </div>
+
+        <!-- Publications table -->
+        <div id="pub-list" class="stats-section" style="padding:0;overflow:hidden;"></div>
+
+        <div id="pub-empty" class="stats-loading" hidden>
+          No publications yet. The Content Factory will start publishing once YouTube credentials are configured.
+        </div>
+      </div>
+
+    </div><!-- end tab-publications -->
+
+  </div>
+</section>
+
+</BaseLayout>
+
+<script is:inline>
+(function() {
+  var API = 'https://supertennis-cron.sfedoroff.workers.dev';
+  var pwd = sessionStorage.getItem('stats_pwd') || '';
+
+  var COUNTRY_NAMES = {
+    'US':'United States','GB':'United Kingdom','DE':'Germany','FR':'France',
+    'RU':'Russia','CA':'Canada','AU':'Australia','IN':'India','BR':'Brazil',
+    'JP':'Japan','CN':'China','KR':'South Korea','IT':'Italy','ES':'Spain',
+    'NL':'Netherlands','PL':'Poland','SE':'Sweden','CH':'Switzerland',
+    'AR':'Argentina','MX':'Mexico','TR':'Turkey','UA':'Ukraine',
+    'RO':'Romania','CZ':'Czech Republic','BE':'Belgium',
+    'AT':'Austria','NO':'Norway','DK':'Denmark','FI':'Finland',
+    'PT':'Portugal','IE':'Ireland','GR':'Greece','HU':'Hungary',
+    'RS':'Serbia','HR':'Croatia','BG':'Bulgaria','SK':'Slovakia',
+    'SI':'Slovenia','LT':'Lithuania','LV':'Latvia','EE':'Estonia',
+    'NZ':'New Zealand','ZA':'South Africa','IL':'Israel','EG':'Egypt',
+    'TH':'Thailand','VN':'Vietnam','PH':'Philippines','ID':'Indonesia',
+    'MY':'Malaysia','SG':'Singapore','CO':'Colombia','CL':'Chile',
+    'PE':'Peru','SA':'Saudi Arabia','AE':'UAE',
+    'PK':'Pakistan','BD':'Bangladesh','NG':'Nigeria','KE':'Kenya',
+    'MA':'Morocco','TN':'Tunisia','DZ':'Algeria','TW':'Taiwan',
+    'HK':'Hong Kong','GE':'Georgia','KZ':'Kazakhstan','BY':'Belarus',
+    'MD':'Moldova','BA':'Bosnia','MK':'N. Macedonia',
+    'ME':'Montenegro','AL':'Albania','XK':'Kosovo','LU':'Luxembourg',
+    'MT':'Malta','CY':'Cyprus','IS':'Iceland',
+  };
+
+  function getFlag(code) {
+    if (!code || code.length !== 2) return '';
+    return '<img src="https://flagcdn.com/w20/' + code.toLowerCase() + '.png" width="20" height="15" alt="' + code + '" style="vertical-align:middle;margin-right:6px;" onerror="this.style.display=\'none\'">';
+  }
+
+  function countryName(code) { return COUNTRY_NAMES[code] || code; }
+
+  function fmt(n) {
+    if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+    if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+    return String(n);
+  }
+
+  function fmtBytes(b) {
+    if (b >= 1e9) return (b / 1e9).toFixed(1) + ' GB';
+    if (b >= 1e6) return (b / 1e6).toFixed(1) + ' MB';
+    return (b / 1e3).toFixed(0) + ' KB';
+  }
+
+  // Auto-login if password in session
+  if (pwd) {
+    document.getElementById('login-form').hidden = true;
+    document.getElementById('dashboard').hidden = false;
+    loadData('7d');
+  }
+
+  // Login form
+  document.getElementById('auth-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    pwd = document.getElementById('pwd-input').value;
+    if (!pwd) return;
+    fetch(API + '/api/analytics?pwd=' + encodeURIComponent(pwd) + '&period=7d')
+      .then(function(r) {
+        if (r.status === 401) { document.getElementById('login-error').hidden = false; return null; }
+        return r.json();
+      })
+      .then(function(data) {
+        if (!data || data.error) { document.getElementById('login-error').hidden = false; return; }
+        sessionStorage.setItem('stats_pwd', pwd);
+        document.getElementById('login-form').hidden = true;
+        document.getElementById('dashboard').hidden = false;
+        renderData(data);
+      })
+      .catch(function() { document.getElementById('login-error').hidden = false; });
+  });
+
+  // Period buttons
+  document.querySelectorAll('.stats-period').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.stats-period').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      loadData(btn.dataset.period);
+    });
+  });
+
+  function loadData(period) {
+    var loading = document.getElementById('loading');
+    loading.hidden = false;
+    document.getElementById('kpi-grid').hidden = true;
+    document.getElementById('traffic-section').hidden = true;
+    document.getElementById('countries-section').hidden = true;
+    document.getElementById('devices-section').hidden = true;
+
+    fetch(API + '/api/analytics?pwd=' + encodeURIComponent(pwd) + '&period=' + period)
+      .then(function(r) {
+        if (r.status === 401) { sessionStorage.removeItem('stats_pwd'); location.reload(); return null; }
+        return r.json();
+      })
+      .then(function(data) {
+        if (!data) return;
+        if (data.error) { loading.textContent = 'Error: ' + data.error; return; }
+        renderData(data);
+      })
+      .catch(function(e) { loading.textContent = 'Failed to load: ' + e.message; });
+  }
+
+  function renderData(data) {
+    document.getElementById('loading').hidden = true;
+
+    // Period label
+    document.getElementById('period-label').textContent = data.period.start + ' \u2014 ' + data.period.end;
+
+    // KPIs
+    document.getElementById('kpi-requests').textContent = fmt(data.totals.requests);
+    document.getElementById('kpi-pageviews').textContent = fmt(data.totals.pageViews);
+    document.getElementById('kpi-uniques').textContent = fmt(data.totals.uniques);
+    document.getElementById('kpi-bandwidth').textContent = fmtBytes(data.totals.bytes);
+    document.getElementById('kpi-grid').hidden = false;
+
+    // Daily Traffic TABLE (newest first)
+    var html = '';
+    if (data.chartData && data.chartData.length) {
+      data.chartData.slice().reverse().forEach(function(d) {
+        html += '<tr>' +
+          '<td>' + d.date + '</td>' +
+          '<td>' + fmt(d.pageViews) + '</td>' +
+          '<td>' + fmt(d.uniques) + '</td>' +
+          '<td>' + fmt(d.requests || 0) + '</td>' +
+          '<td>' + fmtBytes(d.bytes || 0) + '</td>' +
+          '</tr>';
+      });
+    }
+    document.getElementById('traffic-body').innerHTML = html;
+    document.getElementById('traffic-section').hidden = false;
+
+    // Countries
+    var totalCountry = data.countries.reduce(function(s, c) { return s + c.count; }, 0);
+    var countriesHtml = '';
+    data.countries.forEach(function(c) {
+      var pct = totalCountry ? ((c.count / totalCountry) * 100).toFixed(1) : '0';
+      countriesHtml += '<tr><td>' + getFlag(c.country) + countryName(c.country) + '</td><td>' + fmt(c.count) + '</td><td>' + pct + '%</td></tr>';
+    });
+    document.getElementById('countries-body').innerHTML = countriesHtml;
+    document.getElementById('countries-section').hidden = false;
+
+    // Devices
+    var totalDevices = data.devices.reduce(function(s, d) { return s + d.count; }, 0);
+    var devicesHtml = '';
+    data.devices.forEach(function(d) {
+      var pct = totalDevices ? ((d.count / totalDevices) * 100) : 0;
+      var label = d.type || 'Unknown';
+      label = label.charAt(0).toUpperCase() + label.slice(1);
+      devicesHtml += '<div class="stats-bar">' +
+        '<span class="stats-bar__label">' + label + '</span>' +
+        '<div class="stats-bar__track"><div class="stats-bar__fill" style="width:' + pct + '%"></div></div>' +
+        '<span class="stats-bar__pct">' + pct.toFixed(1) + '%</span>' +
+        '</div>';
+    });
+    document.getElementById('devices-bars').innerHTML = devicesHtml;
+    document.getElementById('devices-section').hidden = false;
+  }
+  // ===== TAB SWITCHING =====
+  document.querySelectorAll('.stats-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.stats-tab').forEach(function(t) { t.classList.remove('active'); });
+      document.querySelectorAll('.stats-tab-panel').forEach(function(p) { p.hidden = true; });
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).hidden = false;
+
+      // Load publications data when switching to that tab
+      if (tab.dataset.tab === 'publications' && !pubLoaded) {
+        var sp = sessionStorage.getItem('stats_pwd') || '';
+        if (sp) {
+          document.getElementById('pub-login-form').hidden = true;
+          document.getElementById('pub-dashboard').hidden = false;
+          loadPublications();
+        }
+      }
+    });
+  });
+
+  // ===== PUBLICATIONS TAB =====
+  var pubLoaded = false;
+  var allPubs = [];
+
+  // Auto-login for publications if already authenticated (but don't load data yet)
+  var pubPwd = sessionStorage.getItem('stats_pwd') || '';
+  if (pubPwd) {
+    document.getElementById('pub-login-form').hidden = true;
+    document.getElementById('pub-dashboard').hidden = false;
+  }
+
+  document.getElementById('pub-auth-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    pubPwd = document.getElementById('pub-pwd-input').value;
+    sessionStorage.setItem('stats_pwd', pubPwd);
+    pwd = pubPwd; // sync with analytics password
+    document.getElementById('pub-login-form').hidden = true;
+    document.getElementById('pub-dashboard').hidden = false;
+    loadPublications();
+  });
+
+  // Refresh button — stays on publications tab
+  document.getElementById('pub-refresh').addEventListener('click', function() {
+    loadPublications();
+  });
+
+  // Filter buttons
+  document.querySelectorAll('.pub-filter').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.pub-filter').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      filterPublications(btn.dataset.status);
+    });
+  });
+
+  function loadPublications() {
+    var list = document.getElementById('pub-list');
+    list.innerHTML = '<p style="color:#6b7280;text-align:center;padding:40px;">Loading...</p>';
+
+    fetch(API + '/api/news?limit=50')
+      .then(function(r) { return r.json(); })
+      .then(function(news) {
+        if (!news || !news.length) {
+          document.getElementById('pub-empty').hidden = false;
+          list.innerHTML = '';
+          return;
+        }
+        pubLoaded = true;
+
+        allPubs = news.map(function(n) {
+          return {
+            title: n.title,
+            summary: n.summary || '',
+            category: n.category || 'buzz',
+            image_url: n.image_url,
+            date: n.published_at ? n.published_at.split('T')[0] : '—',
+            youtube_id: n.youtube_video_id || null,
+          };
+        });
+
+        // KPIs
+        var published = allPubs.filter(function(p) { return p.youtube_id; });
+        var queued = allPubs.filter(function(p) { return !p.youtube_id; });
+        document.getElementById('pub-total').textContent = published.length;
+        document.getElementById('pub-queued').textContent = queued.length;
+        var weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0];
+        var thisWeek = published.filter(function(p) { return p.date >= weekAgo; }).length;
+        document.getElementById('pub-week').textContent = thisWeek;
+
+        renderPublications(allPubs);
+      })
+      .catch(function(e) {
+        list.innerHTML = '<p style="color:#ef4444;text-align:center;padding:40px;">Error: ' + e.message + '</p>';
+      });
+  }
+
+  function filterPublications(status) {
+    if (status === 'all') return renderPublications(allPubs);
+    if (status === 'published') return renderPublications(allPubs.filter(function(p) { return p.youtube_id; }));
+    if (status === 'queued') return renderPublications(allPubs.filter(function(p) { return !p.youtube_id; }));
+  }
+
+  function renderPublications(pubs) {
+    var list = document.getElementById('pub-list');
+    if (!pubs.length) {
+      list.innerHTML = '<p style="color:#9ca3af;text-align:center;padding:40px;">No items</p>';
+      return;
+    }
+
+    var catColors = { scandal:'#ef4444', love:'#ec4899', money:'#f59e0b', fashion:'#8b5cf6', viral:'#06b6d4', buzz:'#22c55e', wellness:'#06b6d4', funny:'#f97316', business:'#d4a017' };
+
+    // Sort: queued first, then published (newest first within each group)
+    var queued = pubs.filter(function(p) { return !p.youtube_id; });
+    var published = pubs.filter(function(p) { return p.youtube_id; });
+    var sorted = queued.concat(published);
+
+    var html = '<table class="pub-table"><thead><tr>' +
+      '<th style="width:80px">Preview</th>' +
+      '<th style="width:90px">Category</th>' +
+      '<th>Title & Lead</th>' +
+      '<th style="width:100px">Date</th>' +
+      '<th style="width:120px">Status</th>' +
+      '</tr></thead><tbody>';
+
+    sorted.forEach(function(p) {
+      var catColor = catColors[p.category] || catColors.buzz;
+      var isPublished = !!p.youtube_id;
+
+      // Thumbnail: YouTube thumbnail if published, else news image or placeholder
+      var thumb = '';
+      if (isPublished) {
+        thumb = '<a href="https://youtube.com/shorts/' + p.youtube_id + '" target="_blank" rel="noopener" title="Watch on YouTube">' +
+          '<img src="https://i.ytimg.com/vi/' + p.youtube_id + '/default.jpg" alt="" class="pub-thumb" />' +
+          '</a>';
+      } else if (p.image_url) {
+        thumb = '<img src="' + p.image_url + '" alt="" class="pub-thumb" />';
+      } else {
+        thumb = '<div class="pub-thumb pub-thumb--empty">🎬</div>';
+      }
+
+      // Status
+      var statusCell = '';
+      if (isPublished) {
+        statusCell = '<a href="https://youtube.com/shorts/' + p.youtube_id + '" target="_blank" rel="noopener" class="pub-yt-link">▶ YouTube</a>';
+      } else {
+        statusCell = '<span class="pub-badge pub-badge--queued">Queued</span>';
+      }
+
+      html += '<tr class="' + (isPublished ? 'pub-row--published' : 'pub-row--queued') + '">' +
+        '<td>' + thumb + '</td>' +
+        '<td><span class="pub-cat-badge" style="background:' + catColor + '">' + (p.category || 'buzz').toUpperCase() + '</span></td>' +
+        '<td><strong class="pub-row-title">' + p.title + '</strong>' +
+          (p.summary ? '<br><span class="pub-row-summary">' + p.summary.slice(0, 120) + '</span>' : '') +
+        '</td>' +
+        '<td class="pub-row-date">' + p.date + '</td>' +
+        '<td>' + statusCell + '</td>' +
+        '</tr>';
+    });
+
+    html += '</tbody></table>';
+
+    // Section headers
+    var queuedCount = queued.length;
+    var publishedCount = published.length;
+    var header = '';
+    if (queuedCount > 0) {
+      header += '<div class="pub-section-header pub-section-header--queued">Queued for publication (' + queuedCount + ')</div>';
+    }
+
+    list.innerHTML = header + html;
+  }
+
+})();
+</script>
+
+<style>
+  .stats-page {
+    padding: 40px 0 80px;
+    background: #f8f9fa;
+    color: #1a1a2e;
+    min-height: 80vh;
+  }
+  .stats-page__title {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    margin-bottom: 32px;
+    color: #1a1a2e;
+  }
+
+  /* Login */
+  .stats-login {
+    max-width: 400px;
+    margin: 80px auto;
+    text-align: center;
+  }
+  .stats-login__text { margin-bottom: 16px; color: #666; }
+  .stats-login__form { display: flex; gap: 8px; }
+  .stats-login__input {
+    flex: 1; padding: 10px 14px;
+    border: 1px solid #d1d5db; border-radius: 8px;
+    background: #fff; color: #1a1a2e; font-size: 1rem;
+  }
+  .stats-login__input:focus {
+    outline: none; border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  }
+  .stats-login__btn {
+    padding: 10px 20px; background: #2563eb; color: #fff;
+    border: none; border-radius: 8px; font-weight: 600;
+    cursor: pointer; white-space: nowrap;
+  }
+  .stats-login__btn:hover { background: #1d4ed8; }
+  .stats-login__error { color: #ef4444; margin-top: 12px; font-size: 0.88rem; }
+
+  /* Dashboard */
+  .stats-dash__toolbar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+  }
+  .stats-dash__periods {
+    display: flex; gap: 4px; background: #e5e7eb;
+    border-radius: 8px; padding: 3px;
+  }
+  .stats-period {
+    padding: 6px 16px; border: none; border-radius: 6px;
+    background: transparent; color: #6b7280; cursor: pointer;
+    font-size: 0.88rem; font-weight: 500; transition: all 0.15s;
+  }
+  .stats-period.active { background: #2563eb; color: #fff; }
+  .stats-period:hover:not(.active) { color: #1a1a2e; }
+  .stats-dash__range { color: #9ca3af; font-size: 0.82rem; }
+
+  /* Loading */
+  .stats-loading { text-align: center; padding: 60px 0; color: #6b7280; font-size: 1.1rem; }
+
+  /* KPI */
+  .stats-kpi {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px; margin-bottom: 32px;
+  }
+  .stats-kpi__card {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+    padding: 20px; display: flex; flex-direction: column; gap: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .stats-kpi__label {
+    font-size: 0.78rem; color: #6b7280;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .stats-kpi__value {
+    font-family: var(--font-heading); font-size: 1.8rem;
+    color: #1a1a2e; font-weight: 700;
+  }
+
+  /* Sections */
+  .stats-section {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+    padding: 24px; margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .stats-section__title {
+    font-family: var(--font-heading); font-size: 1rem;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: #1a1a2e; margin-bottom: 16px;
+  }
+
+  /* Columns */
+  .stats-columns {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+
+  /* Table */
+  .stats-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .stats-table th {
+    text-align: left; color: #9ca3af; font-size: 0.72rem;
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 6px 16px; border-bottom: 1px solid #e5e7eb;
+  }
+  .stats-table th:first-child { padding-left: 0; }
+  .stats-table th:last-child { text-align: right; padding-right: 0; }
+  .stats-table :global(td) {
+    padding: 8px 16px; border-bottom: 1px solid #f3f4f6; color: #374151;
+  }
+  .stats-table :global(td:first-child) { padding-left: 0; }
+  .stats-table :global(td:last-child) { text-align: right; padding-right: 0; }
+
+  /* Bars (devices) */
+  .stats-bars { display: flex; flex-direction: column; gap: 12px; }
+  .stats-bar { display: flex; align-items: center; gap: 12px; }
+  .stats-bar__label { width: 80px; font-size: 0.82rem; color: #374151; }
+  .stats-bar__track {
+    flex: 1; height: 8px; background: #e5e7eb;
+    border-radius: 4px; overflow: hidden;
+  }
+  .stats-bar__fill {
+    height: 100%; background: #2563eb;
+    border-radius: 4px; transition: width 0.3s;
+  }
+  .stats-bar__pct { width: 50px; text-align: right; font-size: 0.82rem; color: #6b7280; }
+
+  /* Tabs */
+  .stats-tabs {
+    display: flex; gap: 4px; background: #1a1a2e;
+    border-radius: 10px; padding: 4px; margin-bottom: 28px;
+    max-width: 400px;
+  }
+  .stats-tab {
+    flex: 1; padding: 10px 20px; border: none; border-radius: 8px;
+    background: transparent; color: #9ca3af; cursor: pointer;
+    font-size: 0.9rem; font-weight: 600; transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .stats-tab.active { background: #2563eb; color: #fff; }
+  .stats-tab:hover:not(.active) { color: #fff; background: rgba(255,255,255,0.08); }
+
+  /* Publications table */
+  .pub-table {
+    width: 100%; border-collapse: collapse; font-size: 0.88rem;
+  }
+  .pub-table th {
+    text-align: left; color: #9ca3af; font-size: 0.72rem;
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 10px 12px; border-bottom: 2px solid #e5e7eb;
+    background: #f9fafb;
+  }
+  .pub-table :global(td) {
+    padding: 10px 12px; border-bottom: 1px solid #f3f4f6;
+    color: #374151; vertical-align: middle;
+  }
+  .pub-table :global(tr:hover) { background: #f9fafb; }
+  .pub-row--queued { background: #fffbeb; }
+  .pub-row--queued:hover { background: #fef3c7 !important; }
+
+  .pub-thumb {
+    width: 64px; height: 48px; object-fit: cover; border-radius: 6px;
+    display: block; background: #e5e7eb;
+  }
+  .pub-thumb--empty {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; color: #9ca3af;
+  }
+  .pub-cat-badge {
+    color: #fff; font-size: 0.65rem; font-weight: 700;
+    padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .pub-row-title {
+    font-size: 0.88rem; color: #1a1a2e; line-height: 1.35;
+  }
+  .pub-row-summary {
+    font-size: 0.78rem; color: #6b7280; line-height: 1.4;
+  }
+  .pub-row-date { font-size: 0.78rem; color: #9ca3af; white-space: nowrap; }
+  .pub-yt-link {
+    display: inline-flex; align-items: center; gap: 4px;
+    color: #dc2626; font-size: 0.78rem; font-weight: 600;
+    text-decoration: none; padding: 4px 10px; border-radius: 6px;
+    background: #fef2f2; transition: background 0.15s;
+  }
+  .pub-yt-link:hover { background: #fee2e2; }
+
+  .pub-badge {
+    font-size: 0.72rem; font-weight: 600; padding: 3px 10px;
+    border-radius: 10px;
+  }
+  .pub-badge--queued { background: #fef3c7; color: #92400e; }
+
+  .pub-section-header {
+    padding: 10px 16px; font-size: 0.78rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .pub-section-header--queued {
+    background: #fffbeb; color: #92400e; border-bottom: 1px solid #fde68a;
+  }
+
+  .pub-filter {
+    padding: 6px 16px; border: none; border-radius: 6px;
+    background: transparent; color: #6b7280; cursor: pointer;
+    font-size: 0.88rem; font-weight: 500; transition: all 0.15s;
+  }
+  .pub-filter.active { background: #2563eb; color: #fff; }
+
+  @media (max-width: 768px) {
+    .stats-kpi { grid-template-columns: repeat(2, 1fr); }
+    .stats-columns { grid-template-columns: 1fr; }
+    .stats-login__form { flex-direction: column; }
+    .stats-tabs { max-width: 100%; }
+    .pub-table { font-size: 0.78rem; }
+    .pub-table th:nth-child(3), .pub-table :global(td:nth-child(3)) { max-width: 200px; }
+    .pub-thumb { width: 48px; height: 36px; }
+  }
+</style>

@@ -1,0 +1,19 @@
+{
+  "name": "supertennis-content-factory",
+  "version": "1.0.0",
+  "description": "Auto-generate and publish short tennis videos to YouTube, Instagram, TikTok",
+  "type": "module",
+  "scripts": {
+    "daily": "node src/daily-run.js",
+    "generate": "node src/generate-video.js",
+    "auth:youtube": "node src/auth-youtube.js",
+    "publish:youtube": "node src/publish-youtube.js",
+    "publish:instagram": "node src/publish-instagram.js",
+    "test:generate": "node src/generate-video.js --test"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.0",
+    "googleapis": "^144.0.0",
+    "open": "^10.1.0"
+  }
+}
