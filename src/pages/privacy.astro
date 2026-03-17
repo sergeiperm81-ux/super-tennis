@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Privacy Policy" description="SUPER.TENNIS Privacy Policy">
+<section class="legal-page">
+  <div class="container">
+    <h1>Privacy Policy</h1>
+    <p class="legal-date">Last updated: March 17, 2026</p>
+
+    <h2>1. Information We Collect</h2>
+    <p>SUPER.TENNIS does not require user registration. We collect minimal data through standard web analytics (page views, country, device type) via Cloudflare Analytics. No personally identifiable information is collected or stored.</p>
+
+    <h2>2. Cookies</h2>
+    <p>We use essential cookies only for site functionality. We do not use third-party tracking cookies or advertising cookies.</p>
+
+    <h2>3. Third-Party Services</h2>
+    <p>Our website may embed content from third-party services:</p>
+    <ul>
+      <li><strong>YouTube</strong> — for video content. Subject to Google's Privacy Policy.</li>
+      <li><strong>TikTok</strong> — for video distribution. Subject to TikTok's Privacy Policy.</li>
+      <li><strong>Cloudflare</strong> — for hosting and analytics. Subject to Cloudflare's Privacy Policy.</li>
+      <li><strong>FlagCDN</strong> — for country flag images.</li>
+    </ul>
+
+    <h2>4. Data Storage</h2>
+    <p>We do not store personal data. Article and player data is stored in a secure database (Supabase) and does not contain user information.</p>
+
+    <h2>5. Children's Privacy</h2>
+    <p>Our Website is not directed at children under 13. We do not knowingly collect information from children.</p>
+
+    <h2>6. Data Security</h2>
+    <p>We use industry-standard security measures including HTTPS encryption and Cloudflare's security services to protect data in transit.</p>
+
+    <h2>7. Your Rights</h2>
+    <p>Since we do not collect personal data, there is no personal information to access, correct, or delete. If you have concerns, please contact us.</p>
+
+    <h2>8. Changes to This Policy</h2>
+    <p>We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated date.</p>
+
+    <h2>9. Contact</h2>
+    <p>For questions about this Privacy Policy, please visit <a href="https://super.tennis">super.tennis</a>.</p>
+  </div>
+</section>
+</BaseLayout>
+
+<style>
+  .legal-page { padding: 40px 0 80px; background: #f8f9fa; color: #1a1a2e; min-height: 60vh; }
+  .legal-page h1 { font-family: var(--font-heading); font-size: 2rem; margin-bottom: 8px; }
+  .legal-date { color: #6b7280; font-size: 0.88rem; margin-bottom: 32px; }
+  .legal-page h2 { font-family: var(--font-heading); font-size: 1.2rem; margin-top: 28px; margin-bottom: 10px; }
+  .legal-page p { line-height: 1.7; color: #374151; margin-bottom: 12px; }
+  .legal-page ul { margin: 8px 0 12px 24px; line-height: 1.7; color: #374151; }
+  .legal-page a { color: #2563eb; text-decoration: underline; }
+</style>
