@@ -1,11 +1,10 @@
 name: Content Factory — YouTube Shorts
 
 on:
-  # 3 times/day: 07:00, 13:00, 19:00 UTC (≈ 09:00, 15:00, 21:00 CET)
+  # 1x/day until YouTube Advanced Features unlocks (~mid April)
+  # Then switch back to 3x/day: 07:00, 13:00, 19:00 UTC
   schedule:
-    - cron: '0 7 * * *'   # Morning
-    - cron: '0 13 * * *'  # Afternoon
-    - cron: '0 19 * * *'  # Evening
+    - cron: '0 7 * * *'   # Morning only (1 video/day limit)
   workflow_dispatch: {}    # Manual trigger
 
 jobs:

@@ -110,33 +110,32 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         <div class="stats-kpi" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
           <div class="stats-kpi__card">
             <span class="stats-kpi__label">Published</span>
-            <span class="stats-kpi__value" id="pub-total">—</span>
+            <span class="stats-kpi__value" id="pub-published">—</span>
           </div>
           <div class="stats-kpi__card">
             <span class="stats-kpi__label">In Queue</span>
             <span class="stats-kpi__value" id="pub-queued">—</span>
           </div>
           <div class="stats-kpi__card">
-            <span class="stats-kpi__label">This Week</span>
-            <span class="stats-kpi__value" id="pub-week">—</span>
+            <span class="stats-kpi__label" id="pub-errors-label">Errors</span>
+            <span class="stats-kpi__value" id="pub-errors">—</span>
           </div>
         </div>
 
-        <!-- Filter -->
+        <!-- Filter: Queue / Published -->
         <div class="stats-dash__toolbar">
           <div class="stats-dash__periods">
-            <button class="pub-filter active" data-status="all">All</button>
+            <button class="pub-filter active" data-status="queue">Queue</button>
             <button class="pub-filter" data-status="published">Published</button>
-            <button class="pub-filter" data-status="queued">Queued</button>
           </div>
-          <button id="pub-refresh" class="stats-login__btn" style="padding:6px 14px;font-size:0.82rem;">Refresh</button>
+          <button id="pub-refresh" class="stats-login__btn" style="padding:6px 14px;font-size:0.82rem;">↻ Refresh</button>
         </div>
 
         <!-- Publications table -->
         <div id="pub-list" class="stats-section" style="padding:0;overflow:hidden;"></div>
 
         <div id="pub-empty" class="stats-loading" hidden>
-          No publications yet. The Content Factory will start publishing once YouTube credentials are configured.
+          No publications yet. Videos will appear here once the Content Factory runs.
         </div>
       </div>
 
@@ -336,6 +335,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   // ===== PUBLICATIONS TAB =====
   var pubLoaded = false;
   var allPubs = [];
+  var pubFilter = 'queue'; // default tab
 
   var pubPwd = sessionStorage.getItem('stats_pwd') || '';
   if (pubPwd) {
@@ -361,51 +361,69 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     btn.addEventListener('click', function() {
       document.querySelectorAll('.pub-filter').forEach(function(b) { b.classList.remove('active'); });
       btn.classList.add('active');
-      filterPublications(btn.dataset.status);
+      pubFilter = btn.dataset.status;
+      filterPublications(pubFilter);
     });
   });
 
-  function fmtDate(dateStr) {
-    if (!dateStr || dateStr === '—') return '—';
-    var parts = dateStr.split('-');
-    if (parts.length !== 3) return dateStr;
-    return parts[2] + '.' + parts[1] + '.' + parts[0];
+  function fmtDateTime(isoStr) {
+    if (!isoStr) return '—';
+    var d = new Date(isoStr);
+    if (isNaN(d)) return isoStr;
+    var dd = String(d.getDate()).padStart(2, '0');
+    var mm = String(d.getMonth() + 1).padStart(2, '0');
+    var yyyy = d.getFullYear();
+    var hh = String(d.getHours()).padStart(2, '0');
+    var mi = String(d.getMinutes()).padStart(2, '0');
+    return dd + '.' + mm + '.' + yyyy + ' ' + hh + ':' + mi;
+  }
+
+  function isPublished(p) {
+    return !!(p.youtube_id || p.tiktok_id);
+  }
+
+  function hasError(p) {
+    return !!(p.youtube_error || p.tiktok_error);
   }
 
   function loadPublications() {
     var list = document.getElementById('pub-list');
     list.innerHTML = '<p style="color:#6b7280;text-align:center;padding:40px;">Loading...</p>';
 
-    fetch(API + '/api/news?limit=50')
+    fetch(API + '/api/publications?limit=100')
       .then(function(r) { return r.json(); })
-      .then(function(news) {
-        if (!news || !news.length) {
+      .then(function(data) {
+        if (!data || data.error) {
+          list.innerHTML = '<p style="color:#ef4444;text-align:center;padding:40px;">Error: ' + (data && data.error || 'Unknown') + '</p>';
+          return;
+        }
+        if (!data.length) {
           document.getElementById('pub-empty').hidden = false;
           list.innerHTML = '';
+          document.getElementById('pub-published').textContent = '0';
+          document.getElementById('pub-queued').textContent = '0';
+          document.getElementById('pub-errors').textContent = '0';
           return;
         }
         pubLoaded = true;
+        allPubs = data;
 
-        allPubs = news.map(function(n) {
-          return {
-            title: n.title,
-            summary: n.summary || '',
-            category: n.category || 'buzz',
-            image_url: n.image_url,
-            date: n.published_at ? n.published_at.split('T')[0] : '—',
-            youtube_id: n.youtube_video_id || null,
-          };
-        });
-
-        var published = allPubs.filter(function(p) { return p.youtube_id; });
-        var queued = allPubs.filter(function(p) { return !p.youtube_id; });
-        document.getElementById('pub-total').textContent = published.length;
+        // KPI counts
+        var published = data.filter(isPublished);
+        var queued = data.filter(function(p) { return !isPublished(p); });
+        var errors = data.filter(hasError);
+        document.getElementById('pub-published').textContent = published.length;
         document.getElementById('pub-queued').textContent = queued.length;
-        var weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0];
-        var thisWeek = published.filter(function(p) { return p.date >= weekAgo; }).length;
-        document.getElementById('pub-week').textContent = thisWeek;
+        document.getElementById('pub-errors').textContent = errors.length;
+        if (errors.length > 0) {
+          document.getElementById('pub-errors').style.color = '#ef4444';
+          document.getElementById('pub-errors-label').style.color = '#ef4444';
+        } else {
+          document.getElementById('pub-errors').style.color = '';
+          document.getElementById('pub-errors-label').style.color = '';
+        }
 
-        renderPublications(allPubs);
+        filterPublications(pubFilter);
       })
       .catch(function(e) {
         list.innerHTML = '<p style="color:#ef4444;text-align:center;padding:40px;">Error: ' + e.message + '</p>';
@@ -413,9 +431,23 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   }
 
   function filterPublications(status) {
-    if (status === 'all') return renderPublications(allPubs);
-    if (status === 'published') return renderPublications(allPubs.filter(function(p) { return p.youtube_id; }));
-    if (status === 'queued') return renderPublications(allPubs.filter(function(p) { return !p.youtube_id; }));
+    if (status === 'published') return renderPublications(allPubs.filter(isPublished));
+    // queue = not published (may include errors)
+    return renderPublications(allPubs.filter(function(p) { return !isPublished(p); }));
+  }
+
+  function platformCell(id, publishedAt, error, platform) {
+    if (id) {
+      var link = platform === 'yt'
+        ? 'https://youtube.com/shorts/' + id
+        : 'https://www.tiktok.com/@supertennisnews/video/' + id;
+      var label = platform === 'yt' ? '▶ YT' : '▶ TT';
+      return '<a href="' + link + '" target="_blank" rel="noopener" class="pub-platform-link pub-platform--ok" title="Published ' + fmtDateTime(publishedAt) + '">' + label + '</a>';
+    }
+    if (error) {
+      return '<span class="pub-platform-badge pub-platform--err" title="' + error.replace(/"/g, '&quot;').slice(0, 200) + '">❌</span>';
+    }
+    return '<span class="pub-platform-badge pub-platform--wait">⏳</span>';
   }
 
   function renderPublications(pubs) {
@@ -428,60 +460,42 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     var catColors = { scandal:'#ef4444', love:'#ec4899', money:'#f59e0b', fashion:'#8b5cf6', viral:'#06b6d4', buzz:'#22c55e', wellness:'#06b6d4', funny:'#f97316', business:'#d4a017' };
     var catLabels = { scandal:'Scandal', love:'Love', money:'Money', fashion:'Fashion', viral:'Viral', buzz:'News', wellness:'Wellness', funny:'LOL', business:'Business' };
 
-    // Sort: PUBLISHED first (newest), then queued (newest)
-    var published = pubs.filter(function(p) { return p.youtube_id; });
-    var queued = pubs.filter(function(p) { return !p.youtube_id; });
-    var sorted = published.concat(queued);
+    var html = '<table class="pub-table"><thead><tr>' +
+      '<th></th>' +
+      '<th>Cat</th>' +
+      '<th>Title</th>' +
+      '<th>Scheduled</th>' +
+      '<th>YT</th>' +
+      '<th>TT</th>' +
+      '</tr></thead><tbody>';
 
-    var html = '';
-
-    // Published section
-    if (published.length > 0) {
-      html += '<div class="pub-section-header pub-section-header--published">Published (' + published.length + ')</div>';
-    }
-
-    html += '<table class="pub-table"><tbody>';
-
-    sorted.forEach(function(p, i) {
+    pubs.forEach(function(p) {
       var catColor = catColors[p.category] || catColors.buzz;
       var catLabel = catLabels[p.category] || 'News';
-      var isPublished = !!p.youtube_id;
-
-      // Insert "In Queue" header before first queued item
-      if (!isPublished && (i === 0 || sorted[i - 1].youtube_id)) {
-        html += '</tbody></table>';
-        html += '<div class="pub-section-header pub-section-header--queued">In Queue (' + queued.length + ')</div>';
-        html += '<table class="pub-table"><tbody>';
-      }
 
       // Thumbnail
       var thumb = '';
-      if (isPublished) {
+      if (p.youtube_id) {
         thumb = '<a href="https://youtube.com/shorts/' + p.youtube_id + '" target="_blank" rel="noopener">' +
-          '<img src="https://i.ytimg.com/vi/' + p.youtube_id + '/default.jpg" alt="" class="pub-thumb" />' +
-          '</a>';
+          '<img src="https://i.ytimg.com/vi/' + p.youtube_id + '/default.jpg" alt="" class="pub-thumb" /></a>';
       } else if (p.image_url) {
         thumb = '<img src="' + p.image_url + '" alt="" class="pub-thumb" onerror="this.style.display=\'none\'" />';
       } else {
         thumb = '<div class="pub-thumb pub-thumb--empty"></div>';
       }
 
-      // Status
-      var statusCell = '';
-      if (isPublished) {
-        statusCell = '<a href="https://youtube.com/shorts/' + p.youtube_id + '" target="_blank" rel="noopener" class="pub-yt-link">▶ YouTube</a>';
-      } else {
-        statusCell = '<span class="pub-badge pub-badge--queued">In Queue</span>';
-      }
+      // YouTube cell
+      var ytCell = platformCell(p.youtube_id, p.youtube_published_at, p.youtube_error, 'yt');
+      // TikTok cell
+      var ttCell = platformCell(p.tiktok_id, p.tiktok_published_at, p.tiktok_error, 'tt');
 
-      html += '<tr class="' + (isPublished ? 'pub-row--published' : 'pub-row--queued') + '">' +
+      html += '<tr>' +
         '<td class="pub-td-thumb">' + thumb + '</td>' +
         '<td class="pub-td-cat"><span class="pub-cat-badge" style="background:' + catColor + '">' + catLabel + '</span></td>' +
-        '<td class="pub-td-content"><div class="pub-row-title">' + p.title + '</div>' +
-          (p.summary ? '<div class="pub-row-summary">' + p.summary.slice(0, 100) + '</div>' : '') +
-        '</td>' +
-        '<td class="pub-td-date">' + fmtDate(p.date) + '</td>' +
-        '<td class="pub-td-status">' + statusCell + '</td>' +
+        '<td class="pub-td-content"><div class="pub-row-title">' + (p.title || '') + '</div></td>' +
+        '<td class="pub-td-date">' + fmtDateTime(p.scheduled_at) + '</td>' +
+        '<td class="pub-td-platform">' + ytCell + '</td>' +
+        '<td class="pub-td-platform">' + ttCell + '</td>' +
         '</tr>';
     });
 
@@ -635,72 +649,56 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   /* Publications — all :global() because JS injects HTML at runtime */
   :global(.pub-table) {
     width: 100%; border-collapse: collapse; font-size: 0.88rem;
-    table-layout: fixed;
+  }
+  :global(.pub-table thead th) {
+    text-align: left; color: #9ca3af; font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 8px 10px; border-bottom: 2px solid #e5e7eb;
+    white-space: nowrap;
   }
   :global(.pub-table td) {
-    padding: 12px 10px; border-bottom: 1px solid #f3f4f6;
+    padding: 10px 10px; border-bottom: 1px solid #f3f4f6;
     color: #374151; vertical-align: middle;
   }
   :global(.pub-table tr:hover) { background: #f9fafb; }
-  :global(.pub-row--queued) { background: #fffbeb; }
-  :global(.pub-row--queued:hover) { background: #fef3c7 !important; }
 
   /* Column widths */
-  :global(.pub-td-thumb) { width: 80px; padding-right: 12px !important; }
-  :global(.pub-td-cat) { width: 80px; padding-right: 14px !important; }
-  :global(.pub-td-date) { width: 90px; text-align: center; white-space: nowrap; font-size: 0.78rem; color: #9ca3af; }
-  :global(.pub-td-status) { width: 100px; text-align: center; }
+  :global(.pub-td-thumb) { width: 76px; }
+  :global(.pub-td-cat) { width: 76px; }
+  :global(.pub-td-date) { width: 120px; white-space: nowrap; font-size: 0.78rem; color: #6b7280; }
+  :global(.pub-td-platform) { width: 48px; text-align: center; }
 
   :global(.pub-thumb) {
-    width: 68px; height: 48px; object-fit: cover; border-radius: 6px;
+    width: 64px; height: 44px; object-fit: cover; border-radius: 6px;
     display: block; background: #e5e7eb;
   }
   :global(.pub-thumb--empty) {
-    width: 68px; height: 48px; border-radius: 6px; background: #e5e7eb;
+    width: 64px; height: 44px; border-radius: 6px; background: #e5e7eb;
   }
   :global(.pub-cat-badge) {
     display: inline-block;
-    color: #fff; font-size: 0.65rem; font-weight: 700;
-    padding: 3px 8px; border-radius: 4px; letter-spacing: 0.5px;
+    color: #fff; font-size: 0.62rem; font-weight: 700;
+    padding: 2px 7px; border-radius: 4px; letter-spacing: 0.5px;
     white-space: nowrap; text-transform: uppercase;
   }
   :global(.pub-row-title) {
-    font-size: 0.85rem; color: #1a1a2e; line-height: 1.35;
+    font-size: 0.82rem; color: #1a1a2e; line-height: 1.3;
     font-weight: 600;
-  }
-  :global(.pub-row-summary) {
-    font-size: 0.75rem; color: #6b7280; line-height: 1.35;
-    margin-top: 3px;
     overflow: hidden; text-overflow: ellipsis;
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
   }
-  :global(.pub-yt-link) {
-    display: inline-flex; align-items: center; gap: 4px;
-    color: #dc2626; font-size: 0.78rem; font-weight: 600;
-    text-decoration: none; padding: 4px 10px; border-radius: 6px;
-    background: #fef2f2; transition: background 0.15s;
-    white-space: nowrap;
-  }
-  :global(.pub-yt-link:hover) { background: #fee2e2; }
 
-  :global(.pub-badge) {
-    font-size: 0.72rem; font-weight: 600; padding: 3px 10px;
-    border-radius: 10px; white-space: nowrap;
+  /* Platform cells */
+  :global(.pub-platform-link) {
+    display: inline-block; font-size: 0.72rem; font-weight: 700;
+    text-decoration: none; padding: 3px 8px; border-radius: 5px;
+    white-space: nowrap; transition: opacity 0.15s;
   }
-  :global(.pub-badge--queued) { background: #fef3c7; color: #92400e; }
-
-  :global(.pub-section-header) {
-    padding: 12px 16px; font-size: 0.78rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 1px;
-    border-bottom: 1px solid #e5e7eb;
-  }
-  :global(.pub-section-header--published) {
-    background: #f0fdf4; color: #166534; border-bottom-color: #bbf7d0;
-  }
-  :global(.pub-section-header--queued) {
-    background: #fffbeb; color: #92400e; border-bottom-color: #fde68a;
-    margin-top: 8px;
-  }
+  :global(.pub-platform-link:hover) { opacity: 0.8; }
+  :global(.pub-platform--ok) { background: #dcfce7; color: #166534; }
+  :global(.pub-platform-badge) { font-size: 0.9rem; cursor: default; }
+  :global(.pub-platform--err) { cursor: help; }
+  :global(.pub-platform--wait) { opacity: 0.5; }
 
   .pub-filter {
     padding: 6px 16px; border: none; border-radius: 6px;
@@ -714,11 +712,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     .stats-columns { grid-template-columns: 1fr; }
     .stats-login__form { flex-direction: column; }
     .stats-tabs { max-width: 100%; }
-    :global(.pub-table) { font-size: 0.78rem; table-layout: auto; }
-    :global(.pub-td-thumb) { width: 56px; }
-    :global(.pub-td-cat) { width: 64px; }
-    :global(.pub-td-date) { display: none; }
-    :global(.pub-thumb) { width: 50px; height: 36px; }
-    :global(.pub-thumb--empty) { width: 50px; height: 36px; }
+    :global(.pub-table) { font-size: 0.75rem; }
+    :global(.pub-td-thumb) { display: none; }
+    :global(.pub-td-cat) { width: 56px; }
+    :global(.pub-td-date) { width: 90px; font-size: 0.7rem; }
+    :global(.pub-td-platform) { width: 36px; }
   }
 </style>

@@ -3,9 +3,11 @@
  *
  * Flow:
  *   1. Fetch fresh headlines from Supabase
- *   2. Generate short videos with FFmpeg (headline + summary + CTA)
- *   3. Publish to YouTube Shorts
- *   4. Log results
+ *   2. Register in video_publications table (scheduled)
+ *   3. Generate short videos with FFmpeg (headline + summary + CTA)
+ *   4. Publish to YouTube Shorts → update video_publications
+ *   5. Publish to TikTok (when configured) → update video_publications
+ *   6. Log results
  *
  * Run: node src/daily-run.js
  * Cron: GitHub Actions — 3 times/day
@@ -18,6 +20,45 @@ import { publishToYouTube } from './publish-youtube.js';
 import fs from 'fs';
 
 const VIDEOS_PER_RUN = parseInt(process.env.VIDEOS_PER_RUN || '1');
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
+
+// ── Supabase helpers for video_publications ──
+
+async function supabaseInsert(table, row) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation',
+    },
+    body: JSON.stringify(row),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Supabase INSERT ${table} failed (${res.status}): ${text}`);
+  }
+  const data = await res.json();
+  return data[0]; // return created row with id
+}
+
+async function supabaseUpdate(table, id, fields) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+    method: 'PATCH',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(fields),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    console.warn(`   ⚠️ Supabase UPDATE ${table} id=${id} failed (${res.status}): ${text}`);
+  }
+}
 
 async function main() {
   const startTime = Date.now();
@@ -42,11 +83,27 @@ async function main() {
     process.exit(0);
   }
 
-  // 2. Generate videos (with summary for lead text)
+  // 2. Register in video_publications + generate videos
   console.log(`\n🎬 Generating ${headlines.length} video(s)...`);
   const videos = [];
   for (let i = 0; i < headlines.length; i++) {
     const h = headlines[i];
+
+    // INSERT into video_publications (scheduled)
+    let pubRow = null;
+    try {
+      pubRow = await supabaseInsert('video_publications', {
+        news_slug: h.slug,
+        title: h.title,
+        category: h.category || 'buzz',
+        image_url: h.image_url || null,
+        scheduled_at: new Date().toISOString(),
+      });
+      console.log(`   📋 Registered publication #${pubRow.id}: ${h.title}`);
+    } catch (e) {
+      console.warn(`   ⚠️ Failed to register publication: ${e.message}`);
+    }
+
     const videoPath = await generateVideo({
       title: h.title,
       summary: h.summary || '',
@@ -54,7 +111,7 @@ async function main() {
       index: i,
     });
     if (videoPath) {
-      videos.push({ headline: h, path: videoPath, index: i });
+      videos.push({ headline: h, path: videoPath, index: i, pubId: pubRow?.id });
     }
   }
 
@@ -65,11 +122,11 @@ async function main() {
   console.log(`   Generated ${videos.length} video(s)`);
 
   // 3. Publish to YouTube
-  console.log(`\n📤 Publishing...`);
+  console.log(`\n📤 Publishing to YouTube...`);
   const results = [];
 
   for (const video of videos) {
-    const { headline, path: videoPath } = video;
+    const { headline, path: videoPath, pubId } = video;
     console.log(`\n── ${headline.title} ──`);
 
     const result = {
@@ -77,38 +134,62 @@ async function main() {
       slug: headline.slug,
       category: headline.category,
       youtube: null,
+      youtubeError: null,
+      pubId,
     };
 
-    result.youtube = await publishToYouTube(videoPath, {
-      title: headline.title,
-      summary: headline.summary || '',
-      category: headline.category,
-    });
+    try {
+      result.youtube = await publishToYouTube(videoPath, {
+        title: headline.title,
+        summary: headline.summary || '',
+        category: headline.category,
+      });
+
+      // Update video_publications with YouTube result
+      if (pubId && result.youtube) {
+        await supabaseUpdate('video_publications', pubId, {
+          youtube_id: result.youtube,
+          youtube_published_at: new Date().toISOString(),
+        });
+        console.log(`   ✅ YouTube: https://youtube.com/shorts/${result.youtube}`);
+      } else if (pubId && !result.youtube) {
+        await supabaseUpdate('video_publications', pubId, {
+          youtube_error: 'Upload returned null (skipped or quota exceeded)',
+        });
+        console.log(`   ⏭️ YouTube: skipped`);
+      }
+    } catch (err) {
+      result.youtubeError = err.message;
+      if (pubId) {
+        await supabaseUpdate('video_publications', pubId, {
+          youtube_error: err.message.slice(0, 500),
+        });
+      }
+      console.error(`   ❌ YouTube error: ${err.message}`);
+    }
 
     results.push(result);
   }
 
-  // 4. Mark headlines as used + save YouTube IDs to Supabase
+  // 4. Mark headlines as used + save YouTube IDs to news table (backward compat)
   const usedSlugs = results.map(r => r.slug);
   markPublished(usedSlugs);
 
-  // Save YouTube video IDs back to Supabase
   for (const r of results) {
     if (r.youtube && r.slug) {
       try {
-        const url = `${process.env.SUPABASE_URL}/rest/v1/news?slug=eq.${encodeURIComponent(r.slug)}`;
+        const url = `${SUPABASE_URL}/rest/v1/news?slug=eq.${encodeURIComponent(r.slug)}`;
         await fetch(url, {
           method: 'PATCH',
           headers: {
-            'apikey': process.env.SUPABASE_SERVICE_KEY,
-            'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ youtube_video_id: r.youtube }),
         });
-        console.log(`   📎 Saved YouTube ID for "${r.slug}"`);
       } catch (e) {
-        console.log(`   ⚠️ Failed to save YouTube ID: ${e.message}`);
+        console.log(`   ⚠️ Failed to save YouTube ID to news: ${e.message}`);
       }
     }
   }
@@ -125,7 +206,7 @@ async function main() {
   console.log('📊 SUMMARY');
   console.log('━'.repeat(60));
   for (const r of results) {
-    const yt = r.youtube ? `✅ https://youtube.com/shorts/${r.youtube}` : '⏭️ skipped';
+    const yt = r.youtube ? `✅ https://youtube.com/shorts/${r.youtube}` : (r.youtubeError ? `❌ ${r.youtubeError}` : '⏭️ skipped');
     console.log(`  ${yt} │ ${r.title}`);
   }
   console.log(`\n⏱️  Done in ${elapsed}s`);

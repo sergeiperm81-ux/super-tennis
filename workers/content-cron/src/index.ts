@@ -1256,6 +1256,21 @@ export default {
       }
     }
 
+    // ── PUBLICATIONS API (for dashboard) ──
+
+    if (url.pathname === '/api/publications') {
+      try {
+        const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 200);
+        const data = await supabaseQuery(env, 'video_publications', 'GET', {
+          'order': 'scheduled_at.desc',
+          'limit': String(limit),
+        });
+        return jsonResponse(data, 120, request); // cache 2 min
+      } catch (e: any) {
+        return jsonResponse({ error: e.message }, 60, request);
+      }
+    }
+
     // ── ANALYTICS API (password-protected) ──
 
     if (url.pathname === '/api/analytics') {
