@@ -42,6 +42,15 @@ jobs:
           curl -sL "https://github.com/rsms/inter/raw/master/fonts/desktop/Inter-Bold.otf" -o fonts/Inter-Bold.ttf
           curl -sL "https://github.com/rsms/inter/raw/master/fonts/desktop/Inter-Regular.otf" -o fonts/Inter-Regular.ttf
 
+      - name: Download royalty-free music
+        run: |
+          mkdir -p music
+          gh release download music-v1 --pattern '*.tar.gz' --dir /tmp --clobber
+          tar xzf /tmp/music.tar.gz -C music/
+          echo "Music tracks: $(ls music/*.mp3 | wc -l) files"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
       - name: Run content factory
         env:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}

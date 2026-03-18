@@ -73,14 +73,14 @@ function hasAudio(filePath) {
   } catch { return false; }
 }
 
-/** Get background music file */
+/** Get random background music file (royalty-free, rotates each video) */
 function getMusicPath() {
-  const musicFile = path.join(ROOT, 'music', 'bg-loop.aac');
-  if (fs.existsSync(musicFile)) return musicFile;
   const musicDir = path.join(ROOT, 'music');
   if (!fs.existsSync(musicDir)) return null;
   const files = fs.readdirSync(musicDir).filter(f => f.endsWith('.aac') || f.endsWith('.mp3'));
-  return files.length > 0 ? path.join(musicDir, files[0]) : null;
+  if (files.length === 0) return null;
+  const picked = files[Math.floor(Math.random() * files.length)];
+  return path.join(musicDir, picked);
 }
 
 export async function generateVideo({ title, summary = '', category = 'buzz', index = 0 }) {
