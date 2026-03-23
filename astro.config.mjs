@@ -15,10 +15,8 @@ export default defineConfig({
     inlineStylesheets: 'auto',
   },
   vite: {
-    // Make env variables available at build time for SSG
-    define: {
-      'import.meta.env.SUPABASE_SERVICE_KEY': JSON.stringify(process.env.SUPABASE_SERVICE_KEY || ''),
-    },
+    // SUPABASE_SERVICE_KEY is read via import.meta.env at SSG build time only
+    // Do NOT put it in vite.define — it could leak into client bundles
     build: {
       cssMinify: true,
     },

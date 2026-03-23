@@ -366,6 +366,11 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     });
   });
 
+  function escHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
   function fmtDateTime(isoStr) {
     if (!isoStr) return '—';
     var d = new Date(isoStr);
@@ -482,7 +487,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         thumb = '<a href="https://youtube.com/shorts/' + p.youtube_id + '" target="_blank" rel="noopener">' +
           '<img src="https://i.ytimg.com/vi/' + p.youtube_id + '/default.jpg" alt="" class="pub-thumb" /></a>';
       } else if (p.image_url) {
-        thumb = '<img src="' + p.image_url + '" alt="" class="pub-thumb" onerror="this.style.display=\'none\'" />';
+        thumb = '<img src="' + escHtml(p.image_url) + '" alt="" class="pub-thumb" onerror="this.style.display=\'none\'" />';
       } else {
         thumb = '<div class="pub-thumb pub-thumb--empty"></div>';
       }
@@ -495,7 +500,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       html += '<tr>' +
         '<td class="pub-td-thumb">' + thumb + '</td>' +
         '<td class="pub-td-cat"><span class="pub-cat-badge" style="background:' + catColor + '">' + catLabel + '</span></td>' +
-        '<td class="pub-td-content"><div class="pub-row-title">' + (p.title || '') + '</div></td>' +
+        '<td class="pub-td-content"><div class="pub-row-title">' + escHtml(p.title || '') + '</div></td>' +
         '<td class="pub-td-date">' + fmtDateTime(p.scheduled_at) + '</td>' +
         '<td class="pub-td-platform">' + ytCell + '</td>' +
         '<td class="pub-td-platform">' + ttCell + '</td>' +

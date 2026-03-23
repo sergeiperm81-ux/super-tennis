@@ -122,7 +122,10 @@
         .replace(/^## (.+)$/gm, '<h2>' + '$1' + '</h2>')
         .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
         .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-        .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(_, text, url) {
+          if (!/^https?:\/\//i.test(url.trim())) return esc(text);
+          return '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(text) + '</a>';
+        })
         .split(/\n\n+/)
         .map(function (p) {
           p = p.trim();
