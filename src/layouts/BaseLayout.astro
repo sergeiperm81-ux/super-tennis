@@ -61,18 +61,12 @@ const fullTitle = cleanTitle === 'Home' ? 'SUPER.TENNIS — Tennis for Everyone'
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
 
   <!-- Dynamic content styles (client-side rendered news/videos) -->
-  <link rel="stylesheet" href={`/css/dynamic-content.css?v=${Date.now()}`} />
+  <link rel="stylesheet" href="/css/dynamic-content.css?v=2" />
 
   {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
-  <!-- Google Analytics 4 -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX" is:inline></script>
-  <script is:inline>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-XXXXXXXXXX');
-  </script>
+  <!-- Cloudflare Web Analytics -->
+  <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "58c55eb389e74cd9a957df82216424eb"}' is:inline></script>
 </head>
 <body>
   <Header />

@@ -114,13 +114,15 @@
 
     var bodyHtml = '';
     if (item.body) {
+      // Strip any HTML tags from AI-generated body first (XSS prevention)
+      var cleanBody = item.body.replace(/<[^>]*>/g, '');
       // Simple markdown-ish rendering: ## headers, **bold**, paragraphs
-      bodyHtml = item.body
-        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+      bodyHtml = cleanBody
+        .replace(/^### (.+)$/gm, '<h3>' + '$1' + '</h3>')
+        .replace(/^## (.+)$/gm, '<h2>' + '$1' + '</h2>')
         .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
         .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
         .split(/\n\n+/)
         .map(function (p) {
           p = p.trim();

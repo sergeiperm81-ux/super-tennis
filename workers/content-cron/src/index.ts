@@ -443,7 +443,12 @@ For each story provide:
   const data = await res.json() as any;
   const content = data.choices[0]?.message?.content || '';
   const jsonStr = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-  return JSON.parse(jsonStr);
+  try {
+    return JSON.parse(jsonStr);
+  } catch (e) {
+    console.error('OpenAI returned invalid JSON:', jsonStr.slice(0, 500));
+    return [];
+  }
 }
 
 // ============================================================
@@ -457,14 +462,7 @@ async function generateNews(env: Env): Promise<string> {
 
   log('🎾 Starting news generation...');
 
-  // 1. Deactivate ALL currently active news (new batch replaces old)
-  try {
-    await supabaseQuery(env, 'news', 'PATCH',
-      { 'is_active': 'eq.true' },
-      { is_active: false },
-    );
-    log('🗑️  Deactivated old news');
-  } catch (e: any) { log(`⚠️  Deactivate error: ${e.message}`); }
+  // 1. (moved) Deactivation happens AFTER successful upsert to avoid blank news window
 
   // 2. Fetch RSS feeds
   log('📡 Fetching RSS feeds...');
@@ -610,11 +608,18 @@ async function generateNews(env: Env): Promise<string> {
     log(`  ✅ ${(c.category || 'buzz').toUpperCase().padEnd(8)} ${c.title}`);
   }
 
-  // 7. Upsert into Supabase
+  // 7. Upsert into Supabase, then deactivate old news only on success
   log(`💾 Upserting ${newsRows.length} items...`);
   try {
     await supabaseQuery(env, 'news', 'POST', { 'on_conflict': 'slug' }, newsRows);
     log(`   ✅ Saved ${newsRows.length} items`);
+    // Deactivate old news AFTER new batch confirmed — prevents blank news window
+    const newSlugs = newsRows.map((r: any) => r.slug);
+    await supabaseQuery(env, 'news', 'PATCH',
+      { 'is_active': 'eq.true', 'slug': `not.in.(${newSlugs.join(',')})` },
+      { is_active: false },
+    );
+    log('🗑️  Deactivated old news (new batch confirmed)');
   } catch (e: any) {
     log(`❌ Supabase error: ${e.message}`);
   }
@@ -748,7 +753,7 @@ function seededPick<T>(arr: T[], seed: number): T {
 // ============================================================
 function getCorsOrigin(request: Request): string {
   const origin = request.headers.get('Origin') || '';
-  if (origin === 'https://super.tennis' || origin.startsWith('http://localhost')) return origin;
+  if (origin === 'https://super.tennis') return origin;
   return 'https://super.tennis';
 }
 
@@ -1256,9 +1261,29 @@ export default {
       }
     }
 
-    // ── PUBLICATIONS API (for dashboard) ──
+    // ── Helper: extract auth password from Authorization header or query param ──
+    function getAuthPassword(req: Request, u: URL): string | null {
+      const authHeader = req.headers.get('Authorization');
+      if (authHeader?.startsWith('Bearer ')) return authHeader.slice(7);
+      return u.searchParams.get('pwd'); // fallback for backwards compat
+    }
+
+    function requireAuth(req: Request, u: URL, e: Env): Response | null {
+      const pwd = getAuthPassword(req, u);
+      if (!e.ANALYTICS_PASSWORD || !pwd || pwd !== e.ANALYTICS_PASSWORD) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders(req) },
+        });
+      }
+      return null; // auth OK
+    }
+
+    // ── PUBLICATIONS API (password-protected) ──
 
     if (url.pathname === '/api/publications') {
+      const authErr = requireAuth(request, url, env);
+      if (authErr) return authErr;
       try {
         const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 200);
         const data = await supabaseQuery(env, 'video_publications', 'GET', {
@@ -1274,13 +1299,8 @@ export default {
     // ── ANALYTICS API (password-protected) ──
 
     if (url.pathname === '/api/analytics') {
-      const pwd = url.searchParams.get('pwd');
-      if (!env.ANALYTICS_PASSWORD || !pwd || pwd !== env.ANALYTICS_PASSWORD) {
-        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-          status: 401,
-          headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
-        });
-      }
+      const authErr = requireAuth(request, url, env);
+      if (authErr) return authErr;
       if (!env.CF_API_TOKEN || !env.CF_ZONE_ID) {
         return jsonResponse({ error: 'Analytics not configured (missing CF_API_TOKEN or CF_ZONE_ID)' }, 0, request);
       }
@@ -1298,36 +1318,43 @@ export default {
       }
     }
 
-    // ── MANUAL TRIGGERS (with rebuild) ──
+    // ── MANUAL TRIGGERS (password-protected) ──
 
-    if (url.pathname === '/trigger/news') {
-      const result = await generateNews(env);
-      return new Response(result, { headers: { 'Content-Type': 'text/plain' } });
-    }
+    if (url.pathname.startsWith('/trigger/')) {
+      const authErr = requireAuth(request, url, env);
+      if (authErr) return authErr;
 
-    if (url.pathname === '/trigger/videos') {
-      const result = await updateVideos(env);
-      return new Response(result, { headers: { 'Content-Type': 'text/plain' } });
-    }
+      if (url.pathname === '/trigger/news') {
+        const result = await generateNews(env);
+        return new Response(result, { headers: { 'Content-Type': 'text/plain' } });
+      }
 
-    if (url.pathname === '/trigger/article') {
-      const result = await generateWeeklyArticle(env);
-      await triggerRebuild(env);
-      return new Response(result, { headers: { 'Content-Type': 'text/plain' } });
-    }
+      if (url.pathname === '/trigger/videos') {
+        const result = await updateVideos(env);
+        return new Response(result, { headers: { 'Content-Type': 'text/plain' } });
+      }
 
-    if (url.pathname === '/trigger/rankings') {
-      const result = await updateRankings(env);
-      await triggerRebuild(env);
-      return new Response(result, { headers: { 'Content-Type': 'text/plain' } });
-    }
+      if (url.pathname === '/trigger/article') {
+        const result = await generateWeeklyArticle(env);
+        await triggerRebuild(env);
+        return new Response(result, { headers: { 'Content-Type': 'text/plain' } });
+      }
 
-    if (url.pathname === '/trigger/all') {
-      const newsResult = await generateNews(env);
-      const videoResult = await updateVideos(env);
-      return new Response(`${newsResult}\n\n---\n\n${videoResult}`, {
-        headers: { 'Content-Type': 'text/plain' },
-      });
+      if (url.pathname === '/trigger/rankings') {
+        const result = await updateRankings(env);
+        await triggerRebuild(env);
+        return new Response(result, { headers: { 'Content-Type': 'text/plain' } });
+      }
+
+      if (url.pathname === '/trigger/all') {
+        const newsResult = await generateNews(env);
+        const videoResult = await updateVideos(env);
+        return new Response(`${newsResult}\n\n---\n\n${videoResult}`, {
+          headers: { 'Content-Type': 'text/plain' },
+        });
+      }
+
+      return new Response('Unknown trigger', { status: 404 });
     }
 
     return new Response(`SuperTennis Content Cron Worker
