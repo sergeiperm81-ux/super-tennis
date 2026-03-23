@@ -163,11 +163,11 @@ export async function generateVideo({ title, summary = '', category = 'buzz', in
     `drawtext=${tmpFonts.bold}text='  ${esc(cat.label)}  ':fontsize=32:fontcolor=white:x=(w-text_w)/2:y=${badgeY}:box=1:boxcolor=${cat.color}@0.95:boxborderw=16:enable='gte(t,1.0)':alpha='min((t-1.0)/0.3,1)'`
   );
 
-  // 4. HEADLINE — Anton, fades in at 1.5s
+  // 4. HEADLINE — Anton, fades in at 1.5s, dark pill behind each line for readability
   hLines.forEach((line, i) => {
     const y = hTop + i * hLH;
     f.push(
-      `drawtext=${tmpFonts.anton}text='${esc(line.toUpperCase())}':fontsize=${hFS}:fontcolor=white:x=(w-text_w)/2:y=${y}:enable='gte(t,1.5)':alpha='min((t-1.5)/0.5,1)'`
+      `drawtext=${tmpFonts.anton}text='${esc(line.toUpperCase())}':fontsize=${hFS}:fontcolor=white:x=(w-text_w)/2:y=${y}:box=1:boxcolor=black@0.55:boxborderw=12:shadowcolor=black@0.6:shadowx=2:shadowy=2:enable='gte(t,1.5)':alpha='min((t-1.5)/0.5,1)'`
     );
   });
 
@@ -176,12 +176,12 @@ export async function generateVideo({ title, summary = '', category = 'buzz', in
     `drawbox=x=340:y=${accentY}:w=400:h=4:color=${cat.color}@0.9:t=fill:enable='gte(t,2.5)':replace=1`
   );
 
-  // 6. LEAD TEXT — Anton 60px, fades in at 4.0s (good gap after headline)
+  // 6. LEAD TEXT — Anton 60px, fades in at 4.0s, dark pill behind each line
   if (lLines.length > 0) {
     lLines.forEach((line, i) => {
       const y = lTop + i * lLH;
       f.push(
-        `drawtext=${tmpFonts.anton}text='${esc(line)}':fontsize=${lFS}:fontcolor=white@0.92:x=(w-text_w)/2:y=${y}:enable='gte(t,4.0)':alpha='min((t-4.0)/0.5,1)'`
+        `drawtext=${tmpFonts.anton}text='${esc(line)}':fontsize=${lFS}:fontcolor=white@0.92:x=(w-text_w)/2:y=${y}:box=1:boxcolor=black@0.45:boxborderw=10:shadowcolor=black@0.5:shadowx=2:shadowy=2:enable='gte(t,4.0)':alpha='min((t-4.0)/0.5,1)'`
       );
     });
   }
@@ -191,10 +191,10 @@ export async function generateVideo({ title, summary = '', category = 'buzz', in
     `drawbox=x=100:y=${ctaBoxY}:w=880:h=200:color=black@0.7:t=fill:enable='gte(t,7.0)'`
   );
   f.push(
-    `drawtext=${tmpFonts.anton}text='FULL STORY ON':fontsize=36:fontcolor=white:x=(w-text_w)/2:y=${ctaLine1Y}:enable='gte(t,7.0)':alpha='min((t-7.0)/0.4,1)'`
+    `drawtext=${tmpFonts.anton}text='FULL STORY ON':fontsize=36:fontcolor=white:x=(w-text_w)/2:y=${ctaLine1Y}:shadowcolor=black@0.6:shadowx=2:shadowy=2:enable='gte(t,7.0)':alpha='min((t-7.0)/0.4,1)'`
   );
   f.push(
-    `drawtext=${tmpFonts.anton}text='SUPER.TENNIS':fontsize=72:fontcolor=${cat.color}:x=(w-text_w)/2:y=${ctaLine2Y}:enable='gte(t,7.0)':alpha='min((t-7.0)/0.5,1)'`
+    `drawtext=${tmpFonts.anton}text='SUPER.TENNIS':fontsize=72:fontcolor=${cat.color}:x=(w-text_w)/2:y=${ctaLine2Y}:shadowcolor=black@0.6:shadowx=2:shadowy=2:enable='gte(t,7.0)':alpha='min((t-7.0)/0.5,1)'`
   );
 
   // 8. Subtle watermark
@@ -218,10 +218,10 @@ export async function generateVideo({ title, summary = '', category = 'buzz', in
   if (musicPath) {
     args.push('-i', musicPath);
     if (bgAudio) {
-      args.push('-filter_complex', '[0:a]volume=0.3[bg];[1:a]volume=2.5[mus];[bg][mus]amix=inputs=2:duration=first:normalize=0[aout]');
+      args.push('-filter_complex', '[0:a]volume=0.15[bg];[1:a]volume=0.20[mus];[bg][mus]amix=inputs=2:duration=first:normalize=0[aout]');
       args.push('-map', '0:v', '-map', '[aout]');
     } else {
-      args.push('-filter_complex', '[1:a]volume=2.5[aout]');
+      args.push('-filter_complex', '[1:a]volume=0.20[aout]');
       args.push('-map', '0:v', '-map', '[aout]');
     }
   } else if (!bgAudio) {
