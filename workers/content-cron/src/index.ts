@@ -761,6 +761,7 @@ function corsHeaders(request: Request): Record<string, string> {
   return {
     'Access-Control-Allow-Origin': getCorsOrigin(request),
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Authorization, Content-Type',
     'Access-Control-Max-Age': '86400',
   };
 }
@@ -891,18 +892,36 @@ Return ONLY a JSON object (no markdown fences, no extra text):
 // ============================================================
 function parseRankingsHtml(html: string, tour: string): { rank: number; name: string; country: string; points: number }[] {
   const players: { rank: number; name: string; country: string; points: number }[] = [];
-  const rowRegex = /<tr[^>]*>\s*<td[^>]*>(\d+)<\/td>\s*<td[^>]*>[^<]*<\/td>\s*<td[^>]*>(?:<a[^>]*>)?([^<]+)(?:<\/a>)?<\/td>\s*<td[^>]*>([A-Z]{3})<\/td>\s*<td[^>]*>([\d,]+)<\/td>/g;
 
+  // Format 1 (current): Rank, Player (link with &nbsp;), Country, Birthdate — no points
+  const rowRegex4 = /<tr><td[^>]*>(\d+)<\/td><td[^>]*>(?:<a[^>]*>)?([\s\S]*?)(?:<\/a>)?<\/td><td[^>]*>([A-Z]{3})<\/td><td[^>]*>[^<]*<\/td><\/tr>/g;
+  // Format 2 (legacy): Rank, ?, Player, Country, Points
+  const rowRegex5 = /<tr[^>]*>\s*<td[^>]*>(\d+)<\/td>\s*<td[^>]*>[^<]*<\/td>\s*<td[^>]*>(?:<a[^>]*>)?([^<]+)(?:<\/a>)?<\/td>\s*<td[^>]*>([A-Z]{3})<\/td>\s*<td[^>]*>([\d,]+)<\/td>/g;
+
+  // Try 4-column format first (current tennisabstract layout)
   let match;
-  while ((match = rowRegex.exec(html)) !== null) {
+  while ((match = rowRegex4.exec(html)) !== null) {
     const rank = parseInt(match[1]);
-    const name = match[2].trim();
+    const name = match[2].replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').trim();
     const country = match[3];
-    const points = parseInt(match[4].replace(/,/g, ''));
-    if (rank <= 200) {
-      players.push({ rank, name, country, points });
+    if (rank <= 200 && name.length > 1) {
+      players.push({ rank, name, country, points: 0 });
     }
   }
+
+  // Fallback: try 5-column format if nothing parsed
+  if (players.length === 0) {
+    while ((match = rowRegex5.exec(html)) !== null) {
+      const rank = parseInt(match[1]);
+      const name = match[2].replace(/&nbsp;/g, ' ').trim();
+      const country = match[3];
+      const points = parseInt(match[4].replace(/,/g, ''));
+      if (rank <= 200) {
+        players.push({ rank, name, country, points });
+      }
+    }
+  }
+
   return players;
 }
 
@@ -946,11 +965,8 @@ async function updateRankings(env: Env): Promise<string> {
   // Fetch all players once
   let allPlayers: any[] = [];
   try {
-    allPlayers = await supabaseQuery(env, 'players', 'GET', {
-      'select': 'id,slug,full_name',
-      'limit': '1000',
-    });
-    log(`   Loaded ${allPlayers.length} players from DB`);
+    // We'll load matching players on-demand after parsing rankings
+    log(`   Will match players by slug lookup`);
   } catch (e: any) {
     log(`   ❌ Failed to fetch players: ${e.message}`);
     return logs.join('\n');
@@ -986,23 +1002,46 @@ async function updateRankings(env: Env): Promise<string> {
         continue;
       }
 
-      // Match and build rows
+      // Match by batch slug lookup — query Supabase for all parsed slugs at once
       const rows: any[] = [];
-      let matched = 0;
+      const slugs = parsed.map(r => nameToSlug(r.name));
+      const slugToRank = new Map<string, { rank: number; points: number }>();
       for (const r of parsed) {
-        const player = matchPlayer(r.name, allPlayers);
-        if (player) {
-          matched++;
+        slugToRank.set(nameToSlug(r.name), { rank: r.rank, points: r.points });
+      }
+
+      // Batch lookup: query in chunks of 50 slugs, get player_id for FK
+      const slugToPlayerId = new Map<string, string>();
+      for (let i = 0; i < slugs.length; i += 50) {
+        const chunk = slugs.slice(i, i + 50);
+        const slugFilter = `in.(${chunk.join(',')})`;
+        try {
+          const found = await supabaseQuery(env, 'players', 'GET', {
+            'select': 'slug,player_id',
+            'slug': slugFilter,
+            'limit': '50',
+          });
+          for (const p of found) {
+            slugToPlayerId.set(p.slug, p.player_id);
+          }
+        } catch (e: any) {
+          log(`   ⚠️ Batch lookup error: ${e.message}`);
+        }
+      }
+
+      for (const [slug, playerId] of slugToPlayerId) {
+        const data = slugToRank.get(slug);
+        if (data) {
           rows.push({
             ranking_date: today,
-            player_id: player.slug,
+            player_id: playerId,
             tour,
-            ranking: r.rank,
-            points: r.points,
+            ranking: data.rank,
+            points: data.points,
           });
         }
       }
-      log(`   🔗 ${tour.toUpperCase()}: matched ${matched}/${parsed.length} players`);
+      log(`   🔗 ${tour.toUpperCase()}: matched ${slugToPlayerId.size}/${parsed.length} players`);
 
       // Batch upsert
       for (let i = 0; i < rows.length; i += 100) {
