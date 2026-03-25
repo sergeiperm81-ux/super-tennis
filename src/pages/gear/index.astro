@@ -83,7 +83,7 @@ const iconMap: Record<string, string> = {
             <a href={`/gear/${article.slug}/`} class={`gear-card ${i === 0 ? 'featured' : ''}`}>
               {articlePhotos.get(article.slug) ? (
                 <div class="gear-card-img">
-                  <img src={articlePhotos.get(article.slug)!} alt="" loading="lazy" onerror="this.parentElement.classList.add('no-img')" />
+                  <img src={articlePhotos.get(article.slug)!} alt={article.title} loading="lazy" onerror="this.parentElement.classList.add('no-img')" />
                 </div>
               ) : (
                 <div class="gear-card-icon">{iconMap[article.slug] || '🎾'}</div>

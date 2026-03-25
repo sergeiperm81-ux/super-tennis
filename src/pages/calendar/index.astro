@@ -255,7 +255,7 @@ function articleUrl(art: { category: string; slug: string }): string {
                             <img
                               src={`https://flagcdn.com/w40/${cc}.png`}
                               srcset={`https://flagcdn.com/w80/${cc}.png 2x`}
-                              alt=""
+                              alt={`${t.location} flag`}
                               class="tourney-flag"
                               loading="lazy"
                               onerror="this.style.display='none'"

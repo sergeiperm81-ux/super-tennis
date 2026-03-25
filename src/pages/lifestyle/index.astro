@@ -48,7 +48,7 @@ const gridArticles = lifestyleArticles.slice(2);
                 <a href={`/lifestyle/${article.slug}/`} class="top-card">
                   <div class={`top-card-img ${isPlayerPhoto(photo) ? 'player-photo' : ''}`}>
                     {photo ? (
-                      <img src={photo} alt="" loading="eager" onerror="this.parentElement.classList.add('no-img')" />
+                      <img src={photo} alt={article.title} loading="eager" onerror="this.parentElement.classList.add('no-img')" />
                     ) : (
                       <div class="img-placeholder"></div>
                     )}
@@ -69,7 +69,7 @@ const gridArticles = lifestyleArticles.slice(2);
                 <a href={`/lifestyle/${article.slug}/`} class="card">
                   <div class={`card-img ${isPlayerPhoto(photo) ? 'player-photo' : ''}`}>
                     {photo ? (
-                      <img src={photo} alt="" loading="lazy" onerror="this.parentElement.classList.add('no-img')" />
+                      <img src={photo} alt={article.title} loading="lazy" onerror="this.parentElement.classList.add('no-img')" />
                     ) : (
                       <div class="img-placeholder"></div>
                     )}

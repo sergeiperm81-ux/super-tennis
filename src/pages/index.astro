@@ -362,7 +362,7 @@ const playerProfile = profilePlayer ? {
             {row3a.map(card => (
               <a href={card.href} class="compact-card">
                 <div class="compact-card__img">
-                  <img src={card.image} alt="" loading="lazy" />
+                  <img src={card.image} alt={card.title} loading="lazy" />
                 </div>
                 <div class="compact-card__body">
                   <span class="badge" style={`background: ${badgeColors[card.badge]}; color: #000;`}>{card.badge}</span>
@@ -374,7 +374,7 @@ const playerProfile = profilePlayer ? {
 
           <!-- 3. FULL-WIDTH HERO -->
           <a href={hero2.href} class="card-hero">
-            <img src={hero2.image} alt="" loading="lazy" />
+            <img src={hero2.image} alt={hero2.title} loading="lazy" />
             <div class="card-hero__overlay"></div>
             <div class="card-hero__content">
               <span class="badge" style={`background: ${badgeColors[hero2.badge]}; color: #000;`}>{hero2.badge}</span>
@@ -385,7 +385,7 @@ const playerProfile = profilePlayer ? {
 
           <!-- 4. FULL-WIDTH HERO -->
           <a href={hero3.href} class="card-hero">
-            <img src={hero3.image} alt="" loading="lazy" />
+            <img src={hero3.image} alt={hero3.title} loading="lazy" />
             <div class="card-hero__overlay"></div>
             <div class="card-hero__content">
               <span class="badge" style={`background: ${badgeColors[hero3.badge]}; color: #000;`}>{hero3.badge}</span>
@@ -402,7 +402,7 @@ const playerProfile = profilePlayer ? {
             {row2.map(card => (
               <a href={card.href} class="vcard">
                 <div class="vcard__img">
-                  <img src={card.image} alt="" loading="lazy" />
+                  <img src={card.image} alt={card.title} loading="lazy" />
                 </div>
                 <h3 class="vcard__title">{card.title}</h3>
               </a>
@@ -414,7 +414,7 @@ const playerProfile = profilePlayer ? {
             {compactCards.map(card => (
               <a href={card.href} class="hcard">
                 <div class="hcard__img">
-                  <img src={card.image} alt="" loading="lazy" />
+                  <img src={card.image} alt={card.title} loading="lazy" />
                 </div>
                 <div class="hcard__body">
                   <h3 class="hcard__title">{card.title}</h3>
@@ -426,7 +426,7 @@ const playerProfile = profilePlayer ? {
           <!-- 7. HORIZONTAL FEATURE CARD (big photo left + text right) -->
           <a href={featureCard.href} class="feature-card">
             <div class="feature-card__img">
-              <img src={featureCard.image} alt="" loading="lazy" />
+              <img src={featureCard.image} alt={featureCard.title} loading="lazy" />
             </div>
             <div class="feature-card__body">
               <span class="badge" style={`background: ${badgeColors[featureCard.badge]}; color: #000;`}>{featureCard.badge}</span>
@@ -437,7 +437,7 @@ const playerProfile = profilePlayer ? {
 
           <!-- 8. FULL-WIDTH HERO -->
           <a href={hero4.href} class="card-hero">
-            <img src={hero4.image} alt="" loading="lazy" />
+            <img src={hero4.image} alt={hero4.title} loading="lazy" />
             <div class="card-hero__overlay"></div>
             <div class="card-hero__content">
               <span class="badge" style={`background: ${badgeColors[hero4.badge]}; color: #000;`}>{hero4.badge}</span>
@@ -451,7 +451,7 @@ const playerProfile = profilePlayer ? {
             {row3b.map(card => (
               <a href={card.href} class="vcard">
                 <div class="vcard__img">
-                  <img src={card.image} alt="" loading="lazy" />
+                  <img src={card.image} alt={card.title} loading="lazy" />
                 </div>
                 <h3 class="vcard__title">{card.title}</h3>
               </a>

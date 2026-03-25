@@ -1,0 +1,360 @@
+---
+import ArticleLayout from '../../../layouts/ArticleLayout.astro';
+import ArticleFooter from '../../../components/ArticleFooter.astro';
+import { getPlayerBySlug, getTopPlayerSlugs } from '../../../lib/supabase';
+import { fallbackPlayers, countryNames, countryFlags, getFlagUrl } from '../../../lib/fallback-data';
+
+export async function getStaticPaths() {
+  let slugs: string[] = [];
+  try {
+    slugs = await getTopPlayerSlugs(100);
+  } catch (e) {
+    console.warn('age getStaticPaths: Supabase unavailable');
+  }
+
+  const fbSlugs = Object.keys(fallbackPlayers);
+  const allSlugs = [...new Set([...slugs, ...fbSlugs])];
+
+  return allSlugs.map(slug => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+
+let player = await getPlayerBySlug(slug as string);
+if (!player) {
+  player = fallbackPlayers[slug as string] || null;
+}
+
+if (!player) {
+  return Astro.redirect('/players/');
+}
+
+const name = `${player.first_name} ${player.last_name}`;
+const country = countryNames[player.country_code || ''] || player.country_code || '';
+const isWTA = player.tour === 'wta';
+const pronoun = isWTA ? 'she' : 'he';
+const possessive = isWTA ? 'her' : 'his';
+
+// Calculate age + birthday info
+function getAgeInfo(birthDate: string | null) {
+  if (!birthDate) return { age: 'N/A', birthday: 'Unknown', zodiac: 'Unknown', birthYear: 'Unknown' };
+  const birth = new Date(birthDate);
+  const now = new Date();
+  let age = now.getFullYear() - birth.getFullYear();
+  const monthDiff = now.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birth.getDate())) age--;
+
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const birthday = `${months[birth.getMonth()]} ${birth.getDate()}, ${birth.getFullYear()}`;
+  const birthYear = String(birth.getFullYear());
+
+  // Zodiac sign
+  const m = birth.getMonth() + 1;
+  const d = birth.getDate();
+  let zodiac = 'Unknown';
+  if ((m === 3 && d >= 21) || (m === 4 && d <= 19)) zodiac = 'Aries';
+  else if ((m === 4 && d >= 20) || (m === 5 && d <= 20)) zodiac = 'Taurus';
+  else if ((m === 5 && d >= 21) || (m === 6 && d <= 20)) zodiac = 'Gemini';
+  else if ((m === 6 && d >= 21) || (m === 7 && d <= 22)) zodiac = 'Cancer';
+  else if ((m === 7 && d >= 23) || (m === 8 && d <= 22)) zodiac = 'Leo';
+  else if ((m === 8 && d >= 23) || (m === 9 && d <= 22)) zodiac = 'Virgo';
+  else if ((m === 9 && d >= 23) || (m === 10 && d <= 22)) zodiac = 'Libra';
+  else if ((m === 10 && d >= 23) || (m === 11 && d <= 21)) zodiac = 'Scorpio';
+  else if ((m === 11 && d >= 22) || (m === 12 && d <= 21)) zodiac = 'Sagittarius';
+  else if ((m === 12 && d >= 22) || (m === 1 && d <= 19)) zodiac = 'Capricorn';
+  else if ((m === 1 && d >= 20) || (m === 2 && d <= 18)) zodiac = 'Aquarius';
+  else zodiac = 'Pisces';
+
+  return { age: String(age), birthday, zodiac, birthYear };
+}
+
+const { age, birthday, zodiac, birthYear } = getAgeInfo(player.birth_date);
+
+// Height formatting
+function formatHeight(cm: number | null): string {
+  if (!cm) return 'N/A';
+  const feet = Math.floor(cm / 30.48);
+  const inches = Math.round((cm / 2.54) % 12);
+  return cm + ' cm (' + feet + "'" + inches + '")';
+}
+
+const height = formatHeight(player.height_cm);
+
+// Hand
+const handLabel = player.hand === 'R' ? 'Right-Handed' : player.hand === 'L' ? 'Left-Handed' : 'Ambidextrous';
+
+// Pre-compute text fragments to avoid template literal issues in JSX
+const ageYearOld = age !== 'N/A' ? `a ${age}-year-old` : 'a';
+const bornText = player.birth_date ? ` Born on ${birthday}, ${pronoun}` : ` ${pronoun.charAt(0).toUpperCase() + pronoun.slice(1)}`;
+const gsText = player.grand_slam_titles > 0 ? `, including ${player.grand_slam_titles} Grand Slam${player.grand_slam_titles > 1 ? 's' : ''}` : '';
+const tourName = player.tour === 'atp' ? 'ATP' : 'WTA';
+const tallText = player.height_cm && player.height_cm >= 190 ? ` At ${player.height_cm} cm, ${pronoun} is one of the taller players on the ${tourName} Tour, using ${possessive} height advantage for a powerful serve.` : '';
+const shortText = player.height_cm && player.height_cm <= 170 ? ` Despite ${possessive} compact stature, ${pronoun} has proven that height is no barrier to success in professional tennis.` : '';
+const totalMatchesAge = player.career_win + player.career_loss;
+const winRateNum = totalMatchesAge > 0 ? (player.career_win / totalMatchesAge) * 100 : 0;
+const winRate = totalMatchesAge > 0 ? `${winRateNum.toFixed(1)}%` : 'N/A';
+
+const pageTitle = `How Old Is ${name}? Age, Birthday & Height`;
+const ageText = age !== 'N/A' ? `${age} years old` : 'a professional tennis player';
+const bornPart = birthday !== 'Unknown' ? `on ${birthday}` : '';
+const pageDesc = `${name} is ${ageText}, born ${bornPart} in ${country}. Height: ${height}. Full bio facts.`;
+const playerHref = `/players/${slug}/`;
+const ageYearsOldDisplay = age !== 'N/A' ? `${age} years old` : 'N/A';
+const faqAgeAnswer = age !== 'N/A' ? `${name} is ${age} years old in 2026, born on ${birthday}.` : `${name} is a professional tennis player from ${country}.`;
+const faqHeightAnswer = player.height_cm ? `${name} is ${height} tall.` : `Height information for ${name} is not yet available.`;
+const faqZodiacAnswer = zodiac !== 'Unknown' ? `${name}'s zodiac sign is ${zodiac}.` : 'Zodiac sign information is not available.';
+const footerBackLabel = `${name}'s Profile`;
+const footerNwLabel = `${name}'s Net Worth`;
+const footerNwHref = `/players/${slug}/net-worth/`;
+const footerRacketLabel = `${name}'s Racket`;
+const footerRacketHref = `/players/${slug}/racket/`;
+const footerPartnerLabel = `${name}'s Partner`;
+const footerPartnerHref = `/players/${slug}/partner/`;
+const jldQ1Name = `How old is ${name} in 2026?`;
+const jldQ1Answer = age !== 'N/A' ? `${name} is ${age} years old in 2026, born on ${birthday} in ${country}.` : `${name} is a professional tennis player from ${country}.`;
+const jldQ2Name = `How tall is ${name}?`;
+const jldQ2Answer = player.height_cm ? `${name} is ${height} tall.` : `Height information for ${name} is not yet available.`;
+const jldQ3Name = `Where is ${name} from?`;
+const jldQ3Answer = `${name} is from ${country} and competes on the ${player.tour === 'atp' ? 'ATP' : 'WTA'} Tour.`;
+const jldQ4Name = `What is ${name}'s zodiac sign?`;
+const jldQ4Answer = zodiac !== 'Unknown' ? `${name}'s zodiac sign is ${zodiac}.` : 'Zodiac sign information is not available.';
+const faqJsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    { '@type': 'Question', name: jldQ1Name, acceptedAnswer: { '@type': 'Answer', text: jldQ1Answer } },
+    { '@type': 'Question', name: jldQ2Name, acceptedAnswer: { '@type': 'Answer', text: jldQ2Answer } },
+    { '@type': 'Question', name: jldQ3Name, acceptedAnswer: { '@type': 'Answer', text: jldQ3Answer } },
+    { '@type': 'Question', name: jldQ4Name, acceptedAnswer: { '@type': 'Answer', text: jldQ4Answer } },
+  ],
+});
+---
+
+<ArticleLayout
+  title={pageTitle}
+  description={pageDesc}
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Players', href: '/players/' },
+    { label: name, href: playerHref },
+    { label: 'Age & Bio' },
+  ]}
+  category="players"
+>
+  <!-- Quick Answer Box (targets Featured Snippet) -->
+  <div class="answer-box">
+    <div class="answer-question">How old is {name}?</div>
+    <div class="answer-text">
+      {age !== 'N/A' ? (
+        <><strong>{name} is {age} years old</strong> (born {birthday} in {country}).</>
+      ) : (
+        <><strong>{name}</strong> is a professional tennis player from {country}.</>
+      )}
+    </div>
+  </div>
+
+  <!-- Bio Facts Table -->
+  <div class="bio-table-wrap">
+    <table class="bio-table">
+      <tbody>
+        <tr>
+          <td class="bio-label">Full Name</td>
+          <td class="bio-value">{name}</td>
+        </tr>
+        <tr>
+          <td class="bio-label">Age</td>
+          <td class="bio-value">{ageYearsOldDisplay}</td>
+        </tr>
+        <tr>
+          <td class="bio-label">Birthday</td>
+          <td class="bio-value">{birthday}</td>
+        </tr>
+        <tr>
+          <td class="bio-label">Birth Year</td>
+          <td class="bio-value">{birthYear}</td>
+        </tr>
+        <tr>
+          <td class="bio-label">Zodiac Sign</td>
+          <td class="bio-value">{zodiac}</td>
+        </tr>
+        <tr>
+          <td class="bio-label">Country</td>
+          <td class="bio-value">
+            {getFlagUrl(player.country_code || '') ? (
+              <img src={getFlagUrl(player.country_code || '')} alt={country} class="bio-flag" width="20" height="15" loading="lazy" />
+            ) : null}
+            {country}
+          </td>
+        </tr>
+        <tr>
+          <td class="bio-label">Height</td>
+          <td class="bio-value">{height}</td>
+        </tr>
+        <tr>
+          <td class="bio-label">Plays</td>
+          <td class="bio-value">{handLabel}</td>
+        </tr>
+        <tr>
+          <td class="bio-label">Tour</td>
+          <td class="bio-value">{player.tour === 'atp' ? 'ATP' : 'WTA'}</td>
+        </tr>
+        <tr>
+          <td class="bio-label">Career Titles</td>
+          <td class="bio-value">{player.career_titles}</td>
+        </tr>
+        {player.grand_slam_titles > 0 && (
+          <tr>
+            <td class="bio-label">Grand Slams</td>
+            <td class="bio-value">{player.grand_slam_titles}</td>
+          </tr>
+        )}
+        <tr>
+          <td class="bio-label">Career W-L</td>
+          <td class="bio-value">{player.career_win}-{player.career_loss}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>About {name}</h2>
+  <p>
+    {name} is {ageYearOld} professional tennis player from {country}
+    competing on the {tourName} Tour.
+    {bornText} has built an impressive career
+    with {player.career_titles} titles{gsText}.
+  </p>
+
+  {player.height_cm && (
+    <>
+      <h2>How Tall Is {name}?</h2>
+      <p>
+        {name} stands at <strong>{height}</strong>.
+        {tallText}
+        {shortText}
+      </p>
+    </>
+  )}
+
+  <h2>Career Highlights</h2>
+  <ul>
+    <li><strong>Career Titles:</strong> {player.career_titles}</li>
+    {player.grand_slam_titles > 0 && <li><strong>Grand Slam Titles:</strong> {player.grand_slam_titles}</li>}
+    <li><strong>Career Record:</strong> {player.career_win} wins, {player.career_loss} losses ({winRate} win rate)</li>
+    <li><strong>Playing Hand:</strong> {handLabel}</li>
+  </ul>
+
+  <!-- FAQ Section -->
+  <div class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item">
+      <h3>How old is {name} in 2026?</h3>
+      <p>{faqAgeAnswer}</p>
+    </div>
+    <div class="faq-item">
+      <h3>How tall is {name}?</h3>
+      <p>{faqHeightAnswer}</p>
+    </div>
+    <div class="faq-item">
+      <h3>Where is {name} from?</h3>
+      <p>{name} is from {country} and competes on the {player.tour === 'atp' ? 'ATP' : 'WTA'} Tour.</p>
+    </div>
+    <div class="faq-item">
+      <h3>What is {name}'s zodiac sign?</h3>
+      <p>{faqZodiacAnswer}</p>
+    </div>
+  </div>
+
+  <!-- FAQPage JSON-LD -->
+  <script type="application/ld+json" set:html={faqJsonLd} />
+
+  <ArticleFooter
+    backLabel={footerBackLabel}
+    backHref={playerHref}
+    relatedLinks={[
+      { label: footerNwLabel, href: footerNwHref },
+      { label: footerRacketLabel, href: footerRacketHref },
+      { label: footerPartnerLabel, href: footerPartnerHref },
+      { label: 'All Players', href: '/players/' },
+    ]}
+  />
+</ArticleLayout>
+
+<style>
+  .answer-box {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 2px solid #16a34a;
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 32px;
+  }
+  .answer-question {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 8px;
+  }
+  .answer-text {
+    font-size: 1.25rem;
+    color: var(--gray-900);
+    line-height: 1.5;
+  }
+
+  .bio-table-wrap {
+    margin-bottom: 32px;
+    overflow-x: auto;
+  }
+  .bio-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .bio-table tr {
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .bio-table tr:hover {
+    background: var(--gray-50);
+  }
+  .bio-label {
+    font-weight: 600;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    padding: 12px 16px;
+    width: 140px;
+    vertical-align: middle;
+  }
+  .bio-value {
+    padding: 12px 16px;
+    font-size: 1rem;
+    color: var(--gray-900);
+    vertical-align: middle;
+  }
+  .bio-flag {
+    vertical-align: middle;
+    margin-right: 6px;
+    border-radius: 2px;
+  }
+
+  .faq-section {
+    margin-top: 48px;
+    border-top: 1px solid var(--gray-200);
+    padding-top: 32px;
+  }
+  .faq-item {
+    margin-bottom: 24px;
+  }
+  .faq-item h3 {
+    font-size: 1.1rem;
+    color: var(--gray-900);
+    margin-bottom: 8px;
+  }
+  .faq-item p {
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 480px) {
+    .answer-text { font-size: 1.1rem; }
+    .bio-label { width: 100px; font-size: 0.7rem; }
+  }
+</style>

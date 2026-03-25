@@ -4,7 +4,28 @@ import LiteYouTube from '../../components/LiteYouTube.astro';
 import { getArticles, getLatestRankings, getPlayerBySlug } from '../../lib/supabase';
 import { countryFlags, fallbackPlayers, getFlagUrl } from '../../lib/fallback-data';
 
-// News is now loaded client-side via dynamic-content.js — no SSG fetch needed
+// Fetch news at build time for SSG (Google can see content)
+let ssgNews: any[] = [];
+try {
+  const res = await fetch('https://supertennis-cron.sfedoroff.workers.dev/api/news');
+  if (res.ok) {
+    const data = await res.json();
+    ssgNews = (Array.isArray(data) ? data : []).filter((n: any) => n.body && n.body.length > 50).slice(0, 50);
+  }
+} catch (e) {
+  console.warn('News SSG: Worker API unavailable, will fall back to client-side');
+}
+
+// Helper: strip HTML tags for safe text
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, '').trim();
+}
+
+// Category colors
+const newsCatColors: Record<string, string> = {
+  scandal: '#dc2626', love: '#e11d7e', money: '#d4a017',
+  fashion: '#9333ea', viral: '#f97316', buzz: '#16a34a',
+};
 
 // JSON-LD
 const jsonLd = {
@@ -124,9 +145,59 @@ const sbCatLabels: Record<string, string> = {
             <button class="np-filter" data-cat="buzz" style="--cat-color: #16a34a">Buzz</button>
           </div>
 
-          <!-- News List (loaded client-side) -->
+          <!-- News List (SSG pre-rendered + client-side hydration) -->
           <div class="np-list" id="np-list" data-dynamic="news-full" data-limit="100">
-            <div class="np-loading" style="text-align:center;padding:3rem;color:var(--gray-500)">Loading news...</div>
+            {ssgNews.length > 0 ? (
+              ssgNews.map((n: any) => {
+                const cat = n.category || 'buzz';
+                const catColor = newsCatColors[cat] || '#16a34a';
+                const slug = (n.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').substring(0, 60);
+                const timeAgo = n.published_at ? new Date(n.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+                const summary = n.excerpt || (n.body ? stripHtml(n.body).substring(0, 160) + '...' : '');
+                return (
+                  <details class="np-item" data-cat={cat} id={slug}>
+                    <summary>
+                      <div class="np-item__header">
+                        {n.image_url ? (
+                          <div class="np-item__thumb">
+                            <img src={n.image_url} alt={n.title} loading="lazy" />
+                            {n.source && <div class="np-item__thumb-source">{n.source}</div>}
+                          </div>
+                        ) : (
+                          <div class="np-item__thumb">
+                            <div class="np-item__thumb-fallback">🎾</div>
+                          </div>
+                        )}
+                        <div class="np-item__info">
+                          <div class="np-item__meta">
+                            <span class="np-cat-badge" style={`background: ${catColor}`}>{cat}</span>
+                            {timeAgo && <span class="np-item__time">{timeAgo}</span>}
+                          </div>
+                          <h3 class="np-item__title">{n.title}</h3>
+                          <p class="np-item__summary">{summary}</p>
+                        </div>
+                        <svg class="np-item__chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </div>
+                    </summary>
+                    <div class="np-item__body">
+                      <div class="np-article">
+                        <div class="np-article__content" set:html={n.body || ''} />
+                        {n.source_url && (
+                          <div class="np-source">
+                            <div class="np-source__info">
+                              <span class="np-source__label">Source</span>
+                              <a href={n.source_url} target="_blank" rel="noopener noreferrer" class="np-source__link">{n.source || 'Original Article'}</a>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </details>
+                );
+              })
+            ) : (
+              <div class="np-loading" style="text-align:center;padding:3rem;color:var(--gray-500)">Loading news...</div>
+            )}
           </div>
 
         </main>

@@ -224,7 +224,7 @@ const newsCatLabels: Record<string, string> = {
             <>
               {catIdx > 0 && sectionPhotos[catIdx - 1] && (
                 <div class="section-photo-break">
-                  <img src={sectionPhotos[catIdx - 1].image} alt="" loading="lazy" />
+                  <img src={sectionPhotos[catIdx - 1].image} alt={sectionPhotos[catIdx - 1].caption} loading="lazy" />
                   <div class="section-photo-caption">{sectionPhotos[catIdx - 1].caption}</div>
                 </div>
               )}
@@ -285,7 +285,7 @@ const newsCatLabels: Record<string, string> = {
                           <td class="lb-rank">{i + 1}</td>
                           <td class="lb-player">
                             <a href={`/players/${p.slug}/`}>
-                              {p.image_url ? (<img src={p.image_url} alt="" class="lb-avatar" width="28" height="28" loading="lazy" onerror="this.style.display='none'" />) : null}
+                              {p.image_url ? (<img src={p.image_url} alt={`${p.first_name} ${p.last_name}`} class="lb-avatar" width="28" height="28" loading="lazy" onerror="this.style.display='none'" />) : null}
                               {getFlagUrl(p.country_code || '') ? (<img src={getFlagUrl(p.country_code || '', 20)} alt={p.country_code || ''} class="lb-flag-img" width="20" height="15" loading="lazy" />) : (<span class="lb-flag">{countryFlags[p.country_code || ''] || ''}</span>)}
                               {p.first_name} <strong>{p.last_name}</strong>
                             </a>
@@ -318,7 +318,7 @@ const newsCatLabels: Record<string, string> = {
                           <td class="lb-rank">{i + 1}</td>
                           <td class="lb-player">
                             <a href={`/players/${p.slug}/`}>
-                              {p.image_url ? (<img src={p.image_url} alt="" class="lb-avatar" width="28" height="28" loading="lazy" onerror="this.style.display='none'" />) : null}
+                              {p.image_url ? (<img src={p.image_url} alt={`${p.first_name} ${p.last_name}`} class="lb-avatar" width="28" height="28" loading="lazy" onerror="this.style.display='none'" />) : null}
                               {getFlagUrl(p.country_code || '') ? (<img src={getFlagUrl(p.country_code || '', 20)} alt={p.country_code || ''} class="lb-flag-img" width="20" height="15" loading="lazy" />) : (<span class="lb-flag">{countryFlags[p.country_code || ''] || ''}</span>)}
                               {p.first_name} <strong>{p.last_name}</strong>
                             </a>

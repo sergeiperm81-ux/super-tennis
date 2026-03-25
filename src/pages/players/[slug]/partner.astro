@@ -1,0 +1,275 @@
+---
+import ArticleLayout from '../../../layouts/ArticleLayout.astro';
+import ArticleFooter from '../../../components/ArticleFooter.astro';
+import { getPlayerBySlug, getTopPlayerSlugs, getArticleBySlug } from '../../../lib/supabase';
+import { fallbackPlayers, countryNames, countryFlags, getFlagUrl } from '../../../lib/fallback-data';
+import { addInterlinks } from '../../../lib/interlinks';
+import { marked } from 'marked';
+
+export async function getStaticPaths() {
+  let slugs: string[] = [];
+  try {
+    slugs = await getTopPlayerSlugs(100);
+  } catch (e) {
+    console.warn('partner getStaticPaths: Supabase unavailable');
+  }
+
+  const fbSlugs = Object.keys(fallbackPlayers);
+  const allSlugs = [...new Set([...slugs, ...fbSlugs])];
+
+  return allSlugs.map(slug => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+
+let player = await getPlayerBySlug(slug as string);
+if (!player) {
+  player = fallbackPlayers[slug as string] || null;
+}
+
+if (!player) {
+  return Astro.redirect('/players/');
+}
+
+const name = `${player.first_name} ${player.last_name}`;
+const country = countryNames[player.country_code || ''] || player.country_code || '';
+const isWTA = player.tour === 'wta';
+
+// Determine gendered terms
+const partnerTerm = isWTA ? 'Husband & Boyfriend' : 'Wife & Girlfriend';
+const shortTerm = isWTA ? 'Partner' : 'Partner';
+
+// Try to find the partner article from Supabase
+const articleSlug = `${slug}-partner`;
+let article: any = null;
+try {
+  article = await getArticleBySlug(articleSlug);
+} catch (e) {
+  // No article yet — will show placeholder
+}
+
+// Calculate age
+function getAge(birthDate: string | null): string {
+  if (!birthDate) return 'N/A';
+  const birth = new Date(birthDate);
+  const now = new Date();
+  let age = now.getFullYear() - birth.getFullYear();
+  const monthDiff = now.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birth.getDate())) age--;
+  return String(age);
+}
+
+const age = getAge(player.birth_date);
+
+const rawHtml = article?.body ? marked.parse(article.body) : null;
+const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/players/${slug}/partner/`) : null;
+const tourName = player.tour === 'atp' ? 'ATP' : 'WTA';
+const ageDesc = age !== 'N/A' ? `${age}-year-old ` : '';
+const titlesDesc = player.career_titles > 0 ? ` With ${player.career_titles} career titles` : '';
+const gsDesc = player.grand_slam_titles > 0 ? ` including ${player.grand_slam_titles} Grand Slam${player.grand_slam_titles > 1 ? 's' : ''}` : '';
+const pageTitle = `${name} ${partnerTerm} — Relationship & Dating History`;
+const pageDesc = article?.meta_description || `Who is ${name} dating? ${name}'s ${partnerTerm.toLowerCase()}, relationship history, and personal life in 2026.`;
+const playerHref = `/players/${slug}/`;
+const partnerBfGf = isWTA ? 'boyfriend' : 'girlfriend';
+const faqProfileHref = `/players/${slug}/`;
+const faqAgeAnswer = age !== 'N/A' ? `${name} is ${age} years old, born on ${player.birth_date}, from ${country}.` : `${name} is a professional tennis player from ${country}.`;
+const faqAgeDisplay = age !== 'N/A' ? `${age} years old` : 'a professional tennis player';
+const footerBackLabel = `${name}'s Profile`;
+const footerNwLabel = `${name}'s Net Worth`;
+const footerNwHref = `/players/${slug}/net-worth/`;
+const footerRacketLabel = `${name}'s Racket`;
+const footerRacketHref = `/players/${slug}/racket/`;
+---
+
+<ArticleLayout
+  title={pageTitle}
+  description={pageDesc}
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Players', href: '/players/' },
+    { label: name, href: playerHref },
+    { label: shortTerm },
+  ]}
+  category="lifestyle"
+  categoryLabel="Lifestyle"
+  categoryHref="/lifestyle/"
+>
+  <!-- Quick Facts Banner -->
+  <div class="partner-banner">
+    <div class="partner-stat">
+      <span class="partner-stat-label">Full Name</span>
+      <span class="partner-stat-value">{name}</span>
+    </div>
+    <div class="partner-stat">
+      <span class="partner-stat-label">Age</span>
+      <span class="partner-stat-value">{age}</span>
+    </div>
+    <div class="partner-stat">
+      <span class="partner-stat-label">Country</span>
+      <span class="partner-stat-value">
+        {getFlagUrl(player.country_code || '') ? (
+          <img src={getFlagUrl(player.country_code || '')} alt={country} class="stat-flag" width="20" height="15" loading="lazy" />
+        ) : null}
+        {country}
+      </span>
+    </div>
+    <div class="partner-stat">
+      <span class="partner-stat-label">Tour</span>
+      <span class="partner-stat-value">{player.tour === 'atp' ? 'ATP' : 'WTA'}</span>
+    </div>
+  </div>
+
+  {bodyHtml ? (
+    <div set:html={bodyHtml} />
+  ) : (
+    <div class="placeholder-content">
+      <h2>Who Is {name} Dating?</h2>
+      <p>
+        {name} is a {ageDesc}professional tennis player from {country}
+        competing on the {tourName} Tour.
+        {titlesDesc}{gsDesc},
+        {player.first_name} is one of the most recognizable names in tennis.
+      </p>
+
+      <h2>Relationship Status</h2>
+      <p>
+        Fans frequently search for information about {name}'s personal life and relationships.
+        {player.first_name} has generally kept {isWTA ? 'her' : 'his'} private life away from the media spotlight,
+        preferring to let {isWTA ? 'her' : 'his'} tennis achievements speak for themselves.
+      </p>
+
+      <h2>Personal Life</h2>
+      <p>
+        Beyond the tennis court, {player.first_name} is known for {isWTA ? 'her' : 'his'} dedication to the sport
+        and commitment to maintaining a balanced lifestyle. Like many professional athletes,
+        {isWTA ? 'she' : 'he'} manages the demands of a global tennis career while maintaining personal relationships.
+      </p>
+
+      <p><em>Detailed relationship profile coming soon. Check back for more about {name}'s personal life and relationship history.</em></p>
+    </div>
+  )}
+
+  <!-- FAQ Schema target -->
+  <div class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item">
+      <h3>Who is {name}'s {partnerBfGf}?</h3>
+      <p>For the latest information about {name}'s relationship status, visit {isWTA ? 'her' : 'his'} <a href={faqProfileHref}>full player profile</a>.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Is {name} married?</h3>
+      <p>Check {name}'s updated profile for current relationship and marital status information.</p>
+    </div>
+    <div class="faq-item">
+      <h3>How old is {name}?</h3>
+      <p>{name} is {faqAgeDisplay} from {country}.</p>
+    </div>
+  </div>
+
+  <!-- FAQPage JSON-LD -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `Who is ${name}'s ${isWTA ? 'boyfriend' : 'girlfriend'}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `For the latest information about ${name}'s relationship status, visit the full player profile on SUPER.TENNIS.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `Is ${name} married?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `Check ${name}'s updated profile for current relationship and marital status information.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `How old is ${name}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: age !== 'N/A' ? `${name} is ${age} years old, born on ${player.birth_date}, from ${country}.` : `${name} is a professional tennis player from ${country}.`,
+        },
+      },
+    ],
+  })} />
+
+  <ArticleFooter
+    backLabel={footerBackLabel}
+    backHref={playerHref}
+    relatedLinks={[
+      { label: footerNwLabel, href: footerNwHref },
+      { label: footerRacketLabel, href: footerRacketHref },
+      { label: 'All Players', href: '/players/' },
+      { label: 'Lifestyle', href: '/lifestyle/' },
+    ]}
+  />
+</ArticleLayout>
+
+<style>
+  .partner-banner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+  .partner-stat {
+    text-align: center;
+  }
+  .partner-stat-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+  .partner-stat-value {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--gray-900);
+  }
+
+  .stat-flag {
+    vertical-align: middle;
+    margin-right: 4px;
+    border-radius: 2px;
+  }
+
+  .placeholder-content {
+    color: var(--gray-700);
+  }
+
+  .faq-section {
+    margin-top: 48px;
+    border-top: 1px solid var(--gray-200);
+    padding-top: 32px;
+  }
+  .faq-item {
+    margin-bottom: 24px;
+  }
+  .faq-item h3 {
+    font-size: 1.1rem;
+    color: var(--gray-900);
+    margin-bottom: 8px;
+  }
+  .faq-item p {
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 480px) {
+    .partner-banner { grid-template-columns: 1fr 1fr; }
+    .partner-stat-value { font-size: 1.1rem; }
+  }
+</style>
