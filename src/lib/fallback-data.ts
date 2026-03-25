@@ -126,7 +126,7 @@ export const iocToIso2: Record<string, string> = {
   HUN: 'hu', SVK: 'sk', SLO: 'si', MNE: 'me', BIH: 'ba',
   MKD: 'mk', ALB: 'al', CYP: 'cy', LUX: 'lu', MON: 'mc',
   UZB: 'uz', PHI: 'ph', INA: 'id', MAS: 'my', VIE: 'vn',
-  NZL: 'nz', RSA: 'za', NGR: 'ng', EGY: 'eg', MAR: 'ma',
+  NZL: 'nz', NGR: 'ng', EGY: 'eg', MAR: 'ma',
   ZIM: 'zw', BOT: 'bw', KEN: 'ke', ARM: 'am', TUR: 'tr',
 };
 

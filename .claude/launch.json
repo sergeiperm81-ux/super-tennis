@@ -6,6 +6,12 @@
       "runtimeExecutable": "node",
       "runtimeArgs": ["node_modules/astro/astro.js", "dev", "--host"],
       "port": 4321
+    },
+    {
+      "name": "preview",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["node_modules/astro/astro.js", "preview", "--host"],
+      "port": 4321
     }
   ]
 }

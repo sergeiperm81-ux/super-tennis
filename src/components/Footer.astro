@@ -75,6 +75,10 @@ const sections = [
   <div class="footer__bottom">
     <div class="container footer__bottom-inner">
       <p>&copy; {currentYear} SUPER.TENNIS. All rights reserved.</p>
+      <nav class="footer__legal">
+        <a href="/privacy/" class="footer__legal-link">Privacy Policy</a>
+        <a href="/terms/" class="footer__legal-link">Terms of Service</a>
+      </nav>
       <p class="footer__disclaimer">Player stats sourced from public records. Not affiliated with ATP, WTA, or ITF.</p>
     </div>
   </div>
@@ -167,6 +171,19 @@ const sections = [
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+  .footer__legal {
+    display: flex;
+    gap: 16px;
+  }
+  .footer__legal-link {
+    color: var(--gray-400);
+    font-size: 0.78rem;
+    text-decoration: none;
+    transition: var(--transition);
+  }
+  .footer__legal-link:hover {
+    color: var(--ball-yellow);
   }
   .footer__disclaimer {
     color: var(--gray-600);

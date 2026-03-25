@@ -1,0 +1,67 @@
+name: Daily Content Factory
+
+on:
+  schedule:
+    # Run at 08:00 UTC daily (11:00 Moscow)
+    - cron: '0 8 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  generate-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          # Fetch backgrounds folder (LFS or regular)
+          lfs: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: content-factory
+        run: npm install
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+
+      - name: Download font (Inter Bold)
+        working-directory: content-factory
+        run: |
+          mkdir -p fonts
+          curl -sL -o fonts/Inter-Bold.ttf \
+            "https://github.com/rsms/inter/raw/master/fonts/desktop/Inter-Bold.otf"
+
+      - name: Generate videos and publish
+        working-directory: content-factory
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+          INSTAGRAM_BUSINESS_ACCOUNT_ID: ${{ secrets.INSTAGRAM_BUSINESS_ACCOUNT_ID }}
+          TIKTOK_ACCESS_TOKEN: ${{ secrets.TIKTOK_ACCESS_TOKEN }}
+          VIDEOS_PER_DAY: '3'
+          SITE_URL: 'https://super.tennis'
+        run: node src/daily-run.js
+
+      - name: Save published log
+        if: always()
+        working-directory: content-factory
+        run: |
+          if [ -f published-log.json ]; then
+            git config user.name "Content Factory Bot"
+            git config user.email "bot@super.tennis"
+            git add published-log.json bg-history.json 2>/dev/null || true
+            git diff --staged --quiet || git commit -m "Update content factory logs [skip ci]"
+            git push || echo "Push failed (non-critical)"
+          fi

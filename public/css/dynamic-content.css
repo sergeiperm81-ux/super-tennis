@@ -141,9 +141,9 @@
   overflow: hidden;
 }
 .buzz-card__summary {
-  font-size: 0.78rem;
-  color: var(--gray-500);
-  line-height: 1.5;
+  font-size: 0.88rem;
+  color: var(--gray-700, #374151);
+  line-height: 1.55;
   margin: 0;
   flex: 1;
   display: -webkit-box;
@@ -412,13 +412,47 @@
 .np-source {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
   margin-top: 24px;
-  padding: 12px;
+  padding: 12px 16px;
   background: var(--white, #fff);
   border: 1px solid var(--gray-200, #e9ecef);
   border-radius: var(--radius-sm, 8px);
 }
+.np-source__info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.np-source__share {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.np-share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--gray-200, #e5e7eb);
+  background: var(--gray-50, #f9fafb);
+  color: var(--gray-600, #4b5563);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  line-height: 1;
+}
+.np-share-btn:hover {
+  transform: translateY(-1px);
+}
+.np-share-btn--x:hover { background: #000; color: #fff; border-color: #000; }
+.np-share-btn--fb:hover { background: #1877f2; color: #fff; border-color: #1877f2; }
+.np-share-btn--wa:hover { background: #25d366; color: #fff; border-color: #25d366; }
+.np-share-btn--copy:hover { background: var(--court-green, #16a34a); color: #fff; border-color: var(--court-green); }
 .np-item.hidden {
   display: none;
 }

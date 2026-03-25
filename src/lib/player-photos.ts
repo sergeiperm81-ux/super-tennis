@@ -147,7 +147,7 @@ export const lifestyleArticlePhotos: Record<string, ArticlePhoto> = {
   'tennis-mental-health': { type: 'player', value: 'naomi-osaka' },
   'how-to-start-playing-tennis': { type: 'local', value: '/images/lifestyle/tennis-training.jpg' },
   'tennis-betting-guide': { type: 'local', value: '/images/records/tennis-court-aerial.jpg' },
-  'tennis-rules-explained': { type: 'local', value: '/images/records/tennis-court-aerial.jpg' },
+  'tennis-rules-explained': { type: 'local', value: '/images/lifestyle/tennis-court-sunset.jpg' },
   'tennis-vs-padel': { type: 'local', value: '/images/lifestyle/padel-court.jpg' },
   'how-to-watch-tennis': { type: 'local', value: '/images/tournaments/us-open.jpg' },
   'tennis-coaching-legends': { type: 'player', value: 'novak-djokovic' },
@@ -155,6 +155,8 @@ export const lifestyleArticlePhotos: Record<string, ArticlePhoto> = {
   'tennis-superstitions-rituals': { type: 'player', value: 'rafael-nadal' },
   'tennis-injuries-common': { type: 'local', value: '/images/lifestyle/tennis-physio.jpg' },
   'tennis-trophies-prizes': { type: 'local', value: '/images/lifestyle/tennis-trophy.jpg' },
+  'aryna-sabalenka-rise-world-number-one': { type: 'local', value: '/images/lifestyle/sabalenka-action.webp' },
+  'the-social-side-of-tennis-a-culture-of-community': { type: 'local', value: '/images/lifestyle/luxury-travel.jpg' },
 };
 
 // Records articles → photos (diversified — avoid showing same player for every record)
@@ -225,7 +227,7 @@ export async function getArticlePhotoUrl(
 
 // Get all article photos for a category (batch, for index pages)
 export async function getArticlePhotosForCategory(
-  articles: { slug: string }[],
+  articles: { slug: string; image_url?: string | null }[],
   category: string
 ): Promise<Map<string, string | null>> {
   const mappings: Record<string, Record<string, ArticlePhoto>> = {
@@ -256,7 +258,8 @@ export async function getArticlePhotosForCategory(
   for (const art of articles) {
     const mapping = catMap[art.slug];
     if (!mapping) {
-      result.set(art.slug, null);
+      // Fallback to article's own image_url from database
+      result.set(art.slug, (art as any).image_url || null);
     } else if (mapping.type === 'local') {
       result.set(art.slug, mapping.value);
     } else {

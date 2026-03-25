@@ -1,0 +1,122 @@
+/* ===== Magazine Layout Styles ===== */
+/* Applied to articles with rich HTML (mag-* classes) from Supabase */
+
+/* Global rule: ALL article images have rounded corners */
+.article-body img,
+.article-page img {
+  border-radius: 12px;
+}
+
+.mag-dropcap::first-letter {
+  float: left;
+  font-family: var(--font-heading, 'Oswald', sans-serif);
+  font-size: 4.2rem;
+  line-height: 0.8;
+  font-weight: 800;
+  color: #7c3aed;
+  padding-right: 10px;
+  padding-top: 6px;
+}
+.mag-intro p {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: #374151;
+}
+
+.mag-hero {
+  margin: 32px 0;
+  overflow: hidden;
+  border-radius: 12px;
+}
+.mag-hero img {
+  width: 100%;
+  height: auto;
+  max-height: 500px;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+}
+.mag-hero figcaption {
+  font-size: 0.78rem;
+  color: #6b7280;
+  text-align: center;
+  padding: 8px 40px 0;
+  font-style: italic;
+}
+
+.mag-pullquote {
+  margin: 32px 0;
+  padding: 24px 32px;
+  border-left: 4px solid #a78bfa;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.06), transparent);
+  font-family: var(--font-heading, 'Oswald', sans-serif);
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #1f2937;
+  font-style: italic;
+}
+
+.mag-media-row {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 28px;
+  align-items: start;
+  margin: 32px 0;
+}
+.mag-media-row--reverse {
+  grid-template-columns: 1fr 280px;
+}
+.mag-media-row--reverse .mag-figure { order: 2; }
+.mag-media-row--reverse .mag-media-text { order: 1; }
+
+.mag-figure {
+  overflow: hidden;
+  border-radius: 12px;
+  margin: 0;
+}
+.mag-figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+.mag-figure--round {
+  border-radius: 50%;
+  aspect-ratio: 1;
+}
+.mag-figure--round img {
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+.mag-figure--portrait img {
+  max-height: 400px;
+}
+
+.mag-media-text p {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #374151;
+  margin: 0 0 16px;
+}
+.mag-media-text p:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .mag-hero { margin: 24px 0; }
+  .mag-media-row,
+  .mag-media-row--reverse {
+    grid-template-columns: 1fr;
+  }
+  .mag-media-row--reverse .mag-figure,
+  .mag-media-row--reverse .mag-media-text { order: unset; }
+  .mag-figure--round {
+    max-width: 200px;
+    margin: 0 auto;
+  }
+  .mag-pullquote {
+    font-size: 1.1rem;
+    padding: 16px 20px;
+  }
+}

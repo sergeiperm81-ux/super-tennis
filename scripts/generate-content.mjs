@@ -944,6 +944,560 @@ Structure:
 
 Include fun facts about trophy weight, history, and traditions.`,
   },
+  // ── New lifestyle articles (batch 3) ──
+  {
+    slug: 'tennis-diet-nutrition-guide',
+    title: 'What Tennis Players Eat — Diet & Nutrition Guide',
+    prompt: `Write a lifestyle article (600-800 words) about tennis player nutrition.
+
+Structure:
+## What Do Tennis Players Eat?
+## Pre-Match Nutrition
+## During-Match Fueling
+## Post-Match Recovery Foods
+## Djokovic's Gluten-Free Diet
+## Nadal's Mediterranean Diet
+## Nutrition Tips for Recreational Players
+
+Include practical advice for recreational players.`,
+  },
+  {
+    slug: 'tennis-fitness-training',
+    title: 'Tennis Fitness — How Pros Train Off the Court',
+    prompt: `Write a lifestyle article (600-800 words) about tennis fitness training.
+
+Structure:
+## How Tennis Players Train Off the Court
+## Cardio & Endurance Training
+## Strength Training for Tennis
+## Flexibility & Injury Prevention
+## Recovery: Ice Baths, Sleep & More
+## Home Workout for Tennis Players
+## How Much Should You Train vs Play?
+
+Make it practical for club-level players.`,
+  },
+  {
+    slug: 'tennis-injuries-prevention',
+    title: 'Common Tennis Injuries & How to Prevent Them',
+    prompt: `Write a lifestyle article (600-800 words) about tennis injuries.
+
+Structure:
+## Most Common Tennis Injuries
+## Tennis Elbow: Causes & Prevention
+## Shoulder Injuries in Tennis
+## Knee & Ankle Problems
+## Wrist & Hand Issues
+## Warm-Up Routine to Prevent Injuries
+## When to See a Doctor
+
+Be informative but not medical advice.`,
+  },
+  {
+    slug: 'best-tennis-movies-documentaries',
+    title: 'Best Tennis Movies & Documentaries to Watch',
+    prompt: `Write a lifestyle article (600-700 words) about the best tennis movies and documentaries.
+
+Structure:
+## Best Tennis Movies & Documentaries
+## Challengers (2024) — Zendaya's Tennis Drama
+## King Richard (2021) — The Williams Sisters Story
+## Battle of the Sexes (2017)
+## Borg vs McEnroe (2017)
+## Best Tennis Documentaries on Netflix & Prime
+## Honorable Mentions
+
+Include streaming availability where known.`,
+  },
+  {
+    slug: 'tennis-betting-guide',
+    title: 'Tennis Betting Guide — How Odds Work & What to Watch',
+    prompt: `Write a lifestyle article (600-800 words) about tennis betting for beginners.
+
+Structure:
+## Tennis Betting Explained
+## How Tennis Odds Work
+## Types of Tennis Bets (Match Winner, Set Betting, Over/Under)
+## Key Stats That Matter for Betting
+## Surface & Form Analysis
+## Common Mistakes to Avoid
+## Responsible Gambling
+
+Informative, not promotional. Emphasize responsible gambling.`,
+  },
+  {
+    slug: 'tennis-coaching-tips-beginners',
+    title: 'Tennis Coaching Tips — How to Start Playing Tennis',
+    prompt: `Write a lifestyle article (600-800 words) about getting started with tennis.
+
+Structure:
+## How to Start Playing Tennis
+## Finding a Coach vs Self-Learning
+## Essential Gear for Beginners (Budget Guide)
+## The Basic Strokes Explained
+## Court Etiquette You Should Know
+## How to Find People to Play With
+## Apps & Resources for Tennis Beginners
+
+Practical, encouraging, and beginner-friendly.`,
+  },
+  {
+    slug: 'tennis-scoring-explained',
+    title: 'Tennis Scoring System Explained — Love, Deuce & Tiebreaks',
+    prompt: `Write a lifestyle article (600-800 words) explaining tennis scoring.
+
+Structure:
+## Tennis Scoring Made Simple
+## Points: Love, 15, 30, 40
+## Games and Sets
+## What is Deuce? (and Ad-In, Ad-Out)
+## Tiebreak Rules
+## Super Tiebreak (Match Tiebreak)
+## Why Does Tennis Use This Weird Scoring?
+
+Make it fun and easy to understand for complete beginners.`,
+  },
+  {
+    slug: 'tennis-court-types-explained',
+    title: 'Tennis Court Surfaces Explained — Clay, Grass, Hard Court',
+    prompt: `Write a lifestyle article (600-800 words) about tennis court surfaces.
+
+Structure:
+## Tennis Court Surfaces Explained
+## Hard Courts (US Open, Australian Open)
+## Clay Courts (Roland Garros)
+## Grass Courts (Wimbledon)
+## Carpet & Indoor Courts
+## How Surface Affects Playing Style
+## Which Surface Suits Your Game?
+
+Include speed ratings and bounce characteristics.`,
+  },
+  {
+    slug: 'tennis-etiquette-unwritten-rules',
+    title: 'Tennis Etiquette — The Unwritten Rules Every Player Should Know',
+    prompt: `Write a lifestyle article (500-700 words) about tennis etiquette.
+
+Structure:
+## Tennis Etiquette Guide
+## Before the Match (Warm-Up Rules)
+## During Play (Line Calls, Ball Management)
+## Silence During Points
+## Changeover Etiquette
+## After the Match (Handshake & Thanks)
+## Spectator Etiquette at Tournaments
+
+Fun and informative — include real examples from pro tennis.`,
+  },
+  {
+    slug: 'best-tennis-video-games',
+    title: 'Best Tennis Video Games — From TopSpin to AO Tennis',
+    prompt: `Write a lifestyle article (500-700 words) about tennis video games.
+
+Structure:
+## Best Tennis Video Games
+## TopSpin 2K25 — The Return of a Legend
+## AO International Tennis 2
+## Tennis World Tour 2
+## Mario Tennis Aces
+## Classic Tennis Games Worth Playing
+## What Makes a Great Tennis Video Game?
+
+Include platforms and general quality assessment.`,
+  },
+  {
+    slug: 'tennis-for-kids-parents-guide',
+    title: "Tennis for Kids — A Parent's Complete Guide",
+    prompt: `Write a lifestyle article (600-800 words) about getting kids into tennis.
+
+Structure:
+## Getting Your Child Started in Tennis
+## What Age Should Kids Start Tennis?
+## Finding the Right Coach & Program
+## Equipment Basics (Smaller Rackets, Slower Balls)
+## Red, Orange, Green Ball Progression
+## How to Keep Kids Motivated
+## Cost of Youth Tennis Programs
+
+Practical advice for parents considering tennis for their children.`,
+  },
+  {
+    slug: 'tennis-travel-guide-grand-slams',
+    title: 'Tennis Travel Guide — Attending the Grand Slams',
+    prompt: `Write a lifestyle article (700-900 words) about attending Grand Slam tournaments.
+
+Structure:
+## Grand Slam Tennis Travel Guide
+## Australian Open — Melbourne in January
+## Roland Garros — Paris in May/June
+## Wimbledon — London in July
+## US Open — New York in August/September
+## Ticket Buying Tips & Best Seats
+## Budget vs Luxury Tennis Travel
+## Tips for First-Time Grand Slam Visitors
+
+Include practical tips: when to buy tickets, where to sit, what to bring.`,
+  },
+  {
+    slug: 'pickleball-vs-tennis',
+    title: 'Pickleball vs Tennis — Differences, Similarities & Which to Play',
+    prompt: `Write a lifestyle article (600-800 words) comparing pickleball and tennis.
+
+Structure:
+## Pickleball vs Tennis: The Complete Comparison
+## Key Differences (Court Size, Equipment, Scoring)
+## Physical Demands: Which Is Harder?
+## Which Is Easier to Learn?
+## Cost Comparison
+## Social Aspects
+## Can You Play Both?
+## The Pickleball-Tennis Debate in 2026
+
+Be balanced and fair to both sports.`,
+  },
+  {
+    slug: 'padel-tennis-explained',
+    title: "Padel Tennis Explained — Rules, Equipment & Why It's Booming",
+    prompt: `Write a lifestyle article (600-700 words) about padel tennis.
+
+Structure:
+## What Is Padel Tennis?
+## How Padel Differs from Tennis
+## Padel Rules Explained
+## Equipment You Need
+## Why Padel Is Growing So Fast
+## Padel vs Tennis: Physical Demands
+## Where to Play Padel
+
+Fun, informative introduction to padel for tennis fans.`,
+  },
+  {
+    slug: 'tennis-mental-game-tips',
+    title: 'The Mental Game of Tennis — How to Stay Focused Under Pressure',
+    prompt: `Write a lifestyle article (600-800 words) about tennis mental toughness.
+
+Structure:
+## The Mental Game of Tennis
+## Why Tennis Is the Loneliest Sport
+## Pre-Match Mental Preparation
+## Dealing with Momentum Shifts
+## How Djokovic Masters the Mental Game
+## Breathing & Mindfulness Techniques
+## The Reset Ritual Between Points
+## Books & Resources for Tennis Mental Training
+
+Include practical techniques players can use immediately.`,
+  },
+  {
+    slug: 'tennis-doubles-strategy',
+    title: 'Tennis Doubles Strategy — Formations, Poaching & Communication',
+    prompt: `Write a lifestyle article (600-700 words) about doubles tennis strategy.
+
+Structure:
+## Tennis Doubles Strategy Guide
+## Basic Doubles Formations
+## The I-Formation Explained
+## Poaching: When & How
+## Communication with Your Partner
+## Serving Strategy in Doubles
+## Return Strategy in Doubles
+## Most Successful Doubles Teams in History
+
+Practical advice for recreational doubles players.`,
+  },
+  // ── "Second Serve" — Tennis & Active Life 50+ (batch 4) ──
+  {
+    slug: 'tennis-adds-10-years-life',
+    title: 'Tennis Adds 9.7 Years to Your Life — The Science Behind It',
+    prompt: `Write a lifestyle article (700-900 words) about the Copenhagen Heart Study finding that tennis adds 9.7 years of life expectancy.
+
+Structure:
+## Tennis: The Sport That Adds Nearly 10 Years to Your Life
+## The Copenhagen City Heart Study
+## Why Tennis Beats Running, Swimming & Cycling for Longevity
+## The Social Connection Factor
+## Physical Benefits: Heart, Bones, Brain
+## It's Never Too Late to Start
+## How Much Tennis Do You Need?
+
+Reference the Copenhagen study (9,000 adults, 25 years). Tennis #1 sport for longevity, ahead of badminton (6.2 years), soccer (4.7), cycling (3.7), swimming (3.4), jogging (3.2). The social/interactive nature of tennis is key.`,
+  },
+  {
+    slug: 'starting-tennis-after-50',
+    title: 'Starting Tennis After 50 — A Complete Beginner Guide',
+    prompt: `Write a lifestyle article (700-900 words) for people who want to start playing tennis after age 50.
+
+Structure:
+## Starting Tennis After 50: Yes, You Can
+## Why Tennis is Perfect for the 50+ Crowd
+## Finding the Right Coach & Group Lessons
+## Equipment for Beginners Over 50 (Lighter Rackets, Arm-Friendly)
+## Your First Month: What to Expect
+## Avoiding Injury: Smart Training Tips
+## Social Tennis vs Competitive Tennis
+## Success Stories: People Who Started Late
+
+Encouraging, practical tone. 40% of tennis players are over 40. Address common fears (too old, too unfit, too late).`,
+  },
+  {
+    slug: 'tennis-against-loneliness',
+    title: 'Tennis Against Loneliness — How a Racket Sport Builds Community',
+    prompt: `Write a lifestyle article (600-800 words) about tennis as a cure for loneliness, especially for people 45+.
+
+Structure:
+## Tennis: The Antidote to Loneliness
+## The Loneliness Epidemic (4 in 10 adults 45+ are lonely — AARP)
+## Why Tennis Builds Deeper Social Bonds Than the Gym
+## Club Culture: Finding Your Tennis Community
+## Doubles: The Ultimate Social Sport
+## Social Tennis Programs & Leagues
+## Real Stories: How Tennis Changed Lives
+
+Reference AARP data (40% of 45+ are lonely). Tennis forces interaction — you can't play alone. Club culture, post-match drinks, tournaments = community.`,
+  },
+  {
+    slug: 'tennis-brain-health-dementia',
+    title: 'Tennis & Brain Health — How Racket Sports Fight Cognitive Decline',
+    prompt: `Write a lifestyle article (600-800 words) about how tennis benefits brain health and may help prevent dementia.
+
+Structure:
+## Tennis and Your Brain
+## The Cognitive Demands of Tennis (Strategy, Anticipation, Split-Second Decisions)
+## Research: Racket Sports and Reduced Dementia Risk
+## Hand-Eye Coordination and Neural Pathways
+## The Social Brain: Why Playing With Others Matters
+## Tennis vs Other Exercise for Brain Health
+## Practical Tips: How Much and How Often
+
+Reference Harvard research on racket sports and cognitive benefits. Tennis combines physical exercise + social interaction + strategic thinking = triple brain workout.`,
+  },
+  {
+    slug: 'tennis-after-knee-replacement',
+    title: 'Playing Tennis After Knee or Hip Replacement — Is It Possible?',
+    prompt: `Write a lifestyle article (600-800 words) about returning to tennis after joint replacement surgery.
+
+Structure:
+## Tennis After Joint Replacement: The Honest Guide
+## When Can You Return to Court?
+## What the Research Says
+## Modified Play: Doubles Over Singles
+## Equipment Adjustments (Shoes, Surface, Racket)
+## Exercises to Prepare for Return
+## What to Discuss With Your Doctor
+## Real Players Who Came Back
+
+Medical disclaimer. Generally positive — many players return to doubles within 6-12 months. Emphasize consulting with surgeon.`,
+  },
+  {
+    slug: 'tennis-retirement-communities',
+    title: 'Best Tennis Retirement Communities — Where Tennis Never Stops',
+    prompt: `Write a lifestyle article (600-800 words) about retirement communities with great tennis programs.
+
+Structure:
+## Retirement Communities Where Tennis Is King
+## Why Tennis Communities Are Booming
+## What to Look for in a Tennis Community
+## Top Tennis-Focused Communities in the US
+## International Tennis Retirement Destinations (Spain, Portugal, Thailand)
+## Cost Range: Budget to Luxury
+## Day Passes and Try-Before-You-Buy
+
+Focus on the lifestyle aspect, not just real estate. Social tennis programs, coaching, leagues.`,
+  },
+  {
+    slug: 'tennis-fitness-over-50',
+    title: 'Tennis Fitness After 50 — Training Smart, Not Hard',
+    prompt: `Write a lifestyle article (600-800 words) about fitness training for tennis players over 50.
+
+Structure:
+## Tennis Fitness After 50
+## Why Recovery Matters More Than Ever
+## Warm-Up: The Non-Negotiable 15 Minutes
+## Strength Training for Tennis (Legs, Core, Shoulders)
+## Flexibility: Every Decade Needs More Stretching
+## Play Every Other Day, Not Every Day
+## Nutrition for the Senior Tennis Player
+## Signs You're Overdoing It
+
+Practical, age-appropriate advice. Reference: after 30, we lose 5% muscle mass per decade.`,
+  },
+  {
+    slug: 'tennis-weight-loss-over-50',
+    title: 'Tennis for Weight Loss After 50 — Burn 400-600 Calories Per Hour',
+    prompt: `Write a lifestyle article (600-700 words) about using tennis for weight management after 50.
+
+Structure:
+## Tennis for Weight Loss After 50
+## How Many Calories Does Tennis Burn?
+## Singles vs Doubles: Calorie Comparison
+## Why Tennis Burns More Than Walking or Cycling
+## Interval Nature of Tennis = Natural HIIT
+## Nutrition Tips for Tennis Players Watching Weight
+## Realistic Expectations and Timeline
+
+Practical, not preachy. Tennis burns 400-600 cal/hour (singles), 300-400 (doubles). The fun factor means people stick with it.`,
+  },
+  {
+    slug: 'tennis-osteoporosis-bone-health',
+    title: 'Tennis & Bone Health — Why Weight-Bearing Sport Fights Osteoporosis',
+    prompt: `Write a lifestyle article (600-700 words) about tennis and bone health.
+
+Structure:
+## Tennis and Bone Health
+## The Osteoporosis Challenge After 50
+## Why Tennis Builds Stronger Bones
+## Weight-Bearing Impact: Tennis vs Swimming vs Cycling
+## Research on Tennis and Bone Density
+## How Often Should You Play?
+## Other Bone-Healthy Habits for Tennis Players
+
+Reference: tennis is weight-bearing → stimulates bone tissue production. Important for post-menopausal women especially.`,
+  },
+  {
+    slug: 'tennis-stress-relief-mindfulness',
+    title: 'Tennis as Meditation — How the Court Becomes Your Zen Zone',
+    prompt: `Write a lifestyle article (600-800 words) about tennis as stress relief and mindfulness practice.
+
+Structure:
+## Tennis: Moving Meditation
+## Why Tennis Forces You Into the Present Moment
+## The Flow State on Court
+## Cortisol and Adrenaline: What Happens During Play
+## Post-Match Calm: The Tennis Afterglow
+## Rituals Between Points as Mindfulness Practice
+## Tennis vs Yoga, Running, Meditation for Stress Relief
+
+Thoughtful, not clinical. The point-by-point nature of tennis naturally creates a mindfulness structure. Between points = breathing reset.`,
+  },
+  {
+    slug: 'finding-tennis-partners-over-50',
+    title: 'Finding Tennis Partners After 50 — Apps, Clubs & Social Tennis',
+    prompt: `Write a lifestyle article (500-700 words) about finding people to play tennis with, especially for people 50+.
+
+Structure:
+## How to Find Tennis Partners After 50
+## Tennis Club Memberships: Worth the Investment?
+## Apps: Playfinder, Tennis Buddy, Meetup
+## USTA Adult Leagues
+## Social Tennis Events & Round Robins
+## Doubles Groups: The Easiest Entry Point
+## Online Tennis Communities
+
+Practical, actionable. Address the "I don't know anyone who plays" problem.`,
+  },
+  {
+    slug: 'tennis-heart-health',
+    title: 'Tennis & Heart Health — How 3 Hours a Week Cuts Heart Disease Risk by 50%',
+    prompt: `Write a lifestyle article (600-700 words) about tennis and cardiovascular health.
+
+Structure:
+## Tennis and Your Heart
+## The Research: 50% Lower Heart Disease Risk
+## How Tennis Trains Your Heart (Interval Training Effect)
+## Blood Pressure Benefits
+## Cholesterol Impact: Raising HDL, Lowering LDL
+## How Much Tennis for Heart Health?
+## Warning Signs: When to Stop and See a Doctor
+
+Reference PMC research: 3+ hours of moderately vigorous sport weekly = 50% reduction in coronary heart disease death risk.`,
+  },
+  {
+    slug: 'tennis-empty-nest-new-chapter',
+    title: 'The Empty Nest Tennis Player — Starting a New Chapter on Court',
+    prompt: `Write a lifestyle article (600-800 words) for parents whose children have left home and are looking for meaning and activity.
+
+Structure:
+## When the Kids Leave: Tennis as Your New Chapter
+## The Empty Nest Moment — Now What?
+## Why Tennis Fills the Void (Purpose, Schedule, Community)
+## From Soccer Mom/Dad to Tennis Player
+## Couples Tennis: Reconnecting With Your Partner
+## Building a New Social Circle Through Tennis
+## The Unexpected Joy of Learning Something New at 50+
+
+Empathetic, uplifting. Address the emotional void that empty nesters feel. Tennis provides structure, community, physical challenge, and fun.`,
+  },
+  {
+    slug: 'tennis-couples-relationship',
+    title: 'Tennis for Couples — How Playing Together Strengthens Your Relationship',
+    prompt: `Write a lifestyle article (500-700 words) about couples playing tennis together.
+
+Structure:
+## Tennis for Couples
+## Mixed Doubles: The Ultimate Team Sport
+## How Tennis Improves Communication
+## Dealing with Competitive Partners
+## Date Night on the Court
+## Famous Tennis Couples
+## Tips for Playing With Your Spouse Without Fighting
+
+Fun, light-hearted. Include tips for managing competitive dynamics between partners.`,
+  },
+  {
+    slug: 'tennis-grandparents-grandkids',
+    title: 'Tennis With Grandkids — The Sport That Bridges Generations',
+    prompt: `Write a lifestyle article (500-700 words) about grandparents playing tennis with grandchildren.
+
+Structure:
+## Tennis: The Multigenerational Sport
+## Why Tennis Works Across Ages (Adjustable Pace, Modified Rules)
+## Mini Tennis & Red Ball for Young Kids
+## Equipment Tips for Playing Together
+## Making It Fun, Not Competitive
+## Creating Tennis Family Traditions
+## Local Programs for Multigenerational Tennis
+
+Heartwarming, practical. Tennis is one of few sports where a 65-year-old can genuinely play with a 10-year-old.`,
+  },
+  {
+    slug: 'reinventing-yourself-through-tennis',
+    title: 'Reinventing Yourself Through Tennis — Stories of Late Bloomers',
+    prompt: `Write an inspirational lifestyle article (600-800 words) about people who found tennis later in life and it transformed them.
+
+Structure:
+## Late Bloomers: Finding Tennis After 40, 50, 60
+## The Retiree Who Became a Tournament Player
+## From Couch to Court: Weight Loss Through Tennis
+## The Introvert Who Found Community
+## Tennis as Identity: More Than Just Exercise
+## Why "Too Old" Is Never True in Tennis
+## How to Write Your Own Tennis Story
+
+Inspirational but not cheesy. Use general archetypes (not specific named people unless public figures). The message: it's never too late.`,
+  },
+  {
+    slug: 'tennis-vs-golf-retirement-sport',
+    title: 'Tennis vs Golf — Which Is the Better Retirement Sport?',
+    prompt: `Write a lifestyle comparison article (600-800 words) comparing tennis and golf as sports for retirees.
+
+Structure:
+## Tennis vs Golf: The Retirement Sport Showdown
+## Physical Benefits Comparison
+## Social Aspects: Club Culture vs Court Culture
+## Cost Comparison (Equipment, Membership, Ongoing)
+## Time Commitment
+## Learning Curve After 50
+## Health Research: Which Sport Adds More Years?
+## Why Not Both?
+
+Balanced comparison. Tennis wins on fitness/longevity (+9.7 years vs golf's minimal impact), golf wins on low-impact accessibility. Both excellent socially.`,
+  },
+  {
+    slug: 'walking-tennis-gentle-start',
+    title: 'Walking Tennis — The Gentle Way Into the Sport for Seniors',
+    prompt: `Write a lifestyle article (500-700 words) about walking tennis, a modified version of tennis for older adults.
+
+Structure:
+## What Is Walking Tennis?
+## Rules: How Walking Tennis Differs
+## Who Is It For?
+## Health Benefits of Walking Tennis
+## Where to Find Walking Tennis Programs
+## From Walking Tennis to Regular Tennis
+## Equipment Recommendations
+
+Walking tennis is growing fast in UK and Europe — two bounces allowed, no running required. Perfect entry point for 60+.`,
+  },
 ];
 
 // ============================================================
