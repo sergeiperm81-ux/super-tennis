@@ -135,28 +135,53 @@ export const gearArticlePhotos: Record<string, ArticlePhoto> = {
   'tennis-equipment-buying-guide-for-club-players': { type: 'local', value: '/images/gear/tennis-accessories.jpg' },
 };
 
-// Lifestyle articles → photos
+// Lifestyle articles → photos (DIVERSE thematic photos, not just tennis)
+// Uses Unsplash (free license) for thematic variety
 export const lifestyleArticlePhotos: Record<string, ArticlePhoto> = {
-  'richest-tennis-players-2026': { type: 'player', value: 'novak-djokovic' },
-  'tennis-fashion-on-court': { type: 'local', value: '/images/lifestyle/tennis-fashion.jpg' },
-  'tennis-diet-nutrition': { type: 'local', value: '/images/lifestyle/tennis-nutrition.jpg' },
-  'tennis-fitness-training': { type: 'local', value: '/images/lifestyle/tennis-training.jpg' },
-  'tennis-retirement-second-careers': { type: 'player', value: 'roger-federer' },
-  'best-tennis-movies-documentaries': { type: 'local', value: '/images/lifestyle/cinema-popcorn.jpg' },
-  'tennis-travel-bucket-list': { type: 'local', value: '/images/lifestyle/airplane-travel.jpg' },
-  'tennis-mental-health': { type: 'player', value: 'naomi-osaka' },
-  'how-to-start-playing-tennis': { type: 'local', value: '/images/lifestyle/tennis-training.jpg' },
-  'tennis-betting-guide': { type: 'local', value: '/images/records/tennis-court-aerial.jpg' },
-  'tennis-rules-explained': { type: 'local', value: '/images/lifestyle/tennis-court-sunset.jpg' },
-  'tennis-vs-padel': { type: 'local', value: '/images/lifestyle/padel-court.jpg' },
-  'how-to-watch-tennis': { type: 'local', value: '/images/tournaments/us-open.jpg' },
-  'tennis-coaching-legends': { type: 'player', value: 'novak-djokovic' },
-  'tennis-wags-power-couples': { type: 'player', value: 'stefanos-tsitsipas' },
-  'tennis-superstitions-rituals': { type: 'player', value: 'rafael-nadal' },
-  'tennis-injuries-common': { type: 'local', value: '/images/lifestyle/tennis-physio.jpg' },
+  // Money & Business
+  'richest-tennis-players-2026': { type: 'local', value: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&q=80' }, // money stacks
   'tennis-trophies-prizes': { type: 'local', value: '/images/lifestyle/tennis-trophy.jpg' },
+  'tennis-betting-guide': { type: 'local', value: 'https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=800&q=80' }, // sports betting
+  // Culture & Entertainment
+  'best-tennis-movies-documentaries': { type: 'local', value: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800&q=80' }, // cinema
+  'best-tennis-video-games': { type: 'local', value: 'https://images.unsplash.com/photo-1592840496694-26d035b52b48?w=800&q=80' }, // game controller
+  'tennis-fashion-on-court': { type: 'local', value: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80' }, // fashion runway
+  'tennis-superstitions-rituals': { type: 'player', value: 'rafael-nadal' },
+  // Health & Wellness
+  'tennis-mental-health': { type: 'local', value: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=80' }, // meditation
+  'tennis-mental-game-tips': { type: 'local', value: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=800&q=80' }, // zen focus
+  'tennis-stress-relief-mindfulness': { type: 'local', value: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80' }, // yoga woman
+  'tennis-injuries-common': { type: 'local', value: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80' }, // physio/medical
+  'tennis-injuries-prevention': { type: 'local', value: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80' }, // stretching
+  'tennis-heart-health': { type: 'local', value: 'https://images.unsplash.com/photo-1559757175-5700dde675bc?w=800&q=80' }, // heart health
+  'tennis-fitness-training': { type: 'local', value: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80' }, // gym workout
+  'tennis-diet-nutrition': { type: 'local', value: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&q=80' }, // healthy food
+  'tennis-diet-nutrition-guide': { type: 'local', value: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80' }, // salad bowl
+  // Relationships & Social
+  'tennis-couples-relationship': { type: 'local', value: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=800&q=80' }, // couple holding hands
+  'tennis-wags-power-couples': { type: 'player', value: 'stefanos-tsitsipas' },
+  'the-social-side-of-tennis-a-culture-of-community': { type: 'local', value: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80' }, // friends socializing
+  'tennis-for-kids-parents-guide': { type: 'local', value: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&q=80' }, // happy kid
+  'tennis-doubles-strategy': { type: 'local', value: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800&q=80' }, // teamwork
+  // Travel & Experience
+  'tennis-travel-bucket-list': { type: 'local', value: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80' }, // travel passport
+  'tennis-travel-guide-grand-slams': { type: 'local', value: 'https://images.unsplash.com/photo-1507608616759-54f48f0af0ee?w=800&q=80' }, // travel suitcase
+  'how-to-watch-tennis': { type: 'local', value: 'https://images.unsplash.com/photo-1593784991095-a205069470b6?w=800&q=80' }, // TV streaming
+  // Learning & Getting Started
+  'tennis-rules-explained': { type: 'local', value: 'https://images.unsplash.com/photo-1456406644174-8ddd4cd52a06?w=800&q=80' }, // chalkboard
+  'tennis-scoring-explained': { type: 'local', value: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800&q=80' }, // scoreboard
+  'how-to-start-playing-tennis': { type: 'local', value: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800&q=80' }, // beginner athlete
+  'tennis-coaching-tips-beginners': { type: 'local', value: 'https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=800&q=80' }, // coaching/teaching
+  'tennis-coaching-legends': { type: 'player', value: 'andy-murray' },
+  'tennis-etiquette-unwritten-rules': { type: 'local', value: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80' }, // gentleman
+  // Sports Comparison
+  'tennis-vs-padel': { type: 'local', value: '/images/lifestyle/padel-court.jpg' },
+  'pickleball-vs-tennis': { type: 'local', value: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800&q=80' }, // racket sports
+  'padel-tennis-explained': { type: 'local', value: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800&q=80' }, // padel
+  'tennis-court-types-explained': { type: 'local', value: '/images/tournaments/roland-garros.jpg' },
+  // Players & Careers
+  'tennis-retirement-second-careers': { type: 'player', value: 'roger-federer' },
   'aryna-sabalenka-rise-world-number-one': { type: 'local', value: '/images/lifestyle/sabalenka-action.webp' },
-  'the-social-side-of-tennis-a-culture-of-community': { type: 'local', value: '/images/lifestyle/luxury-travel.jpg' },
 };
 
 // Records articles → photos (diversified — avoid showing same player for every record)

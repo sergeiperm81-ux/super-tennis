@@ -7,7 +7,7 @@ import { getArticlePhotosForCategory } from '../../lib/player-photos';
 // Fetch real lifestyle articles from Supabase
 let lifestyleArticles: any[] = [];
 try {
-  lifestyleArticles = await getArticles({ category: 'lifestyle', limit: 20 });
+  lifestyleArticles = await getArticles({ category: 'lifestyle', limit: 100 });
 } catch (e) {
   console.warn('Lifestyle index: Supabase unavailable');
 }

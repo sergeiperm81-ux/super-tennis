@@ -7,7 +7,7 @@ import { getArticlePhotosForCategory } from '../../lib/player-photos';
 // Fetch real gear articles from Supabase
 let gearArticles: any[] = [];
 try {
-  gearArticles = await getArticles({ category: 'gear', limit: 30 });
+  gearArticles = await getArticles({ category: 'gear', limit: 100 });
 } catch (e) {
   console.warn('Gear index: Supabase unavailable');
 }

@@ -893,31 +893,33 @@ Return ONLY a JSON object (no markdown fences, no extra text):
 function parseRankingsHtml(html: string, tour: string): { rank: number; name: string; country: string; points: number }[] {
   const players: { rank: number; name: string; country: string; points: number }[] = [];
 
-  // Format 1 (current): Rank, Player (link with &nbsp;), Country, Birthdate — no points
-  const rowRegex4 = /<tr><td[^>]*>(\d+)<\/td><td[^>]*>(?:<a[^>]*>)?([\s\S]*?)(?:<\/a>)?<\/td><td[^>]*>([A-Z]{3})<\/td><td[^>]*>[^<]*<\/td><\/tr>/g;
-  // Format 2 (legacy): Rank, ?, Player, Country, Points
+  // Format 1 (primary): Rank, Change/Skip, Player (with optional link), Country, Points
+  // This is the current tennisabstract layout with 5+ columns including points
   const rowRegex5 = /<tr[^>]*>\s*<td[^>]*>(\d+)<\/td>\s*<td[^>]*>[^<]*<\/td>\s*<td[^>]*>(?:<a[^>]*>)?([^<]+)(?:<\/a>)?<\/td>\s*<td[^>]*>([A-Z]{3})<\/td>\s*<td[^>]*>([\d,]+)<\/td>/g;
 
-  // Try 4-column format first (current tennisabstract layout)
+  // Format 2 (fallback): Rank, Player (link with &nbsp;), Country, Birthdate — no points column
+  const rowRegex4 = /<tr><td[^>]*>(\d+)<\/td><td[^>]*>(?:<a[^>]*>)?([\s\S]*?)(?:<\/a>)?<\/td><td[^>]*>([A-Z]{3})<\/td><td[^>]*>[^<]*<\/td><\/tr>/g;
+
+  // Try 5-column format first (has points)
   let match;
-  while ((match = rowRegex4.exec(html)) !== null) {
+  while ((match = rowRegex5.exec(html)) !== null) {
     const rank = parseInt(match[1]);
-    const name = match[2].replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').trim();
+    const name = match[2].replace(/&nbsp;/g, ' ').trim();
     const country = match[3];
-    if (rank <= 200 && name.length > 1) {
-      players.push({ rank, name, country, points: 0 });
+    const points = parseInt(match[4].replace(/,/g, ''));
+    if (rank <= 200) {
+      players.push({ rank, name, country, points });
     }
   }
 
-  // Fallback: try 5-column format if nothing parsed
+  // Fallback: try 4-column format if nothing parsed (points unavailable)
   if (players.length === 0) {
-    while ((match = rowRegex5.exec(html)) !== null) {
+    while ((match = rowRegex4.exec(html)) !== null) {
       const rank = parseInt(match[1]);
-      const name = match[2].replace(/&nbsp;/g, ' ').trim();
+      const name = match[2].replace(/&nbsp;/g, ' ').replace(/<[^>]*>/g, '').trim();
       const country = match[3];
-      const points = parseInt(match[4].replace(/,/g, ''));
-      if (rank <= 200) {
-        players.push({ rank, name, country, points });
+      if (rank <= 200 && name.length > 1) {
+        players.push({ rank, name, country, points: 0 });
       }
     }
   }

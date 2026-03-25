@@ -6,7 +6,7 @@ import { stripMarkdown } from '../../lib/fallback-data';
 // Fetch real tournament articles from Supabase
 let tournamentArticles: any[] = [];
 try {
-  tournamentArticles = await getArticles({ category: 'tournaments', limit: 20 });
+  tournamentArticles = await getArticles({ category: 'tournaments', limit: 100 });
 } catch (e) {
   console.warn('Tournaments index: Supabase unavailable');
 }
