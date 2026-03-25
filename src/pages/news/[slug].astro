@@ -1,0 +1,139 @@
+---
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import ArticleFooter from '../../components/ArticleFooter.astro';
+import { addInterlinks } from '../../lib/interlinks';
+
+export async function getStaticPaths() {
+  const toSlug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').substring(0, 80);
+
+  let allNews: any[] = [];
+  try {
+    const res = await fetch('https://supertennis-cron.sfedoroff.workers.dev/api/news');
+    if (res.ok) {
+      const data = await res.json();
+      allNews = (Array.isArray(data) ? data : []).filter((n: any) => n.body && n.body.length > 50);
+    }
+  } catch (e) {
+    console.warn('News [slug]: Worker API unavailable');
+  }
+
+  const seen = new Set<string>();
+  return allNews.filter((n: any) => {
+    const s = toSlug(n.title || 'untitled');
+    if (seen.has(s)) return false;
+    seen.add(s);
+    return true;
+  }).map((n: any) => ({
+    params: { slug: toSlug(n.title || 'untitled') },
+    props: { article: n },
+  }));
+}
+
+function makeSlug(title: string): string {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').substring(0, 80);
+}
+
+const { article } = Astro.props;
+
+if (!article) {
+  return Astro.redirect('/news/');
+}
+
+const slug = makeSlug(article.title);
+const cat = article.category || 'buzz';
+const publishedDate = article.published_at || new Date().toISOString();
+const summary = article.excerpt || (article.body ? article.body.replace(/<[^>]*>/g, '').trim().substring(0, 160) + '...' : '');
+
+// Category info
+const catLabels: Record<string, string> = {
+  scandal: 'Scandal', love: 'Love', money: 'Money',
+  fashion: 'Fashion', viral: 'Viral', buzz: 'Buzz',
+};
+
+// Add interlinks to body
+const bodyHtml = article.body ? await addInterlinks(article.body, `/news/${slug}/`) : '';
+
+// NewsArticle JSON-LD
+const newsJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'NewsArticle',
+  headline: article.title,
+  description: summary,
+  datePublished: publishedDate,
+  author: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+  publisher: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+  ...(article.image_url && { image: article.image_url }),
+  mainEntityOfPage: `https://super.tennis/news/${slug}/`,
+};
+---
+
+<ArticleLayout
+  title={article.title}
+  description={summary}
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'News', href: '/news/' },
+    { label: catLabels[cat] || 'News' },
+  ]}
+  image={article.image_url || undefined}
+  publishedDate={publishedDate}
+  category="news"
+  categoryLabel="News"
+  categoryHref="/news/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(newsJsonLd)} />
+
+  {/* Source attribution */}
+  {article.source_url && (
+    <div class="news-source">
+      <span class="news-source-label">Source:</span>
+      <a href={article.source_url} target="_blank" rel="noopener noreferrer">{article.source || 'Original Article'}</a>
+    </div>
+  )}
+
+  {/* Article body */}
+  <div class="news-body" set:html={bodyHtml} />
+
+  <ArticleFooter
+    backLabel="All News"
+    backHref="/news/"
+    relatedLinks={[
+      { label: 'Players', href: '/players/' },
+      { label: 'Rankings', href: '/rankings/' },
+      { label: 'Lifestyle', href: '/lifestyle/' },
+      { label: 'Records', href: '/records/' },
+    ]}
+  />
+</ArticleLayout>
+
+<style>
+  .news-source {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    font-size: 0.85rem;
+  }
+  .news-source-label {
+    color: var(--gray-500);
+    margin-right: 6px;
+  }
+  .news-source a {
+    color: var(--court-green);
+    text-decoration: none;
+  }
+  .news-source a:hover {
+    text-decoration: underline;
+  }
+  .news-body {
+    line-height: 1.8;
+    color: var(--gray-800);
+  }
+  .news-body :global(h2) {
+    margin-top: 2rem;
+  }
+  .news-body :global(p) {
+    margin-bottom: 1rem;
+  }
+</style>
