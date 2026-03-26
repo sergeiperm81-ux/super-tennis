@@ -32,7 +32,7 @@ function getUsedBackgrounds() {
   catch { return []; }
 }
 function saveUsedBackgrounds(list) {
-  fs.writeFileSync(HISTORY_FILE, JSON.stringify(list.slice(-30)));
+  fs.writeFileSync(HISTORY_FILE, JSON.stringify(list.slice(-60)));
 }
 function pickBackground(usedList) {
   const allBgs = fs.readdirSync(BG_DIR).filter(f => f.endsWith('.mp4'));
