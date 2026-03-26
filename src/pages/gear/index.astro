@@ -65,6 +65,35 @@ const itemListJsonLd = gearArticles.length > 0 ? {
     url: `https://super.tennis/gear/${article.slug}/`,
   })),
 } : null;
+
+// FAQ data for gear page
+const gearFaqItems = [
+  {
+    q: 'What tennis racket should a beginner use?',
+    a: 'Beginners should look for a lightweight racket weighing 260-280 grams (9.2-9.9 oz) with a large head size of 100-110 square inches. A larger head provides a bigger sweet spot, making it more forgiving on off-center hits. Pre-strung rackets from brands like Wilson, Head, or Babolat in the $50-$120 range are excellent starting points.',
+  },
+  {
+    q: 'How often should you restring a tennis racket?',
+    a: 'As a general rule, you should restring your racket every 40-50 hours of play, or at least twice a year even if you play infrequently. Strings lose tension and elasticity over time, which reduces control and power. Frequent players (3+ times per week) may need to restring monthly. A common guideline is to restring as many times per year as you play per week.',
+  },
+  {
+    q: 'What are the best tennis shoes for clay courts?',
+    a: 'The best clay court tennis shoes feature a herringbone outsole pattern, which provides excellent traction on the loose surface while still allowing controlled sliding. Look for shoes with durable outsoles designed to resist the abrasive clay surface. Top options include models from Nike, Asics, and Adidas specifically designed for clay, often labeled with "Clay" or "CLY" in the model name.',
+  },
+];
+
+const gearFaqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: gearFaqItems.map(item => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.a,
+    },
+  })),
+};
 ---
 
 <BaseLayout
@@ -73,6 +102,7 @@ const itemListJsonLd = gearArticles.length > 0 ? {
   ogImage="/og/gear.png"
 >
   {itemListJsonLd && <script type="application/ld+json" set:html={JSON.stringify(itemListJsonLd)} />}
+  <script type="application/ld+json" set:html={JSON.stringify(gearFaqJsonLd)} />
   <div class="gear-page">
     <div class="container">
       <nav class="breadcrumbs"><a href="/">Home</a> <span class="sep">/</span> <span class="current">Gear</span></nav>
@@ -115,6 +145,19 @@ const itemListJsonLd = gearArticles.length > 0 ? {
           <p>Gear guides are coming soon. Check back shortly!</p>
         </div>
       )}
+
+      <!-- FAQ Section -->
+      <section class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-list">
+          {gearFaqItems.map(item => (
+            <details class="faq-item">
+              <summary class="faq-question">{item.q}</summary>
+              <p class="faq-answer">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
 
       <section class="related-section">
         <h2>Pro Player Equipment</h2>
@@ -302,6 +345,60 @@ const itemListJsonLd = gearArticles.length > 0 ? {
     background: var(--gray-50);
     border-radius: var(--radius);
     margin-bottom: 48px;
+  }
+
+  /* FAQ Section */
+  .faq-section {
+    margin-bottom: 48px;
+    padding-top: 16px;
+  }
+  .faq-section h2 {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0 0 24px;
+  }
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .faq-item {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 16px 20px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--gray-50);
+    transition: background 0.15s;
+  }
+  .faq-question::-webkit-details-marker { display: none; }
+  .faq-question::after {
+    content: '+';
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--gray-400);
+    flex-shrink: 0;
+  }
+  .faq-item[open] .faq-question::after { content: '-'; }
+  .faq-question:hover { background: var(--gray-100); }
+  .faq-answer {
+    padding: 16px 20px;
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--gray-600);
+    border-top: 1px solid var(--gray-200);
   }
 
   .related-section {

@@ -26,6 +26,46 @@ const rankingsJsonLd = {
   })),
 };
 
+// FAQ data for rankings page
+const atpNo1 = atpRankings[0]?.players ? `${atpRankings[0].players.first_name} ${atpRankings[0].players.last_name}` : 'the current leader';
+const wtaNo1 = wtaRankings[0]?.players ? `${wtaRankings[0].players.first_name} ${wtaRankings[0].players.last_name}` : 'the current leader';
+
+const rankingsFaqItems = [
+  {
+    q: 'How are ATP rankings calculated?',
+    a: 'ATP rankings are based on a points system that counts a player\'s best 19 tournament results over a rolling 52-week period. Points are awarded based on how far a player advances in each tournament, with Grand Slams and Masters 1000 events offering the most points.',
+  },
+  {
+    q: 'How are WTA rankings calculated?',
+    a: 'WTA rankings use a points system based on a player\'s best 16 tournament results over a rolling 52-week period. Grand Slams and WTA 1000 events carry the highest point values, rewarding deep runs in prestigious tournaments.',
+  },
+  {
+    q: 'How often are tennis rankings updated?',
+    a: 'Both ATP and WTA rankings are updated every Monday following the conclusion of each tournament week. Points from tournaments played exactly 52 weeks ago drop off, while new points from the most recent week are added.',
+  },
+  {
+    q: `Who is the current world No. 1 in men's tennis?`,
+    a: `As of ${rankingDate}, ${atpNo1} holds the ATP world No. 1 ranking. The No. 1 ranking is determined by accumulating the most ranking points over a 52-week period.`,
+  },
+  {
+    q: `Who is the current world No. 1 in women's tennis?`,
+    a: `As of ${rankingDate}, ${wtaNo1} holds the WTA world No. 1 ranking. The No. 1 ranking is based on the highest total of ranking points accumulated over the past 52 weeks.`,
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: rankingsFaqItems.map(item => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.a,
+    },
+  })),
+};
+
 // ========== SIDEBAR DATA ==========
 
 // News and videos are loaded client-side via dynamic-content.js
@@ -67,6 +107,7 @@ const sbCatLabels: Record<string, string> = {
   ogImage="/og/rankings.png"
   jsonLd={rankingsJsonLd}
 >
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
   <div class="rankings-page">
     <div class="container">
       <nav class="breadcrumbs"><a href="/">Home</a> <span class="sep">/</span> <span class="current">Rankings</span></nav>
@@ -218,6 +259,20 @@ const sbCatLabels: Record<string, string> = {
         </aside>
 
       </div>
+
+      <!-- FAQ Section -->
+      <section class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-list">
+          {rankingsFaqItems.map(item => (
+            <details class="faq-item">
+              <summary class="faq-question">{item.q}</summary>
+              <p class="faq-answer">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
     </div>
   </div>
 
@@ -589,6 +644,62 @@ const sbCatLabels: Record<string, string> = {
   }
   .sb-articles__item:hover .sb-articles__link {
     color: var(--court-green);
+  }
+
+  /* ===== FAQ SECTION ===== */
+  .faq-section {
+    max-width: 1200px;
+    margin: 48px auto 0;
+    padding-top: 48px;
+    border-top: 1px solid var(--gray-200);
+  }
+  .faq-section h2 {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0 0 24px;
+  }
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .faq-item {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 16px 20px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--gray-50);
+    transition: background 0.15s;
+  }
+  .faq-question::-webkit-details-marker { display: none; }
+  .faq-question::after {
+    content: '+';
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--gray-400);
+    flex-shrink: 0;
+  }
+  .faq-item[open] .faq-question::after { content: '-'; }
+  .faq-question:hover { background: var(--gray-100); }
+  .faq-answer {
+    padding: 16px 20px;
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--gray-600);
+    border-top: 1px solid var(--gray-200);
   }
 
   /* ===== RESPONSIVE ===== */
