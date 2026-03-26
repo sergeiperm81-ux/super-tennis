@@ -77,7 +77,7 @@ const categoryOgImages: Record<string, string> = {
 const ogImage = categoryOgImages[category || ''] || '/og/default.png';
 ---
 
-<BaseLayout title={title} description={description} ogImage={ogImage}>
+<BaseLayout title={title} description={description} ogImage={ogImage} publishedTime={publishedDate}>
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
 

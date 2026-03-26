@@ -53,6 +53,18 @@ const iconMap: Record<string, string> = {
   'natural-gut-vs-synthetic-strings': '🧵',
   'tennis-apparel-brands-2026': '👕',
 };
+
+// ItemList JSON-LD for first 10 articles
+const itemListJsonLd = gearArticles.length > 0 ? {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  itemListElement: gearArticles.slice(0, 10).map((article, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: article.title,
+    url: `https://super.tennis/gear/${article.slug}/`,
+  })),
+} : null;
 ---
 
 <BaseLayout
@@ -60,6 +72,7 @@ const iconMap: Record<string, string> = {
   description="Expert tennis gear reviews and guides. Find the best rackets, shoes, strings, and equipment for your game. Pro player setups and recommendations."
   ogImage="/og/gear.png"
 >
+  {itemListJsonLd && <script type="application/ld+json" set:html={JSON.stringify(itemListJsonLd)} />}
   <div class="gear-page">
     <div class="container">
       <nav class="breadcrumbs"><a href="/">Home</a> <span class="sep">/</span> <span class="current">Gear</span></nav>

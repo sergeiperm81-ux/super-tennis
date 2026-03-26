@@ -1,0 +1,213 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'SUPER.TENNIS',
+  url: 'https://super.tennis',
+  description: 'The best of tennis for everyone — records, rivalries, gear, lifestyle. Everything super from the world of tennis, even if you\'ve never held a racket.',
+  sameAs: [
+    'https://www.youtube.com/@SuperTennisNews',
+    'https://www.tiktok.com/@supertennisnews',
+  ],
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'About' },
+  ],
+};
+
+const sections = [
+  { icon: '🎾', title: 'Players', desc: '200+ detailed profiles with stats, net worth, gear, and career highlights', href: '/players/' },
+  { icon: '📊', title: 'Rankings', desc: 'Current ATP and WTA rankings, updated regularly', href: '/rankings/' },
+  { icon: '🏆', title: 'Records', desc: 'All-time records, leaderboards, and historic achievements', href: '/records/' },
+  { icon: '⚔️', title: 'Head to Head', desc: 'Classic rivalries and player comparisons', href: '/vs/' },
+  { icon: '🏟️', title: 'Tournaments', desc: 'Grand Slam and major tournament guides', href: '/tournaments/' },
+  { icon: '📅', title: 'Calendar', desc: '2026 ATP and WTA tour schedule', href: '/calendar/' },
+  { icon: '🎒', title: 'Gear', desc: 'Racket, shoe, and equipment reviews and guides', href: '/gear/' },
+  { icon: '💡', title: 'Lifestyle', desc: 'Net worth, culture, rivalries, and stories beyond the court', href: '/lifestyle/' },
+  { icon: '📰', title: 'News', desc: 'Latest tennis news, updated daily', href: '/news/' },
+];
+---
+
+<BaseLayout
+  title="About SUPER.TENNIS — Tennis for Everyone"
+  description="The best of tennis for everyone — records, rivalries, gear, lifestyle. Everything super from the world of tennis, even if you've never held a racket."
+  jsonLd={jsonLd}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <div class="about-page">
+    <nav class="breadcrumbs"><a href="/">Home</a> <span class="sep">/</span> <span class="current">About</span></nav>
+
+    <header class="page-hero">
+      <h1>About SUPER.TENNIS</h1>
+      <p class="subtitle">Tennis for everyone — even if you've never held a racket</p>
+    </header>
+
+    <section class="about-section">
+      <h2>Our Mission</h2>
+      <p>
+        SUPER.TENNIS is built for everyone who finds tennis fascinating — whether you follow every Grand Slam
+        or just discovered the sport. We break down the records, the rivalries, the gear, and the lifestyle
+        of professional tennis into content that's accessible, engaging, and genuinely useful.
+      </p>
+      <p>
+        No jargon walls. No insider gatekeeping. Just the best of tennis, explained clearly.
+      </p>
+    </section>
+
+    <section class="about-section">
+      <h2>What We Cover</h2>
+      <div class="coverage-grid">
+        {sections.map(s => (
+          <a href={s.href} class="coverage-card">
+            <span class="coverage-icon">{s.icon}</span>
+            <div>
+              <h3>{s.title}</h3>
+              <p>{s.desc}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="about-section">
+      <h2>Our Data</h2>
+      <p>
+        Player statistics, rankings, and career records are sourced from publicly available ATP, WTA,
+        and ITF data, along with established tennis databases. We update rankings and player profiles
+        regularly to keep information current.
+      </p>
+      <p>
+        SUPER.TENNIS is not affiliated with the ATP, WTA, or ITF. All trademarks belong to their
+        respective owners.
+      </p>
+    </section>
+
+    <section class="about-section">
+      <h2>Get in Touch</h2>
+      <p>
+        Have a question, suggestion, or correction? We'd love to hear from you.
+        Reach us at <a href="mailto:contact@super.tennis">contact@super.tennis</a>
+        or visit our <a href="/contact/">contact page</a>.
+      </p>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .about-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  .breadcrumbs {
+    padding: 20px 0;
+    font-size: 0.82rem;
+    color: var(--gray-500);
+  }
+  .breadcrumbs a { color: var(--gray-600); transition: color 0.2s; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .page-hero {
+    padding: 48px 0 32px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 36px;
+  }
+  .page-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.4rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0;
+  }
+  .subtitle {
+    color: var(--gray-600);
+    font-size: 1.1rem;
+    margin: 8px 0 0;
+  }
+
+  .about-section {
+    margin-bottom: 40px;
+  }
+  .about-section h2 {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--gray-200);
+  }
+  .about-section p {
+    color: var(--gray-700);
+    font-size: 1.02rem;
+    line-height: 1.8;
+    margin: 0 0 16px;
+  }
+  .about-section a {
+    color: var(--court-green);
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .about-section a:hover { text-decoration: underline; }
+
+  .coverage-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .coverage-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: var(--gray-50);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-200);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s;
+  }
+  .coverage-card:hover {
+    border-color: var(--court-green);
+    box-shadow: var(--shadow);
+    transform: translateY(-1px);
+  }
+  .coverage-icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .coverage-card h3 {
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    font-weight: 700;
+    margin: 0 0 4px;
+    color: var(--gray-900);
+  }
+  .coverage-card p {
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--gray-600);
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .page-hero h1 { font-size: 1.8rem; }
+    .coverage-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .coverage-grid { grid-template-columns: 1fr; }
+  }
+</style>
