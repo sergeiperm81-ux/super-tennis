@@ -1,4 +1,5 @@
 ---
+import Newsletter from './Newsletter.astro';
 const currentYear = new Date().getFullYear();
 
 const sections = [
@@ -60,6 +61,7 @@ const sections = [
         </a>
         <!-- Instagram — hidden until account is created -->
       </div>
+      <Newsletter />
     </div>
     <div class="footer__nav">
       {sections.map(section => (

@@ -1,0 +1,141 @@
+---
+/**
+ * Newsletter signup form powered by Buttondown.
+ * Embed anywhere — footer, sidebar, dedicated page.
+ */
+interface Props {
+  variant?: 'inline' | 'card';
+}
+const { variant = 'inline' } = Astro.props;
+const BUTTONDOWN_USER = 'sergeiperm81';
+const action = `https://buttondown.com/api/emails/embed-subscribe/${BUTTONDOWN_USER}`;
+---
+
+<div class:list={['newsletter', `newsletter--${variant}`]}>
+  {variant === 'card' && (
+    <div class="newsletter__icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28">
+        <path d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+      </svg>
+    </div>
+  )}
+  <h4 class="newsletter__title">Get the Weekly Serve</h4>
+  <p class="newsletter__desc">Rankings, stories & gear reviews — delivered every Friday.</p>
+  <form
+    action={action}
+    method="post"
+    class="newsletter__form"
+    target="_blank"
+  >
+    <input
+      type="email"
+      name="email"
+      placeholder="your@email.com"
+      required
+      aria-label="Email address"
+      class="newsletter__input"
+    />
+    <button type="submit" class="newsletter__btn">Subscribe</button>
+  </form>
+  <p class="newsletter__fine">Free. No spam. Unsubscribe anytime.</p>
+</div>
+
+<style>
+  .newsletter { text-align: center; }
+
+  .newsletter--card {
+    background: var(--gray-800, #1a1a1a);
+    border: 1px solid var(--gray-700, #333);
+    border-radius: 16px;
+    padding: 32px 28px;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  .newsletter--inline {
+    padding: 24px 0 0;
+    border-top: 1px solid var(--gray-800, #333);
+    margin-top: 12px;
+  }
+
+  .newsletter__icon {
+    color: var(--ball-yellow, #ccff00);
+    margin-bottom: 12px;
+  }
+
+  .newsletter__title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--white, #fff);
+    margin-bottom: 6px;
+  }
+
+  .newsletter__desc {
+    font-size: 0.82rem;
+    color: var(--gray-400, #999);
+    margin-bottom: 16px;
+    line-height: 1.4;
+  }
+
+  .newsletter__form {
+    display: flex;
+    gap: 8px;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+
+  .newsletter__input {
+    flex: 1;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--gray-700, #333);
+    background: var(--gray-900, #111);
+    color: var(--white, #fff);
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 0.2s;
+    min-width: 0;
+  }
+
+  .newsletter__input:focus {
+    border-color: var(--ball-yellow, #ccff00);
+  }
+
+  .newsletter__input::placeholder {
+    color: var(--gray-600, #666);
+  }
+
+  .newsletter__btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    background: var(--ball-yellow, #ccff00);
+    color: var(--gray-900, #111);
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .newsletter__btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .newsletter__fine {
+    font-size: 0.7rem;
+    color: var(--gray-600, #666);
+    margin-top: 10px;
+  }
+
+  @media (max-width: 480px) {
+    .newsletter__form {
+      flex-direction: column;
+    }
+    .newsletter__btn {
+      width: 100%;
+    }
+  }
+</style>

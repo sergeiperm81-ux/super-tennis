@@ -5,8 +5,20 @@ interface Props {
 }
 const { videoId, title = '' } = Astro.props;
 const thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+const videoSchema = title ? JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'VideoObject',
+  name: title,
+  thumbnailUrl,
+  embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}`,
+  contentUrl: videoUrl,
+  uploadDate: new Date().toISOString().split('T')[0],
+  publisher: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+}) : '';
 ---
 
+{videoSchema && <script type="application/ld+json" set:html={videoSchema} />}
 <div class="lite-yt" data-video-id={videoId}>
   <img src={thumbnailUrl} alt={title} loading="lazy" onerror="this.src='/images/news/court-01.jpg'" />
   <button class="lite-yt__play" aria-label={`Play: ${title}`}>
