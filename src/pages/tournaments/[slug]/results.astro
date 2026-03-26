@@ -1,0 +1,339 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ArticleFooter from '../../../components/ArticleFooter.astro';
+import { grandSlams } from '../../../data/grand-slam-champions';
+import { addInterlinks } from '../../../lib/interlinks';
+
+export function getStaticPaths() {
+  return grandSlams.map(gs => ({
+    params: { slug: gs.slug },
+    props: { tournament: gs },
+  }));
+}
+
+const { tournament } = Astro.props;
+const { name, city, country, surface, months, established, emoji, photo, champions } = tournament;
+
+const title = `${name} Winners & Results — All Champions`;
+const description = `Complete list of ${name} champions. Every men's and women's singles winner from ${champions[champions.length - 1]?.year} to ${champions[0]?.year}. ${city}, ${country}.`;
+
+// Count title leaders for this tournament
+const mensTitleCount = new Map<string, number>();
+const womensTitleCount = new Map<string, number>();
+for (const c of champions) {
+  mensTitleCount.set(c.menssingles, (mensTitleCount.get(c.menssingles) || 0) + 1);
+  womensTitleCount.set(c.womenssingles, (womensTitleCount.get(c.womenssingles) || 0) + 1);
+}
+const mensLeaders = [...mensTitleCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+const womensLeaders = [...womensTitleCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+const surfaceClass = surface.toLowerCase().includes('clay') ? 'clay' : surface.toLowerCase().includes('grass') ? 'grass' : 'hard';
+
+// FAQ data
+const faqItems = [
+  { q: `Who won the ${name} in ${champions[0]?.year}?`, a: `The ${champions[0]?.year} ${name} men's singles was won by ${champions[0]?.menssingles}. The women's singles title went to ${champions[0]?.womenssingles}.` },
+  { q: `Who has won the most ${name} titles?`, a: `In men's singles, ${mensLeaders[0]?.[0]} leads with ${mensLeaders[0]?.[1]} title${mensLeaders[0]?.[1] > 1 ? 's' : ''} (since ${champions[champions.length-1]?.year}). In women's singles, ${womensLeaders[0]?.[0]} leads with ${womensLeaders[0]?.[1]} title${womensLeaders[0]?.[1] > 1 ? 's' : ''}.` },
+  { q: `What surface is the ${name} played on?`, a: `The ${name} is played on ${surface} in ${city}, ${country}. The tournament has been held since ${established}.` },
+  { q: `When is the ${name}?`, a: `The ${name} is typically held in ${months} each year at ${city}, ${country}.` },
+];
+
+const faqSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqItems.map(f => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+});
+
+const breadcrumbSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Tournaments', item: 'https://super.tennis/tournaments/' },
+    { '@type': 'ListItem', position: 3, name: `${name} Results` },
+  ],
+});
+
+const relatedLinks = [
+  { href: `/tournaments/${tournament.slug}/`, label: `${name} Guide` },
+  { href: '/tournaments/', label: 'All Tournaments' },
+  { href: '/rankings/', label: 'Current Rankings' },
+  { href: '/records/', label: 'Tennis Records' },
+];
+---
+
+<BaseLayout {title} {description} ogImage="/og/tournaments.png">
+  <script type="application/ld+json" set:html={faqSchema} />
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <div class="results-page">
+    <div class="container">
+      <nav class="breadcrumbs">
+        <a href="/">Home</a> <span class="sep">/</span>
+        <a href="/tournaments/">Tournaments</a> <span class="sep">/</span>
+        <span class="current">{name} Results</span>
+      </nav>
+
+      <header class={`page-hero surface-${surfaceClass}`}>
+        <span class="emoji">{emoji}</span>
+        <h1>{name} — Winners & Results</h1>
+        <p class="subtitle">Every champion from {champions[champions.length-1]?.year} to {champions[0]?.year} · {surface} · {city}, {country}</p>
+      </header>
+
+      {/* Answer box for featured snippet */}
+      <div class="answer-box">
+        <div class="answer-question">Who won the {name} in {champions[0]?.year}?</div>
+        <div class="answer-text">
+          <strong>Men's: {champions[0]?.menssingles}</strong> · <strong>Women's: {champions[0]?.womenssingles}</strong>
+        </div>
+      </div>
+
+      {/* Title leaders */}
+      <section class="leaders-section">
+        <h2>Title Leaders (Since {champions[champions.length-1]?.year})</h2>
+        <div class="leaders-grid">
+          <div class="leaders-card">
+            <h3>Men's Singles</h3>
+            <ol class="leaders-list">
+              {mensLeaders.map(([player, count]) => (
+                <li>
+                  <span class="leader-name" set:html={addInterlinks(player)} />
+                  <span class="leader-count">{count} title{count > 1 ? 's' : ''}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div class="leaders-card">
+            <h3>Women's Singles</h3>
+            <ol class="leaders-list">
+              {womensLeaders.map(([player, count]) => (
+                <li>
+                  <span class="leader-name" set:html={addInterlinks(player)} />
+                  <span class="leader-count">{count} title{count > 1 ? 's' : ''}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      {/* Full results table */}
+      <section class="results-section">
+        <h2>Complete Results</h2>
+        <div class="table-wrap">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Men's Singles</th>
+                <th>Women's Singles</th>
+              </tr>
+            </thead>
+            <tbody>
+              {champions.map(c => (
+                <tr>
+                  <td class="year-cell">{c.year}</td>
+                  <td set:html={addInterlinks(c.menssingles)} />
+                  <td set:html={addInterlinks(c.womenssingles)} />
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+        {faqItems.map(f => (
+          <details class="faq-item">
+            <summary class="faq-question">{f.q}</summary>
+            <p class="faq-answer">{f.a}</p>
+          </details>
+        ))}
+      </section>
+
+      <ArticleFooter links={relatedLinks} />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .results-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+  .page-hero {
+    padding: 40px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 32px;
+    text-align: center;
+  }
+  .page-hero.surface-clay { border-color: #d97706; }
+  .page-hero.surface-grass { border-color: #16a34a; }
+  .page-hero.surface-hard { border-color: #2563eb; }
+  .emoji { font-size: 2.4rem; display: block; margin-bottom: 12px; }
+  .page-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0;
+  }
+  .subtitle {
+    color: var(--gray-500);
+    font-size: 1rem;
+    margin: 8px 0 0;
+  }
+
+  /* Answer Box */
+  .answer-box {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 2px solid #16a34a;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+  }
+  .answer-question {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--gray-900);
+    margin-bottom: 8px;
+  }
+  .answer-text {
+    font-size: 1.05rem;
+    color: var(--gray-700);
+    line-height: 1.5;
+  }
+
+  /* Leaders */
+  .leaders-section { margin-bottom: 40px; }
+  .leaders-section h2 {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    margin: 0 0 16px;
+    color: var(--gray-800);
+  }
+  .leaders-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .leaders-card {
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .leaders-card h3 {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-500);
+    margin: 0 0 12px;
+  }
+  .leaders-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: leader;
+  }
+  .leaders-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--gray-200);
+    counter-increment: leader;
+  }
+  .leaders-list li::before {
+    content: counter(leader) ".";
+    font-weight: 700;
+    color: var(--gray-400);
+    margin-right: 10px;
+    min-width: 20px;
+  }
+  .leader-name { flex: 1; font-weight: 600; }
+  .leader-count {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+    white-space: nowrap;
+  }
+
+  /* Results table */
+  .results-section h2 {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    margin: 0 0 16px;
+    color: var(--gray-800);
+  }
+  .table-wrap { overflow-x: auto; margin-bottom: 40px; }
+  .results-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .results-table th {
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-500);
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 2px solid var(--gray-200);
+  }
+  .results-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 0.92rem;
+  }
+  .results-table tbody tr:hover { background: var(--gray-50); }
+  .year-cell { font-weight: 700; color: var(--gray-900); white-space: nowrap; }
+
+  /* FAQ */
+  .faq-section {
+    margin-top: 48px;
+    border-top: 1px solid var(--gray-200);
+    padding-top: 32px;
+  }
+  .faq-section h2 {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    margin: 0 0 20px;
+    color: var(--gray-800);
+  }
+  .faq-item {
+    margin-bottom: 16px;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 16px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    color: var(--gray-900);
+  }
+  .faq-question:hover { background: var(--gray-50); }
+  .faq-answer {
+    padding: 0 16px 16px;
+    color: var(--gray-600);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  @media (max-width: 640px) {
+    .page-hero h1 { font-size: 1.6rem; }
+    .leaders-grid { grid-template-columns: 1fr; }
+    .results-table { font-size: 0.85rem; }
+    .results-table td, .results-table th { padding: 8px 10px; }
+  }
+</style>

@@ -1,0 +1,314 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getLatestRankings } from '../lib/supabase';
+import { grandSlams, allTimeMensLeaders, allTimeWomensLeaders } from '../data/grand-slam-champions';
+
+// Get current #1 players for dynamic FAQ answers
+let atpNo1 = 'Jannik Sinner';
+let wtaNo1 = 'Aryna Sabalenka';
+try {
+  const { rankings: atpR } = await getLatestRankings('atp');
+  const { rankings: wtaR } = await getLatestRankings('wta');
+  if (atpR.length > 0) atpNo1 = atpR[0].full_name || atpNo1;
+  if (wtaR.length > 0) wtaNo1 = wtaR[0].full_name || wtaNo1;
+} catch {}
+
+// Organize FAQ by category
+const faqCategories = [
+  {
+    id: 'rankings',
+    title: 'Rankings & Scoring',
+    icon: '📊',
+    questions: [
+      { q: 'How are ATP rankings calculated?', a: `ATP rankings are based on a player's best 19 results over a rolling 52-week period. Grand Slams award 2,000 points to the winner, Masters 1000 events award 1,000 points, and ATP 500/250 tournaments award proportionally fewer points.` },
+      { q: 'How are WTA rankings calculated?', a: `WTA rankings use a similar 52-week rolling system. Players' best 16 results count toward their ranking. Grand Slams award 2,000 points, WTA 1000 events award 1,000 points, and smaller tournaments contribute fewer points.` },
+      { q: 'How often are tennis rankings updated?', a: 'ATP and WTA rankings are updated every Monday following the conclusion of the previous week\'s tournaments. Points from the same tournament the previous year drop off when the current year\'s edition concludes.' },
+      { q: 'Who is the current world No. 1 in men\'s tennis?', a: `The current ATP world No. 1 is ${atpNo1}. Rankings are updated weekly on super.tennis.` },
+      { q: 'Who is the current world No. 1 in women\'s tennis?', a: `The current WTA world No. 1 is ${wtaNo1}. Check the full rankings at super.tennis/rankings.` },
+      { q: 'What is the difference between ATP and WTA rankings?', a: 'ATP ranks men\'s professional tennis players while WTA ranks women\'s. Both use a 52-week rolling points system based on tournament results, but differ in the number of counting results (ATP: best 19, WTA: best 16).' },
+    ],
+  },
+  {
+    id: 'grand-slams',
+    title: 'Grand Slam Tournaments',
+    icon: '🏆',
+    questions: [
+      { q: 'What are the four Grand Slam tournaments?', a: 'The four Grand Slam tournaments are the Australian Open (January, Melbourne), Roland Garros/French Open (May-June, Paris), Wimbledon (June-July, London), and the US Open (August-September, New York). They are the most prestigious events in tennis.' },
+      { q: 'Who has won the most Grand Slam titles in men\'s tennis?', a: `${allTimeMensLeaders[0].name} holds the record with ${allTimeMensLeaders[0].titles} Grand Slam titles, followed by ${allTimeMensLeaders[1].name} (${allTimeMensLeaders[1].titles}) and ${allTimeMensLeaders[2].name} (${allTimeMensLeaders[2].titles}).` },
+      { q: 'Who has won the most Grand Slam titles in women\'s tennis?', a: `${allTimeWomensLeaders[0].name} holds the all-time record with ${allTimeWomensLeaders[0].titles} Grand Slam titles, followed by ${allTimeWomensLeaders[1].name} (${allTimeWomensLeaders[1].titles}) and ${allTimeWomensLeaders[2].name} (${allTimeWomensLeaders[2].titles}).` },
+      { q: 'What is a Calendar Grand Slam?', a: 'A Calendar Grand Slam is winning all four Grand Slam tournaments in the same calendar year. In men\'s singles, only Don Budge (1938) and Rod Laver (1962, 1969) have achieved it. In women\'s, Maureen Connolly (1953), Margaret Court (1970), and Steffi Graf (1988) hold this distinction.' },
+      { q: 'What surfaces are Grand Slams played on?', a: 'Each Grand Slam uses a different surface: Australian Open on hard court (GreenSet), Roland Garros on clay, Wimbledon on grass, and US Open on hard court (DecoTurf). This variety tests players\' versatility.' },
+      { q: 'How many sets are played in Grand Slam matches?', a: 'Men\'s Grand Slam singles matches are best-of-five sets, while women\'s matches are best-of-three sets. All four Grand Slams now use a 10-point tiebreak in the final set at 6-6.' },
+    ],
+  },
+  {
+    id: 'rules',
+    title: 'Rules & Scoring',
+    icon: '📏',
+    questions: [
+      { q: 'How does tennis scoring work?', a: 'Tennis uses a unique scoring system: points go 0 (love), 15, 30, 40, game. You must win by 2 points — at 40-40 (deuce), a player must win two consecutive points. Six games win a set (with a 2-game lead or tiebreak at 6-6), and matches are best-of-three or best-of-five sets.' },
+      { q: 'What is a tiebreak in tennis?', a: 'A tiebreak is played when a set reaches 6-6. Players alternate serves and the first to reach 7 points (with a 2-point lead) wins the tiebreak and the set. Grand Slams now use a 10-point "super tiebreak" in the deciding set.' },
+      { q: 'What is an ace in tennis?', a: 'An ace is a serve that lands in the service box and is not touched by the receiver. It results in an automatic point for the server. Ivo Karlovic holds the career record with over 13,700 aces.' },
+      { q: 'What is a double fault?', a: 'A double fault occurs when a player fails to land either their first or second serve in the correct service box. It results in losing the point. Players get two serve attempts per point.' },
+      { q: 'What is the difference between a let and a fault?', a: 'A let occurs when a serve clips the net cord but still lands in the correct service box — the serve is replayed. A fault is when the serve misses the service box entirely. Two consecutive faults result in a double fault and loss of point.' },
+    ],
+  },
+  {
+    id: 'gear',
+    title: 'Gear & Equipment',
+    icon: '🎾',
+    questions: [
+      { q: 'What tennis racket should a beginner use?', a: 'Beginners should look for a racket with a larger head size (100-110 sq in), lighter weight (270-285g), and pre-strung setup. Popular choices include the Wilson Clash, Babolat Pure Drive Lite, and Head Ti.S6. Avoid pro-level heavy frames initially.' },
+      { q: 'How often should you restring a tennis racket?', a: 'A general rule is to restring as many times per year as you play per week. If you play 3 times a week, restring about 3 times per year. Competitive players may restring every few weeks. Signs you need new strings: loss of tension, fraying, or noticeable power loss.' },
+      { q: 'What are the best tennis shoes for clay courts?', a: 'Clay court shoes need a herringbone tread pattern for grip on loose surface, durable outsoles to resist abrasion, and a snug fit. Top options include the Asics Gel-Resolution, Nike Air Zoom Vapor, and adidas Barricade in their clay-court versions.' },
+      { q: 'What is the difference between polyester and natural gut strings?', a: 'Polyester strings offer more control and spin potential but are stiffer. Natural gut provides superior feel, power, and comfort but is more expensive and less durable. Many pros use a hybrid setup combining both.' },
+    ],
+  },
+  {
+    id: 'watching',
+    title: 'Watching Tennis',
+    icon: '📺',
+    questions: [
+      { q: 'Where can I watch tennis on TV?', a: 'In the US, ESPN and Tennis Channel cover major tournaments. UK fans can watch on Sky Sports. Eurosport covers most events in Europe. Streaming options include ESPN+, Tennis Channel Plus, and Amazon Prime (UK Wimbledon coverage).' },
+      { q: 'What is the ATP Tour schedule?', a: 'The ATP season runs from January to November, starting with the Australian Open and culminating in the ATP Finals. It includes 4 Grand Slams, 9 Masters 1000 events, multiple ATP 500 and 250 tournaments, plus the Davis Cup.' },
+      { q: 'What time do tennis matches start?', a: 'Start times vary by tournament. Grand Slams typically begin at 11:00 AM local time, with night sessions starting around 7:00 PM. Check the tournament schedule page on super.tennis/calendar for specific start times.' },
+    ],
+  },
+];
+
+// Flatten all FAQ for JSON-LD
+const allFaqs = faqCategories.flatMap(cat => cat.questions);
+
+const faqSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: allFaqs.map(f => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+});
+
+const breadcrumbSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'FAQ' },
+  ],
+});
+
+const title = 'Tennis FAQ — Rules, Rankings, Grand Slams & Gear';
+const description = 'Answers to the most common tennis questions. Learn about rankings, Grand Slam tournaments, scoring rules, gear recommendations, and where to watch tennis.';
+---
+
+<BaseLayout {title} {description} ogImage="/og/default.png">
+  <script type="application/ld+json" set:html={faqSchema} />
+  <script type="application/ld+json" set:html={breadcrumbSchema} />
+
+  <div class="faq-page">
+    <div class="container">
+      <nav class="breadcrumbs"><a href="/">Home</a> <span class="sep">/</span> <span class="current">FAQ</span></nav>
+
+      <header class="page-hero">
+        <h1>Tennis FAQ</h1>
+        <p class="subtitle">Answers to {allFaqs.length} frequently asked questions about tennis</p>
+      </header>
+
+      {/* Jump navigation */}
+      <nav class="faq-nav">
+        {faqCategories.map(cat => (
+          <a href={`#${cat.id}`} class="faq-nav-link">
+            <span class="faq-nav-icon">{cat.icon}</span>
+            {cat.title}
+          </a>
+        ))}
+      </nav>
+
+      {faqCategories.map(cat => (
+        <section id={cat.id} class="faq-category">
+          <h2><span class="cat-icon">{cat.icon}</span> {cat.title}</h2>
+          {cat.questions.map(faq => (
+            <details class="faq-item" open>
+              <summary class="faq-question">{faq.q}</summary>
+              <p class="faq-answer">{faq.a}</p>
+            </details>
+          ))}
+        </section>
+      ))}
+
+      <section class="related-section">
+        <h2>Explore More</h2>
+        <div class="related-grid">
+          <a href="/rankings/" class="related-card">
+            <h3>Rankings</h3>
+            <p>Current ATP & WTA rankings</p>
+          </a>
+          <a href="/tournaments/" class="related-card">
+            <h3>Tournaments</h3>
+            <p>Grand Slam & Masters guides</p>
+          </a>
+          <a href="/gear/" class="related-card">
+            <h3>Gear</h3>
+            <p>Racket & equipment reviews</p>
+          </a>
+          <a href="/players/" class="related-card">
+            <h3>Players</h3>
+            <p>Profiles & career stats</p>
+          </a>
+        </div>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .faq-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+  .page-hero {
+    padding: 48px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 32px;
+  }
+  .page-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.4rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0;
+  }
+  .subtitle {
+    color: var(--gray-500);
+    font-size: 1rem;
+    margin: 8px 0 0;
+  }
+
+  /* Jump nav */
+  .faq-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 36px;
+  }
+  .faq-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 24px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .faq-nav-link:hover {
+    background: #f0fdf4;
+    border-color: var(--court-green);
+    color: var(--gray-900);
+  }
+  .faq-nav-icon { font-size: 1rem; }
+
+  /* Categories */
+  .faq-category {
+    margin-bottom: 40px;
+    scroll-margin-top: 80px;
+  }
+  .faq-category h2 {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    color: var(--gray-800);
+    margin: 0 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cat-icon { font-size: 1.3rem; }
+
+  /* FAQ items */
+  .faq-item {
+    margin-bottom: 8px;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .faq-question {
+    padding: 16px 20px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    color: var(--gray-900);
+    line-height: 1.4;
+    list-style: none;
+  }
+  .faq-question::-webkit-details-marker { display: none; }
+  .faq-question::before {
+    content: '+';
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--court-green);
+    margin-right: 12px;
+  }
+  details[open] .faq-question::before { content: '−'; }
+  .faq-question:hover { background: var(--gray-50); }
+  .faq-answer {
+    padding: 0 20px 16px 42px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    font-size: 0.92rem;
+    margin: 0;
+  }
+
+  /* Related */
+  .related-section {
+    border-top: 1px solid var(--gray-200);
+    padding-top: 32px;
+    margin-top: 20px;
+  }
+  .related-section h2 {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    text-transform: uppercase;
+    color: var(--gray-800);
+    margin: 0 0 16px;
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .related-card {
+    padding: 20px;
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s;
+  }
+  .related-card:hover { background: #f0fdf4; }
+  .related-card h3 {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    margin: 0 0 4px;
+  }
+  .related-card p {
+    color: var(--gray-600);
+    font-size: 0.78rem;
+    margin: 0;
+  }
+
+  @media (max-width: 640px) {
+    .page-hero h1 { font-size: 1.8rem; }
+    .faq-nav { gap: 6px; }
+    .related-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>

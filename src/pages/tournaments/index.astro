@@ -121,7 +121,10 @@ const sortedOthers = [...otherTournaments].sort((a, b) => {
                     <span class="gs-icon">{getIcon(article.slug)}</span>
                     <h3>{article.title}</h3>
                     <p>{stripMarkdown(article.excerpt || article.meta_description || '')}</p>
-                    <span class="read-more">Read Guide →</span>
+                    <div class="gs-actions">
+                      <span class="read-more">Read Guide →</span>
+                      <a href={`/tournaments/${article.slug}/results/`} class="results-link" onclick="event.stopPropagation()">Results & Winners →</a>
+                    </div>
                   </div>
                 </a>
               );
@@ -373,6 +376,21 @@ const sortedOthers = [...otherTournaments].sort((a, b) => {
     font-size: 0.85rem;
     margin-top: 16px;
   }
+  .gs-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-top: 16px;
+  }
+  .gs-actions .read-more { margin-top: 0; }
+  .results-link {
+    color: var(--gray-500);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .results-link:hover { color: var(--court-green); }
 
   .empty-state {
     text-align: center;
