@@ -26,25 +26,37 @@ const breadcrumbJsonLd = {
     </header>
 
     <section class="contact-section">
-      <h2>Get in Touch</h2>
+      <h2>Send Us a Message</h2>
       <p>
         Have a question about our content? Spotted an error in our stats? Want to suggest a feature
         or a player profile? We welcome all feedback.
       </p>
-      <div class="contact-card">
-        <div class="contact-method">
-          <span class="contact-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="4" width="20" height="16" rx="2"/>
-              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-            </svg>
-          </span>
-          <div>
-            <h3>Email</h3>
-            <a href="mailto:contact@super.tennis" class="contact-email">contact@super.tennis</a>
-          </div>
+      <form id="contact-form" class="contact-form">
+        <div class="form-group">
+          <label for="name">Your Name</label>
+          <input type="text" id="name" name="name" required placeholder="John Smith" />
         </div>
-      </div>
+        <div class="form-group">
+          <label for="email">Your Email</label>
+          <input type="email" id="email" name="email" required placeholder="you@example.com" />
+        </div>
+        <div class="form-group">
+          <label for="subject">Subject</label>
+          <select id="subject" name="subject">
+            <option value="general">General Question</option>
+            <option value="correction">Content Correction</option>
+            <option value="suggestion">Feature Suggestion</option>
+            <option value="partnership">Partnership Inquiry</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" required rows="5" placeholder="Your message..."></textarea>
+        </div>
+        <button type="submit" class="submit-btn" id="submit-btn">Send Message</button>
+        <div id="form-status" class="form-status"></div>
+      </form>
     </section>
 
     <section class="contact-section">
@@ -63,6 +75,47 @@ const breadcrumbJsonLd = {
     </section>
   </div>
 </BaseLayout>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const btn = document.getElementById('submit-btn') as HTMLButtonElement;
+  const status = document.getElementById('form-status') as HTMLDivElement;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    status.textContent = '';
+    status.className = 'form-status';
+
+    const data = {
+      name: (form.elements.namedItem('name') as HTMLInputElement).value,
+      email: (form.elements.namedItem('email') as HTMLInputElement).value,
+      subject: (form.elements.namedItem('subject') as HTMLSelectElement).value,
+      message: (form.elements.namedItem('message') as HTMLTextAreaElement).value,
+    };
+
+    try {
+      const res = await fetch('https://supertennis-cron.sfedoroff.workers.dev/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        status.textContent = 'Message sent! We\'ll get back to you soon.';
+        status.className = 'form-status success';
+        form.reset();
+      } else {
+        throw new Error('Failed');
+      }
+    } catch {
+      status.textContent = 'Something went wrong. Please try again later.';
+      status.className = 'form-status error';
+    }
+    btn.disabled = false;
+    btn.textContent = 'Send Message';
+  });
+</script>
 
 <style>
   .contact-page {
@@ -118,46 +171,81 @@ const breadcrumbJsonLd = {
     margin: 0 0 16px;
   }
 
-  .contact-card {
+  .contact-form {
     background: var(--gray-50);
     border: 1px solid var(--gray-200);
     border-radius: var(--radius);
     padding: 28px 32px;
-    margin-top: 8px;
   }
-  .contact-method {
-    display: flex;
-    align-items: center;
-    gap: 16px;
+  .form-group {
+    margin-bottom: 20px;
   }
-  .contact-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: color-mix(in srgb, var(--court-green) 12%, transparent);
-    color: var(--court-green);
-    flex-shrink: 0;
-  }
-  .contact-method h3 {
-    font-family: var(--font-body);
+  .form-group label {
+    display: block;
     font-size: 0.82rem;
     font-weight: 600;
     text-transform: uppercase;
     color: var(--gray-500);
-    margin: 0 0 4px;
     letter-spacing: 0.04em;
+    margin-bottom: 6px;
   }
-  .contact-email {
-    color: var(--court-green);
-    font-size: 1.1rem;
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    font-family: var(--font-body);
+    color: var(--gray-900);
+    background: white;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--court-green);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--court-green) 15%, transparent);
+  }
+  .form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .submit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    background: var(--court-green);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
     font-weight: 600;
-    text-decoration: none;
-    transition: color 0.2s;
+    cursor: pointer;
+    transition: all 0.2s;
   }
-  .contact-email:hover { text-decoration: underline; }
+  .submit-btn:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+  }
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .form-status {
+    margin-top: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+  .form-status.success { color: #16a34a; }
+  .form-status.error { color: #dc2626; }
 
   .social-links {
     display: flex;
@@ -186,6 +274,6 @@ const breadcrumbJsonLd = {
   @media (max-width: 480px) {
     .page-hero h1 { font-size: 1.8rem; }
     .social-links { flex-direction: column; }
-    .contact-card { padding: 20px; }
+    .contact-form { padding: 20px; }
   }
 </style>

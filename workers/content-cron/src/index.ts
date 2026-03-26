@@ -1251,6 +1251,30 @@ export default {
 
     // ── API ENDPOINTS (client-side fetch, no rebuild) ──
 
+    // Contact form handler
+    if (url.pathname === '/api/contact' && request.method === 'POST') {
+      try {
+        const body = await request.json() as Record<string, string>;
+        const { name, email, subject, message } = body;
+        if (!name || !email || !message) {
+          return new Response(JSON.stringify({ error: 'Missing fields' }), { status: 400, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } });
+        }
+        // Store in Supabase
+        await supabaseQuery(env, 'contact_messages', 'POST', {}, {
+          name, email, subject: subject || 'general', message,
+          created_at: new Date().toISOString(),
+        });
+        return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } });
+      } catch (e: any) {
+        return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } });
+      }
+    }
+
+    // CORS preflight for contact form
+    if (url.pathname === '/api/contact' && request.method === 'OPTIONS') {
+      return new Response(null, { status: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' } });
+    }
+
     if (url.pathname === '/api/news') {
       try {
         const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 1000);
