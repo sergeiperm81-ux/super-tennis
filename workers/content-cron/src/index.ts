@@ -10,6 +10,7 @@
  * API endpoints (client-side fetch, no rebuild needed):
  * - /api/news   → JSON with active news
  * - /api/videos → JSON with 6 featured videos (1 per category, rotated)
+ * - /api/brief  → JSON with latest weekly SEO brief (password-protected)
  */
 
 export interface Env {
@@ -613,13 +614,9 @@ async function generateNews(env: Env): Promise<string> {
   try {
     await supabaseQuery(env, 'news', 'POST', { 'on_conflict': 'slug' }, newsRows);
     log(`   ✅ Saved ${newsRows.length} items`);
-    // Deactivate old news AFTER new batch confirmed — prevents blank news window
-    const newSlugs = newsRows.map((r: any) => r.slug);
-    await supabaseQuery(env, 'news', 'PATCH',
-      { 'is_active': 'eq.true', 'slug': `not.in.(${newSlugs.join(',')})` },
-      { is_active: false },
-    );
-    log('🗑️  Deactivated old news (new batch confirmed)');
+    // Keep all news active — they serve as SSG pages for Google indexing
+    // Old news stay in the archive, only the latest batch shows first in the feed
+    log('📦  All news preserved in archive (no deactivation)');
   } catch (e: any) {
     log(`❌ Supabase error: ${e.message}`);
   }
@@ -1256,12 +1253,12 @@ export default {
 
     if (url.pathname === '/api/news') {
       try {
-        const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 50);
+        const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 1000);
         const data = await supabaseQuery(env, 'news', 'GET', {
           'is_active': 'eq.true',
           'order': 'published_at.desc',
           'limit': String(limit),
-        });
+        }, undefined, { 'Range': `0-${limit - 1}` });
         return jsonResponse(data, 300, request); // cache 5 min
       } catch (e: any) {
         return jsonResponse({ error: e.message }, 60, request);
@@ -1359,6 +1356,25 @@ export default {
       }
     }
 
+    // ── WEEKLY BRIEF API (password-protected) ──
+
+    if (url.pathname === '/api/brief') {
+      const authErr = requireAuth(request, url, env);
+      if (authErr) return authErr;
+      try {
+        const data = await supabaseQuery(env, 'weekly_briefs', 'GET', {
+          'order': 'week_start.desc',
+          'limit': '1',
+        });
+        if (!data || !data.length) {
+          return jsonResponse({ error: 'No briefs yet' }, 60, request);
+        }
+        return jsonResponse(data[0], 3600, request); // cache 1 hour
+      } catch (e: any) {
+        return jsonResponse({ error: e.message }, 0, request);
+      }
+    }
+
     // ── MANUAL TRIGGERS (password-protected) ──
 
     if (url.pathname.startsWith('/trigger/')) {
@@ -1404,6 +1420,7 @@ API (client-side, no rebuild):
   /api/news          GET active news JSON
   /api/videos        GET 6 featured videos JSON
   /api/analytics     GET site analytics (password-protected)
+  /api/brief         GET latest weekly brief (password-protected)
 
 Manual triggers:
   /trigger/news      Generate news

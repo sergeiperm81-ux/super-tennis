@@ -8,7 +8,7 @@ export async function getStaticPaths() {
 
   let allNews: any[] = [];
   try {
-    const res = await fetch('https://supertennis-cron.sfedoroff.workers.dev/api/news');
+    const res = await fetch('https://supertennis-cron.sfedoroff.workers.dev/api/news?limit=1000');
     if (res.ok) {
       const data = await res.json();
       allNews = (Array.isArray(data) ? data : []).filter((n: any) => n.body && n.body.length > 50);

@@ -12,6 +12,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     <div class="stats-tabs">
       <button class="stats-tab active" data-tab="analytics">📊 Analytics</button>
       <button class="stats-tab" data-tab="publications">🎬 Video Publications</button>
+      <button class="stats-tab" data-tab="brief">📋 Weekly Brief</button>
     </div>
 
     <!-- ===== TAB: ANALYTICS ===== -->
@@ -140,6 +141,74 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       </div>
 
     </div><!-- end tab-publications -->
+
+    <!-- ===== TAB: WEEKLY BRIEF ===== -->
+    <div id="tab-brief" class="stats-tab-panel" hidden>
+
+      <div id="brief-login-form" class="stats-login">
+        <p class="stats-login__text">Enter password to view weekly brief</p>
+        <form id="brief-auth-form" class="stats-login__form">
+          <input type="password" id="brief-pwd-input" class="stats-login__input" placeholder="Password" autocomplete="off" />
+          <button type="submit" class="stats-login__btn">View</button>
+        </form>
+        <p id="brief-login-error" class="stats-login__error" hidden>Invalid password</p>
+      </div>
+
+      <div id="brief-dashboard" hidden>
+
+        <!-- Brief header with date + copy button -->
+        <div class="stats-dash__toolbar">
+          <span id="brief-week-label" class="stats-dash__range" style="font-size:1rem;font-weight:600;color:#1a1a2e;"></span>
+          <button id="brief-copy" class="stats-login__btn" style="padding:6px 14px;font-size:0.82rem;">📋 Copy Brief</button>
+        </div>
+
+        <!-- AI Summary -->
+        <div id="brief-summary" class="stats-section" hidden>
+          <h2 class="stats-section__title">Executive Summary</h2>
+          <p id="brief-summary-text" style="color:#374151;line-height:1.7;white-space:pre-wrap;"></p>
+        </div>
+
+        <!-- Top Pages -->
+        <div id="brief-pages-section" class="stats-section" hidden>
+          <h2 class="stats-section__title">Top Pages</h2>
+          <table class="stats-table">
+            <thead><tr><th>Title</th><th>Path</th><th>Views</th><th>Change</th></tr></thead>
+            <tbody id="brief-pages-body"></tbody>
+          </table>
+        </div>
+
+        <!-- Search Queries -->
+        <div id="brief-queries-section" class="stats-section" hidden>
+          <h2 class="stats-section__title">Search Queries</h2>
+          <table class="stats-table">
+            <thead><tr><th>Query</th><th>Clicks</th><th>Impressions</th><th>Position</th></tr></thead>
+            <tbody id="brief-queries-body"></tbody>
+          </table>
+        </div>
+
+        <!-- Two column: Upcoming Events + Recommendations -->
+        <div class="stats-columns">
+          <div id="brief-events-section" class="stats-section" hidden>
+            <h2 class="stats-section__title">Upcoming Events</h2>
+            <div id="brief-events-list"></div>
+          </div>
+
+          <div id="brief-recs-section" class="stats-section" hidden>
+            <h2 class="stats-section__title">Recommendations</h2>
+            <div id="brief-recs-list"></div>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div id="brief-empty" class="stats-loading" hidden>
+          No weekly briefs yet. Briefs will appear here once generated.
+        </div>
+
+        <div id="brief-loading" class="stats-loading">Loading brief...</div>
+
+      </div>
+
+    </div><!-- end tab-brief -->
 
   </div>
 </section>
@@ -322,6 +391,15 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         loadPublications();
       }
     }
+
+    if (tabName === 'brief' && !briefLoaded) {
+      var sp = sessionStorage.getItem('stats_pwd') || '';
+      if (sp) {
+        document.getElementById('brief-login-form').hidden = true;
+        document.getElementById('brief-dashboard').hidden = false;
+        loadBrief();
+      }
+    }
   }
 
   document.querySelectorAll('.stats-tab').forEach(function(tab) {
@@ -330,7 +408,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
   // Restore tab from URL hash on page load
   var hashTab = location.hash.replace('#', '');
-  if (hashTab === 'publications') switchTab('publications');
+  if (hashTab === 'publications' || hashTab === 'brief') switchTab(hashTab);
 
   // ===== PUBLICATIONS TAB =====
   var pubLoaded = false;
@@ -511,6 +589,197 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     list.innerHTML = html;
   }
 
+  // ===== WEEKLY BRIEF TAB =====
+  var briefLoaded = false;
+  var briefData = null;
+
+  var briefPwd = sessionStorage.getItem('stats_pwd') || '';
+  if (briefPwd) {
+    document.getElementById('brief-login-form').hidden = true;
+    document.getElementById('brief-dashboard').hidden = false;
+  }
+
+  document.getElementById('brief-auth-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    briefPwd = document.getElementById('brief-pwd-input').value;
+    sessionStorage.setItem('stats_pwd', briefPwd);
+    pwd = briefPwd;
+    document.getElementById('brief-login-form').hidden = true;
+    document.getElementById('brief-dashboard').hidden = false;
+    loadBrief();
+  });
+
+  document.getElementById('brief-copy').addEventListener('click', function() {
+    if (!briefData) return;
+    var text = buildBriefText(briefData);
+    navigator.clipboard.writeText(text).then(function() {
+      var btn = document.getElementById('brief-copy');
+      btn.textContent = 'Copied!';
+      setTimeout(function() { btn.textContent = '\ud83d\udccb Copy Brief'; }, 2000);
+    });
+  });
+
+  function buildBriefText(b) {
+    var lines = [];
+    lines.push('# Weekly Brief \u2014 ' + (b.week_start || ''));
+    lines.push('');
+    if (b.summary) { lines.push('## Summary'); lines.push(b.summary); lines.push(''); }
+    if (b.top_pages && b.top_pages.length) {
+      lines.push('## Top Pages');
+      b.top_pages.forEach(function(p) {
+        var change = p.change_pct >= 0 ? '+' + p.change_pct + '%' : p.change_pct + '%';
+        lines.push('- ' + p.title + ' (' + p.path + ') \u2014 ' + p.views + ' views (' + change + ')');
+      });
+      lines.push('');
+    }
+    if (b.search_queries && b.search_queries.length) {
+      lines.push('## Search Queries');
+      b.search_queries.forEach(function(q) {
+        lines.push('- "' + q.query + '" \u2014 ' + q.clicks + ' clicks, ' + q.impressions + ' impr, pos ' + q.position);
+      });
+      lines.push('');
+    }
+    if (b.upcoming_events && b.upcoming_events.length) {
+      lines.push('## Upcoming Events');
+      b.upcoming_events.forEach(function(ev) {
+        lines.push('- ' + ev.name + ' (' + ev.date + ', ' + ev.type + ')');
+        if (ev.recommended_articles && ev.recommended_articles.length) {
+          lines.push('  Suggested: ' + ev.recommended_articles.join(', '));
+        }
+      });
+      lines.push('');
+    }
+    if (b.recommendations && b.recommendations.length) {
+      lines.push('## Recommendations');
+      b.recommendations.forEach(function(r) {
+        lines.push('- [' + r.priority.toUpperCase() + '] ' + r.title + ' (' + r.category + ') \u2014 ' + r.reason + ' [' + r.status + ']');
+      });
+    }
+    return lines.join('\n');
+  }
+
+  function loadBrief() {
+    var loading = document.getElementById('brief-loading');
+    loading.hidden = false;
+    document.getElementById('brief-empty').hidden = true;
+    document.getElementById('brief-summary').hidden = true;
+    document.getElementById('brief-pages-section').hidden = true;
+    document.getElementById('brief-queries-section').hidden = true;
+    document.getElementById('brief-events-section').hidden = true;
+    document.getElementById('brief-recs-section').hidden = true;
+
+    fetch(API + '/api/brief', { headers: { 'Authorization': 'Bearer ' + pwd } })
+      .then(function(r) {
+        if (r.status === 401) {
+          document.getElementById('brief-login-form').hidden = false;
+          document.getElementById('brief-dashboard').hidden = true;
+          return null;
+        }
+        return r.json();
+      })
+      .then(function(data) {
+        if (!data) return;
+        loading.hidden = true;
+        if (data.error) {
+          document.getElementById('brief-empty').hidden = false;
+          document.getElementById('brief-empty').textContent = data.error === 'No briefs yet'
+            ? 'No weekly briefs yet. Briefs will appear here once generated.'
+            : 'Error: ' + data.error;
+          return;
+        }
+        briefLoaded = true;
+        briefData = data;
+        renderBrief(data);
+      })
+      .catch(function(e) {
+        loading.hidden = true;
+        document.getElementById('brief-empty').hidden = false;
+        document.getElementById('brief-empty').textContent = 'Failed to load: ' + e.message;
+      });
+  }
+
+  function renderBrief(b) {
+    // Week label
+    document.getElementById('brief-week-label').textContent = 'Week of ' + (b.week_start || 'N/A');
+
+    // Summary
+    if (b.summary) {
+      document.getElementById('brief-summary-text').textContent = b.summary;
+      document.getElementById('brief-summary').hidden = false;
+    }
+
+    // Top pages
+    if (b.top_pages && b.top_pages.length) {
+      var html = '';
+      b.top_pages.forEach(function(p) {
+        var changeClass = p.change_pct >= 0 ? 'brief-change--up' : 'brief-change--down';
+        var changeSign = p.change_pct >= 0 ? '+' : '';
+        html += '<tr>' +
+          '<td>' + escHtml(p.title) + '</td>' +
+          '<td style="font-size:0.78rem;color:#6b7280;">' + escHtml(p.path) + '</td>' +
+          '<td>' + fmt(p.views || 0) + '</td>' +
+          '<td class="' + changeClass + '">' + changeSign + (p.change_pct || 0) + '%</td>' +
+          '</tr>';
+      });
+      document.getElementById('brief-pages-body').innerHTML = html;
+      document.getElementById('brief-pages-section').hidden = false;
+    }
+
+    // Search queries
+    if (b.search_queries && b.search_queries.length) {
+      var html = '';
+      b.search_queries.forEach(function(q) {
+        html += '<tr>' +
+          '<td>' + escHtml(q.query) + '</td>' +
+          '<td>' + fmt(q.clicks || 0) + '</td>' +
+          '<td>' + fmt(q.impressions || 0) + '</td>' +
+          '<td>' + (q.position ? q.position.toFixed(1) : '\u2014') + '</td>' +
+          '</tr>';
+      });
+      document.getElementById('brief-queries-body').innerHTML = html;
+      document.getElementById('brief-queries-section').hidden = false;
+    }
+
+    // Upcoming events
+    if (b.upcoming_events && b.upcoming_events.length) {
+      var html = '';
+      b.upcoming_events.forEach(function(ev) {
+        html += '<div class="brief-event">' +
+          '<div class="brief-event__header">' +
+            '<span class="brief-event__name">' + escHtml(ev.name) + '</span>' +
+            '<span class="brief-event__badge">' + escHtml(ev.type || '') + '</span>' +
+          '</div>' +
+          '<div class="brief-event__date">' + escHtml(ev.date || '') + '</div>';
+        if (ev.recommended_articles && ev.recommended_articles.length) {
+          html += '<div class="brief-event__articles">Suggested: ' + ev.recommended_articles.map(escHtml).join(', ') + '</div>';
+        }
+        html += '</div>';
+      });
+      document.getElementById('brief-events-list').innerHTML = html;
+      document.getElementById('brief-events-section').hidden = false;
+    }
+
+    // Recommendations
+    if (b.recommendations && b.recommendations.length) {
+      var html = '';
+      b.recommendations.forEach(function(r, i) {
+        var prioColor = r.priority === 'high' ? '#ef4444' : r.priority === 'medium' ? '#f59e0b' : '#22c55e';
+        var statusLabel = r.status || 'pending';
+        html += '<div class="brief-rec">' +
+          '<div class="brief-rec__header">' +
+            '<span class="brief-rec__prio" style="background:' + prioColor + '">' + escHtml((r.priority || 'low').toUpperCase()) + '</span>' +
+            '<span class="brief-rec__status brief-rec__status--' + statusLabel + '">' + statusLabel + '</span>' +
+          '</div>' +
+          '<div class="brief-rec__title">' + escHtml(r.title) + '</div>' +
+          '<div class="brief-rec__meta">' + escHtml(r.category || '') + '</div>' +
+          '<div class="brief-rec__reason">' + escHtml(r.reason || '') + '</div>' +
+          '</div>';
+      });
+      document.getElementById('brief-recs-list').innerHTML = html;
+      document.getElementById('brief-recs-section').hidden = false;
+    }
+  }
+
 })();
 </script>
 
@@ -643,7 +912,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   .stats-tabs {
     display: flex; gap: 4px; background: #1a1a2e;
     border-radius: 10px; padding: 4px; margin-bottom: 28px;
-    max-width: 400px;
+    max-width: 560px;
   }
   .stats-tab {
     flex: 1; padding: 10px 20px; border: none; border-radius: 8px;
@@ -715,11 +984,54 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   }
   .pub-filter.active { background: #2563eb; color: #fff; }
 
+  /* Weekly Brief — :global() for JS-injected HTML */
+  :global(.brief-change--up) { color: #059669; font-weight: 600; }
+  :global(.brief-change--down) { color: #ef4444; font-weight: 600; }
+
+  :global(.brief-event) {
+    padding: 12px 0; border-bottom: 1px solid #f3f4f6;
+  }
+  :global(.brief-event:last-child) { border-bottom: none; }
+  :global(.brief-event__header) {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+  }
+  :global(.brief-event__name) { font-weight: 600; color: #1a1a2e; font-size: 0.88rem; }
+  :global(.brief-event__badge) {
+    display: inline-block; font-size: 0.62rem; font-weight: 700;
+    padding: 2px 7px; border-radius: 4px; background: #2563eb; color: #fff;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  :global(.brief-event__date) { font-size: 0.78rem; color: #6b7280; }
+  :global(.brief-event__articles) { font-size: 0.78rem; color: #9ca3af; margin-top: 4px; }
+
+  :global(.brief-rec) {
+    padding: 12px 0; border-bottom: 1px solid #f3f4f6;
+  }
+  :global(.brief-rec:last-child) { border-bottom: none; }
+  :global(.brief-rec__header) {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+  }
+  :global(.brief-rec__prio) {
+    display: inline-block; font-size: 0.6rem; font-weight: 700;
+    padding: 2px 7px; border-radius: 4px; color: #fff;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  :global(.brief-rec__status) {
+    font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  :global(.brief-rec__status--pending) { color: #f59e0b; }
+  :global(.brief-rec__status--approved) { color: #2563eb; }
+  :global(.brief-rec__status--done) { color: #059669; }
+  :global(.brief-rec__title) { font-weight: 600; color: #1a1a2e; font-size: 0.88rem; margin-bottom: 2px; }
+  :global(.brief-rec__meta) { font-size: 0.72rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
+  :global(.brief-rec__reason) { font-size: 0.82rem; color: #6b7280; margin-top: 4px; line-height: 1.4; }
+
   @media (max-width: 768px) {
     .stats-kpi { grid-template-columns: repeat(2, 1fr); }
     .stats-columns { grid-template-columns: 1fr; }
     .stats-login__form { flex-direction: column; }
-    .stats-tabs { max-width: 100%; }
+    .stats-tabs { max-width: 100%; overflow-x: auto; }
     :global(.pub-table) { font-size: 0.75rem; }
     :global(.pub-td-thumb) { display: none; }
     :global(.pub-td-cat) { width: 56px; }
