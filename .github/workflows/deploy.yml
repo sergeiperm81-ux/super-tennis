@@ -55,3 +55,24 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Notify search engines (IndexNow + sitemap ping)
+        if: success()
+        run: |
+          # IndexNow — instant indexing for Bing, Yandex, Seznam, Naver
+          INOW_KEY="91c5dc98807613af2ffb83361ebbd154"
+          echo "Submitting sitemap via IndexNow..."
+          curl -s -X POST "https://api.indexnow.org/indexnow" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"host\": \"super.tennis\",
+              \"key\": \"${INOW_KEY}\",
+              \"keyLocation\": \"https://super.tennis/${INOW_KEY}.txt\",
+              \"urlList\": [\"https://super.tennis/sitemap-index.xml\"]
+            }" || true
+
+          # Google — sitemap ping
+          echo "Pinging Google sitemap..."
+          curl -s "https://www.google.com/ping?sitemap=https://super.tennis/sitemap-index.xml" || true
+
+          echo "Search engines notified"
