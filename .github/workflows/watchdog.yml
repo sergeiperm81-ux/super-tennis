@@ -1,0 +1,128 @@
+name: Watchdog — Auto-Retry & Health Report
+
+on:
+  schedule:
+    # Run 35 min after content factory (07:00 UTC)
+    - cron: '35 7 * * *'
+    # Midday health check
+    - cron: '0 12 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check all workflows health
+        id: health
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "## 🏥 Super Tennis Health Report" > report.md
+          echo "**$(date -u '+%Y-%m-%d %H:%M UTC')**" >> report.md
+          echo "" >> report.md
+
+          ISSUES=0
+
+          # --- Content Factory ---
+          CF_STATUS=$(gh run list --repo ${{ github.repository }} \
+            --workflow=content-factory.yml --limit=1 \
+            --json conclusion,createdAt --jq '.[0]')
+          CF_CONCLUSION=$(echo "$CF_STATUS" | jq -r '.conclusion')
+          CF_DATE=$(echo "$CF_STATUS" | jq -r '.createdAt' | cut -dT -f1)
+
+          if [ "$CF_CONCLUSION" = "success" ]; then
+            echo "✅ **Content Factory** — OK ($CF_DATE)" >> report.md
+          else
+            echo "❌ **Content Factory** — FAILED ($CF_CONCLUSION, $CF_DATE)" >> report.md
+            ISSUES=$((ISSUES + 1))
+          fi
+
+          # --- Build & Deploy ---
+          BD_STATUS=$(gh run list --repo ${{ github.repository }} \
+            --workflow=deploy.yml --limit=1 \
+            --json conclusion,createdAt --jq '.[0]')
+          BD_CONCLUSION=$(echo "$BD_STATUS" | jq -r '.conclusion')
+          BD_DATE=$(echo "$BD_STATUS" | jq -r '.createdAt' | cut -dT -f1)
+
+          if [ "$BD_CONCLUSION" = "success" ]; then
+            echo "✅ **Build & Deploy** — OK ($BD_DATE)" >> report.md
+          else
+            echo "❌ **Build & Deploy** — FAILED ($BD_CONCLUSION, $BD_DATE)" >> report.md
+            ISSUES=$((ISSUES + 1))
+          fi
+
+          # --- Weekly Rankings ---
+          WR_STATUS=$(gh run list --repo ${{ github.repository }} \
+            --workflow=weekly-rankings.yml --limit=1 \
+            --json conclusion,createdAt --jq '.[0]')
+          WR_CONCLUSION=$(echo "$WR_STATUS" | jq -r '.conclusion')
+          WR_DATE=$(echo "$WR_STATUS" | jq -r '.createdAt' | cut -dT -f1)
+
+          if [ "$WR_CONCLUSION" = "success" ]; then
+            echo "✅ **Weekly Rankings** — OK ($WR_DATE)" >> report.md
+          else
+            echo "❌ **Weekly Rankings** — FAILED ($WR_CONCLUSION, $WR_DATE)" >> report.md
+            ISSUES=$((ISSUES + 1))
+          fi
+
+          # --- Site availability ---
+          echo "" >> report.md
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://super.tennis/ || echo "000")
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ **Site** — super.tennis responding (HTTP $HTTP_CODE)" >> report.md
+          else
+            echo "❌ **Site** — super.tennis DOWN (HTTP $HTTP_CODE)" >> report.md
+            ISSUES=$((ISSUES + 1))
+          fi
+
+          echo "" >> report.md
+          echo "**Issues found: $ISSUES**" >> report.md
+
+          cat report.md
+          echo "issues=$ISSUES" >> $GITHUB_OUTPUT
+          echo "cf_conclusion=$CF_CONCLUSION" >> $GITHUB_OUTPUT
+
+      - name: Upload health report
+        uses: actions/upload-artifact@v4
+        with:
+          name: health-report
+          path: report.md
+          retention-days: 7
+
+  # Auto-retry Content Factory if it failed today
+  retry-content-factory:
+    needs: health-check
+    if: needs.health-check.outputs.cf_conclusion != 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Retry Content Factory
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "⚠️ Content Factory failed — retrying..."
+          gh workflow run content-factory.yml --repo ${{ github.repository }}
+          echo "✅ Retry triggered"
+
+  # Wait and verify the retry worked
+  verify-retry:
+    needs: retry-content-factory
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for retry to complete
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "Waiting 3 minutes for Content Factory retry..."
+          sleep 180
+
+          CF_STATUS=$(gh run list --repo ${{ github.repository }} \
+            --workflow=content-factory.yml --limit=1 \
+            --json conclusion --jq '.[0].conclusion')
+
+          if [ "$CF_STATUS" = "success" ]; then
+            echo "✅ Retry succeeded — video published"
+          else
+            echo "❌ Retry also failed ($CF_STATUS)"
+            echo "Manual intervention needed"
+            exit 1
+          fi
