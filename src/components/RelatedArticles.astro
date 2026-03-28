@@ -1,0 +1,129 @@
+---
+/**
+ * RelatedArticles — Shows 3 related article cards with images
+ * Picks articles from same category, excluding current article
+ */
+interface Props {
+  category: string;
+  currentSlug: string;
+}
+
+import { getArticles } from '../lib/supabase';
+import { getArticlePhotoUrl } from '../lib/player-photos';
+
+const { category, currentSlug } = Astro.props;
+
+// Deterministic but unique selection per article — use slug hash to pick 3 different articles each time
+function hashCode(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+const fallbackImage = '/images/news/court-01.jpg';
+let related: any[] = [];
+try {
+  const all = await getArticles({ category, limit: 50 });
+  const filtered = all.filter((a: any) => a.slug !== currentSlug);
+  // Use slug hash as seed for deterministic but unique ordering per article
+  const seed = hashCode(currentSlug);
+  const shuffled = [...filtered].sort((a, b) => {
+    const ha = hashCode(a.slug + currentSlug) % 10000;
+    const hb = hashCode(b.slug + currentSlug) % 10000;
+    return ha - hb;
+  });
+  related = shuffled.slice(0, 3).map((a: any) => ({
+    ...a,
+    image_url: a.image_url || fallbackImage,
+  }));
+} catch (e) {
+  // silently fail
+}
+---
+
+{related.length > 0 && (
+  <section class="related-articles">
+    <h2 class="related-title">You Might Also Like</h2>
+    <div class="related-grid">
+      {related.map((article: any) => (
+        <a href={`/${category}/${article.slug}/`} class="related-card">
+          <div class="related-card__image">
+            <img
+              src={article.image_url}
+              alt={article.image_alt || article.title}
+              loading="lazy"
+              onerror="this.src='/images/news/court-01.jpg'"
+            />
+          </div>
+          <h3 class="related-card__title">{article.title}</h3>
+        </a>
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .related-articles {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 2px solid var(--gray-200);
+  }
+
+  .related-title {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-900);
+    margin: 0 0 20px;
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .related-card {
+    display: block;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .related-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+
+  .related-card__image {
+    aspect-ratio: 16/10;
+    overflow: hidden;
+  }
+  .related-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+  .related-card:hover .related-card__image img {
+    transform: scale(1.05);
+  }
+
+  .related-card__title {
+    padding: 12px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--gray-900);
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .related-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+</style>
