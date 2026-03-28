@@ -110,23 +110,24 @@ const sortedOthers = [...otherTournaments].sort((a, b) => {
               const photo = getVenuePhoto(article.slug);
               const surface = getSurface(article.slug);
               return (
-                <a href={`/tournaments/${article.slug}/`} class={`gs-card surface-${surface}`}>
-                  {photo && (
-                    <div class="gs-card-img">
-                      <img src={photo} alt={article.title} loading="eager" onerror="this.parentElement.style.display='none'" />
-                      <span class="level-badge gs">Grand Slam</span>
+                <div class={`gs-card surface-${surface}`}>
+                  <a href={`/tournaments/${article.slug}/`} class="gs-card-link">
+                    {photo && (
+                      <div class="gs-card-img">
+                        <img src={photo} alt={article.title} loading="eager" decoding="async" width="600" height="400" onerror="this.parentElement.style.display='none'" />
+                        <span class="level-badge gs">Grand Slam</span>
+                      </div>
+                    )}
+                    <div class="gs-card-body">
+                      <span class="gs-icon">{getIcon(article.slug)}</span>
+                      <h3>{article.title}</h3>
+                      <p>{stripMarkdown(article.excerpt || article.meta_description || '')}</p>
+                      <div class="gs-actions">
+                        <span class="read-more">Read Guide →</span>
+                      </div>
                     </div>
-                  )}
-                  <div class="gs-card-body">
-                    <span class="gs-icon">{getIcon(article.slug)}</span>
-                    <h3>{article.title}</h3>
-                    <p>{stripMarkdown(article.excerpt || article.meta_description || '')}</p>
-                    <div class="gs-actions">
-                      <span class="read-more">Read Guide →</span>
-                      <a href={`/tournaments/${article.slug}/results/`} class="results-link" onclick="event.stopPropagation()">Results & Winners →</a>
-                    </div>
-                  </div>
-                </a>
+                  </a>
+                </div>
               );
             })}
           </div>
@@ -220,80 +221,13 @@ const sortedOthers = [...otherTournaments].sort((a, b) => {
     border-bottom: 2px solid var(--gray-200);
   }
 
-  /* ===== GRAND SLAM PHOTO CARDS ===== */
-  .gs-section {
-    margin-bottom: 40px;
-  }
-  .gs-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-  .gs-card {
-    text-decoration: none;
-    color: inherit;
-    background: white;
-    border: 1px solid var(--gray-200);
-    border-radius: var(--radius);
-    overflow: hidden;
-    transition: all 0.2s;
-    display: flex;
-    flex-direction: column;
-  }
-  .gs-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  }
+  /* Grand Slam cards moved to is:global style block below */
 
-  .gs-card-img {
-    aspect-ratio: 1 / 1;
-    overflow: hidden;
-    position: relative;
-  }
-  .gs-card-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .gs-card-img .level-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-  }
-
-  .gs-card-body {
-    padding: 20px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
+  /* gs-card styles are in the is:global block below */
   .gs-icon {
     font-size: 1.4rem;
     margin-bottom: 8px;
   }
-  .gs-card-body h3 {
-    font-family: var(--font-body);
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin: 0 0 8px;
-    line-height: 1.3;
-  }
-  .gs-card-body p {
-    color: var(--gray-600);
-    font-size: 0.85rem;
-    line-height: 1.6;
-    margin: 0;
-    flex: 1;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  /* Surface accent borders */
-  .gs-card.surface-clay { border-top: 3px solid #d97706; }
-  .gs-card.surface-grass { border-top: 3px solid #16a34a; }
-  .gs-card.surface-hard { border-top: 3px solid #2563eb; }
 
   /* ===== OTHER TOURNAMENT CARDS ===== */
   .others-section {
@@ -440,6 +374,70 @@ const sortedOthers = [...otherTournaments].sort((a, b) => {
     .tournaments-grid { grid-template-columns: 1fr; }
     .related-links { grid-template-columns: 1fr; }
     .page-hero h1 { font-size: 2rem; }
-    .gs-card-img { aspect-ratio: 4 / 3; }
+    .gs-card-img { aspect-ratio: 16 / 10; }
+  }
+</style>
+
+<style is:global>
+  .gs-section { margin-bottom: 40px; }
+  .gs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .gs-card {
+    background: white;
+    border: 1px solid var(--gray-200, #e5e7eb);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+  .gs-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  }
+  .gs-card-link {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+  }
+  .gs-card-img {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    position: relative;
+    max-height: 220px;
+  }
+  .gs-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .gs-card-img .level-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+  }
+  .gs-card-body {
+    padding: 20px;
+  }
+  .gs-card-body h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+    line-height: 1.3;
+  }
+  .gs-card-body p {
+    color: #6b7280;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin: 0 0 12px;
+  }
+  .gs-card.surface-clay { border-top: 3px solid #d97706; }
+  .gs-card.surface-grass { border-top: 3px solid #16a34a; }
+  .gs-card.surface-hard { border-top: 3px solid #2563eb; }
+  @media (max-width: 768px) {
+    .gs-grid { grid-template-columns: 1fr; }
+    .gs-card-img { aspect-ratio: 16 / 10; max-height: none; }
   }
 </style>

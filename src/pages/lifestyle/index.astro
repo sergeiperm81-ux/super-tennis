@@ -61,7 +61,7 @@ const itemListJsonLd = lifestyleArticles.length > 0 ? {
                 <a href={`/lifestyle/${article.slug}/`} class="top-card">
                   <div class={`top-card-img ${isPlayerPhoto(photo) ? 'player-photo' : ''}`}>
                     {photo ? (
-                      <img src={photo} alt={article.title} loading="eager" onerror="this.parentElement.classList.add('no-img')" />
+                      <img src={photo} alt={article.title} loading="eager" decoding="async" width="600" height="400" onerror="this.parentElement.classList.add('no-img')" />
                     ) : (
                       <div class="img-placeholder"></div>
                     )}
@@ -82,7 +82,7 @@ const itemListJsonLd = lifestyleArticles.length > 0 ? {
                 <a href={`/lifestyle/${article.slug}/`} class="card">
                   <div class={`card-img ${isPlayerPhoto(photo) ? 'player-photo' : ''}`}>
                     {photo ? (
-                      <img src={photo} alt={article.title} loading="lazy" onerror="this.parentElement.classList.add('no-img')" />
+                      <img src={photo} alt={article.title} loading="lazy" decoding="async" width="400" height="400" onerror="this.parentElement.classList.add('no-img')" />
                     ) : (
                       <div class="img-placeholder"></div>
                     )}

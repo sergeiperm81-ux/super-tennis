@@ -157,7 +157,7 @@ const sbCatLabels: Record<string, string> = {
                         </td>
                         <td class="col-player">
                           <a href={`/players/${slug}/`} class="player-link">
-                            {flagSrc ? (<img src={flagSrc} alt={cc} class="player-flag-img" width="20" height="15" loading="lazy" />) : (<span class="player-flag">{countryFlags[cc] || ''}</span>)}
+                            {flagSrc ? (<img src={flagSrc} alt={cc} class="player-flag-img" width="20" height="15" loading="lazy" decoding="async" />) : (<span class="player-flag">{countryFlags[cc] || ''}</span>)}
                             <span class="player-name">
                               {p?.first_name} <strong>{p?.last_name?.toUpperCase()}</strong>
                             </span>
@@ -204,7 +204,7 @@ const sbCatLabels: Record<string, string> = {
                         </td>
                         <td class="col-player">
                           <a href={`/players/${slug}/`} class="player-link">
-                            {flagSrc ? (<img src={flagSrc} alt={cc} class="player-flag-img" width="20" height="15" loading="lazy" />) : (<span class="player-flag">{countryFlags[cc] || ''}</span>)}
+                            {flagSrc ? (<img src={flagSrc} alt={cc} class="player-flag-img" width="20" height="15" loading="lazy" decoding="async" />) : (<span class="player-flag">{countryFlags[cc] || ''}</span>)}
                             <span class="player-name">
                               {p?.first_name} <strong>{p?.last_name?.toUpperCase()}</strong>
                             </span>

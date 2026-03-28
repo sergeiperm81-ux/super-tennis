@@ -108,7 +108,7 @@ const footerRacketHref = `/players/${slug}/racket/`;
       <span class="partner-stat-label">Country</span>
       <span class="partner-stat-value">
         {getFlagUrl(player.country_code || '') ? (
-          <img src={getFlagUrl(player.country_code || '')} alt={country} class="stat-flag" width="20" height="15" loading="lazy" />
+          <img src={getFlagUrl(player.country_code || '')} alt={country} class="stat-flag" width="20" height="15" loading="lazy" decoding="async" />
         ) : null}
         {country}
       </span>

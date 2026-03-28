@@ -164,6 +164,8 @@
       '</article></div>' : '') +
     '</details>';
   }
+  // Expose for Load More button
+  window.__renderNewsFullItem = renderNewsFullItem;
 
   // ── Render: sidebar news card ──
   function renderSidebarNews(item) {
@@ -192,6 +194,69 @@
         '<span class="sb-video__ch">' + esc(v.channel_name) + '</span>' +
       '</div>' +
     '</div>';
+  }
+
+  // ── Load Earlier News button ──
+  function initLoadEarlier(listEl) {
+    var loadDate = new Date();
+    loadDate.setDate(loadDate.getDate() - 1);
+    var earliest = new Date(); earliest.setDate(earliest.getDate() - 60);
+
+    function fd(d) { return d.toISOString().split('T')[0]; }
+    function fl(d) {
+      var t = new Date();
+      var y = new Date(t); y.setDate(y.getDate() - 1);
+      if (fd(d) === fd(t)) return 'Today';
+      if (fd(d) === fd(y)) return 'Yesterday';
+      return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    }
+
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'text-align:center;padding:28px 0';
+    wrap.innerHTML = '<button id="news-load-btn" style="background:#1a7a2e;color:white;border:none;padding:14px 40px;border-radius:8px;font-size:0.95rem;font-weight:700;cursor:pointer">Load Earlier News</button>';
+    listEl.parentElement.insertBefore(wrap, listEl.nextSibling);
+
+    var btn = document.getElementById('news-load-btn');
+    btn.addEventListener('click', function () {
+      if (loadDate < earliest) return;
+      btn.textContent = 'Loading...';
+      btn.disabled = true;
+      btn.style.opacity = '0.6';
+
+      fetch(API + '/api/news?date=' + fd(loadDate) + '&limit=100')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data && data.length > 0) {
+            // Date divider
+            var divider = document.createElement('div');
+            divider.style.cssText = 'text-align:center;margin:32px 0 16px;position:relative';
+            divider.innerHTML = '<div style="position:absolute;top:50%;left:0;right:0;height:1px;background:#ddd"></div><span style="position:relative;background:white;padding:0 16px;font-size:0.82rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#888">' + fl(loadDate) + '</span>';
+            listEl.appendChild(divider);
+
+            // Render with same function used for today's news
+            var html = data.map(renderNewsFullItem).join('');
+            var temp = document.createElement('div');
+            temp.innerHTML = html;
+            while (temp.firstChild) listEl.appendChild(temp.firstChild);
+          }
+
+          loadDate.setDate(loadDate.getDate() - 1);
+          if (loadDate < earliest) {
+            btn.textContent = 'No more news';
+            btn.disabled = true;
+            btn.style.opacity = '0.4';
+          } else {
+            btn.textContent = 'Load Earlier News';
+            btn.disabled = false;
+            btn.style.opacity = '1';
+          }
+        })
+        .catch(function () {
+          btn.textContent = 'Failed — try again';
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        });
+    });
   }
 
   // ── Main: find containers and hydrate ──
@@ -246,6 +311,8 @@
               setTimeout(function () { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
             }
           }
+          // Add "Load Earlier News" button
+          initLoadEarlier(el);
         } else {
           el.innerHTML = '<p style="color:var(--gray-500);text-align:center;padding:2rem">No news articles yet. Check back soon!</p>';
         }
@@ -305,6 +372,21 @@
   }
 
   // Run on DOM ready
+  // ── Lite YouTube click-to-play (for dynamically rendered videos) ──
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('.lite-yt');
+    if (!el || el.querySelector('iframe')) return;
+    var videoId = el.getAttribute('data-video-id');
+    if (!videoId) return;
+    var iframe = document.createElement('iframe');
+    iframe.src = 'https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1&rel=0';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    iframe.allowFullscreen = true;
+    iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:0;z-index:2';
+    el.style.position = 'relative';
+    el.appendChild(iframe);
+  });
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () { hydrate(); populateTrending(); });
   } else {

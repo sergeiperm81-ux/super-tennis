@@ -1,6 +1,7 @@
 ---
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
 import ArticleFooter from '../../components/ArticleFooter.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import { getArticleBySlug, getArticleSlugs } from '../../lib/supabase';
 import { addInterlinks } from '../../lib/interlinks';
 import { getArticlePhotoUrl } from '../../lib/player-photos';
@@ -79,6 +80,8 @@ const jsonLd = {
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <div set:html={bodyHtml} />
+
+  <RelatedArticles category="gear" currentSlug={slug as string} />
 
   <ArticleFooter backLabel="All Gear Guides" backHref="/gear/" />
 </ArticleLayout>

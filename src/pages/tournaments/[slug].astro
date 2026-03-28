@@ -1,6 +1,7 @@
 ---
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
 import ArticleFooter from '../../components/ArticleFooter.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import LiteYouTube from '../../components/LiteYouTube.astro';
 import { getArticleBySlug, getArticleSlugs } from '../../lib/supabase';
 import { addInterlinks } from '../../lib/interlinks';
@@ -96,6 +97,8 @@ const jsonLd = {
       </div>
     </section>
   )}
+
+  <RelatedArticles category="tournaments" currentSlug={slug as string} />
 
   <ArticleFooter
     backLabel="All Tournaments"

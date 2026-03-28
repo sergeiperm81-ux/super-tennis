@@ -314,7 +314,7 @@ function articleUrl(art: { category: string; slug: string }): string {
                     <td class="sb-rankings__name">
                       <a href={`/players/${r.slug}/`}>
                         {getFlagUrl(r.country) ? (
-                          <img src={getFlagUrl(r.country, 20)} alt={r.country} class="sb-flag" width="20" height="15" loading="lazy" />
+                          <img src={getFlagUrl(r.country, 20)} alt={r.country} class="sb-flag" width="20" height="15" loading="lazy" decoding="async" />
                         ) : (
                           <span>{countryFlags[r.country] || ''}</span>
                         )}

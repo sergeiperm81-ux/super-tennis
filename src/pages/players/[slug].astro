@@ -183,6 +183,7 @@ try {
           width="400"
           height="400"
           loading="eager"
+          decoding="async"
         />
         <span class="tour-badge" style={`background: ${tourColor}`}>{tourLabel}</span>
       </div>
@@ -190,7 +191,7 @@ try {
       <div class="hero-info">
         <div class="hero-name-row">
           {flagImg ? (
-            <img src={flagImg} alt={country} class="hero-flag-img" width="40" height="30" loading="eager" />
+            <img src={flagImg} alt={country} class="hero-flag-img" width="40" height="30" loading="eager" decoding="async" />
           ) : (
             <span class="hero-flag">{flag}</span>
           )}
@@ -261,7 +262,7 @@ try {
               <span class="fact-label">Country</span>
               <span class="fact-value">
                 {flagImg ? (
-                  <img src={getFlagUrl(player.country_code || '', 20)} alt={player.country_code || ''} style="vertical-align:middle;margin-right:4px;border-radius:2px;" width="20" height="15" loading="lazy" />
+                  <img src={getFlagUrl(player.country_code || '', 20)} alt={player.country_code || ''} style="vertical-align:middle;margin-right:4px;border-radius:2px;" width="20" height="15" loading="lazy" decoding="async" />
                 ) : null}
                 {country}
               </span>
@@ -378,7 +379,7 @@ try {
                   <span class="sp-name">{p.first_name} <strong>{p.last_name}</strong></span>
                   <span class="sp-country">
                     {getFlagUrl(p.country_code || '') ? (
-                      <img src={getFlagUrl(p.country_code || '', 16)} alt={p.country_code || ''} class="sp-flag" width="16" height="12" loading="lazy" />
+                      <img src={getFlagUrl(p.country_code || '', 16)} alt={p.country_code || ''} class="sp-flag" width="16" height="12" loading="lazy" decoding="async" />
                     ) : null}
                     {countryNames[p.country_code || ''] || p.country_code || ''}
                   </span>

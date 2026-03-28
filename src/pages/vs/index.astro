@@ -82,7 +82,7 @@ const restArticles = sortedArticles.slice(1);
           <div class="vs-hero-photos">
             <div class="vs-hero-player vs-hero-left">
               {featuredPhotos.p1 ? (
-                <img src={featuredPhotos.p1} alt={featuredPhotos.name1} loading="eager" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+                <img src={featuredPhotos.p1} alt={featuredPhotos.name1} loading="eager" decoding="async" width="400" height="400" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
               ) : null}
               <div class="vs-hero-placeholder" style={featuredPhotos.p1 ? 'display:none' : ''}>{featuredPhotos.name1.charAt(0)}</div>
               <span class="vs-hero-name">{featuredPhotos.name1}</span>
@@ -90,7 +90,7 @@ const restArticles = sortedArticles.slice(1);
             <div class="vs-hero-divider">VS</div>
             <div class="vs-hero-player vs-hero-right">
               {featuredPhotos.p2 ? (
-                <img src={featuredPhotos.p2} alt={featuredPhotos.name2} loading="eager" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+                <img src={featuredPhotos.p2} alt={featuredPhotos.name2} loading="eager" decoding="async" width="400" height="400" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
               ) : null}
               <div class="vs-hero-placeholder" style={featuredPhotos.p2 ? 'display:none' : ''}>{featuredPhotos.name2.charAt(0)}</div>
               <span class="vs-hero-name">{featuredPhotos.name2}</span>
@@ -123,7 +123,7 @@ const restArticles = sortedArticles.slice(1);
                 <div class="card-player-duo">
                   <div class="duo-player">
                     {photos.p1 ? (
-                      <img src={photos.p1} alt={photos.name1} class="duo-avatar" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+                      <img src={photos.p1} alt={photos.name1} class="duo-avatar" loading="lazy" decoding="async" width="80" height="80" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
                     ) : null}
                     <div class="duo-placeholder" style={photos.p1 ? 'display:none' : ''}>{photos.name1.charAt(0)}</div>
                     <span class="duo-name">{photos.name1.split(' ').pop()}</span>
@@ -131,7 +131,7 @@ const restArticles = sortedArticles.slice(1);
                   <span class="duo-vs">vs</span>
                   <div class="duo-player">
                     {photos.p2 ? (
-                      <img src={photos.p2} alt={photos.name2} class="duo-avatar" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+                      <img src={photos.p2} alt={photos.name2} class="duo-avatar" loading="lazy" decoding="async" width="80" height="80" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
                     ) : null}
                     <div class="duo-placeholder" style={photos.p2 ? 'display:none' : ''}>{photos.name2.charAt(0)}</div>
                     <span class="duo-name">{photos.name2.split(' ').pop()}</span>

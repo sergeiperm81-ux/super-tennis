@@ -176,7 +176,7 @@ const newsCatLabels: Record<string, string> = {
 
       <!-- Records Hero Banner -->
       <div class="records-hero">
-        <img src="/images/records/tennis-trophy-gold.jpg" alt="Tennis championship trophy" class="records-hero-img" loading="eager" onerror="this.parentElement.style.display='none'" />
+        <img src="/images/records/tennis-trophy-gold.jpg" alt="Tennis championship trophy" class="records-hero-img" loading="eager" decoding="async" width="1200" height="400" onerror="this.parentElement.style.display='none'" />
         <div class="records-hero-overlay">
           <div class="records-hero-stat">
             <span class="hero-stat-value">24</span>
@@ -224,7 +224,7 @@ const newsCatLabels: Record<string, string> = {
             <>
               {catIdx > 0 && sectionPhotos[catIdx - 1] && (
                 <div class="section-photo-break">
-                  <img src={sectionPhotos[catIdx - 1].image} alt={sectionPhotos[catIdx - 1].caption} loading="lazy" />
+                  <img src={sectionPhotos[catIdx - 1].image} alt={sectionPhotos[catIdx - 1].caption} loading="lazy" decoding="async" width="800" height="300" />
                   <div class="section-photo-caption">{sectionPhotos[catIdx - 1].caption}</div>
                 </div>
               )}
@@ -285,8 +285,8 @@ const newsCatLabels: Record<string, string> = {
                           <td class="lb-rank">{i + 1}</td>
                           <td class="lb-player">
                             <a href={`/players/${p.slug}/`}>
-                              {p.image_url ? (<img src={p.image_url} alt={`${p.first_name} ${p.last_name}`} class="lb-avatar" width="28" height="28" loading="lazy" onerror="this.style.display='none'" />) : null}
-                              {getFlagUrl(p.country_code || '') ? (<img src={getFlagUrl(p.country_code || '', 20)} alt={p.country_code || ''} class="lb-flag-img" width="20" height="15" loading="lazy" />) : (<span class="lb-flag">{countryFlags[p.country_code || ''] || ''}</span>)}
+                              {p.image_url ? (<img src={p.image_url} alt={`${p.first_name} ${p.last_name}`} class="lb-avatar" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display='none'" />) : null}
+                              {getFlagUrl(p.country_code || '') ? (<img src={getFlagUrl(p.country_code || '', 20)} alt={p.country_code || ''} class="lb-flag-img" width="20" height="15" loading="lazy" decoding="async" />) : (<span class="lb-flag">{countryFlags[p.country_code || ''] || ''}</span>)}
                               {p.first_name} <strong>{p.last_name}</strong>
                             </a>
                           </td>
@@ -318,8 +318,8 @@ const newsCatLabels: Record<string, string> = {
                           <td class="lb-rank">{i + 1}</td>
                           <td class="lb-player">
                             <a href={`/players/${p.slug}/`}>
-                              {p.image_url ? (<img src={p.image_url} alt={`${p.first_name} ${p.last_name}`} class="lb-avatar" width="28" height="28" loading="lazy" onerror="this.style.display='none'" />) : null}
-                              {getFlagUrl(p.country_code || '') ? (<img src={getFlagUrl(p.country_code || '', 20)} alt={p.country_code || ''} class="lb-flag-img" width="20" height="15" loading="lazy" />) : (<span class="lb-flag">{countryFlags[p.country_code || ''] || ''}</span>)}
+                              {p.image_url ? (<img src={p.image_url} alt={`${p.first_name} ${p.last_name}`} class="lb-avatar" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display='none'" />) : null}
+                              {getFlagUrl(p.country_code || '') ? (<img src={getFlagUrl(p.country_code || '', 20)} alt={p.country_code || ''} class="lb-flag-img" width="20" height="15" loading="lazy" decoding="async" />) : (<span class="lb-flag">{countryFlags[p.country_code || ''] || ''}</span>)}
                               {p.first_name} <strong>{p.last_name}</strong>
                             </a>
                           </td>
@@ -360,7 +360,7 @@ const newsCatLabels: Record<string, string> = {
                         <td class="lb-rank">{i + 1}</td>
                         <td class="lb-player">
                           <a href={`/players/${p.slug}/`}>
-                            {getFlagUrl(p.country_code || '') ? (<img src={getFlagUrl(p.country_code || '', 20)} alt={p.country_code || ''} class="lb-flag-img" width="20" height="15" loading="lazy" />) : (<span class="lb-flag">{countryFlags[p.country_code || ''] || ''}</span>)}
+                            {getFlagUrl(p.country_code || '') ? (<img src={getFlagUrl(p.country_code || '', 20)} alt={p.country_code || ''} class="lb-flag-img" width="20" height="15" loading="lazy" decoding="async" />) : (<span class="lb-flag">{countryFlags[p.country_code || ''] || ''}</span>)}
                             {p.first_name} <strong>{p.last_name}</strong>
                           </a>
                         </td>
@@ -401,7 +401,7 @@ const newsCatLabels: Record<string, string> = {
                         <td class="lb-rank">{i + 1}</td>
                         <td class="lb-player">
                           <a href={`/players/${p.slug}/`}>
-                            {getFlagUrl(p.country_code || '') ? (<img src={getFlagUrl(p.country_code || '', 20)} alt={p.country_code || ''} class="lb-flag-img" width="20" height="15" loading="lazy" />) : (<span class="lb-flag">{countryFlags[p.country_code || ''] || ''}</span>)}
+                            {getFlagUrl(p.country_code || '') ? (<img src={getFlagUrl(p.country_code || '', 20)} alt={p.country_code || ''} class="lb-flag-img" width="20" height="15" loading="lazy" decoding="async" />) : (<span class="lb-flag">{countryFlags[p.country_code || ''] || ''}</span>)}
                             {p.first_name} <strong>{p.last_name}</strong>
                           </a>
                         </td>
@@ -474,11 +474,11 @@ const newsCatLabels: Record<string, string> = {
             <a href={`/players/${sidebarPlayer.slug}/`} class="sb-profile__card">
               <div class="sb-profile__img">
                 {sidebarPlayer.image_url && (
-                  <img src={sidebarPlayer.image_url} alt={`${sidebarPlayer.first_name} ${sidebarPlayer.last_name}`} loading="lazy" />
+                  <img src={sidebarPlayer.image_url} alt={`${sidebarPlayer.first_name} ${sidebarPlayer.last_name}`} loading="lazy" decoding="async" width="320" height="160" />
                 )}
                 <div class="sb-profile__name">
                   {getFlagUrl(sidebarPlayer.country_code) ? (
-                    <img src={getFlagUrl(sidebarPlayer.country_code, 40)} alt={sidebarPlayer.country_code} class="sb-flag" width="20" height="15" loading="lazy" />
+                    <img src={getFlagUrl(sidebarPlayer.country_code, 40)} alt={sidebarPlayer.country_code} class="sb-flag" width="20" height="15" loading="lazy" decoding="async" />
                   ) : null}
                   {sidebarPlayer.first_name} {sidebarPlayer.last_name}
                 </div>

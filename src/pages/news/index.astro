@@ -160,7 +160,7 @@ const sbCatLabels: Record<string, string> = {
                       <div class="np-item__header">
                         {n.image_url ? (
                           <div class="np-item__thumb">
-                            <img src={n.image_url} alt={n.title} loading="lazy" />
+                            <img src={n.image_url} alt={n.title} loading="lazy" decoding="async" width="260" height="180" />
                             {n.source && <div class="np-item__thumb-source">{n.source}</div>}
                           </div>
                         ) : (
@@ -218,11 +218,11 @@ const sbCatLabels: Record<string, string> = {
             <a href={`/players/${sidebarPlayer.slug}/`} class="sb-profile__card">
               <div class="sb-profile__img">
                 {sidebarPlayer.image_url && (
-                  <img src={sidebarPlayer.image_url} alt={`${sidebarPlayer.first_name} ${sidebarPlayer.last_name}`} loading="lazy" />
+                  <img src={sidebarPlayer.image_url} alt={`${sidebarPlayer.first_name} ${sidebarPlayer.last_name}`} loading="lazy" decoding="async" width="320" height="160" />
                 )}
                 <div class="sb-profile__name">
                   {getFlagUrl(sidebarPlayer.country_code) ? (
-                    <img src={getFlagUrl(sidebarPlayer.country_code, 40)} alt={sidebarPlayer.country_code} class="sb-flag" width="20" height="15" loading="lazy" />
+                    <img src={getFlagUrl(sidebarPlayer.country_code, 40)} alt={sidebarPlayer.country_code} class="sb-flag" width="20" height="15" loading="lazy" decoding="async" />
                   ) : null}
                   {sidebarPlayer.first_name} {sidebarPlayer.last_name}
                 </div>
@@ -248,7 +248,7 @@ const sbCatLabels: Record<string, string> = {
                     <td class="sb-rankings__name">
                       <a href={`/players/${r.slug}/`}>
                         {getFlagUrl(r.country) ? (
-                          <img src={getFlagUrl(r.country, 20)} alt={r.country} class="sb-flag" width="20" height="15" loading="lazy" />
+                          <img src={getFlagUrl(r.country, 20)} alt={r.country} class="sb-flag" width="20" height="15" loading="lazy" decoding="async" />
                         ) : (
                           <span>{countryFlags[r.country] || ''}</span>
                         )}
@@ -909,6 +909,32 @@ const sbCatLabels: Record<string, string> = {
       grid-template-columns: 1fr;
     }
   }
+
+  /* Load More button */
+  .news-load-more {
+    text-align: center;
+    padding: 24px 0;
+  }
+  .news-load-btn {
+    background: var(--court-green);
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .news-load-btn:hover:not(:disabled) {
+    background: #1a7a3a;
+    transform: translateY(-1px);
+  }
+  .news-load-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
 </style>
 
 <script>
@@ -929,5 +955,7 @@ const sbCatLabels: Record<string, string> = {
   });
 
   // Hash navigation is handled by dynamic-content.js after items load
+
+  // Load Earlier is handled entirely by dynamic-content.js (has access to renderNewsFullItem)
 </script>
 <script src="/js/dynamic-content.js" defer></script>

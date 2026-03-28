@@ -79,7 +79,7 @@ const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/players/${sl
       <span class="eq-stat-label">Country</span>
       <span class="eq-stat-value">
         {getFlagUrl(player.country_code || '') ? (
-          <img src={getFlagUrl(player.country_code || '')} alt={player.country_code || ''} class="stat-flag" width="20" height="15" loading="lazy" />
+          <img src={getFlagUrl(player.country_code || '')} alt={player.country_code || ''} class="stat-flag" width="20" height="15" loading="lazy" decoding="async" />
         ) : (
           <span>{flag}</span>
         )}

@@ -1,6 +1,7 @@
 ---
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
 import ArticleFooter from '../../components/ArticleFooter.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import { getArticleBySlug, getArticleSlugs } from '../../lib/supabase';
 import { addInterlinks } from '../../lib/interlinks';
 import { getVsPhotos, vsPlayerSlugs, slugToName } from '../../lib/player-photos';
@@ -89,7 +90,7 @@ const jsonLd = {
     <div class="vs-hero">
       <div class="vs-side">
         {photo1 ? (
-          <img src={photo1} alt={name1} class="vs-photo" loading="eager" onerror="this.style.display='none'" />
+          <img src={photo1} alt={name1} class="vs-photo" loading="eager" decoding="async" width="400" height="400" onerror="this.style.display='none'" />
         ) : (
           <div class="vs-placeholder"></div>
         )}
@@ -100,7 +101,7 @@ const jsonLd = {
       <div class="vs-badge">VS</div>
       <div class="vs-side">
         {photo2 ? (
-          <img src={photo2} alt={name2} class="vs-photo" loading="eager" onerror="this.style.display='none'" />
+          <img src={photo2} alt={name2} class="vs-photo" loading="eager" decoding="async" width="400" height="400" onerror="this.style.display='none'" />
         ) : (
           <div class="vs-placeholder"></div>
         )}
@@ -112,6 +113,8 @@ const jsonLd = {
   )}
 
   <div set:html={bodyHtml} />
+
+  <RelatedArticles category="vs" currentSlug={slug as string} />
 
   <ArticleFooter backLabel="All Rivalries" backHref="/vs/" />
 </ArticleLayout>

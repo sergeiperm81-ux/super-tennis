@@ -113,7 +113,7 @@ const gearFaqJsonLd = {
 
       {/* Hero Banner */}
       <div class="gear-hero">
-        <img src="/images/gear/tennis-rackets.jpg" alt="Tennis rackets and equipment" loading="eager" onerror="this.parentElement.style.display='none'" />
+        <img src="/images/gear/tennis-rackets.jpg" alt="Tennis rackets and equipment" loading="eager" decoding="async" width="1200" height="400" onerror="this.parentElement.style.display='none'" />
         <div class="gear-hero-overlay">
           <h2>Find Your Perfect Setup</h2>
           <p>Rackets, strings, shoes, and accessories — reviewed by tennis experts</p>
@@ -126,7 +126,7 @@ const gearFaqJsonLd = {
             <a href={`/gear/${article.slug}/`} class={`gear-card ${i === 0 ? 'featured' : ''}`}>
               {articlePhotos.get(article.slug) ? (
                 <div class="gear-card-img">
-                  <img src={articlePhotos.get(article.slug)!} alt={article.title} loading="lazy" onerror="this.parentElement.classList.add('no-img')" />
+                  <img src={articlePhotos.get(article.slug)!} alt={article.title} loading="lazy" decoding="async" width="400" height="267" onerror="this.parentElement.classList.add('no-img')" />
                 </div>
               ) : (
                 <div class="gear-card-icon">{iconMap[article.slug] || '🎾'}</div>

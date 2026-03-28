@@ -114,13 +114,20 @@ const row3a = [
 
 // 3. Full-width heroes
 const hero2 = {
-  title: "Djokovic vs Nadal — The Greatest Rivalry in Tennis History",
-  badge: "H2H",
-  image: nadalPhoto,
-  href: "/vs/djokovic-vs-nadal/",
-  desc: "60+ matches, 30+ Grand Slam titles between them. A rivalry that defined an era.",
+  title: "Famous People Who Played Tennis — Writers, Kings & Celebrities",
+  badge: "LIFESTYLE",
+  image: 'https://upload.wikimedia.org/wikipedia/commons/c/c6/Emperor_Nicholas_II_after_tennis_game%2C_1910.jpg',
+  href: "/lifestyle/famous-people-who-played-tennis/",
+  desc: "From Tolstoy to Henry VIII — the fascinating stories of writers, kings, and celebrities on the court.",
 };
 const hero3 = {
+  title: "Tennis in Movies & TV Shows — The Greatest Tennis Scenes in Cinema",
+  badge: "LIFESTYLE",
+  image: 'https://upload.wikimedia.org/wikipedia/commons/9/91/Cast_of_Challengers_2024.jpg',
+  href: "/lifestyle/tennis-in-movies-tv-shows/",
+  desc: "From Hitchcock's Strangers on a Train to Challengers — the most iconic tennis scenes in film history.",
+};
+const hero5 = {
   title: "Your Complete Guide to Wimbledon",
   badge: "TOURNAMENTS",
   image: '/images/tournaments/wimbledon.jpg',
@@ -162,20 +169,20 @@ const compactCards = [
 
 // 6. Horizontal feature card
 const featureCard = {
-  title: "Serena Williams' Net Worth — From Tennis to Business Empire",
-  badge: "MONEY",
-  image: serenaPhoto,
-  href: "/players/serena-williams/net-worth/",
-  desc: "How the 23-time Grand Slam champion built a fortune beyond the court.",
+  title: "Tennis Fashion Through the Decades — From Victorian Corsets to Nike Collabs",
+  badge: "LIFESTYLE",
+  image: '/images/tennis-fashion-cover.webp',
+  href: "/lifestyle/tennis-fashion-through-decades/",
+  desc: "A visual journey through 140 years of tennis fashion — from ankle-length skirts to Serena's catsuits.",
 };
 
 // 7. Hero 4
 const hero4 = {
-  title: "Alcaraz vs Sinner — The New Rivalry Defining Tennis",
-  badge: "H2H",
-  image: sinnerPhoto,
-  href: "/vs/alcaraz-vs-sinner/",
-  desc: "Two generational talents battling for supremacy. The rivalry that will define the next decade.",
+  title: "The Most Beautiful Tennis Courts in the World",
+  badge: "LIFESTYLE",
+  image: 'https://upload.wikimedia.org/wikipedia/commons/e/e2/London_Centre_Court_Wimbledon_%2853284151591%29.jpg',
+  href: "/lifestyle/most-beautiful-tennis-courts-world/",
+  desc: "From rooftop courts above skyscrapers to 500-year-old royal palaces — the most stunning venues on the planet.",
 };
 
 // 8. Second row of 3 vertical cards
@@ -375,7 +382,7 @@ const playerProfile = profilePlayer ? {
             {row3a.map(card => (
               <a href={card.href} class="compact-card">
                 <div class="compact-card__img">
-                  <img src={card.image} alt={card.title} loading="lazy" />
+                  <img src={card.image} alt={card.title} loading="lazy" decoding="async" width="400" height="267" />
                 </div>
                 <div class="compact-card__body">
                   <span class="badge" style={`background: ${badgeColors[card.badge]}; color: #000;`}>{card.badge}</span>
@@ -387,7 +394,7 @@ const playerProfile = profilePlayer ? {
 
           <!-- 3. FULL-WIDTH HERO -->
           <a href={hero2.href} class="card-hero">
-            <img src={hero2.image} alt={hero2.title} loading="lazy" />
+            <img src={hero2.image} alt={hero2.title} loading="lazy" decoding="async" width="800" height="400" />
             <div class="card-hero__overlay"></div>
             <div class="card-hero__content">
               <span class="badge" style={`background: ${badgeColors[hero2.badge]}; color: #000;`}>{hero2.badge}</span>
@@ -398,7 +405,7 @@ const playerProfile = profilePlayer ? {
 
           <!-- 4. FULL-WIDTH HERO -->
           <a href={hero3.href} class="card-hero">
-            <img src={hero3.image} alt={hero3.title} loading="lazy" />
+            <img src={hero3.image} alt={hero3.title} loading="lazy" decoding="async" width="800" height="400" />
             <div class="card-hero__overlay"></div>
             <div class="card-hero__content">
               <span class="badge" style={`background: ${badgeColors[hero3.badge]}; color: #000;`}>{hero3.badge}</span>
@@ -415,7 +422,7 @@ const playerProfile = profilePlayer ? {
             {row2.map(card => (
               <a href={card.href} class="vcard">
                 <div class="vcard__img">
-                  <img src={card.image} alt={card.title} loading="lazy" />
+                  <img src={card.image} alt={card.title} loading="lazy" decoding="async" width="400" height="267" />
                 </div>
                 <h3 class="vcard__title">{card.title}</h3>
               </a>
@@ -427,7 +434,7 @@ const playerProfile = profilePlayer ? {
             {compactCards.map(card => (
               <a href={card.href} class="hcard">
                 <div class="hcard__img">
-                  <img src={card.image} alt={card.title} loading="lazy" />
+                  <img src={card.image} alt={card.title} loading="lazy" decoding="async" width="400" height="267" />
                 </div>
                 <div class="hcard__body">
                   <h3 class="hcard__title">{card.title}</h3>
@@ -439,7 +446,7 @@ const playerProfile = profilePlayer ? {
           <!-- 7. HORIZONTAL FEATURE CARD (big photo left + text right) -->
           <a href={featureCard.href} class="feature-card">
             <div class="feature-card__img">
-              <img src={featureCard.image} alt={featureCard.title} loading="lazy" />
+              <img src={featureCard.image} alt={featureCard.title} loading="lazy" decoding="async" width="600" height="400" />
             </div>
             <div class="feature-card__body">
               <span class="badge" style={`background: ${badgeColors[featureCard.badge]}; color: #000;`}>{featureCard.badge}</span>
@@ -450,7 +457,7 @@ const playerProfile = profilePlayer ? {
 
           <!-- 8. FULL-WIDTH HERO -->
           <a href={hero4.href} class="card-hero">
-            <img src={hero4.image} alt={hero4.title} loading="lazy" />
+            <img src={hero4.image} alt={hero4.title} loading="lazy" decoding="async" width="800" height="400" />
             <div class="card-hero__overlay"></div>
             <div class="card-hero__content">
               <span class="badge" style={`background: ${badgeColors[hero4.badge]}; color: #000;`}>{hero4.badge}</span>
@@ -464,7 +471,7 @@ const playerProfile = profilePlayer ? {
             {row3b.map(card => (
               <a href={card.href} class="vcard">
                 <div class="vcard__img">
-                  <img src={card.image} alt={card.title} loading="lazy" />
+                  <img src={card.image} alt={card.title} loading="lazy" decoding="async" width="400" height="267" />
                 </div>
                 <h3 class="vcard__title">{card.title}</h3>
               </a>
@@ -549,10 +556,10 @@ const playerProfile = profilePlayer ? {
             </div>
             <a href={playerProfile.href} class="sb-profile__card">
               <div class="sb-profile__img">
-                <img src={playerProfile.image} alt={playerProfile.name} loading="lazy" />
+                <img src={playerProfile.image} alt={playerProfile.name} loading="lazy" decoding="async" width="400" height="400" />
                 <div class="sb-profile__name">
                   {getFlagUrl(playerProfile.country) ? (
-                    <img src={getFlagUrl(playerProfile.country, 40)} alt={playerProfile.country} class="sb-flag" width="20" height="15" loading="lazy" />
+                    <img src={getFlagUrl(playerProfile.country, 40)} alt={playerProfile.country} class="sb-flag" width="20" height="15" loading="lazy" decoding="async" />
                   ) : (
                     <span>{playerProfile.flag}</span>
                   )}
@@ -590,7 +597,7 @@ const playerProfile = profilePlayer ? {
                       {r.slug ? (
                         <a href={`/players/${r.slug}/`}>
                           {getFlagUrl(r.country) ? (
-                            <img src={getFlagUrl(r.country, 20)} alt={r.country} class="sb-flag" width="20" height="15" loading="lazy" />
+                            <img src={getFlagUrl(r.country, 20)} alt={r.country} class="sb-flag" width="20" height="15" loading="lazy" decoding="async" />
                           ) : (
                             <span>{countryFlags[r.country] || ''}</span>
                           )}
@@ -599,7 +606,7 @@ const playerProfile = profilePlayer ? {
                       ) : (
                         <span>
                           {getFlagUrl(r.country) ? (
-                            <img src={getFlagUrl(r.country, 20)} alt={r.country} class="sb-flag" width="20" height="15" loading="lazy" />
+                            <img src={getFlagUrl(r.country, 20)} alt={r.country} class="sb-flag" width="20" height="15" loading="lazy" decoding="async" />
                           ) : (
                             <span>{countryFlags[r.country] || ''}</span>
                           )}
@@ -1405,6 +1412,67 @@ const playerProfile = profilePlayer ? {
   .video-thumb__channel {
     font-size: 0.72rem;
     color: var(--gray-500);
+  }
+
+  /* Lite YouTube player (dynamically loaded) */
+  .lite-yt {
+    position: relative;
+    aspect-ratio: 16/9;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    cursor: pointer;
+    background: #000;
+  }
+  .lite-yt img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .lite-yt__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 64px;
+    height: 64px;
+    background: rgba(0,0,0,0.65);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    z-index: 1;
+  }
+  .lite-yt:hover .lite-yt__play {
+    background: rgba(220,38,38,0.9);
+  }
+  .lite-yt__play svg {
+    width: 28px;
+    height: 28px;
+    fill: #fff;
+  }
+  .lite-yt__title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 32px 12px 10px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .lite-yt iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    z-index: 2;
   }
 
   /* ===== RESPONSIVE ===== */
