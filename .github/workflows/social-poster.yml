@@ -1,4 +1,4 @@
-name: Social Poster — X/Twitter
+name: Social Poster — Bluesky
 
 on:
   schedule:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  post-to-x:
+  post-to-bluesky:
     runs-on: ubuntu-latest
     timeout-minutes: 2
 
@@ -23,12 +23,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Post one news to X/Twitter
+      - name: Post one news to Bluesky
         env:
-          X_API_KEY: ${{ secrets.X_API_KEY }}
-          X_API_SECRET: ${{ secrets.X_API_SECRET }}
-          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
-          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-        run: node scripts/post-to-x.mjs
+        run: node scripts/post-to-bluesky.mjs
