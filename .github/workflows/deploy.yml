@@ -6,9 +6,18 @@ on:
     types: [content-updated]
   # Manual trigger
   workflow_dispatch:
-  # Code changes
+  # Code changes — skip docs, configs, and non-site files
   push:
     branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'astro.config.*'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - 'workers/**'
+      - 'scripts/**'
 
 jobs:
   build-deploy:
@@ -24,6 +33,13 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
+
+      - name: Cache Astro build
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.astro
+          key: astro-build-${{ hashFiles('src/**', 'public/**', 'astro.config.*') }}
+          restore-keys: astro-build-
 
       - name: Install dependencies
         run: npm ci
