@@ -4,14 +4,12 @@ import ArticleFooter from '../../components/ArticleFooter.astro';
 import { addInterlinks } from '../../lib/interlinks';
 
 export async function getStaticPaths() {
-  const toSlug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').substring(0, 80);
-
   let allNews: any[] = [];
   try {
     const res = await fetch('https://supertennis-cron.sfedoroff.workers.dev/api/news?limit=1000');
     if (res.ok) {
       const data = await res.json();
-      allNews = (Array.isArray(data) ? data : []).filter((n: any) => n.body && n.body.length > 50);
+      allNews = (Array.isArray(data) ? data : []).filter((n: any) => n.body && n.body.length > 50 && n.slug);
     }
   } catch (e) {
     console.warn('News [slug]: Worker API unavailable');
@@ -19,12 +17,11 @@ export async function getStaticPaths() {
 
   const seen = new Set<string>();
   return allNews.filter((n: any) => {
-    const s = toSlug(n.title || 'untitled');
-    if (seen.has(s)) return false;
-    seen.add(s);
+    if (seen.has(n.slug)) return false;
+    seen.add(n.slug);
     return true;
   }).map((n: any) => ({
-    params: { slug: toSlug(n.title || 'untitled') },
+    params: { slug: n.slug },
     props: { article: n },
   }));
 }

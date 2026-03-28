@@ -504,6 +504,7 @@ async function generateNews(env: Env): Promise<string> {
     curated.push(...curatedA);
     log(`   Batch A: ${curatedA.length} stories`);
   } catch (e: any) {
+        console.error('API error:', e.message);
     log(`❌ OpenAI batch A failed: ${e.message}`);
   }
 
@@ -518,6 +519,7 @@ async function generateNews(env: Env): Promise<string> {
       curated.push(...curatedB);
       log(`   Batch B: ${curatedB.length} stories`);
     } catch (e: any) {
+        console.error('API error:', e.message);
       log(`❌ OpenAI batch B failed: ${e.message}`);
     }
   }
@@ -587,7 +589,7 @@ async function generateNews(env: Env): Promise<string> {
 
     if (imageUrl) usedImages.add(imageUrl);
 
-    const titleSlug = c.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
+    const titleSlug = c.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 120);
     const slug = `${today}-${titleSlug}`;
 
     newsRows.push({
@@ -618,6 +620,7 @@ async function generateNews(env: Env): Promise<string> {
     // Old news stay in the archive, only the latest batch shows first in the feed
     log('📦  All news preserved in archive (no deactivation)');
   } catch (e: any) {
+        console.error('API error:', e.message);
     log(`❌ Supabase error: ${e.message}`);
   }
 
@@ -700,6 +703,7 @@ async function updateVideos(env: Env): Promise<string> {
       await supabaseQuery(env, 'youtube_videos', 'POST', { 'on_conflict': 'video_id' }, rows);
       log(`   ✅ Saved ${rows.length} videos to Supabase`);
     } catch (e: any) {
+        console.error('API error:', e.message);
       log(`   ⚠️ Supabase video upsert error: ${e.message}`);
       log('   ℹ️  Make sure youtube_videos table exists with columns: video_id (PK), title, channel_name, channel_id, category, published_at');
     }
@@ -732,6 +736,7 @@ async function triggerRebuild(env: Env): Promise<void> {
     });
     console.log(`🔄 GitHub rebuild triggered: ${res.status}`);
   } catch (e: any) {
+        console.error('API error:', e.message);
     console.log(`⚠️  Rebuild trigger failed: ${e.message}`);
   }
 }
@@ -824,6 +829,7 @@ async function generateWeeklyArticle(env: Env): Promise<string> {
     existingTitles = (existing || []).map((a: any) => a.title).join('\n- ');
     log(`   Found ${existing.length} existing ${section} articles`);
   } catch (e: any) {
+        console.error('API error:', e.message);
     log(`   ⚠️ Could not fetch existing articles: ${e.message}`);
   }
 
@@ -878,6 +884,7 @@ Return ONLY a JSON object (no markdown fences, no extra text):
 
     log(`   ✅ Generated: "${article.title}" (${section}/${article.slug})`);
   } catch (e: any) {
+        console.error('API error:', e.message);
     log(`   ❌ Article generation failed: ${e.message}`);
   }
 
@@ -967,6 +974,7 @@ async function updateRankings(env: Env): Promise<string> {
     // We'll load matching players on-demand after parsing rankings
     log(`   Will match players by slug lookup`);
   } catch (e: any) {
+        console.error('API error:', e.message);
     log(`   ❌ Failed to fetch players: ${e.message}`);
     return logs.join('\n');
   }
@@ -1024,6 +1032,7 @@ async function updateRankings(env: Env): Promise<string> {
             slugToPlayerId.set(p.slug, p.player_id);
           }
         } catch (e: any) {
+        console.error('API error:', e.message);
           log(`   ⚠️ Batch lookup error: ${e.message}`);
         }
       }
@@ -1052,6 +1061,7 @@ async function updateRankings(env: Env): Promise<string> {
       }
       log(`   ✅ ${tour.toUpperCase()}: upserted ${rows.length} rankings`);
     } catch (e: any) {
+        console.error('API error:', e.message);
       log(`   ❌ ${tour.toUpperCase()}: ${e.message}`);
     }
   }
@@ -1257,35 +1267,43 @@ export default {
         const body = await request.json() as Record<string, string>;
         const { name, email, subject, message } = body;
         if (!name || !email || !message) {
-          return new Response(JSON.stringify({ error: 'Missing fields' }), { status: 400, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } });
+          return new Response(JSON.stringify({ error: 'Missing fields' }), { status: 400, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://super.tennis' } });
         }
         // Store in Supabase
         await supabaseQuery(env, 'contact_messages', 'POST', {}, {
           name, email, subject: subject || 'general', message,
           created_at: new Date().toISOString(),
         });
-        return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } });
+        return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://super.tennis' } });
       } catch (e: any) {
-        return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } });
+        console.error('API error:', e.message);
+        return new Response(JSON.stringify({ error: 'Internal error' }), { status: 500, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://super.tennis' } });
       }
     }
 
     // CORS preflight for contact form
     if (url.pathname === '/api/contact' && request.method === 'OPTIONS') {
-      return new Response(null, { status: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' } });
+      return new Response(null, { status: 204, headers: { 'Access-Control-Allow-Origin': 'https://super.tennis', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' } });
     }
 
     if (url.pathname === '/api/news') {
       try {
         const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 1000);
-        const data = await supabaseQuery(env, 'news', 'GET', {
+        const dateParam = url.searchParams.get('date'); // YYYY-MM-DD
+        const params: Record<string, string> = {
           'is_active': 'eq.true',
           'order': 'published_at.desc',
           'limit': String(limit),
-        }, undefined, { 'Range': `0-${limit - 1}` });
+        };
+        if (dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
+          // Filter by specific date using Supabase and() filter
+          params['and'] = `(published_at.gte.${dateParam}T00:00:00Z,published_at.lt.${dateParam}T23:59:59Z)`;
+        }
+        const data = await supabaseQuery(env, 'news', 'GET', params, undefined, { 'Range': `0-${limit - 1}` });
         return jsonResponse(data, 300, request); // cache 5 min
       } catch (e: any) {
-        return jsonResponse({ error: e.message }, 60, request);
+        console.error('API error:', e.message);
+        return jsonResponse({ error: 'Internal error' }, 60, request);
       }
     }
 
@@ -1319,7 +1337,8 @@ export default {
         }
         return jsonResponse(results, 3600, request); // cache 1 hour
       } catch (e: any) {
-        return jsonResponse({ error: e.message }, 60, request);
+        console.error('API error:', e.message);
+        return jsonResponse({ error: 'Internal error' }, 60, request);
       }
     }
 
@@ -1354,7 +1373,8 @@ export default {
         });
         return jsonResponse(data, 120, request); // cache 2 min
       } catch (e: any) {
-        return jsonResponse({ error: e.message }, 60, request);
+        console.error('API error:', e.message);
+        return jsonResponse({ error: 'Internal error' }, 60, request);
       }
     }
 
@@ -1376,7 +1396,8 @@ export default {
         const analyticsData = await fetchCloudflareAnalytics(env, dateStart, dateEnd);
         return jsonResponse(analyticsData, 3600, request); // cache 1 hour
       } catch (e: any) {
-        return jsonResponse({ error: e.message }, 0, request);
+        console.error('API error:', e.message);
+        return jsonResponse({ error: 'Internal error' }, 0, request);
       }
     }
 
@@ -1395,7 +1416,8 @@ export default {
         }
         return jsonResponse(data[0], 3600, request); // cache 1 hour
       } catch (e: any) {
-        return jsonResponse({ error: e.message }, 0, request);
+        console.error('API error:', e.message);
+        return jsonResponse({ error: 'Internal error' }, 0, request);
       }
     }
 
