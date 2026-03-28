@@ -167,6 +167,14 @@ async function main() {
     process.exit(0);
   }
 
+  // Verify the page exists (avoid posting 404 links)
+  const articleUrl = `${SITE_URL}/news/${news.slug}/`;
+  const pageCheck = await fetch(articleUrl, { method: 'HEAD' }).catch(() => null);
+  if (!pageCheck || pageCheck.status === 404) {
+    console.log(`⏭️  Page not deployed yet: ${articleUrl} — skipping`);
+    process.exit(0);
+  }
+
   console.log(`📝 Posting: "${news.title}"`);
 
   const { text, url } = buildPost(news);
