@@ -51,6 +51,18 @@ const itemListJsonLd = lifestyleArticles.length > 0 ? {
         <p class="subtitle">Net worth, culture, rivalries, and stories from the world of professional tennis{lifestyleArticles.length > 0 && ` — ${lifestyleArticles.length} articles`}</p>
       </section>
 
+      {/* Category filters */}
+      <div class="cat-filters" id="cat-filters">
+        <button class="cat-btn active" data-subcat="all">All</button>
+        <button class="cat-btn" data-subcat="culture" style="--cat-color: #2563eb">Culture</button>
+        <button class="cat-btn" data-subcat="health" style="--cat-color: #059669">Health</button>
+        <button class="cat-btn" data-subcat="style" style="--cat-color: #9333ea">Style</button>
+        <button class="cat-btn" data-subcat="media" style="--cat-color: #f97316">Media</button>
+        <button class="cat-btn" data-subcat="career" style="--cat-color: #dc2626">Career</button>
+        <button class="cat-btn" data-subcat="money" style="--cat-color: #d4a017">Money</button>
+        <button class="cat-btn" data-subcat="travel" style="--cat-color: #0891b2">Travel</button>
+      </div>
+
       {lifestyleArticles.length > 0 ? (
         <>
           {/* Top row — 2 large cards side by side */}
@@ -58,7 +70,7 @@ const itemListJsonLd = lifestyleArticles.length > 0 ? {
             {topArticles.map((article) => {
               const photo = articlePhotos.get(article.slug);
               return (
-                <a href={`/lifestyle/${article.slug}/`} class="top-card">
+                <a href={`/lifestyle/${article.slug}/`} class="top-card" data-subcat={article.subcategory || 'culture'}>
                   <div class={`top-card-img ${isPlayerPhoto(photo) ? 'player-photo' : ''}`}>
                     {photo ? (
                       <img src={photo} alt={article.title} loading="eager" decoding="async" width="600" height="400" onerror="this.parentElement.classList.add('no-img')" />
@@ -79,7 +91,7 @@ const itemListJsonLd = lifestyleArticles.length > 0 ? {
             {gridArticles.map((article) => {
               const photo = articlePhotos.get(article.slug);
               return (
-                <a href={`/lifestyle/${article.slug}/`} class="card">
+                <a href={`/lifestyle/${article.slug}/`} class="card" data-subcat={article.subcategory || 'culture'}>
                   <div class={`card-img ${isPlayerPhoto(photo) ? 'player-photo' : ''}`}>
                     {photo ? (
                       <img src={photo} alt={article.title} loading="lazy" decoding="async" width="400" height="400" onerror="this.parentElement.classList.add('no-img')" />
@@ -114,9 +126,54 @@ const itemListJsonLd = lifestyleArticles.length > 0 ? {
       </section>
     </div>
   </div>
+
+  <script is:inline>
+    document.getElementById('cat-filters')?.addEventListener('click', function(e) {
+      const btn = e.target.closest('.cat-btn');
+      if (!btn) return;
+      const sub = btn.dataset.subcat;
+      this.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.top-card, .card').forEach(el => {
+        if (sub === 'all' || el.dataset.subcat === sub) {
+          el.style.display = '';
+        } else {
+          el.style.display = 'none';
+        }
+      });
+    });
+  </script>
 </BaseLayout>
 
 <style>
+  .cat-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .cat-btn {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid #d1d5db;
+    background: transparent;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #374151;
+    transition: all 0.2s;
+  }
+  .cat-btn:hover {
+    border-color: var(--cat-color, #6b7280);
+    color: var(--cat-color, #6b7280);
+  }
+  .cat-btn.active {
+    background: var(--cat-color, #111827);
+    color: #fff;
+    border-color: var(--cat-color, #111827);
+  }
   .lifestyle-page {
     max-width: 1100px;
     margin: 0 auto;

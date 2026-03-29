@@ -120,10 +120,20 @@ const gearFaqJsonLd = {
         </div>
       </div>
 
+      {/* Category filters */}
+      <div class="cat-filters" id="cat-filters">
+        <button class="cat-btn active" data-subcat="all">All</button>
+        <button class="cat-btn" data-subcat="rackets" style="--cat-color: #dc2626">Rackets</button>
+        <button class="cat-btn" data-subcat="strings" style="--cat-color: #2563eb">Strings & Grips</button>
+        <button class="cat-btn" data-subcat="shoes" style="--cat-color: #059669">Shoes & Apparel</button>
+        <button class="cat-btn" data-subcat="accessories" style="--cat-color: #f97316">Accessories</button>
+        <button class="cat-btn" data-subcat="guides" style="--cat-color: #7c3aed">Guides</button>
+      </div>
+
       {gearArticles.length > 0 ? (
         <div class="articles-grid">
           {gearArticles.map((article, i) => (
-            <a href={`/gear/${article.slug}/`} class={`gear-card ${i === 0 ? 'featured' : ''}`}>
+            <a href={`/gear/${article.slug}/`} class={`gear-card ${i === 0 ? 'featured' : ''}`} data-subcat={article.subcategory || 'rackets'}>
               {articlePhotos.get(article.slug) ? (
                 <div class="gear-card-img">
                   <img src={articlePhotos.get(article.slug)!} alt={article.title} loading="lazy" decoding="async" width="400" height="267" onerror="this.parentElement.classList.add('no-img')" />
@@ -170,9 +180,54 @@ const gearFaqJsonLd = {
       </section>
     </div>
   </div>
+
+  <script is:inline>
+    document.getElementById('cat-filters')?.addEventListener('click', function(e) {
+      const btn = e.target.closest('.cat-btn');
+      if (!btn) return;
+      const sub = btn.dataset.subcat;
+      this.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.gear-card').forEach(el => {
+        if (sub === 'all' || el.dataset.subcat === sub) {
+          el.style.display = '';
+        } else {
+          el.style.display = 'none';
+        }
+      });
+    });
+  </script>
 </BaseLayout>
 
 <style>
+  .cat-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .cat-btn {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid #d1d5db;
+    background: transparent;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #374151;
+    transition: all 0.2s;
+  }
+  .cat-btn:hover {
+    border-color: var(--cat-color, #6b7280);
+    color: var(--cat-color, #6b7280);
+  }
+  .cat-btn.active {
+    background: var(--cat-color, #111827);
+    color: #fff;
+    border-color: var(--cat-color, #111827);
+  }
   .gear-page {
     max-width: 1200px;
     margin: 0 auto;
