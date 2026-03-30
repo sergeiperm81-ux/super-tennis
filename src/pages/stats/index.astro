@@ -108,14 +108,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       <div id="pub-dashboard" hidden>
 
         <!-- Summary cards -->
-        <div class="stats-kpi" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+        <div class="stats-kpi" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 24px;">
           <div class="stats-kpi__card">
             <span class="stats-kpi__label">Published</span>
             <span class="stats-kpi__value" id="pub-published">—</span>
-          </div>
-          <div class="stats-kpi__card">
-            <span class="stats-kpi__label">In Queue</span>
-            <span class="stats-kpi__value" id="pub-queued">—</span>
           </div>
           <div class="stats-kpi__card">
             <span class="stats-kpi__label" id="pub-errors-label">Errors</span>
@@ -123,12 +119,9 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           </div>
         </div>
 
-        <!-- Filter: Queue / Published -->
+        <!-- Toolbar -->
         <div class="stats-dash__toolbar">
-          <div class="stats-dash__periods">
-            <button class="pub-filter active" data-status="queue">Queue</button>
-            <button class="pub-filter" data-status="published">Published</button>
-          </div>
+          <div class="stats-dash__periods"></div>
           <button id="pub-refresh" class="stats-login__btn" style="padding:6px 14px;font-size:0.82rem;">↻ Refresh</button>
         </div>
 
@@ -413,7 +406,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   // ===== PUBLICATIONS TAB =====
   var pubLoaded = false;
   var allPubs = [];
-  var pubFilter = 'queue'; // default tab
+  var pubFilter = 'published'; // show all published
 
   var pubPwd = sessionStorage.getItem('stats_pwd') || '';
   if (pubPwd) {
@@ -435,14 +428,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     loadPublications();
   });
 
-  document.querySelectorAll('.pub-filter').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('.pub-filter').forEach(function(b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      pubFilter = btn.dataset.status;
-      filterPublications(pubFilter);
-    });
-  });
+  // No queue/published tab switching needed — always show published
 
   function escHtml(s) {
     if (!s) return '';
@@ -487,7 +473,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           document.getElementById('pub-empty').hidden = false;
           list.innerHTML = '';
           document.getElementById('pub-published').textContent = '0';
-          document.getElementById('pub-queued').textContent = '0';
           document.getElementById('pub-errors').textContent = '0';
           return;
         }
@@ -499,7 +484,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         var queued = data.filter(function(p) { return !isPublished(p); });
         var errors = data.filter(hasError);
         document.getElementById('pub-published').textContent = published.length;
-        document.getElementById('pub-queued').textContent = queued.length;
         document.getElementById('pub-errors').textContent = errors.length;
         if (errors.length > 0) {
           document.getElementById('pub-errors').style.color = '#ef4444';
