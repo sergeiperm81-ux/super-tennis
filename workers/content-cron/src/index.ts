@@ -892,6 +892,164 @@ Return ONLY a JSON object (no markdown fences, no extra text):
 }
 
 // ============================================================
+// WEEKLY BRIEF GENERATION
+// ============================================================
+async function generateWeeklyBrief(env: Env): Promise<string> {
+  const logs: string[] = [];
+  const log = (msg: string) => { logs.push(msg); console.log(msg); };
+  log('📋 Generating weekly brief...');
+
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setUTCDate(now.getUTCDate() - 7);
+  const weekStartStr = weekStart.toISOString().split('T')[0];
+
+  // 1. Collect stats from last week
+  let newsCount = 0, topCategories: any[] = [], topNews: any[] = [];
+  try {
+    const news = await supabaseQuery(env, 'news', 'GET', {
+      'select': 'title,category,published_at',
+      'is_active': 'eq.true',
+      'published_at': `gte.${weekStartStr}T00:00:00Z`,
+      'order': 'published_at.desc',
+      'limit': '200',
+    });
+    newsCount = news.length;
+    // Count by category
+    const catCount: Record<string, number> = {};
+    for (const n of news) { catCount[n.category] = (catCount[n.category] || 0) + 1; }
+    topCategories = Object.entries(catCount).sort((a, b) => b[1] - a[1]).map(([cat, count]) => ({ category: cat, count }));
+    topNews = news.slice(0, 10).map((n: any) => ({ title: n.title, category: n.category }));
+    log(`   ${newsCount} news this week, top category: ${topCategories[0]?.category || 'none'}`);
+  } catch (e: any) { log(`   ⚠️ News stats: ${e.message}`); }
+
+  // 2. Video publications this week
+  let videoCount = 0;
+  try {
+    const vids = await supabaseQuery(env, 'video_publications', 'GET', {
+      'select': 'title,youtube_id',
+      'scheduled_at': `gte.${weekStartStr}T00:00:00Z`,
+      'limit': '50',
+    });
+    videoCount = vids.filter((v: any) => v.youtube_id).length;
+    log(`   ${videoCount} videos published this week`);
+  } catch (e: any) { log(`   ⚠️ Video stats: ${e.message}`); }
+
+  // 3. Articles created this week
+  let newArticles = 0;
+  try {
+    const arts = await supabaseQuery(env, 'articles', 'GET', {
+      'select': 'title,category',
+      'status': 'eq.published',
+      'created_at': `gte.${weekStartStr}T00:00:00Z`,
+      'limit': '100',
+    });
+    newArticles = arts.length;
+    log(`   ${newArticles} new articles this week`);
+  } catch (e: any) { log(`   ⚠️ Article stats: ${e.message}`); }
+
+  // 4. Get low-traffic pages from Cloudflare Analytics (if available)
+  let lowTrafficPages: any[] = [];
+  if (env.CF_API_TOKEN && env.CF_ZONE_ID) {
+    try {
+      const since = new Date(now.getTime() - 7 * 86400000).toISOString();
+      const until = now.toISOString();
+      const gqlRes = await fetch('https://api.cloudflare.com/client/v4/graphql', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${env.CF_API_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: `{ viewer { zones(filter: { zoneTag: "${env.CF_ZONE_ID}" }) { httpRequestsAdaptiveGroups(filter: { datetime_geq: "${since}", datetime_leq: "${until}" }, limit: 100, orderBy: [count_ASC]) { count dimensions { clientRequestPath } } } } }` }),
+      });
+      const gqlData: any = await gqlRes.json();
+      const groups = gqlData?.data?.viewer?.zones?.[0]?.httpRequestsAdaptiveGroups || [];
+      lowTrafficPages = groups
+        .filter((g: any) => {
+          const p = g.dimensions.clientRequestPath;
+          return p && !p.match(/\.(js|css|png|jpg|jpeg|svg|ico|webp|woff2?|gif|map|xml|txt)$/i) && p !== '/' && g.count <= 3;
+        })
+        .slice(0, 20)
+        .map((g: any) => ({ path: g.dimensions.clientRequestPath, views: g.count }));
+      log(`   ${lowTrafficPages.length} low-traffic pages found`);
+    } catch (e: any) { log(`   ⚠️ Analytics: ${e.message}`); }
+  }
+
+  // 5. Ask OpenAI for insights + upcoming events + content recommendations
+  log('🤖 Asking OpenAI for weekly insights...');
+  const briefPrompt = `You are a tennis media strategist for super.tennis, a tennis entertainment portal.
+
+This week's stats:
+- ${newsCount} news articles published (categories: ${topCategories.map(c => `${c.category}: ${c.count}`).join(', ')})
+- ${videoCount} YouTube Shorts published
+- ${newArticles} new evergreen articles added
+- Top headlines this week: ${topNews.map(n => n.title).join('; ')}
+${lowTrafficPages.length > 0 ? `\nLow-traffic pages (0-3 views this week — may need improvement):\n${lowTrafficPages.map(p => `  ${p.path} (${p.views} views)`).join('\n')}` : ''}
+
+Today is ${now.toISOString().split('T')[0]}.
+
+Provide a JSON response with these fields:
+{
+  "upcoming_events": [{"event": "tournament or match name", "date": "YYYY-MM-DD", "importance": "high|medium|low", "content_angle": "specific article idea to publish BEFORE this event"}],
+  "recommendations": [{"topic": "article title idea", "category": "lifestyle|gear|records|vs|tournaments|players", "reason": "why write about this now", "priority": "high|medium|low"}],
+  "underperforming_pages": [{"path": "/path/to/page", "views": 0, "problem": "why this page likely gets no traffic", "fix": "specific suggestion to improve it — new title, better content, merge with another page, or delete"}],
+  "summary": "2-3 paragraph weekly summary: what topics were hot, what content worked, what to focus on next week, overall strategy advice"
+}
+
+Include:
+- Real upcoming ATP/WTA tournaments for the next 2 weeks
+- Trending topics based on this week's news categories
+- Content gaps — what categories need more articles
+- SEO opportunities — search terms that will trend due to upcoming events
+- Analysis of low-traffic pages: why they fail, specific fixes for each
+- At least 5 upcoming events, 8 content recommendations, and analysis of ALL low-traffic pages listed above
+
+Return ONLY valid JSON, no markdown fences.`;
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${env.OPENAI_API_KEY}` },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: 'You are a tennis media strategist. Return only valid JSON.' },
+          { role: 'user', content: briefPrompt },
+        ],
+        temperature: 0.7,
+        max_tokens: 3000,
+      }),
+    });
+
+    const data: any = await res.json();
+    const content = data.choices?.[0]?.message?.content || '';
+    const jsonStr = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    let brief;
+    try { brief = JSON.parse(jsonStr); } catch { log('   ❌ OpenAI returned invalid JSON'); return logs.join('\n'); }
+
+    // 6. Insert into weekly_briefs
+    await supabaseQuery(env, 'weekly_briefs', 'POST', {}, [{
+      week_start: weekStartStr,
+      top_pages: topNews,
+      search_queries: topCategories,
+      upcoming_events: brief.upcoming_events || [],
+      recommendations: [...(brief.recommendations || []), ...(brief.underperforming_pages || []).map((p: any) => ({
+        topic: `Fix: ${p.path}`,
+        category: 'maintenance',
+        reason: `${p.problem} → ${p.fix}`,
+        priority: 'medium',
+      }))],
+      summary: brief.summary || '',
+    }]);
+
+    log(`   ✅ Weekly brief saved for week of ${weekStartStr}`);
+    log(`   📅 ${(brief.upcoming_events || []).length} upcoming events`);
+    log(`   💡 ${(brief.recommendations || []).length} content recommendations`);
+  } catch (e: any) {
+    log(`   ❌ Brief generation failed: ${e.message}`);
+  }
+
+  return logs.join('\n');
+}
+
+// ============================================================
 // MONTHLY RANKINGS UPDATE
 // ============================================================
 function parseRankingsHtml(html: string, tour: string): { rank: number; name: string; country: string; points: number }[] {
@@ -1229,11 +1387,13 @@ export default {
       await updateVideos(env);
     }
 
-    // WEEKLY (Monday): New evergreen article → REBUILD
+    // WEEKLY (Monday): New evergreen article + weekly brief → REBUILD
     const dayOfWeek = now.getUTCDay(); // 0=Sun, 1=Mon
     if (dayOfWeek === 1) {
       console.log('📝 Weekly article generation (Monday)');
       await generateWeeklyArticle(env);
+      console.log('📋 Weekly brief generation (Monday)');
+      await generateWeeklyBrief(env);
       ctx.waitUntil(triggerRebuild(env));
       return;
     }
@@ -1440,6 +1600,11 @@ export default {
       if (url.pathname === '/trigger/article') {
         const result = await generateWeeklyArticle(env);
         await triggerRebuild(env);
+        return new Response(result, { headers: { 'Content-Type': 'text/plain' } });
+      }
+
+      if (url.pathname === '/trigger/brief') {
+        const result = await generateWeeklyBrief(env);
         return new Response(result, { headers: { 'Content-Type': 'text/plain' } });
       }
 
