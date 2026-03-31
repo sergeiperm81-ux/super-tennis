@@ -130,6 +130,11 @@ const ogImage = categoryOgImages[category || ''] || '/og/default.png';
       <ol class="toc__list" id="toc-list"></ol>
     </nav>
 
+    <!-- Affiliate Disclosure (shown on gear/lifestyle articles with affiliate links) -->
+    {(category === 'gear' || category === 'lifestyle') && (
+      <p class="affiliate-disclosure">This article contains affiliate links. If you purchase through these links, we may earn a small commission at no extra cost to you.</p>
+    )}
+
     <!-- Article Content -->
     <div class="article-body" id="article-body">
       <slot />
@@ -386,6 +391,18 @@ const ogImage = categoryOgImages[category || ''] || '/og/default.png';
   }
   .toc__list :global(a:hover) {
     color: var(--court-green);
+  }
+
+  /* Affiliate Disclosure */
+  .affiliate-disclosure {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    margin-bottom: 24px;
+    font-style: italic;
   }
 
   /* Article Body */

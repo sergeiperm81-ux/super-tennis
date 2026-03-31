@@ -143,19 +143,20 @@ const fullTitle = cleanTitle === 'Home' ? 'SUPER.TENNIS — Tennis for Everyone'
     })();
   </script>
 
-  <!-- Open external links in new tab (affiliate, shops, etc.) -->
+  <!-- External links: new tab + rel="sponsored" for affiliate domains -->
   <script is:inline>
-    document.addEventListener('click', function(e) {
-      var a = e.target.closest('a');
-      if (!a || !a.href) return;
-      try {
-        var url = new URL(a.href);
-        if (url.hostname !== location.hostname && !a.hasAttribute('target')) {
+    (function() {
+      var affiliateDomains = ['amazon.com','tennis-warehouse.com','tennis-point.com','memberstennisfitness.com','tennisfitness.com','ebay.com','tennistopia.com','doittennis.com','holabirdsports.com','wilson.com','tennisexpress.com'];
+      document.querySelectorAll('a[href]').forEach(function(a) {
+        try {
+          var url = new URL(a.href);
+          if (url.hostname === location.hostname) return;
           a.setAttribute('target', '_blank');
-          a.setAttribute('rel', 'noopener noreferrer');
-        }
-      } catch(ex) {}
-    });
+          var isAffiliate = affiliateDomains.some(function(d) { return url.hostname.includes(d); });
+          a.setAttribute('rel', isAffiliate ? 'sponsored noopener noreferrer' : 'noopener noreferrer');
+        } catch(ex) {}
+      });
+    })();
   </script>
 </body>
 </html>
