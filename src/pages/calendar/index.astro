@@ -209,6 +209,67 @@ function articleUrl(art: { category: string; slug: string }): string {
   }
   return `${categoryUrl[art.category] || '/'}${art.slug}/`;
 }
+
+// Generate Event JSON-LD for all tournaments
+function parseDateRange(dates: string): { start: string; end: string } {
+  // Parse "Jan 19 – Feb 1" or "Mar 5 – 16" style dates
+  const parts = dates.split('–').map(s => s.trim());
+  const monthMap: Record<string, string> = {
+    Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
+    Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12',
+  };
+
+  let startMonth = '', startDay = '', endMonth = '', endDay = '';
+
+  // Parse start
+  const startParts = parts[0].split(/\s+/);
+  startMonth = monthMap[startParts[0]] || '01';
+  startDay = startParts[1]?.padStart(2, '0') || '01';
+
+  // Parse end
+  const endParts = parts[1]?.split(/\s+/) || [];
+  if (endParts.length >= 2) {
+    endMonth = monthMap[endParts[0]] || startMonth;
+    endDay = endParts[1]?.padStart(2, '0') || '28';
+  } else {
+    endMonth = startMonth;
+    endDay = endParts[0]?.padStart(2, '0') || '28';
+  }
+
+  return {
+    start: `2026-${startMonth}-${startDay}`,
+    end: `2026-${endMonth}-${endDay}`,
+  };
+}
+
+const allTournaments = months.flatMap(m => m.tournaments);
+const eventsJsonLd = allTournaments.map(t => {
+  const { start, end } = parseDateRange(t.dates);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SportsEvent',
+    name: t.name,
+    startDate: start,
+    endDate: end,
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    description: `${t.name} — ${t.level} tennis tournament on ${t.surface} in ${t.location}. Part of the 2026 ATP/WTA tour season.`,
+    location: {
+      '@type': 'Place',
+      name: t.location,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: t.location,
+      },
+    },
+    organizer: {
+      '@type': 'Organization',
+      name: t.level.includes('WTA') ? 'WTA' : 'ATP',
+      url: t.level.includes('WTA') ? 'https://www.wtatennis.com' : 'https://www.atptour.com',
+    },
+    sport: 'Tennis',
+  };
+});
 ---
 
 <BaseLayout
@@ -216,6 +277,9 @@ function articleUrl(art: { category: string; slug: string }): string {
   description="Complete 2026 tennis tournament calendar. Grand Slams, Masters 1000, ATP and WTA tour dates, locations, and surfaces."
   ogImage="/og/calendar.png"
 >
+  {eventsJsonLd.map(event => (
+    <script type="application/ld+json" set:html={JSON.stringify(event)} />
+  ))}
   <div class="calendar-page">
     <div class="container">
       <nav class="breadcrumbs"><a href="/">Home</a> <span class="sep">/</span> <span class="current">Calendar</span></nav>
