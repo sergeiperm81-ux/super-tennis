@@ -103,7 +103,7 @@ async function withRetry<T>(
   fn: () => Promise<T>,
   label: string,
   maxRetries = 3,
-  baseDelay = 5000,
+  delays = [10_000, 60_000, 180_000], // 10s, 1min, 3min — escalating
 ): Promise<T> {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
@@ -115,7 +115,7 @@ async function withRetry<T>(
         console.error(`❌ ${label} failed after ${attempt} attempt(s): ${msg}`);
         throw err;
       }
-      const delay = baseDelay * attempt;
+      const delay = delays[attempt - 1] || delays[delays.length - 1];
       console.log(`⚠️ ${label} attempt ${attempt} failed (${msg}), retrying in ${delay / 1000}s...`);
       await new Promise(r => setTimeout(r, delay));
     }
@@ -1407,7 +1407,7 @@ export default {
     const now = new Date();
 
     // DAILY: News (client-side fetch — no rebuild needed) — with retry on failure
-    await withRetry(() => generateNews(env), 'Daily news generation', 2, 10000);
+    await withRetry(() => generateNews(env), 'Daily news generation', 3, [30_000, 120_000, 300_000]); // 30s, 2min, 5min
 
     // EVERY 3 DAYS: Videos (client-side fetch — no rebuild needed)
     const dayOfYear = Math.floor((Date.now() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000);
