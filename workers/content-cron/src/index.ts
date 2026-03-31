@@ -97,6 +97,33 @@ const YOUTUBE_CHANNELS = [
 ];
 
 // ============================================================
+// RETRY HELPER — retries on 5xx / network errors with backoff
+// ============================================================
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  label: string,
+  maxRetries = 3,
+  baseDelay = 5000,
+): Promise<T> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (err: any) {
+      const msg = err?.message || String(err);
+      const isRetryable = msg.includes('5') || msg.includes('timeout') || msg.includes('network') || msg.includes('fetch failed');
+      if (attempt === maxRetries || !isRetryable) {
+        console.error(`❌ ${label} failed after ${attempt} attempt(s): ${msg}`);
+        throw err;
+      }
+      const delay = baseDelay * attempt;
+      console.log(`⚠️ ${label} attempt ${attempt} failed (${msg}), retrying in ${delay / 1000}s...`);
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+  throw new Error(`${label} exhausted retries`);
+}
+
+// ============================================================
 // SUPABASE REST HELPERS
 // ============================================================
 async function supabaseQuery(
@@ -420,27 +447,29 @@ For each story provide:
 4. Category: one of "scandal", "love", "money", "fashion", "viral", "buzz"
 5. The FULL NAME of the main player (or null if no specific player)`;
 
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        {
-          role: 'user',
-          content: `Select ${limit} most entertaining headlines and write articles:\n\n${headlineList}\n\nRespond with JSON array (no markdown fences):\n[{"original_index":1,"title":"...","summary":"...","body":"...","category":"scandal|love|money|fashion|viral|buzz","main_player":"Full Name"}]`,
-        },
-      ],
-      temperature: 0.7,
-      max_tokens: 16384,
-    }),
-  });
-
-  if (!res.ok) throw new Error(`OpenAI error ${res.status}: ${await res.text()}`);
+  const res = await withRetry(async () => {
+    const r = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          {
+            role: 'user',
+            content: `Select ${limit} most entertaining headlines and write articles:\n\n${headlineList}\n\nRespond with JSON array (no markdown fences):\n[{"original_index":1,"title":"...","summary":"...","body":"...","category":"scandal|love|money|fashion|viral|buzz","main_player":"Full Name"}]`,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 16384,
+      }),
+    });
+    if (!r.ok) throw new Error(`OpenAI error ${r.status}: ${await r.text()}`);
+    return r;
+  }, 'OpenAI curation');
   const data = await res.json() as any;
   const content = data.choices[0]?.message?.content || '';
   const jsonStr = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
@@ -1377,8 +1406,8 @@ export default {
     console.log(`⏰ Cron fired at ${new Date().toISOString()}`);
     const now = new Date();
 
-    // DAILY: News (client-side fetch — no rebuild needed)
-    await generateNews(env);
+    // DAILY: News (client-side fetch — no rebuild needed) — with retry on failure
+    await withRetry(() => generateNews(env), 'Daily news generation', 2, 10000);
 
     // EVERY 3 DAYS: Videos (client-side fetch — no rebuild needed)
     const dayOfYear = Math.floor((Date.now() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000);
