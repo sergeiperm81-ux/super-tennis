@@ -139,5 +139,20 @@ const fullTitle = cleanTitle === 'Home' ? 'SUPER.TENNIS — Tennis for Everyone'
       });
     })();
   </script>
+
+  <!-- Open external links in new tab (affiliate, shops, etc.) -->
+  <script is:inline>
+    document.addEventListener('click', function(e) {
+      var a = e.target.closest('a');
+      if (!a || !a.href) return;
+      try {
+        var url = new URL(a.href);
+        if (url.hostname !== location.hostname && !a.hasAttribute('target')) {
+          a.setAttribute('target', '_blank');
+          a.setAttribute('rel', 'noopener noreferrer');
+        }
+      } catch(ex) {}
+    });
+  </script>
 </body>
 </html>
