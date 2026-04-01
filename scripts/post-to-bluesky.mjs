@@ -131,14 +131,27 @@ function buildPost(news) {
   const articleUrl = `${SITE_URL}/news/${news.slug}/`;
   const hashtags = tags.map(t => `#${t}`).join(' ');
 
+  // Add player hashtags if player_slugs exist
+  const playerTags = (news.player_slugs || [])
+    .slice(0, 2)
+    .map(s => '#' + s.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(''))
+    .join(' ');
+  const allHashtags = playerTags ? `${hashtags} ${playerTags}` : hashtags;
+
+  // Build post: title + hook from summary + link + hashtags
   // Bluesky limit: 300 graphemes
-  const maxTitleLen = 300 - articleUrl.length - hashtags.length - 6;
-  let title = news.title;
-  if (title.length > maxTitleLen) {
-    title = title.substring(0, maxTitleLen - 1) + '…';
+  const hook = news.summary ? news.summary.split('.')[0] + '.' : '';
+  const maxLen = 300 - articleUrl.length - allHashtags.length - 8;
+
+  let postBody = news.title;
+  if (hook && (postBody.length + hook.length + 2) <= maxLen) {
+    postBody = `${news.title}\n\n${hook}`;
+  }
+  if (postBody.length > maxLen) {
+    postBody = postBody.substring(0, maxLen - 1) + '…';
   }
 
-  return { text: `${title}\n\n${articleUrl}\n\n${hashtags}`, url: articleUrl };
+  return { text: `${postBody}\n\n${articleUrl}\n\n${allHashtags}`, url: articleUrl };
 }
 
 // --- Main ---
@@ -149,15 +162,15 @@ async function main() {
   }
 
   // Get one unposted news item
-  const today6am = new Date();
-  today6am.setUTCHours(6, 0, 0, 0);
+  const today4am = new Date();
+  today4am.setUTCHours(4, 0, 0, 0);
 
   const { data: news, error } = await supabase
     .from('news')
     .select('id, slug, title, category, summary')
     .eq('is_active', true)
     .is('bluesky_posted_at', null)
-    .gte('published_at', today6am.toISOString())
+    .gte('published_at', today4am.toISOString())
     .order('published_at', { ascending: true })
     .limit(1)
     .single();
