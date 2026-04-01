@@ -7,7 +7,13 @@ export default defineConfig({
   site: 'https://super.tennis',
   integrations: [
     react(),
-    sitemap(),
+    sitemap({
+      serialize(item) {
+        // Add lastmod to all pages — today's date for daily-rebuilt SSG site
+        item.lastmod = new Date().toISOString().split('T')[0];
+        return item;
+      },
+    }),
   ],
   output: 'static',
   compressHTML: true,

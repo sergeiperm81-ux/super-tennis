@@ -53,6 +53,9 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
 
+      - name: Build search index (Pagefind)
+        run: npx pagefind --site dist
+
       - name: Deploy to Cloudflare Pages
         run: npx wrangler pages deploy dist --project-name supertennis
         env:

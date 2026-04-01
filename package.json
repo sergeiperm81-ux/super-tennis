@@ -23,6 +23,7 @@
   "devDependencies": {
     "fast-xml-parser": "^5.4.2",
     "openai": "^6.27.0",
+    "pagefind": "^1.4.0",
     "typescript": "^5.9.3",
     "wrangler": "^4.72.0"
   }
