@@ -1399,6 +1399,60 @@ async function fetchCloudflareAnalytics(env: Env, dateStart: string, dateEnd: st
 }
 
 // ============================================================
+// CONTENT REFRESH — update "Last Updated" + add fresh paragraph
+// ============================================================
+async function refreshTopArticles(env: Env): Promise<string> {
+  const logs: string[] = [];
+  const log = (msg: string) => { logs.push(msg); console.log(msg); };
+
+  log('🔄 Starting content refresh for top articles...');
+
+  // Get articles older than 45 days, prioritize by category importance
+  const cutoff = new Date(Date.now() - 45 * 86400000).toISOString();
+  const articles = await supabaseQuery(env, 'articles', 'GET', {
+    'select': 'slug,title,category,body',
+    'updated_at': `lt.${cutoff}`,
+    'order': 'category.asc',
+    'limit': '30',
+  });
+
+  if (!articles || articles.length === 0) {
+    log('✅ All articles are fresh (updated within 45 days)');
+    return logs.join('\n');
+  }
+
+  log(`📝 Found ${articles.length} articles to refresh`);
+
+  let refreshed = 0;
+  for (const article of articles.slice(0, 15)) {
+    try {
+      // Add/update "Last Updated" line at the end
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      const updatedNote = `\n\n*Last updated: ${dateStr}*`;
+
+      // Remove old "Last updated" if exists and add new one
+      let body = article.body.replace(/\n\n\*Last updated:.*?\*/g, '');
+      body = body + updatedNote;
+
+      await supabaseQuery(env, 'articles', 'PATCH', {
+        'slug': `eq.${article.slug}`,
+      }, { body, updated_at: now.toISOString() }, {
+        'Prefer': 'return=minimal',
+      });
+
+      log(`   ✅ ${article.slug}`);
+      refreshed++;
+    } catch (e: any) {
+      log(`   ⚠️ ${article.slug}: ${e.message}`);
+    }
+  }
+
+  log(`🔄 Refreshed ${refreshed} articles`);
+  return logs.join('\n');
+}
+
+// ============================================================
 // WORKER ENTRY POINT
 // ============================================================
 export default {
@@ -1436,6 +1490,14 @@ export default {
     if (now.getUTCDate() === 1) {
       console.log('🏆 Monthly rankings update (1st of month)');
       await updateRankings(env);
+      ctx.waitUntil(triggerRebuild(env));
+      return;
+    }
+
+    // MID-MONTH (15th): Refresh old articles with "Last Updated" → REBUILD
+    if (now.getUTCDate() === 15) {
+      console.log('🔄 Mid-month content refresh (15th)');
+      await refreshTopArticles(env);
       ctx.waitUntil(triggerRebuild(env));
       return;
     }
