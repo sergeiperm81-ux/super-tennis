@@ -1,0 +1,50 @@
+name: News Failsafe — Retry if Cron Failed
+
+on:
+  schedule:
+    # Run at 06:20 UTC — 20 min after Worker cron (06:00)
+    # If Worker generated news, this does nothing
+    # If Worker failed, this retries via HTTP trigger
+    - cron: '20 6 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  check-and-retry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check if news exists for today
+        id: check
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          echo "Checking news for $TODAY..."
+          COUNT=$(curl -s \
+            -H "apikey: $SUPABASE_SERVICE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            "$SUPABASE_URL/rest/v1/news?select=id&created_at=gte.$TODAY" \
+            | python3 -c "import sys,json; print(len(json.load(sys.stdin)))" 2>/dev/null || echo "0")
+          echo "News count for today: $COUNT"
+          echo "count=$COUNT" >> $GITHUB_OUTPUT
+
+      - name: Trigger news generation if none found
+        if: steps.check.outputs.count == '0'
+        env:
+          ANALYTICS_PASSWORD: ${{ secrets.ANALYTICS_PASSWORD }}
+        run: |
+          echo "⚠️ No news for today — triggering generation..."
+          RESULT=$(curl -s -m 120 "https://supertennis-cron.sfedoroff.workers.dev/trigger/news?pwd=$ANALYTICS_PASSWORD")
+          echo "$RESULT"
+          if echo "$RESULT" | grep -q "Saved"; then
+            echo "✅ News generated successfully via failsafe"
+          else
+            echo "❌ Failsafe generation failed — will retry at next schedule"
+            exit 1
+          fi
+
+      - name: Skip — news already exists
+        if: steps.check.outputs.count != '0'
+        run: echo "✅ News already generated for today (${{ steps.check.outputs.count }} items) — nothing to do"

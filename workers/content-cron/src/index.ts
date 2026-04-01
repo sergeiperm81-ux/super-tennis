@@ -1406,8 +1406,13 @@ export default {
     console.log(`⏰ Cron fired at ${new Date().toISOString()}`);
     const now = new Date();
 
-    // DAILY: News (client-side fetch — no rebuild needed) — with retry on failure
-    await withRetry(() => generateNews(env), 'Daily news generation', 3, [30_000, 120_000, 300_000]); // 30s, 2min, 5min
+    // DAILY: News (client-side fetch — no rebuild needed)
+    // Quick retry only (10s) — GitHub Actions failsafe handles longer outages
+    try {
+      await withRetry(() => generateNews(env), 'Daily news generation', 2, [10_000]);
+    } catch (e: any) {
+      console.error(`⚠️ News generation failed, GitHub Actions failsafe will retry at 06:20 UTC: ${e.message}`);
+    }
 
     // EVERY 3 DAYS: Videos (client-side fetch — no rebuild needed)
     const dayOfYear = Math.floor((Date.now() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000);
