@@ -2,10 +2,10 @@ name: News Failsafe — Retry if Cron Failed
 
 on:
   schedule:
-    # Run at 06:20 UTC — 20 min after Worker cron (06:00)
+    # Run at 04:20 UTC (07:20 Sofia) — 20 min after Worker cron (04:00 UTC / 07:00 Sofia)
     # If Worker generated news, this does nothing
     # If Worker failed, this retries via HTTP trigger
-    - cron: '20 6 * * *'
+    - cron: '20 4 * * *'
   workflow_dispatch: {}
 
 jobs:

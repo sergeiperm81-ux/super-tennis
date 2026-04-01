@@ -1,10 +1,9 @@
 name: Build & Deploy
 
 on:
-  # Daily rebuild at 06:30 UTC — after Worker generates news at 06:00
-  # Ensures news pages exist before Bluesky poster starts at 07:00
+  # Daily rebuild at 04:30 UTC (07:30 Sofia) — after Worker generates news at 04:00 UTC (07:00 Sofia)
   schedule:
-    - cron: '30 6 * * *'
+    - cron: '30 4 * * *'
   # Trigger from Cloudflare Worker after content generation
   repository_dispatch:
     types: [content-updated]

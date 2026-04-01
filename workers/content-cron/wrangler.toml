@@ -3,10 +3,10 @@ main = "src/index.ts"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 
-# Single cron trigger — runs daily at 06:00 UTC = 08:00 Sofia (EET/UTC+2)
+# Single cron trigger — runs daily at 04:00 UTC = 07:00 Sofia (EEST/UTC+3)
 # News: every run. Videos: checked inside handler (every 3 days).
 [triggers]
-crons = ["0 6 * * *"]
+crons = ["0 4 * * *"]
 
 # Environment variables (non-secret) — set via dashboard or wrangler.toml
 # Secrets are set via: wrangler secret put OPENAI_API_KEY (etc.)

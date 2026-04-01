@@ -2,9 +2,9 @@ name: Social Poster — Bluesky
 
 on:
   schedule:
-    # Every 30 min from 7:00 to 22:30 UTC (peak hours)
+    # Every 30 min from 5:00 to 20:30 UTC (08:00-23:30 Sofia)
     # = up to 32 slots/day, we post ~20 news = nice spread
-    - cron: '*/30 7-22 * * *'
+    - cron: '*/30 5-20 * * *'
   workflow_dispatch: {}
 
 jobs:
