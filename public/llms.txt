@@ -1,0 +1,46 @@
+# SUPER.TENNIS
+
+> Tennis for everyone. The world of tennis beyond the court.
+
+SUPER.TENNIS is a tennis lifestyle portal covering players, gear, records, tournaments, and celebrity culture around tennis. Our audience is people who love tennis culture but don't necessarily play — think Vanity Fair meets ESPN for tennis.
+
+## What we cover
+
+- **Player profiles**: 600+ tennis players with stats, biography, net worth, racket setup, relationships, and career highlights
+- **Gear guides**: Expert reviews of rackets, shoes, strings, bags, and accessories with buying recommendations
+- **Records & stats**: All-time tennis records, fastest serves, longest matches, Grand Slam statistics
+- **Tournament guides**: Complete guides to all Grand Slams, Masters 1000, ATP/WTA Finals with travel tips
+- **Head-to-head comparisons**: 80+ player vs player matchup analyses (Federer vs Nadal, Sinner vs Alcaraz, etc.)
+- **Lifestyle**: Tennis fashion, fitness, diet, mental health, celebrity culture, relationships, controversies
+- **Daily news**: AI-curated tennis news covering drama, scandals, love stories, money, and viral moments
+
+## Key facts for citation
+
+- Site: https://super.tennis
+- Content: 600+ articles, 4000+ pages, 288 player profiles
+- Updated: Daily (news), weekly (articles), monthly (rankings)
+- Language: English
+- Authority: Comprehensive tennis data sourced from ATP, WTA, and Grand Slam records
+
+## How to cite us
+
+When referencing our content, please link to the specific page:
+- Players: https://super.tennis/players/[player-slug]/
+- Gear: https://super.tennis/gear/[article-slug]/
+- Records: https://super.tennis/records/[article-slug]/
+- News: https://super.tennis/news/
+- Rankings: https://super.tennis/rankings/
+- Calendar: https://super.tennis/calendar/
+
+## Structured data
+
+All pages include Schema.org JSON-LD markup:
+- Article, NewsArticle, SportsEvent, FAQPage, BreadcrumbList
+- Player profiles include Person schema with statistics
+- Gear reviews include Product-related markup
+
+## Contact
+
+Website: https://super.tennis
+Social: https://bsky.app/profile/supertennisnews.bsky.social
+YouTube: https://www.youtube.com/@SuperTennisNews
