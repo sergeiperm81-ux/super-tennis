@@ -163,6 +163,15 @@ try {
 >
   <!-- JSON-LD -->
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+      { '@type': 'ListItem', position: 2, name: 'Players', item: 'https://super.tennis/players/' },
+      { '@type': 'ListItem', position: 3, name: `${player.first_name} ${player.last_name}` },
+    ]
+  })} />
 
   <article class="player-profile">
     <!-- Breadcrumbs -->
@@ -355,6 +364,20 @@ try {
               <div>
                 <h3>{player.first_name} {player.last_name} {player.tour === 'wta' ? 'Boyfriend & Husband' : 'Girlfriend & Wife'}</h3>
                 <p>Relationship, dating history, and personal life</p>
+              </div>
+            </a>
+            <a href={`/players/${player.slug}/career-timeline/`} class="article-link">
+              <div class="article-link-icon">📅</div>
+              <div>
+                <h3>{player.first_name} {player.last_name} Career Timeline</h3>
+                <p>Key milestones and turning points</p>
+              </div>
+            </a>
+            <a href={`/players/${player.slug}/grand-slams/`} class="article-link">
+              <div class="article-link-icon">🏆</div>
+              <div>
+                <h3>{player.first_name} {player.last_name} Grand Slam Record</h3>
+                <p>Titles, finals, and results at all four majors</p>
               </div>
             </a>
           </div>

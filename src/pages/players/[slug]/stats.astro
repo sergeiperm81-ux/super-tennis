@@ -1,8 +1,10 @@
 ---
 import ArticleLayout from '../../../layouts/ArticleLayout.astro';
 import ArticleFooter from '../../../components/ArticleFooter.astro';
-import { getPlayerBySlug, getTopPlayerSlugs } from '../../../lib/supabase';
+import { getPlayerBySlug, getTopPlayerSlugs, getArticleBySlug } from '../../../lib/supabase';
 import { fallbackPlayers, countryNames, countryFlags, getFlagUrl } from '../../../lib/fallback-data';
+import { addInterlinks } from '../../../lib/interlinks';
+import { marked } from 'marked';
 
 export async function getStaticPaths() {
   let slugs: string[] = [];
@@ -98,6 +100,14 @@ const faqPrize = `How much has ${name} earned in prize money?`;
 const faqPrizeAnswer = `${name} has earned ${prizeMoney} in career prize money on the ${tourName} Tour.`;
 const winsWidth = `width: ${winPct}%`;
 const lossesWidth = `width: ${lossWidth}%`;
+
+// Try to load rich article content from Supabase
+const articleSlug = `${slug}-stats`;
+let article: any = null;
+try { article = await getArticleBySlug(articleSlug); } catch {}
+const rawHtml = article?.body ? marked.parse(article.body) : null;
+const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/players/${slug}/stats/`) : null;
+const hasRichContent = !!bodyHtml;
 ---
 
 <ArticleLayout
@@ -111,6 +121,10 @@ const lossesWidth = `width: ${lossWidth}%`;
   ]}
   category="players"
 >
+  {!hasRichContent && <meta name="robots" content="noindex, follow" />}
+
+  {bodyHtml && <div set:html={bodyHtml} />}
+
   <!-- Stats Hero -->
   <div class="stats-hero">
     <div class="stat-big">

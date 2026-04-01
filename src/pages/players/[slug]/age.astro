@@ -1,8 +1,10 @@
 ---
 import ArticleLayout from '../../../layouts/ArticleLayout.astro';
 import ArticleFooter from '../../../components/ArticleFooter.astro';
-import { getPlayerBySlug, getTopPlayerSlugs } from '../../../lib/supabase';
+import { getPlayerBySlug, getTopPlayerSlugs, getArticleBySlug } from '../../../lib/supabase';
 import { fallbackPlayers, countryNames, countryFlags, getFlagUrl } from '../../../lib/fallback-data';
+import { addInterlinks } from '../../../lib/interlinks';
+import { marked } from 'marked';
 
 export async function getStaticPaths() {
   let slugs: string[] = [];
@@ -94,6 +96,14 @@ const totalMatchesAge = player.career_win + player.career_loss;
 const winRateNum = totalMatchesAge > 0 ? (player.career_win / totalMatchesAge) * 100 : 0;
 const winRate = totalMatchesAge > 0 ? `${winRateNum.toFixed(1)}%` : 'N/A';
 
+// Try to load rich article content from Supabase
+const articleSlug = `${slug}-age`;
+let article: any = null;
+try { article = await getArticleBySlug(articleSlug); } catch {}
+const rawHtml = article?.body ? marked.parse(article.body) : null;
+const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/players/${slug}/age/`) : null;
+const hasRichContent = !!bodyHtml;
+
 const pageTitle = `How Old Is ${name}? Age, Birthday & Height`;
 const ageText = age !== 'N/A' ? `${age} years old` : 'a professional tennis player';
 const bornPart = birthday !== 'Unknown' ? `on ${birthday}` : '';
@@ -141,6 +151,10 @@ const faqJsonLd = JSON.stringify({
   ]}
   category="players"
 >
+  {!hasRichContent && <meta name="robots" content="noindex, follow" />}
+
+  {bodyHtml && <div set:html={bodyHtml} />}
+
   <!-- Quick Answer Box (targets Featured Snippet) -->
   <div class="answer-box">
     <div class="answer-question">How old is {name}?</div>

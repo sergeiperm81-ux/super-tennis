@@ -4,7 +4,26 @@ Disallow: /stats/
 
 Sitemap: https://super.tennis/sitemap-index.xml
 
-# Crawl-delay for polite crawling
+# Explicitly allow AI crawlers for citation/discovery
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+# Crawl-delay for SEO tool bots
 User-agent: AhrefsBot
 Crawl-delay: 10
 
