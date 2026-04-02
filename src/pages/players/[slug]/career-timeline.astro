@@ -46,6 +46,7 @@ try {
 
 const rawHtml = article?.body ? marked.parse(article.body) : null;
 const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/players/${slug}/career-timeline/`) : null;
+const hasRichContent = !!bodyHtml;
 
 // Build career milestones from available data
 const milestones: { year: string; event: string }[] = [];
@@ -104,6 +105,8 @@ const jsonLd = {
     { label: 'Career Timeline' },
   ]}
 >
+  {!hasRichContent && <meta name="robots" content="noindex, follow" />}
+
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <!-- Quick Stats -->

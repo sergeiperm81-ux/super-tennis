@@ -47,6 +47,7 @@ try {
 
 const rawHtml = article?.body ? marked.parse(article.body) : null;
 const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/players/${slug}/racket/`) : null;
+const hasRichContent = !!bodyHtml;
 ---
 
 <ArticleLayout
@@ -62,6 +63,8 @@ const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/players/${sl
   categoryLabel="Gear"
   categoryHref="/gear/"
 >
+  {!hasRichContent && <meta name="robots" content="noindex, follow" />}
+
   <!-- Quick Facts Banner -->
   <div class="eq-banner">
     <div class="eq-stat">

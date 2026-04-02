@@ -42,6 +42,7 @@ try { article = await getArticleBySlug(articleSlug); } catch {}
 
 const rawHtml = article?.body ? marked.parse(article.body) : null;
 const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/players/${slug}/grand-slams/`) : null;
+const hasRichContent = !!bodyHtml;
 
 const gs = player.grand_slam_titles || 0;
 const wl = player.win_loss || '';
@@ -87,6 +88,8 @@ const faqJsonLd = {
     { label: 'Grand Slam Record' },
   ]}
 >
+  {!hasRichContent && <meta name="robots" content="noindex, follow" />}
+
   <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
 
   <!-- Grand Slam Stats Banner -->

@@ -58,6 +58,7 @@ function formatPrize(amount: number): string {
 const prizeMoney = formatPrize(player.career_prize_usd || 0);
 const rawHtml = article?.body ? marked.parse(article.body) : null;
 const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/players/${slug}/net-worth/`) : null;
+const hasRichContent = !!bodyHtml;
 ---
 
 <ArticleLayout
@@ -70,6 +71,8 @@ const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/players/${sl
     { label: 'Net Worth' },
   ]}
 >
+  {!hasRichContent && <meta name="robots" content="noindex, follow" />}
+
   <!-- Quick Stats Banner -->
   <div class="nw-banner">
     <div class="nw-stat">

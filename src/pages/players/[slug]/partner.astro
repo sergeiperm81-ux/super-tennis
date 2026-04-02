@@ -63,6 +63,7 @@ const age = getAge(player.birth_date);
 
 const rawHtml = article?.body ? marked.parse(article.body) : null;
 const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/players/${slug}/partner/`) : null;
+const hasRichContent = !!bodyHtml;
 const tourName = player.tour === 'atp' ? 'ATP' : 'WTA';
 const ageDesc = age !== 'N/A' ? `${age}-year-old ` : '';
 const titlesDesc = player.career_titles > 0 ? ` With ${player.career_titles} career titles` : '';
@@ -94,6 +95,7 @@ const footerRacketHref = `/players/${slug}/racket/`;
   categoryLabel="Lifestyle"
   categoryHref="/lifestyle/"
 >
+  {!hasRichContent && <meta name="robots" content="noindex, follow" />}
   <!-- Quick Facts Banner -->
   <div class="partner-banner">
     <div class="partner-stat">
