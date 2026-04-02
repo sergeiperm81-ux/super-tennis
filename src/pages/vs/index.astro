@@ -588,6 +588,124 @@ const hasMore = totalRivalries > 12;
   }
 </style>
 
+<style is:global>
+  /* Styles for dynamically created rivalry cards (Load More) */
+  .h2h-grid .h2h-card {
+    text-decoration: none;
+    color: inherit;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.2s;
+    border-top: 3px solid var(--gray-200);
+  }
+  .h2h-grid .h2h-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  .h2h-grid .h2h-card.big-three { border-top-color: #d4a017; }
+  .h2h-grid .h2h-card.current { border-top-color: var(--court-green); }
+  .h2h-grid .h2h-card.wta { border-top-color: #7b2d8e; }
+  .h2h-grid .h2h-card.classic { border-top-color: #6b7280; }
+  .h2h-grid .h2h-card .card-player-duo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .h2h-grid .h2h-card .duo-player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .h2h-grid .h2h-card .duo-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top;
+    border: 2px solid var(--gray-200);
+  }
+  .h2h-grid .h2h-card .duo-placeholder {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--gray-100);
+    border: 2px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--gray-400);
+    font-family: var(--font-heading);
+  }
+  .h2h-grid .h2h-card .duo-name {
+    font-size: 0.65rem;
+    color: var(--gray-500);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    max-width: 60px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .h2h-grid .h2h-card .duo-vs {
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    color: var(--gray-400);
+    font-weight: 700;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .h2h-grid .h2h-card .era-badge {
+    font-family: var(--font-heading);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    align-self: flex-start;
+    margin-bottom: 10px;
+  }
+  .h2h-grid .h2h-card .era-badge.big-three { background: #fef3c7; color: #92400e; }
+  .h2h-grid .h2h-card .era-badge.current { background: #dcfce7; color: #166534; }
+  .h2h-grid .h2h-card .era-badge.wta { background: #f3e8ff; color: #6d28d9; }
+  .h2h-grid .h2h-card .era-badge.classic { background: #f3f4f6; color: #374151; }
+  .h2h-grid .h2h-card h2 {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+    line-height: 1.35;
+  }
+  .h2h-grid .h2h-card p {
+    color: var(--gray-600);
+    font-size: 0.82rem;
+    line-height: 1.6;
+    margin: 0;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .h2h-grid .h2h-card .read-more {
+    color: var(--court-green);
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-top: 14px;
+  }
+</style>
+
 <script is:inline>
   // Search functionality
   const searchInput = document.getElementById('search-input');

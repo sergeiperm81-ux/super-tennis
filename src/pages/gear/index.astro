@@ -646,3 +646,82 @@ const gearFaqJsonLd = {
     .page-hero h1 { font-size: 2rem; }
   }
 </style>
+
+<style is:global>
+  /* Styles for dynamically created gear cards (Load More) */
+  .articles-grid .gear-card {
+    text-decoration: none;
+    color: inherit;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.2s;
+  }
+  .articles-grid .gear-card:hover {
+    border-color: var(--court-green);
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+  }
+  .articles-grid .gear-card .gear-card-img {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .articles-grid .gear-card .gear-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    border-radius: var(--radius) var(--radius) 0 0;
+    display: block;
+  }
+  .articles-grid .gear-card .gear-card-icon {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    background: var(--gray-50);
+  }
+  .articles-grid .gear-card .card-content {
+    padding: 16px 20px 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .articles-grid .gear-card .card-category {
+    font-family: var(--font-heading);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .articles-grid .gear-card .card-content h2 {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+    line-height: 1.35;
+  }
+  .articles-grid .gear-card .card-content p {
+    color: var(--gray-600);
+    font-size: 0.82rem;
+    line-height: 1.6;
+    margin: 0;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .articles-grid .gear-card .read-more {
+    color: var(--court-green);
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-top: 14px;
+  }
+</style>
