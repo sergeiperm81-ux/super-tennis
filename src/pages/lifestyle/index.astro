@@ -4,6 +4,11 @@ import { getArticles } from '../../lib/supabase';
 import { stripMarkdown } from '../../lib/fallback-data';
 import { getArticlePhotosForCategory } from '../../lib/player-photos';
 
+// Get URL search params for filtering
+const url = new URL(Astro.request.url);
+const filterSubcat = url.searchParams.get('cat') || 'all';
+const searchQuery = url.searchParams.get('q') || '';
+
 // Fetch real lifestyle articles from Supabase
 let lifestyleArticles: any[] = [];
 try {
@@ -12,23 +17,40 @@ try {
   console.warn('Lifestyle index: Supabase unavailable');
 }
 
+// Filter by subcategory
+let filteredArticles = lifestyleArticles;
+if (filterSubcat !== 'all') {
+  filteredArticles = lifestyleArticles.filter(a => (a.subcategory || 'culture') === filterSubcat);
+}
+
+// Filter by search query
+if (searchQuery) {
+  const query = searchQuery.toLowerCase();
+  filteredArticles = filteredArticles.filter(a =>
+    a.title.toLowerCase().includes(query) ||
+    (a.excerpt || '').toLowerCase().includes(query)
+  );
+}
+
 // Batch-fetch all article photos (player photos + local)
-const articlePhotos = await getArticlePhotosForCategory(lifestyleArticles, 'lifestyle');
+const articlePhotos = await getArticlePhotosForCategory(filteredArticles, 'lifestyle');
 
 // Detect if a photo URL is a player photo (Wikimedia)
 function isPlayerPhoto(url: string | null | undefined): boolean {
   return !!url && (url.includes('wikimedia') || url.includes('wikipedia'));
 }
 
-// First 2 articles go into the top row (bigger), rest into the grid
-const topArticles = lifestyleArticles.slice(0, 2);
-const gridArticles = lifestyleArticles.slice(2);
+// Pagination: First 2 articles go into the top row (bigger), next 12 in grid
+const topArticles = filteredArticles.slice(0, 2);
+const gridArticles = filteredArticles.slice(2, 14);
+const totalGridArticles = filteredArticles.length - 2;
+const hasMore = totalGridArticles > 12;
 
 // ItemList JSON-LD for first 10 articles
-const itemListJsonLd = lifestyleArticles.length > 0 ? {
+const itemListJsonLd = filteredArticles.length > 0 ? {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
-  itemListElement: lifestyleArticles.slice(0, 10).map((article, i) => ({
+  itemListElement: filteredArticles.slice(0, 10).map((article, i) => ({
     '@type': 'ListItem',
     position: i + 1,
     name: article.title,
@@ -51,69 +73,92 @@ const itemListJsonLd = lifestyleArticles.length > 0 ? {
         <p class="subtitle">Net worth, culture, rivalries, and stories from the world of professional tennis{lifestyleArticles.length > 0 && ` — ${lifestyleArticles.length} articles`}</p>
       </section>
 
-      {/* Category filters */}
-      <div class="cat-filters" id="cat-filters">
-        <button class="cat-btn active" data-subcat="all">All</button>
-        <button class="cat-btn" data-subcat="culture" style="--cat-color: #2563eb">Culture</button>
-        <button class="cat-btn" data-subcat="health" style="--cat-color: #059669">Health</button>
-        <button class="cat-btn" data-subcat="style" style="--cat-color: #9333ea">Style</button>
-        <button class="cat-btn" data-subcat="media" style="--cat-color: #f97316">Media</button>
-        <button class="cat-btn" data-subcat="career" style="--cat-color: #dc2626">Career</button>
-        <button class="cat-btn" data-subcat="money" style="--cat-color: #d4a017">Money</button>
-        <button class="cat-btn" data-subcat="travel" style="--cat-color: #0891b2">Travel</button>
+      {/* Search & Filter Section */}
+      <div class="filter-section">
+        <input
+          type="text"
+          class="search-input"
+          id="search-input"
+          placeholder="🔍 Search lifestyle articles..."
+          value={searchQuery}
+        />
       </div>
 
-      {lifestyleArticles.length > 0 ? (
-        <>
-          {/* Top row — 2 large cards side by side */}
-          <div class="top-row">
-            {topArticles.map((article) => {
-              const photo = articlePhotos.get(article.slug);
-              return (
-                <a href={`/lifestyle/${article.slug}/`} class="top-card" data-subcat={article.subcategory || 'culture'}>
-                  <div class={`top-card-img ${isPlayerPhoto(photo) ? 'player-photo' : ''}`}>
-                    {photo ? (
-                      <img src={photo} alt={article.title} loading="eager" decoding="async" width="600" height="400" onerror="this.parentElement.classList.add('no-img')" />
-                    ) : (
-                      <div class="img-placeholder"></div>
-                    )}
-                    <div class="top-card-overlay">
-                      <h2>{article.title}</h2>
-                    </div>
-                  </div>
-                </a>
-              );
-            })}
-          </div>
+      {/* Category filters */}
+      <div class="cat-filters" id="cat-filters">
+        <a href="?cat=all" class={`cat-btn ${filterSubcat === 'all' ? 'active' : ''}`} data-subcat="all">All</a>
+        <a href="?cat=culture" class={`cat-btn ${filterSubcat === 'culture' ? 'active' : ''}`} data-subcat="culture" style="--cat-color: #2563eb">Culture</a>
+        <a href="?cat=health" class={`cat-btn ${filterSubcat === 'health' ? 'active' : ''}`} data-subcat="health" style="--cat-color: #059669">Health</a>
+        <a href="?cat=style" class={`cat-btn ${filterSubcat === 'style' ? 'active' : ''}`} data-subcat="style" style="--cat-color: #9333ea">Style</a>
+        <a href="?cat=media" class={`cat-btn ${filterSubcat === 'media' ? 'active' : ''}`} data-subcat="media" style="--cat-color: #f97316">Media</a>
+        <a href="?cat=career" class={`cat-btn ${filterSubcat === 'career' ? 'active' : ''}`} data-subcat="career" style="--cat-color: #dc2626">Career</a>
+        <a href="?cat=money" class={`cat-btn ${filterSubcat === 'money' ? 'active' : ''}`} data-subcat="money" style="--cat-color: #d4a017">Money</a>
+        <a href="?cat=travel" class={`cat-btn ${filterSubcat === 'travel' ? 'active' : ''}`} data-subcat="travel" style="--cat-color: #0891b2">Travel</a>
+      </div>
 
-          {/* Main grid — uniform cards with square photos */}
-          <div class="card-grid">
-            {gridArticles.map((article) => {
-              const photo = articlePhotos.get(article.slug);
-              return (
-                <a href={`/lifestyle/${article.slug}/`} class="card" data-subcat={article.subcategory || 'culture'}>
-                  <div class={`card-img ${isPlayerPhoto(photo) ? 'player-photo' : ''}`}>
-                    {photo ? (
-                      <img src={photo} alt={article.title} loading="lazy" decoding="async" width="400" height="400" onerror="this.parentElement.classList.add('no-img')" />
-                    ) : (
-                      <div class="img-placeholder"></div>
-                    )}
-                  </div>
-                  <div class="card-body">
-                    <h3>{article.title}</h3>
-                    <p>{stripMarkdown(article.excerpt || article.meta_description || '')}</p>
-                    <span class="card-link">Read Article →</span>
-                  </div>
-                </a>
-              );
-            })}
-          </div>
-        </>
-      ) : (
+      {filteredArticles.length === 0 ? (
         <div class="empty-state">
-          <p>Lifestyle articles are coming soon. Check back shortly!</p>
+          <p>No articles found{searchQuery ? ` for "${searchQuery}"` : ''}{filterSubcat !== 'all' ? ` in this category` : ''}. Try a different search or category.</p>
         </div>
-      )}
+      ) : null}
+
+      {filteredArticles.length > 0 ? (
+        <>
+          {topArticles.length > 0 && (
+            <div class="top-row">
+              {topArticles.map((article) => {
+                const photo = articlePhotos.get(article.slug);
+                return (
+                  <a href={`/lifestyle/${article.slug}/`} class="top-card">
+                    <div class={`top-card-img ${isPlayerPhoto(photo) ? 'player-photo' : ''}`}>
+                      {photo ? (
+                        <img src={photo} alt={article.title} loading="eager" decoding="async" width="600" height="400" onerror="this.parentElement.classList.add('no-img')" />
+                      ) : (
+                        <div class="img-placeholder"></div>
+                      )}
+                      <div class="top-card-overlay">
+                        <h2>{article.title}</h2>
+                      </div>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          )}
+
+          {gridArticles.length > 0 && (
+            <div class="card-grid" id="card-grid">
+              {gridArticles.map((article) => {
+                const photo = articlePhotos.get(article.slug);
+                return (
+                  <a href={`/lifestyle/${article.slug}/`} class="card">
+                    <div class={`card-img ${isPlayerPhoto(photo) ? 'player-photo' : ''}`}>
+                      {photo ? (
+                        <img src={photo} alt={article.title} loading="lazy" decoding="async" width="400" height="400" onerror="this.parentElement.classList.add('no-img')" />
+                      ) : (
+                        <div class="img-placeholder"></div>
+                      )}
+                    </div>
+                    <div class="card-body">
+                      <h3>{article.title}</h3>
+                      <p>{stripMarkdown(article.excerpt || article.meta_description || '')}</p>
+                      <span class="card-link">Read Article →</span>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          )}
+
+          {hasMore && (
+            <div class="load-more-section">
+              <button class="load-more-btn" id="load-more-btn">
+                Load More ({totalGridArticles - 12} more)
+              </button>
+            </div>
+          )}
+        </>
+      ) : null}
 
       <section class="related-section">
         <h2>Explore More</h2>
@@ -128,24 +173,98 @@ const itemListJsonLd = lifestyleArticles.length > 0 ? {
   </div>
 
   <script is:inline>
-    document.getElementById('cat-filters')?.addEventListener('click', function(e) {
-      const btn = e.target.closest('.cat-btn');
-      if (!btn) return;
-      const sub = btn.dataset.subcat;
-      this.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      document.querySelectorAll('.top-card, .card').forEach(el => {
-        if (sub === 'all' || el.dataset.subcat === sub) {
-          el.style.display = '';
-        } else {
-          el.style.display = 'none';
+    // Search functionality
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+      searchInput.addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') {
+          const query = this.value.trim();
+          const cat = new URLSearchParams(window.location.search).get('cat') || 'all';
+          if (query) {
+            window.location.href = `?cat=${cat}&q=${encodeURIComponent(query)}`;
+          } else {
+            window.location.href = `?cat=${cat}`;
+          }
         }
       });
-    });
+    }
+
+    // Load More functionality
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (loadMoreBtn) {
+      loadMoreBtn.addEventListener('click', async function() {
+        const currentCat = new URLSearchParams(window.location.search).get('cat') || 'all';
+        const currentQ = new URLSearchParams(window.location.search).get('q') || '';
+
+        // Fetch all articles and filter client-side
+        try {
+          const response = await fetch(`/api/lifestyle-articles?cat=${currentCat}${currentQ ? `&q=${encodeURIComponent(currentQ)}` : ''}`);
+          const articles = await response.json();
+
+          const cardGrid = document.getElementById('card-grid');
+          const currentCount = cardGrid.querySelectorAll('.card').length;
+
+          // Append next 12 articles
+          articles.slice(currentCount + 2, currentCount + 14).forEach(article => {
+            const card = createArticleCard(article);
+            cardGrid.appendChild(card);
+          });
+
+          // Hide Load More if no more articles
+          if (currentCount + 14 >= articles.length) {
+            loadMoreBtn.parentElement.style.display = 'none';
+          } else {
+            loadMoreBtn.textContent = `Load More (${articles.length - currentCount - 14} more)`;
+          }
+        } catch (error) {
+          console.error('Failed to load more articles:', error);
+        }
+      });
+    }
+
+    function createArticleCard(article) {
+      const a = document.createElement('a');
+      a.href = `/lifestyle/${article.slug}/`;
+      a.className = 'card';
+      a.innerHTML = `
+        <div class="card-img">
+          <img src="${article.photo || ''}" alt="${article.title}" loading="lazy" onerror="this.parentElement.classList.add('no-img')" />
+        </div>
+        <div class="card-body">
+          <h3>${article.title}</h3>
+          <p>${article.excerpt || ''}</p>
+          <span class="card-link">Read Article →</span>
+        </div>
+      `;
+      return a;
+    }
   </script>
 </BaseLayout>
 
 <style>
+  .filter-section {
+    margin-bottom: 24px;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    border: 1px solid #d1d5db;
+    border-radius: var(--radius);
+    background: white;
+    color: #111827;
+    transition: all 0.2s;
+  }
+  .search-input:focus {
+    outline: none;
+    border-color: var(--court-green);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+  }
+  .search-input::placeholder {
+    color: #9ca3af;
+  }
+
   .cat-filters {
     display: flex;
     gap: 8px;
@@ -154,7 +273,9 @@ const itemListJsonLd = lifestyleArticles.length > 0 ? {
     padding-bottom: 16px;
     border-bottom: 1px solid #e5e7eb;
   }
+
   .cat-btn {
+    display: inline-block;
     padding: 6px 16px;
     border-radius: 20px;
     border: 1px solid #d1d5db;
@@ -163,6 +284,7 @@ const itemListJsonLd = lifestyleArticles.length > 0 ? {
     font-weight: 600;
     cursor: pointer;
     color: #374151;
+    text-decoration: none;
     transition: all 0.2s;
   }
   .cat-btn:hover {
@@ -369,6 +491,32 @@ const itemListJsonLd = lifestyleArticles.length > 0 ? {
   }
   .cta-links a:hover { text-decoration: underline; }
 
+  /* ── Load More ── */
+  .load-more-section {
+    display: flex;
+    justify-content: center;
+    margin: 48px 0;
+  }
+  .load-more-btn {
+    padding: 12px 32px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: white;
+    background: var(--court-green);
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .load-more-btn:hover {
+    background: #16a34a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  }
+  .load-more-btn:active {
+    transform: translateY(0);
+  }
+
   /* ── Responsive ── */
   @media (max-width: 1024px) {
     .card-grid { grid-template-columns: repeat(2, 1fr); }
@@ -378,8 +526,11 @@ const itemListJsonLd = lifestyleArticles.length > 0 ? {
     .top-row { grid-template-columns: 1fr; }
     .card-grid { grid-template-columns: 1fr 1fr; }
     .top-card-overlay h2 { font-size: 1.1rem; }
+    .search-input { font-size: 1rem; }
   }
   @media (max-width: 480px) {
     .card-grid { grid-template-columns: 1fr; }
+    .cat-filters { gap: 6px; }
+    .cat-btn { padding: 5px 12px; font-size: 0.8rem; }
   }
 </style>

@@ -34,8 +34,25 @@ try {
 // Fetch record articles from Supabase
 let recordArticles: any[] = [];
 try {
-  recordArticles = await getArticles({ category: 'records', limit: 10 });
+  recordArticles = await getArticles({ category: 'records', limit: 100 });
 } catch (e) {}
+
+// Filter record articles by search query and subcategory
+const url = new URL(Astro.request.url);
+const searchQuery = url.searchParams.get('q') || '';
+let filteredRecordArticles = recordArticles;
+
+if (searchQuery) {
+  const query = searchQuery.toLowerCase();
+  filteredRecordArticles = filteredRecordArticles.filter(a =>
+    a.title.toLowerCase().includes(query) ||
+    (a.excerpt || '').toLowerCase().includes(query)
+  );
+}
+
+// Display first 12 articles, rest loaded via Load More
+const displayedRecordArticles = filteredRecordArticles.slice(0, 12);
+const remainingCount = filteredRecordArticles.length - 12;
 
 // Section break photos (between record categories)
 const sectionPhotos: { image: string; caption: string; credit: string }[] = [
@@ -420,12 +437,24 @@ const newsCatLabels: Record<string, string> = {
           <!-- Deep Dive Articles -->
           {recordArticles.length > 0 && (
             <section class="records-section" id="deep-dive">
-              <h2>
-                <span class="section-icon">📖</span>
-                Deep Dive Articles
-              </h2>
+              <div class="articles-header">
+                <h2>
+                  <span class="section-icon">📖</span>
+                  Deep Dive Articles
+                </h2>
+                <div class="search-box">
+                  <input
+                    type="text"
+                    id="recordSearch"
+                    placeholder="Search articles..."
+                    value={searchQuery}
+                    class="search-input"
+                  />
+                </div>
+              </div>
+
               <div class="articles-list">
-                {recordArticles.map((art: any) => (
+                {displayedRecordArticles.map((art: any) => (
                   <a href={`/records/${art.slug}/`} class="article-card-link">
                     <div class="article-card-content">
                       <h3>{art.title}</h3>
@@ -435,6 +464,17 @@ const newsCatLabels: Record<string, string> = {
                   </a>
                 ))}
               </div>
+
+              {remainingCount > 0 && (
+                <button
+                  class="load-more-btn"
+                  id="recordsLoadMoreBtn"
+                  data-offset="12"
+                  data-total={filteredRecordArticles.length}
+                >
+                  Load more articles ({remainingCount} remaining)
+                </button>
+              )}
             </section>
           )}
 
@@ -1325,5 +1365,143 @@ const newsCatLabels: Record<string, string> = {
       grid-template-columns: 1fr;
     }
   }
+
+  /* Articles Header with Search */
+  .articles-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .articles-header h2 {
+    margin: 0;
+  }
+
+  /* Search Box */
+  .search-box {
+    flex: 1;
+    min-width: 200px;
+  }
+  .search-input {
+    width: 100%;
+    padding: 10px 16px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    font-family: var(--font-body);
+    transition: all 0.2s;
+  }
+  .search-input:focus {
+    outline: none;
+    border-color: var(--court-green);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+  }
+
+  /* Load More Button */
+  .load-more-btn {
+    display: block;
+    width: 100%;
+    padding: 14px 24px;
+    margin-top: 20px;
+    background: var(--court-green);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font-body);
+  }
+  .load-more-btn:hover {
+    background: var(--court-green-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  .load-more-btn:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 640px) {
+    .articles-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .search-box {
+      min-width: 100%;
+    }
+  }
 </style>
+
+<script>
+  // Search functionality
+  const searchInput = document.getElementById('recordSearch');
+  if (searchInput) {
+    searchInput.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') {
+        const query = searchInput.value.trim();
+        const url = new URL(window.location);
+        if (query) {
+          url.searchParams.set('q', query);
+        } else {
+          url.searchParams.delete('q');
+        }
+        window.history.replaceState({}, '', url);
+        window.location.href = url.toString();
+      }
+    });
+  }
+
+  // Load More functionality
+  const loadMoreBtn = document.getElementById('recordsLoadMoreBtn');
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener('click', async () => {
+      const offset = parseInt(loadMoreBtn.dataset.offset || '12');
+      const total = parseInt(loadMoreBtn.dataset.total || '0');
+      const query = searchInput?.value || '';
+
+      try {
+        const params = new URLSearchParams();
+        params.set('offset', offset.toString());
+        if (query) params.set('q', query);
+
+        const response = await fetch(`/api/records-articles?${params}`);
+        const articles = await response.json();
+
+        if (Array.isArray(articles) && articles.length > 0) {
+          const articlesList = document.querySelector('.articles-list');
+          articles.forEach(article => {
+            const link = document.createElement('a');
+            link.href = `/records/${article.slug}/`;
+            link.className = 'article-card-link';
+            link.innerHTML = `
+              <div class="article-card-content">
+                <h3>${article.title}</h3>
+                <p>${article.excerpt}</p>
+              </div>
+              <span class="article-arrow">&rarr;</span>
+            `;
+            articlesList.appendChild(link);
+          });
+
+          // Update button state
+          const newOffset = offset + articles.length;
+          const newRemaining = total - newOffset;
+
+          if (newRemaining <= 0) {
+            loadMoreBtn.style.display = 'none';
+          } else {
+            loadMoreBtn.dataset.offset = newOffset.toString();
+            loadMoreBtn.textContent = `Load more articles (${newRemaining} remaining)`;
+          }
+        }
+      } catch (error) {
+        console.error('Error loading more articles:', error);
+      }
+    });
+  }
+</script>
+
 <script src="/js/dynamic-content.js" defer></script>
