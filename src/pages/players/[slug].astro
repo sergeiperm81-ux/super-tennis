@@ -157,8 +157,8 @@ try {
 ---
 
 <BaseLayout
-  title={`${player.first_name} ${player.last_name} — Profile, Stats & Bio`}
-  description={player.bio_short || `${player.first_name} ${player.last_name} tennis player profile. Career stats, Grand Slam titles, rankings and more on SUPER.TENNIS.`}
+  title={`${player.first_name} ${player.last_name} — Height, Age, Stats & Bio${player.height_cm ? ` | ${player.height_cm}cm` : ''}`}
+  description={player.bio_short || `${player.first_name} ${player.last_name}${age ? `, age ${age}` : ''}${player.height_cm ? `, height ${player.height_cm}cm (${Math.floor(player.height_cm / 30.48)}'${Math.round((player.height_cm % 30.48) / 2.54)}")` : ''} — ${player.tour === 'atp' ? 'ATP' : 'WTA'} tennis player from ${country}. Career stats, rankings, net worth, and racket on SUPER.TENNIS.`}
   ogImage={player.image_url || '/og/players.png'}
 >
   <!-- JSON-LD -->
