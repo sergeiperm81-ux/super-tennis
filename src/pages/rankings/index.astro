@@ -5,8 +5,8 @@ import { getLatestRankings, getArticles } from '../../lib/supabase';
 import { countryFlags, countryNames, getFlagUrl } from '../../lib/fallback-data';
 
 // Fetch real data from Supabase
-let atpRankings = await getLatestRankings('atp', 100);
-let wtaRankings = await getLatestRankings('wta', 100);
+let atpRankings = await getLatestRankings('atp', 200);
+let wtaRankings = await getLatestRankings('wta', 200);
 
 // Determine latest ranking date
 const rankingDate = atpRankings[0]?.ranking_date
@@ -151,7 +151,7 @@ const sbCatLabels: Record<string, string> = {
                     const cc = p?.country_code || '';
                     const flagSrc = getFlagUrl(cc, 20);
                     return (
-                      <tr class={r.ranking <= 10 ? 'top-ten' : ''}>
+                      <tr class={r.ranking <= 10 ? 'top-ten' : ''} data-rank={r.ranking} style={r.ranking > 50 ? 'display:none' : ''}>
                         <td class="col-rank">
                           <span class="rank-num">{r.ranking}</span>
                         </td>
@@ -172,6 +172,9 @@ const sbCatLabels: Record<string, string> = {
                   })}
                 </tbody>
               </table>
+              {atpRankings.length > 50 && (
+                <button class="show-more-btn" id="atp-show-more" data-tour="atp">Show More Rankings</button>
+              )}
             ) : (
               <div class="empty-state">
                 <p>Rankings data is loading. Please check back shortly.</p>
@@ -198,7 +201,7 @@ const sbCatLabels: Record<string, string> = {
                     const cc = p?.country_code || '';
                     const flagSrc = getFlagUrl(cc, 20);
                     return (
-                      <tr class={r.ranking <= 10 ? 'top-ten' : ''}>
+                      <tr class={r.ranking <= 10 ? 'top-ten' : ''} data-rank={r.ranking} style={r.ranking > 50 ? 'display:none' : ''}>
                         <td class="col-rank">
                           <span class="rank-num">{r.ranking}</span>
                         </td>
@@ -219,6 +222,9 @@ const sbCatLabels: Record<string, string> = {
                   })}
                 </tbody>
               </table>
+              {wtaRankings.length > 50 && (
+                <button class="show-more-btn" id="wta-show-more" data-tour="wta">Show More Rankings</button>
+              )}
             ) : (
               <div class="empty-state">
                 <p>Rankings data is loading. Please check back shortly.</p>
@@ -284,6 +290,34 @@ const sbCatLabels: Record<string, string> = {
         btn.classList.toggle('active', btn.dataset.tour === tour);
       });
     }
+
+    // Show More Rankings — reveals next 50 rows
+    var showState = { atp: 50, wta: 50 };
+    document.querySelectorAll('.show-more-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var tour = btn.dataset.tour;
+        var table = document.getElementById(tour + '-table');
+        var current = showState[tour];
+        var next = current + 50;
+        var rows = table.querySelectorAll('tr[data-rank]');
+        var shown = 0;
+        rows.forEach(function(row) {
+          var rank = parseInt(row.dataset.rank);
+          if (rank <= next) {
+            row.style.display = '';
+            shown++;
+          }
+        });
+        showState[tour] = next;
+        // Hide button if all rows shown
+        var totalRows = rows.length;
+        if (next >= totalRows) {
+          btn.style.display = 'none';
+        } else {
+          btn.textContent = 'Show More Rankings (' + next + ' of ' + totalRows + ')';
+        }
+      });
+    });
   </script>
 </BaseLayout>
 
@@ -459,6 +493,29 @@ const sbCatLabels: Record<string, string> = {
     padding: 48px;
     color: var(--gray-500);
     font-size: 1rem;
+  }
+
+  .show-more-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    margin-top: 8px;
+    background: var(--gray-50);
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius);
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .show-more-btn:hover {
+    background: var(--court-green, #16a34a);
+    border-color: var(--court-green, #16a34a);
+    color: white;
   }
 
   /* ===== SIDEBAR ===== */
