@@ -151,7 +151,7 @@ const sbCatLabels: Record<string, string> = {
                     const cc = p?.country_code || '';
                     const flagSrc = getFlagUrl(cc, 20);
                     return (
-                      <tr class={r.ranking <= 10 ? 'top-ten' : ''} data-rank={r.ranking} style={r.ranking > 50 ? 'display:none' : ''}>
+                      <tr class={r.ranking <= 10 ? 'top-ten' : ''} data-rank={r.ranking} data-hidden={r.ranking > 50 ? 'true' : undefined}>
                         <td class="col-rank">
                           <span class="rank-num">{r.ranking}</span>
                         </td>
@@ -201,7 +201,7 @@ const sbCatLabels: Record<string, string> = {
                     const cc = p?.country_code || '';
                     const flagSrc = getFlagUrl(cc, 20);
                     return (
-                      <tr class={r.ranking <= 10 ? 'top-ten' : ''} data-rank={r.ranking} style={r.ranking > 50 ? 'display:none' : ''}>
+                      <tr class={r.ranking <= 10 ? 'top-ten' : ''} data-rank={r.ranking} data-hidden={r.ranking > 50 ? 'true' : undefined}>
                         <td class="col-rank">
                           <span class="rank-num">{r.ranking}</span>
                         </td>
@@ -300,16 +300,13 @@ const sbCatLabels: Record<string, string> = {
         var current = showState[tour];
         var next = current + 50;
         var rows = table.querySelectorAll('tr[data-rank]');
-        var shown = 0;
         rows.forEach(function(row) {
           var rank = parseInt(row.dataset.rank);
           if (rank <= next) {
-            row.style.display = '';
-            shown++;
+            row.removeAttribute('data-hidden');
           }
         });
         showState[tour] = next;
-        // Hide button if all rows shown
         var totalRows = rows.length;
         if (next >= totalRows) {
           btn.style.display = 'none';
@@ -493,6 +490,10 @@ const sbCatLabels: Record<string, string> = {
     padding: 48px;
     color: var(--gray-500);
     font-size: 1rem;
+  }
+
+  tr[data-hidden="true"] {
+    display: none;
   }
 
   .show-more-btn {
