@@ -1,128 +1,116 @@
-name: Watchdog — Auto-Retry & Health Report
+name: Watchdog — Health Monitor + Telegram Alerts
 
 on:
   schedule:
-    # Run 35 min after content factory (07:00 UTC)
-    - cron: '35 7 * * *'
-    # Midday health check
-    - cron: '0 12 * * *'
+    # 08:00 Sofia (05:00 UTC) — after news + deploy
+    - cron: '0 5 * * *'
+    # 13:00 Sofia (10:00 UTC) — midday check
+    - cron: '0 10 * * *'
   workflow_dispatch: {}
 
 jobs:
   health-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
+
     steps:
-      - name: Check all workflows health
-        id: health
+      - name: Full health check
+        id: check
         env:
-          GH_TOKEN: ${{ github.token }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: |
-          echo "## 🏥 Super Tennis Health Report" > report.md
-          echo "**$(date -u '+%Y-%m-%d %H:%M UTC')**" >> report.md
-          echo "" >> report.md
+          ISSUES=""
+          TODAY=$(date -u +%Y-%m-%d)
 
-          ISSUES=0
+          echo "=== SUPER.TENNIS Health Check ==="
 
-          # --- Content Factory ---
-          CF_STATUS=$(gh run list --repo ${{ github.repository }} \
-            --workflow=content-factory.yml --limit=1 \
-            --json conclusion,createdAt --jq '.[0]')
-          CF_CONCLUSION=$(echo "$CF_STATUS" | jq -r '.conclusion')
-          CF_DATE=$(echo "$CF_STATUS" | jq -r '.createdAt' | cut -dT -f1)
-
-          if [ "$CF_CONCLUSION" = "success" ]; then
-            echo "✅ **Content Factory** — OK ($CF_DATE)" >> report.md
+          # 1. Site availability
+          HTTP=$(curl -s -o /dev/null -w "%{http_code}" https://super.tennis/ || echo "000")
+          if [ "$HTTP" != "200" ]; then
+            ISSUES="${ISSUES}🔴 Site DOWN (HTTP $HTTP)\n"
+            echo "❌ Site: HTTP $HTTP"
           else
-            echo "❌ **Content Factory** — FAILED ($CF_CONCLUSION, $CF_DATE)" >> report.md
-            ISSUES=$((ISSUES + 1))
+            echo "✅ Site: HTTP 200"
           fi
 
-          # --- Build & Deploy ---
-          BD_STATUS=$(gh run list --repo ${{ github.repository }} \
-            --workflow=deploy.yml --limit=1 \
-            --json conclusion,createdAt --jq '.[0]')
-          BD_CONCLUSION=$(echo "$BD_STATUS" | jq -r '.conclusion')
-          BD_DATE=$(echo "$BD_STATUS" | jq -r '.createdAt' | cut -dT -f1)
-
-          if [ "$BD_CONCLUSION" = "success" ]; then
-            echo "✅ **Build & Deploy** — OK ($BD_DATE)" >> report.md
+          # 2. News generated today
+          NEWS=$(curl -s \
+            -H "apikey: $SUPABASE_SERVICE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            "$SUPABASE_URL/rest/v1/news?select=id&created_at=gte.$TODAY" \
+            | python3 -c "import sys,json; print(len(json.load(sys.stdin)))" 2>/dev/null || echo "0")
+          if [ "$NEWS" = "0" ]; then
+            ISSUES="${ISSUES}🔴 No news generated today\n"
+            echo "❌ News: 0 today"
           else
-            echo "❌ **Build & Deploy** — FAILED ($BD_CONCLUSION, $BD_DATE)" >> report.md
-            ISSUES=$((ISSUES + 1))
+            echo "✅ News: $NEWS today"
           fi
 
-          # --- Weekly Rankings ---
-          WR_STATUS=$(gh run list --repo ${{ github.repository }} \
-            --workflow=weekly-rankings.yml --limit=1 \
-            --json conclusion,createdAt --jq '.[0]')
-          WR_CONCLUSION=$(echo "$WR_STATUS" | jq -r '.conclusion')
-          WR_DATE=$(echo "$WR_STATUS" | jq -r '.createdAt' | cut -dT -f1)
-
-          if [ "$WR_CONCLUSION" = "success" ]; then
-            echo "✅ **Weekly Rankings** — OK ($WR_DATE)" >> report.md
+          # 3. Rankings not zero
+          RANK_PTS=$(curl -s \
+            -H "apikey: $SUPABASE_SERVICE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            "$SUPABASE_URL/rest/v1/rankings?select=points&tour=eq.atp&order=ranking_date.desc,ranking.asc&limit=1" \
+            | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['points'] if d else 0)" 2>/dev/null || echo "0")
+          if [ "$RANK_PTS" = "0" ]; then
+            ISSUES="${ISSUES}🔴 Rankings show 0 points (broken update)\n"
+            echo "❌ Rankings: 0 points"
           else
-            echo "❌ **Weekly Rankings** — FAILED ($WR_CONCLUSION, $WR_DATE)" >> report.md
-            ISSUES=$((ISSUES + 1))
+            echo "✅ Rankings: top player has $RANK_PTS points"
           fi
 
-          # --- Site availability ---
-          echo "" >> report.md
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://super.tennis/ || echo "000")
-          if [ "$HTTP_CODE" = "200" ]; then
-            echo "✅ **Site** — super.tennis responding (HTTP $HTTP_CODE)" >> report.md
+          # 4. Bluesky posted today
+          BSKY=$(curl -s \
+            -H "apikey: $SUPABASE_SERVICE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            "$SUPABASE_URL/rest/v1/news?select=id&bluesky_posted_at=gte.$TODAY" \
+            | python3 -c "import sys,json; print(len(json.load(sys.stdin)))" 2>/dev/null || echo "0")
+          if [ "$BSKY" = "0" ]; then
+            ISSUES="${ISSUES}🟡 No Bluesky posts today\n"
+            echo "⚠️ Bluesky: 0 posts today"
           else
-            echo "❌ **Site** — super.tennis DOWN (HTTP $HTTP_CODE)" >> report.md
-            ISSUES=$((ISSUES + 1))
+            echo "✅ Bluesky: $BSKY posts today"
           fi
 
-          echo "" >> report.md
-          echo "**Issues found: $ISSUES**" >> report.md
+          # 5. Articles count (should be 600+)
+          ARTICLES=$(curl -s \
+            -H "apikey: $SUPABASE_SERVICE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            "$SUPABASE_URL/rest/v1/articles?select=id" \
+            -H "Prefer: count=exact" -I 2>/dev/null \
+            | grep -i content-range | grep -o '/[0-9]*' | tr -d '/' || echo "0")
+          if [ "$ARTICLES" -lt 500 ] 2>/dev/null; then
+            ISSUES="${ISSUES}🔴 Only $ARTICLES articles (expected 600+)\n"
+            echo "❌ Articles: $ARTICLES"
+          else
+            echo "✅ Articles: $ARTICLES"
+          fi
 
-          cat report.md
-          echo "issues=$ISSUES" >> $GITHUB_OUTPUT
-          echo "cf_conclusion=$CF_CONCLUSION" >> $GITHUB_OUTPUT
+          # Save results
+          if [ -z "$ISSUES" ]; then
+            echo "alert=false" >> $GITHUB_OUTPUT
+            echo "message=✅ All systems healthy" >> $GITHUB_OUTPUT
+          else
+            echo "alert=true" >> $GITHUB_OUTPUT
+            # Escape for GitHub output
+            ESCAPED=$(echo -e "$ISSUES" | tr '\n' '|')
+            echo "message=$ESCAPED" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Upload health report
-        uses: actions/upload-artifact@v4
-        with:
-          name: health-report
-          path: report.md
-          retention-days: 7
-
-  # Auto-retry Content Factory if it failed today
-  retry-content-factory:
-    needs: health-check
-    if: needs.health-check.outputs.cf_conclusion != 'success'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Retry Content Factory
+      - name: Send Telegram alert if issues found
+        if: steps.check.outputs.alert == 'true'
         env:
-          GH_TOKEN: ${{ github.token }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          echo "⚠️ Content Factory failed — retrying..."
-          gh workflow run content-factory.yml --repo ${{ github.repository }}
-          echo "✅ Retry triggered"
+          MESSAGE="⚠️ SUPER.TENNIS Health Alert
 
-  # Wait and verify the retry worked
-  verify-retry:
-    needs: retry-content-factory
-    runs-on: ubuntu-latest
-    steps:
-      - name: Wait for retry to complete
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          echo "Waiting 3 minutes for Content Factory retry..."
-          sleep 180
+          $(echo '${{ steps.check.outputs.message }}' | tr '|' '\n')
 
-          CF_STATUS=$(gh run list --repo ${{ github.repository }} \
-            --workflow=content-factory.yml --limit=1 \
-            --json conclusion --jq '.[0].conclusion')
+          Check: https://github.com/${{ github.repository }}/actions"
 
-          if [ "$CF_STATUS" = "success" ]; then
-            echo "✅ Retry succeeded — video published"
-          else
-            echo "❌ Retry also failed ($CF_STATUS)"
-            echo "Manual intervention needed"
-            exit 1
-          fi
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_ID}" \
+            -d text="${MESSAGE}" \
+            -d parse_mode="HTML" || echo "Telegram send failed"
