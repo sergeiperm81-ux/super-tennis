@@ -1238,6 +1238,13 @@ async function updateRankings(env: Env): Promise<string> {
       }
       log(`   🔗 ${tour.toUpperCase()}: matched ${slugToPlayerId.size}/${parsed.length} players`);
 
+      // Safety: skip upsert if all points are 0 (broken parse / format change)
+      const hasPoints = rows.some(r => r.points > 0);
+      if (!hasPoints && rows.length > 0) {
+        log(`   ⚠️ ${tour.toUpperCase()}: all points are 0 — source format may have changed, skipping upsert`);
+        continue;
+      }
+
       // Batch upsert
       for (let i = 0; i < rows.length; i += 100) {
         const batch = rows.slice(i, i + 100);
