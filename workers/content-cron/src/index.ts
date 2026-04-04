@@ -1118,6 +1118,66 @@ function parseRankingsHtml(html: string, tour: string): { rank: number; name: st
   return players;
 }
 
+// Enrich parsed rankings with points from OpenAI when source doesn't provide them
+async function enrichRankingsWithPoints(
+  env: Env,
+  players: { rank: number; name: string; country: string; points: number }[],
+  tour: string,
+): Promise<void> {
+  if (players.length === 0 || players.some(p => p.points > 0)) return; // already have points
+
+  const top50 = players.slice(0, 50);
+  const nameList = top50.map(p => `${p.rank}. ${p.name} (${p.country})`).join('\n');
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a tennis data assistant. Given ${tour.toUpperCase()} rankings, estimate the current ranking points for each player based on your knowledge. Return ONLY a JSON array of numbers representing points for each player in order. Be as accurate as possible based on recent ${tour.toUpperCase()} rankings data.`,
+          },
+          {
+            role: 'user',
+            content: `Estimate current ${tour.toUpperCase()} ranking points for these players:\n${nameList}\n\nReturn ONLY a JSON array of 50 numbers, e.g. [13550, 11830, ...]`,
+          },
+        ],
+        temperature: 0.3,
+        max_tokens: 1000,
+      }),
+    });
+
+    if (!res.ok) return;
+
+    const data = await res.json() as any;
+    const content = data.choices?.[0]?.message?.content || '';
+    const jsonStr = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const pointsList = JSON.parse(jsonStr) as number[];
+
+    for (let i = 0; i < Math.min(pointsList.length, top50.length); i++) {
+      players[i].points = pointsList[i] || 0;
+    }
+
+    // Estimate remaining players with decreasing points
+    if (players.length > 50 && pointsList.length > 0) {
+      const lastPoints = players[49]?.points || 500;
+      for (let i = 50; i < players.length; i++) {
+        players[i].points = Math.max(10, Math.round(lastPoints * (1 - (i - 50) / 200)));
+      }
+    }
+
+    console.log(`   ✅ Enriched ${tour.toUpperCase()} with estimated points from OpenAI`);
+  } catch (e: any) {
+    console.log(`   ⚠️ Points enrichment failed: ${e.message}`);
+  }
+}
+
 function nameToSlug(name: string): string {
   return name
     .toLowerCase()
@@ -1190,6 +1250,12 @@ async function updateRankings(env: Env): Promise<string> {
       const html = await res.text();
       const parsed = parseRankingsHtml(html, tour);
       log(`   📊 ${tour.toUpperCase()}: parsed ${parsed.length} players`);
+
+      // If points are missing (source format changed), enrich via OpenAI
+      if (parsed.length > 0 && !parsed.some(p => p.points > 0)) {
+        log(`   🤖 No points in source — enriching via OpenAI...`);
+        await enrichRankingsWithPoints(env, parsed, tour);
+      }
 
       if (parsed.length === 0) {
         log(`   ⚠️ ${tour.toUpperCase()}: no rankings parsed, skipping`);
