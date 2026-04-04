@@ -135,6 +135,7 @@ const sbCatLabels: Record<string, string> = {
           <!-- ATP Rankings Table -->
           <div class="rankings-table-wrap" id="atp-table">
             {atpRankings.length > 0 ? (
+              <>
               <table class="rankings-table">
                 <thead>
                   <tr>
@@ -176,6 +177,7 @@ const sbCatLabels: Record<string, string> = {
               {atpRankings.length > 50 && (
                 <button class="show-more-btn" id="atp-show-more" data-tour="atp">Show More Rankings</button>
               )}
+              </>
             ) : (
               <div class="empty-state">
                 <p>Rankings data is loading. Please check back shortly.</p>
@@ -186,6 +188,7 @@ const sbCatLabels: Record<string, string> = {
           <!-- WTA Rankings Table -->
           <div class="rankings-table-wrap" id="wta-table" style="display: none;">
             {wtaRankings.length > 0 ? (
+              <>
               <table class="rankings-table">
                 <thead>
                   <tr>
@@ -227,6 +230,7 @@ const sbCatLabels: Record<string, string> = {
               {wtaRankings.length > 50 && (
                 <button class="show-more-btn" id="wta-show-more" data-tour="wta">Show More Rankings</button>
               )}
+              </>
             ) : (
               <div class="empty-state">
                 <p>Rankings data is loading. Please check back shortly.</p>
