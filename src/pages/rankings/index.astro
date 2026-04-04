@@ -507,22 +507,20 @@ const sbCatLabels: Record<string, string> = {
     width: 100%;
     padding: 14px;
     margin-top: 8px;
-    background: var(--gray-50);
-    border: 2px solid var(--gray-200);
+    background: var(--court-green, #16a34a);
+    border: 2px solid var(--court-green, #16a34a);
     border-radius: var(--radius);
     font-family: var(--font-heading);
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--gray-700);
+    color: white;
     cursor: pointer;
-    transition: background 0.2s, border-color 0.2s;
+    transition: opacity 0.2s;
     text-transform: uppercase;
     letter-spacing: 0.03em;
   }
   .show-more-btn:hover {
-    background: var(--court-green, #16a34a);
-    border-color: var(--court-green, #16a34a);
-    color: white;
+    opacity: 0.85;
   }
 
   /* ===== SIDEBAR ===== */
