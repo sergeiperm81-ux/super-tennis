@@ -192,6 +192,18 @@ const jsonLd = {
 
   <div set:html={bodyHtml} />
 
+  {/* Gear CTA — affiliate cross-promotion */}
+  {(name1 || name2) && (
+    <div class="gear-cta">
+      <span class="gear-cta-icon">🎾</span>
+      <div class="gear-cta-text">
+        <strong>Play like the pros</strong>
+        <p>Discover what rackets, shoes, and gear {name1} and {name2} use on court.</p>
+      </div>
+      <a href="/gear/" class="gear-cta-btn">Browse Gear Guides</a>
+    </div>
+  )}
+
   <RelatedArticles category="vs" currentSlug={slug as string} />
 
   <ArticleFooter backLabel="All Rivalries" backHref="/vs/" />
@@ -371,5 +383,36 @@ const jsonLd = {
     font-size: 0.8rem;
     color: #64748b;
     font-style: italic;
+  }
+
+  /* Gear CTA */
+  .gear-cta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 2rem 0;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border-radius: 12px;
+    border: 1px solid #f59e0b;
+  }
+  .gear-cta-icon { font-size: 2rem; flex-shrink: 0; }
+  .gear-cta-text { flex: 1; }
+  .gear-cta-text strong { display: block; font-size: 1rem; color: #92400e; }
+  .gear-cta-text p { margin: 0.25rem 0 0; font-size: 0.85rem; color: #78350f; }
+  .gear-cta-btn {
+    flex-shrink: 0;
+    padding: 0.5rem 1.25rem;
+    background: #f59e0b;
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .gear-cta-btn:hover { background: #d97706; }
+  @media (max-width: 600px) {
+    .gear-cta { flex-direction: column; text-align: center; }
   }
 </style>

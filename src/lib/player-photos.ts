@@ -2,7 +2,7 @@ import { supabase } from './supabase';
 
 // Mapping: VS article slug → [player1_slug, player2_slug]
 export const vsPlayerSlugs: Record<string, [string, string]> = {
-  // Current Era
+  // Current Era — primary
   'alcaraz-vs-sinner': ['carlos-alcaraz', 'jannik-sinner'],
   'djokovic-vs-alcaraz': ['novak-djokovic', 'carlos-alcaraz'],
   'swiatek-vs-sabalenka': ['iga-swiatek', 'aryna-sabalenka'],
@@ -10,27 +10,63 @@ export const vsPlayerSlugs: Record<string, [string, string]> = {
   'zverev-vs-alcaraz': ['alexander-zverev', 'carlos-alcaraz'],
   'gauff-vs-swiatek': ['coco-gauff', 'iga-swiatek'],
   'kyrgios-vs-djokovic': ['nick-kyrgios', 'novak-djokovic'],
+  // Current Era — variant slugs (same pair, different article angles)
+  'sinner-vs-alcaraz-grand-slams': ['jannik-sinner', 'carlos-alcaraz'],
+  'sinner-vs-alcaraz-2026-new-era': ['jannik-sinner', 'carlos-alcaraz'],
+  'sinner-vs-medvedev': ['jannik-sinner', 'daniil-medvedev'],
+  'djokovic-vs-sinner': ['novak-djokovic', 'jannik-sinner'],
+  'djokovic-vs-sinner-2026-passing-torch': ['novak-djokovic', 'jannik-sinner'],
+  'alcaraz-vs-medvedev': ['carlos-alcaraz', 'daniil-medvedev'],
+  'djokovic-vs-zverev': ['novak-djokovic', 'alexander-zverev'],
+  'sinner-vs-zverev': ['jannik-sinner', 'alexander-zverev'],
+  'draper-vs-sinner': ['jack-draper', 'jannik-sinner'],
+  'alcaraz-vs-djokovic-wimbledon': ['carlos-alcaraz', 'novak-djokovic'],
+  'ruud-vs-alcaraz': ['casper-ruud', 'carlos-alcaraz'],
+  'nadal-vs-alcaraz': ['rafael-nadal', 'carlos-alcaraz'],
+  'zverev-vs-alcaraz-masters-rivalry': ['alexander-zverev', 'carlos-alcaraz'],
+  'shelton-vs-draper-next-gen': ['ben-shelton', 'jack-draper'],
+  'fritz-vs-tiafoe-american-revival': ['taylor-fritz', 'frances-tiafoe'],
+  'rune-vs-sinner-european-young-guns': ['holger-rune', 'jannik-sinner'],
   // Big Three Era
   'djokovic-vs-nadal': ['novak-djokovic', 'rafael-nadal'],
+  'djokovic-vs-nadal-australian-open': ['novak-djokovic', 'rafael-nadal'],
   'federer-vs-nadal': ['roger-federer', 'rafael-nadal'],
   'djokovic-vs-federer': ['novak-djokovic', 'roger-federer'],
   'djokovic-vs-murray': ['novak-djokovic', 'andy-murray'],
   'nadal-vs-federer-clay': ['rafael-nadal', 'roger-federer'],
+  'nadal-vs-murray': ['rafael-nadal', 'andy-murray'],
   'federer-vs-djokovic-wimbledon': ['roger-federer', 'novak-djokovic'],
   'nadal-vs-djokovic-french-open': ['rafael-nadal', 'novak-djokovic'],
   'big-three-comparison': ['novak-djokovic', 'rafael-nadal'],
   'federer-vs-murray': ['roger-federer', 'andy-murray'],
+  'federer-vs-wawrinka': ['roger-federer', 'stan-wawrinka'],
   'tsitsipas-vs-medvedev': ['stefanos-tsitsipas', 'daniil-medvedev'],
+  'agassi-vs-federer': ['andre-agassi', 'roger-federer'],
   // Women's Tennis
   'evert-vs-navratilova': ['chris-evert', 'martina-navratilova'],
   'williams-vs-williams': ['serena-williams', 'venus-williams'],
   'graf-vs-seles': ['steffi-graf', 'monica-seles'],
+  'graf-vs-navratilova': ['steffi-graf', 'martina-navratilova'],
   'sharapova-vs-williams': ['maria-sharapova', 'serena-williams'],
   'henin-vs-clijsters': ['justine-henin', 'kim-clijsters'],
+  'hingis-vs-williams': ['martina-hingis', 'serena-williams'],
+  'osaka-vs-barty': ['naomi-osaka', 'ashleigh-barty'],
+  'sabalenka-vs-rybakina': ['aryna-sabalenka', 'elena-rybakina'],
+  'rybakina-vs-sabalenka-power-vs-power': ['elena-rybakina', 'aryna-sabalenka'],
+  'swiatek-vs-rybakina': ['iga-swiatek', 'elena-rybakina'],
+  'sabalenka-vs-gauff': ['aryna-sabalenka', 'coco-gauff'],
+  'gauff-vs-sabalenka-us-open': ['coco-gauff', 'aryna-sabalenka'],
+  'sabalenka-vs-swiatek-wta-rivalry': ['aryna-sabalenka', 'iga-swiatek'],
+  'gauff-vs-pegula': ['coco-gauff', 'jessica-pegula'],
+  'pegula-vs-sabalenka-hard-court': ['jessica-pegula', 'aryna-sabalenka'],
+  'gauff-vs-rybakina-rising-stars': ['coco-gauff', 'elena-rybakina'],
   // Classic Era
   'sampras-vs-agassi': ['pete-sampras', 'andre-agassi'],
+  'agassi-vs-sampras-us-open': ['andre-agassi', 'pete-sampras'],
   'borg-vs-mcenroe': ['bjorn-borg', 'john-mcenroe'],
   'connors-vs-lendl': ['jimmy-connors', 'ivan-lendl'],
+  'lendl-vs-mcenroe': ['ivan-lendl', 'john-mcenroe'],
+  'edberg-vs-becker': ['stefan-edberg', 'boris-becker'],
 };
 
 // Cache for player photos (grows across build — never evicted)
