@@ -1,15 +1,16 @@
-name: Weekly Rankings & Videos Update
+name: Weekly Rankings & Player Enrichment
 
 on:
   schedule:
-    # Run every Monday at 8:00 UTC (11:00 Moscow time)
+    # Run every Monday at 08:00 UTC (11:00 Sofia)
+    # TLR updates daily ~07:04 GMT, so 08:00 is safe
     - cron: '0 8 * * 1'
   workflow_dispatch: # Allow manual trigger
 
 jobs:
   update-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
@@ -24,11 +25,29 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Update rankings
-        run: node scripts/update-rankings.mjs
+      - name: Update rankings from TennisLiveRanking
+        run: node scripts/update-rankings.mjs --pages=4
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+      - name: Enrich player profiles (top 200)
+        run: node scripts/enrich-players-tlr.mjs --limit=200
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+      - name: Fetch H2H data for vs-articles
+        run: node scripts/fetch-h2h-tlr.mjs
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
       - name: Build Astro site
         run: npx astro build

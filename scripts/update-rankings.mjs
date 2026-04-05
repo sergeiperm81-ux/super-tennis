@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 /**
- * SUPER.TENNIS — Rankings Update Script
+ * SUPER.TENNIS — Rankings Update (TennisLiveRanking.com)
  *
- * Fetches current ATP & WTA rankings from Tennis Abstract
- * and updates Supabase rankings table.
+ * Fetches current ATP & WTA rankings from tennisliveranking.com
+ * with real points, validates data, updates Supabase.
+ * Sends Telegram alert on failure.
  *
  * Usage:
- *   node scripts/update-rankings.mjs
+ *   node scripts/update-rankings.mjs [--dry-run] [--pages=4]
  *
- * Requires .env with SUPABASE_URL and SUPABASE_SERVICE_KEY
+ * Requires env: SUPABASE_URL, SUPABASE_SERVICE_KEY
+ * Optional env: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID (for alerts)
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -16,265 +18,255 @@ import { config } from 'dotenv';
 
 config();
 
+// ─── Config ────────────────────────────────────────────
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
+const TELEGRAM_BOT = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT = process.env.TELEGRAM_CHAT_ID;
+
+const DRY_RUN = process.argv.includes('--dry-run');
+const PAGES_FLAG = process.argv.find(a => a.startsWith('--pages='));
+const MAX_PAGES = PAGES_FLAG ? parseInt(PAGES_FLAG.split('=')[1]) : 4; // 4 pages = top 200
+
+const BASE_URL = 'https://tennisliveranking.com';
+const FETCH_DELAY_MS = 800; // polite delay between page fetches
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
-  console.error('❌ Missing SUPABASE_URL or SUPABASE_SERVICE_KEY in .env');
+  console.error('❌ Missing SUPABASE_URL or SUPABASE_SERVICE_KEY');
   process.exit(1);
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ─── Parse Tennis Abstract HTML rankings ─────────────────
-function parseRankingsHtml(html, tour) {
-  const players = [];
-  // Tennis Abstract uses <tr> rows with <td> cells
-  // Pattern: rank, change, name (with link), country, points, etc.
-  const rowRegex = /<tr[^>]*>\s*<td[^>]*>(\d+)<\/td>\s*<td[^>]*>[^<]*<\/td>\s*<td[^>]*>(?:<a[^>]*>)?([^<]+)(?:<\/a>)?<\/td>\s*<td[^>]*>([A-Z]{3})<\/td>\s*<td[^>]*>([\d,]+)<\/td>/g;
-
-  let match;
-  while ((match = rowRegex.exec(html)) !== null) {
-    const rank = parseInt(match[1]);
-    const name = match[2].trim();
-    const country = match[3];
-    const points = parseInt(match[4].replace(/,/g, ''));
-    if (rank <= 200) {
-      players.push({ rank, name, country, points, tour });
-    }
+// ─── Telegram Alert ────────────────────────────────────
+async function sendTelegramAlert(message) {
+  if (!TELEGRAM_BOT || !TELEGRAM_CHAT) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT,
+        text: `🎾 Rankings Update Alert\n\n${message}`,
+        parse_mode: 'HTML',
+      }),
+    });
+  } catch (err) {
+    console.error('  ⚠️ Telegram alert failed:', err.message);
   }
+}
 
-  // If regex didn't match, try a more lenient approach
-  if (players.length === 0) {
-    console.log(`  ⚠️  Primary regex found 0 rows, trying alternative parser...`);
-    // Try matching lines with ranking data patterns
-    const lines = html.split('\n');
-    let currentRank = 0;
-    for (const line of lines) {
-      const rankMatch = line.match(/<td[^>]*>\s*(\d{1,3})\s*<\/td>/);
-      if (rankMatch) {
-        const r = parseInt(rankMatch[1]);
-        if (r === currentRank + 1 || (currentRank === 0 && r === 1)) {
-          currentRank = r;
-        }
+// ─── Sleep utility ─────────────────────────────────────
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// ─── Parse rankings from JSON-LD structured data ───────
+function parseRankingsPage(html, tour) {
+  const players = [];
+
+  // TennisLiveRanking embeds JSON-LD ItemList with all 50 players per page
+  // Much more reliable than parsing HTML tables
+  const jsonLdBlocks = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g);
+  if (!jsonLdBlocks) return players;
+
+  for (const block of jsonLdBlocks) {
+    const jsonStr = block.replace(/<script[^>]*>/, '').replace(/<\/script>/, '').trim();
+    let parsed;
+    try {
+      // Handle array or single object
+      const raw = JSON.parse(jsonStr);
+      const items = Array.isArray(raw) ? raw : [raw];
+      for (const item of items) {
+        if (item['@type'] !== 'ItemList' || !item.itemListElement) continue;
+        parsed = item;
+        break;
       }
+    } catch {
+      continue;
+    }
+    if (!parsed) continue;
+
+    for (const entry of parsed.itemListElement) {
+      const person = entry.item;
+      if (!person || !person.name) continue;
+
+      // Extract rank and points from "award": "Ranking: #1, Points: 12050"
+      const awardMatch = (person.award || '').match(/Ranking:\s*#(\d+),\s*Points:\s*(\d+)/);
+      if (!awardMatch) continue;
+
+      const rank = parseInt(awardMatch[1]);
+      const points = parseInt(awardMatch[2]);
+
+      // Extract slug and TLR ID from URL: /player/carlos-alcaraz/DbA5
+      const urlMatch = (person.url || '').match(/\/player\/([^/]+)\/([^/?#]+)/);
+      const tlrSlug = urlMatch ? urlMatch[1] : '';
+      const tlrId = urlMatch ? urlMatch[2] : '';
+
+      players.push({
+        rank,
+        name: person.name,
+        country: '', // Not in JSON-LD, matched via DB
+        points,
+        tour,
+        tlr_slug: tlrSlug,
+        tlr_id: tlrId,
+      });
     }
   }
 
   return players;
 }
 
-// ─── Slug from name ─────────────────────────────────────
+// ─── Fetch all ranking pages for a tour ────────────────
+async function fetchTourRankings(tour) {
+  const tourPath = tour === 'atp' ? 'atp-singles' : 'wta-singles';
+  const allPlayers = [];
+
+  for (let page = 1; page <= MAX_PAGES; page++) {
+    const url = `${BASE_URL}/ranking/${tourPath}?pageNum=${page}`;
+    console.log(`  📥 Fetching ${tour.toUpperCase()} page ${page}/${MAX_PAGES}: ${url}`);
+
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent': 'SuperTennis/1.0 (https://super.tennis; data aggregation)',
+          'Accept': 'text/html',
+        },
+      });
+
+      if (!res.ok) {
+        console.error(`  ❌ HTTP ${res.status} for page ${page}`);
+        break;
+      }
+
+      const html = await res.text();
+      const pagePlayers = parseRankingsPage(html, tour);
+      console.log(`     → Parsed ${pagePlayers.length} players`);
+
+      if (pagePlayers.length === 0) {
+        console.log(`     → Empty page, stopping pagination`);
+        break;
+      }
+
+      allPlayers.push(...pagePlayers);
+
+      if (page < MAX_PAGES) await sleep(FETCH_DELAY_MS);
+    } catch (err) {
+      console.error(`  ❌ Fetch error page ${page}: ${err.message}`);
+      break;
+    }
+  }
+
+  return allPlayers;
+}
+
+// ─── Slug from name ────────────────────────────────────
 function nameToSlug(name) {
   return name
     .toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Remove accents
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9\s-]/g, '')
     .trim()
     .replace(/\s+/g, '-');
 }
 
-// ─── Main ───────────────────────────────────────────────
-async function main() {
-  console.log('🎾 SUPER.TENNIS Rankings Updater\n');
+// ─── Validate parsed data (safety) ─────────────────────
+function validateRankings(players, tour) {
+  const errors = [];
 
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-  console.log(`📅 Ranking date: ${today}\n`);
-
-  // Fetch rankings from Tennis Abstract
-  console.log('📥 Fetching ATP rankings...');
-  const atpRes = await fetch('https://tennisabstract.com/reports/atpRankings.html');
-  const atpHtml = await atpRes.text();
-
-  console.log('📥 Fetching WTA rankings...');
-  const wtaRes = await fetch('https://tennisabstract.com/reports/wtaRankings.html');
-  const wtaHtml = await wtaRes.text();
-
-  const atpPlayers = parseRankingsHtml(atpHtml, 'atp');
-  const wtaPlayers = parseRankingsHtml(wtaHtml, 'wta');
-
-  console.log(`  ATP: ${atpPlayers.length} players parsed`);
-  console.log(`  WTA: ${wtaPlayers.length} players parsed`);
-
-  if (atpPlayers.length === 0 && wtaPlayers.length === 0) {
-    console.log('\n⚠️  No players parsed from HTML. Falling back to hardcoded data...');
-    await updateFromHardcoded(today);
-    return;
+  if (players.length < 30) {
+    errors.push(`Only ${players.length} ${tour.toUpperCase()} players parsed (expected 50+)`);
   }
 
-  // Match to existing players in Supabase by name/slug
-  await updateRankingsInDB([...atpPlayers, ...wtaPlayers], today);
+  // Top 10 should all have > 1000 points
+  const top10 = players.filter(p => p.rank <= 10);
+  const zeroPointsTop10 = top10.filter(p => p.points === 0 || isNaN(p.points));
+  if (zeroPointsTop10.length > 0) {
+    errors.push(`${zeroPointsTop10.length} top-10 ${tour.toUpperCase()} players have 0 points`);
+  }
+
+  // #1 should have > 5000 points
+  const num1 = players.find(p => p.rank === 1);
+  if (num1 && num1.points < 5000) {
+    errors.push(`#1 ${tour.toUpperCase()} ${num1.name} has only ${num1.points} points`);
+  }
+
+  // Points should be descending (with some tolerance)
+  for (let i = 1; i < Math.min(players.length, 20); i++) {
+    if (players[i].points > players[i - 1].points + 100) {
+      errors.push(`Points not descending: #${players[i - 1].rank} (${players[i - 1].points}) < #${players[i].rank} (${players[i].points})`);
+      break;
+    }
+  }
+
+  return errors;
 }
 
-// ─── Update from hardcoded current data ─────────────────
-async function updateFromHardcoded(rankingDate) {
-  console.log('\n📊 Using hardcoded March 2026 rankings data...');
-
-  const atpRankings = [
-    { rank: 1, name: 'Carlos Alcaraz', points: 13550, tour: 'atp' },
-    { rank: 2, name: 'Jannik Sinner', points: 11830, tour: 'atp' },
-    { rank: 3, name: 'Novak Djokovic', points: 8120, tour: 'atp' },
-    { rank: 4, name: 'Alexander Zverev', points: 7915, tour: 'atp' },
-    { rank: 5, name: 'Lorenzo Musetti', points: 5430, tour: 'atp' },
-    { rank: 6, name: 'Alex De Minaur', points: 5280, tour: 'atp' },
-    { rank: 7, name: 'Taylor Fritz', points: 5100, tour: 'atp' },
-    { rank: 8, name: 'Ben Shelton', points: 4950, tour: 'atp' },
-    { rank: 9, name: 'Felix Auger Aliassime', points: 4520, tour: 'atp' },
-    { rank: 10, name: 'Alexander Bublik', points: 4380, tour: 'atp' },
-    { rank: 11, name: 'Daniil Medvedev', points: 4200, tour: 'atp' },
-    { rank: 12, name: 'Jakub Mensik', points: 3980, tour: 'atp' },
-    { rank: 13, name: 'Casper Ruud', points: 3850, tour: 'atp' },
-    { rank: 14, name: 'Jack Draper', points: 3720, tour: 'atp' },
-    { rank: 15, name: 'Flavio Cobolli', points: 3550, tour: 'atp' },
-    { rank: 16, name: 'Karen Khachanov', points: 3400, tour: 'atp' },
-    { rank: 17, name: 'Andrey Rublev', points: 3250, tour: 'atp' },
-    { rank: 18, name: 'Holger Rune', points: 3100, tour: 'atp' },
-    { rank: 19, name: 'Alejandro Davidovich Fokina', points: 2950, tour: 'atp' },
-    { rank: 20, name: 'Francisco Cerundolo', points: 2800, tour: 'atp' },
-    { rank: 21, name: 'Luciano Darderi', points: 2700, tour: 'atp' },
-    { rank: 22, name: 'Frances Tiafoe', points: 2600, tour: 'atp' },
-    { rank: 23, name: 'Jiri Lehecka', points: 2500, tour: 'atp' },
-    { rank: 24, name: 'Tommy Paul', points: 2400, tour: 'atp' },
-    { rank: 25, name: 'Tallon Griekspoor', points: 2300, tour: 'atp' },
-    { rank: 26, name: 'Valentin Vacherot', points: 2200, tour: 'atp' },
-    { rank: 27, name: 'Learner Tien', points: 2150, tour: 'atp' },
-    { rank: 28, name: 'Arthur Rinderknech', points: 2100, tour: 'atp' },
-    { rank: 29, name: 'Cameron Norrie', points: 2050, tour: 'atp' },
-    { rank: 30, name: 'Brandon Nakashima', points: 2000, tour: 'atp' },
-    { rank: 31, name: 'Tomas Martin Etcheverry', points: 1950, tour: 'atp' },
-    { rank: 32, name: 'Arthur Fils', points: 1900, tour: 'atp' },
-    { rank: 33, name: 'Corentin Moutet', points: 1850, tour: 'atp' },
-    { rank: 34, name: 'Ugo Humbert', points: 1800, tour: 'atp' },
-    { rank: 35, name: 'Joao Fonseca', points: 1750, tour: 'atp' },
-    { rank: 36, name: 'Jaume Munar', points: 1700, tour: 'atp' },
-    { rank: 37, name: 'Sebastian Korda', points: 1650, tour: 'atp' },
-    { rank: 38, name: 'Gabriel Diallo', points: 1600, tour: 'atp' },
-    { rank: 39, name: 'Denis Shapovalov', points: 1560, tour: 'atp' },
-    { rank: 40, name: 'Alejandro Tabilo', points: 1520, tour: 'atp' },
-    { rank: 41, name: 'Jenson Brooksby', points: 1480, tour: 'atp' },
-    { rank: 42, name: 'Grigor Dimitrov', points: 1440, tour: 'atp' },
-    { rank: 43, name: 'Stefanos Tsitsipas', points: 1400, tour: 'atp' },
-    { rank: 44, name: 'Alex Michelsen', points: 1360, tour: 'atp' },
-    { rank: 45, name: 'Alexei Popyrin', points: 1320, tour: 'atp' },
-    { rank: 46, name: 'Fabian Marozsan', points: 1280, tour: 'atp' },
-    { rank: 47, name: 'Zizou Bergs', points: 1250, tour: 'atp' },
-    { rank: 48, name: 'Adrian Mannarino', points: 1220, tour: 'atp' },
-    { rank: 49, name: 'Nuno Borges', points: 1190, tour: 'atp' },
-    { rank: 50, name: 'Tomas Machac', points: 1160, tour: 'atp' },
-  ];
-
-  const wtaRankings = [
-    { rank: 1, name: 'Aryna Sabalenka', points: 10920, tour: 'wta' },
-    { rank: 2, name: 'Iga Swiatek', points: 8770, tour: 'wta' },
-    { rank: 3, name: 'Elena Rybakina', points: 7200, tour: 'wta' },
-    { rank: 4, name: 'Coco Gauff', points: 6850, tour: 'wta' },
-    { rank: 5, name: 'Jessica Pegula', points: 5600, tour: 'wta' },
-    { rank: 6, name: 'Amanda Anisimova', points: 4950, tour: 'wta' },
-    { rank: 7, name: 'Jasmine Paolini', points: 4700, tour: 'wta' },
-    { rank: 8, name: 'Mirra Andreeva', points: 4400, tour: 'wta' },
-    { rank: 9, name: 'Elina Svitolina', points: 4100, tour: 'wta' },
-    { rank: 10, name: 'Victoria Mboko', points: 3850, tour: 'wta' },
-    { rank: 11, name: 'Ekaterina Alexandrova', points: 3600, tour: 'wta' },
-    { rank: 12, name: 'Belinda Bencic', points: 3400, tour: 'wta' },
-    { rank: 13, name: 'Karolina Muchova', points: 3200, tour: 'wta' },
-    { rank: 14, name: 'Linda Noskova', points: 3050, tour: 'wta' },
-    { rank: 15, name: 'Madison Keys', points: 2900, tour: 'wta' },
-    { rank: 16, name: 'Naomi Osaka', points: 2750, tour: 'wta' },
-    { rank: 17, name: 'Clara Tauson', points: 2650, tour: 'wta' },
-    { rank: 18, name: 'Iva Jovic', points: 2550, tour: 'wta' },
-    { rank: 19, name: 'Liudmila Samsonova', points: 2450, tour: 'wta' },
-    { rank: 20, name: 'Diana Shnaider', points: 2350, tour: 'wta' },
-    { rank: 21, name: 'Elise Mertens', points: 2250, tour: 'wta' },
-    { rank: 22, name: 'Anna Kalinskaya', points: 2150, tour: 'wta' },
-    { rank: 23, name: 'Qinwen Zheng', points: 2060, tour: 'wta' },
-    { rank: 24, name: 'Emma Raducanu', points: 1980, tour: 'wta' },
-    { rank: 25, name: 'Emma Navarro', points: 1900, tour: 'wta' },
-    { rank: 26, name: 'Jelena Ostapenko', points: 1830, tour: 'wta' },
-    { rank: 27, name: 'Leylah Fernandez', points: 1760, tour: 'wta' },
-    { rank: 28, name: 'Marta Kostyuk', points: 1700, tour: 'wta' },
-    { rank: 29, name: 'Maya Joint', points: 1640, tour: 'wta' },
-    { rank: 30, name: 'Xin Yu Wang', points: 1580, tour: 'wta' },
-    { rank: 31, name: 'Cristina Bucsa', points: 1530, tour: 'wta' },
-    { rank: 32, name: 'Alexandra Eala', points: 1480, tour: 'wta' },
-    { rank: 33, name: 'Marie Bouzkova', points: 1430, tour: 'wta' },
-    { rank: 34, name: 'Maria Sakkari', points: 1380, tour: 'wta' },
-    { rank: 35, name: 'Jaqueline Cristian', points: 1340, tour: 'wta' },
-    { rank: 36, name: 'Magdalena Frech', points: 1300, tour: 'wta' },
-    { rank: 37, name: 'Lois Boisson', points: 1260, tour: 'wta' },
-    { rank: 38, name: 'Sorana Cirstea', points: 1220, tour: 'wta' },
-    { rank: 39, name: 'Janice Tjen', points: 1185, tour: 'wta' },
-    { rank: 40, name: 'Sara Bejlek', points: 1150, tour: 'wta' },
-    { rank: 41, name: 'Ann Li', points: 1120, tour: 'wta' },
-    { rank: 42, name: 'Elisabetta Cocciaretto', points: 1090, tour: 'wta' },
-    { rank: 43, name: 'Hailey Baptiste', points: 1060, tour: 'wta' },
-    { rank: 44, name: 'Katerina Siniakova', points: 1035, tour: 'wta' },
-    { rank: 45, name: 'Sofia Kenin', points: 1010, tour: 'wta' },
-    { rank: 46, name: 'Marketa Vondrousova', points: 985, tour: 'wta' },
-    { rank: 47, name: 'Tereza Valentova', points: 960, tour: 'wta' },
-    { rank: 48, name: 'Peyton Stearns', points: 940, tour: 'wta' },
-    { rank: 49, name: 'Magda Linette', points: 920, tour: 'wta' },
-    { rank: 50, name: 'Jessica Bouzas Maneiro', points: 900, tour: 'wta' },
-  ];
-
-  await updateRankingsInDB([...atpRankings, ...wtaRankings], rankingDate);
-}
-
-// ─── Match players to Supabase and insert rankings ──────
-async function updateRankingsInDB(allPlayers, rankingDate) {
-  // Get all existing players from Supabase
-  // IMPORTANT: player_id is TEXT like "atp_206173" — the Sackmann ID with tour prefix
-  console.log('\n📋 Fetching existing players from Supabase...');
-  // Supabase has a 1000-row default limit — fetch in batches
-  let existingPlayers = [];
+// ─── Fetch existing players for matching ───────────────
+async function fetchExistingPlayers() {
+  const allPlayers = [];
   let offset = 0;
-  const PAGE = 1000;
+  const PAGE_SIZE = 1000;
+
   while (true) {
-    const { data, error: err } = await supabase
+    const { data, error } = await supabase
       .from('players')
-      .select('player_id, first_name, last_name, slug, tour')
-      .range(offset, offset + PAGE - 1);
-    if (err) { console.error('❌ Fetch error:', err.message); break; }
+      .select('player_id, first_name, last_name, slug, tour, tlr_player_id')
+      .range(offset, offset + PAGE_SIZE - 1);
+
+    if (error) {
+      console.error('❌ DB fetch error:', error.message);
+      break;
+    }
     if (!data || data.length === 0) break;
-    existingPlayers.push(...data);
-    if (data.length < PAGE) break;
-    offset += PAGE;
-  }
-  const fetchErr = null;
-
-  if (fetchErr) {
-    console.error('❌ Failed to fetch players:', fetchErr.message);
-    return;
+    allPlayers.push(...data);
+    if (data.length < PAGE_SIZE) break;
+    offset += PAGE_SIZE;
   }
 
+  return allPlayers;
+}
+
+// ─── Match and upsert rankings ─────────────────────────
+async function updateRankingsInDB(parsedPlayers, rankingDate) {
+  console.log('\n📋 Fetching existing players from Supabase...');
+  const existingPlayers = await fetchExistingPlayers();
   console.log(`  Found ${existingPlayers.length} players in DB`);
 
   // Build lookup maps
   const slugMap = new Map();
   const nameMap = new Map();
+  const tlrIdMap = new Map();
+
   for (const p of existingPlayers) {
     slugMap.set(p.slug, p);
     const fullName = `${p.first_name} ${p.last_name}`.toLowerCase();
     nameMap.set(fullName, p);
-    // Also map last name + first name
     nameMap.set(`${p.last_name} ${p.first_name}`.toLowerCase(), p);
+    if (p.tlr_player_id) {
+      tlrIdMap.set(p.tlr_player_id, p);
+    }
   }
 
-  // Match rankings to players
   const rankingRows = [];
+  const tlrUpdates = []; // Update players with TLR IDs
   let matched = 0;
   let unmatched = 0;
 
-  for (const r of allPlayers) {
-    const slug = nameToSlug(r.name);
-    let player = slugMap.get(slug);
+  for (const r of parsedPlayers) {
+    // Try matching: 1) TLR ID, 2) slug, 3) name fuzzy
+    let player = tlrIdMap.get(r.tlr_id);
 
     if (!player) {
-      // Try by name
+      const slug = nameToSlug(r.name);
+      player = slugMap.get(slug);
+    }
+
+    if (!player) {
       player = nameMap.get(r.name.toLowerCase());
     }
 
     if (!player) {
-      // Try fuzzy: last name match
+      // Fuzzy: first + last name parts
       const nameParts = r.name.split(' ');
       const lastName = nameParts[nameParts.length - 1].toLowerCase();
       const firstName = nameParts[0].toLowerCase();
@@ -289,15 +281,25 @@ async function updateRankingsInDB(allPlayers, rankingDate) {
     if (player) {
       rankingRows.push({
         ranking_date: rankingDate,
-        player_id: player.player_id, // TEXT like "atp_206173"
+        player_id: player.player_id,
         tour: r.tour,
         ranking: r.rank,
         points: r.points,
       });
+
+      // Save TLR mapping if not yet stored
+      if (!player.tlr_player_id && r.tlr_id) {
+        tlrUpdates.push({
+          player_id: player.player_id,
+          tlr_player_id: r.tlr_id,
+          tlr_slug: r.tlr_slug,
+        });
+      }
+
       matched++;
     } else {
       if (r.rank <= 30) {
-        console.log(`  ⚠️  No match for #${r.rank} ${r.name} (${r.tour.toUpperCase()}) — slug: ${slug}`);
+        console.log(`  ⚠️  No match: #${r.rank} ${r.name} (${r.tour.toUpperCase()}) → slug: ${nameToSlug(r.name)}`);
       }
       unmatched++;
     }
@@ -305,35 +307,138 @@ async function updateRankingsInDB(allPlayers, rankingDate) {
 
   console.log(`\n✅ Matched: ${matched}, ⚠️ Unmatched: ${unmatched}`);
 
-  if (rankingRows.length === 0) {
-    console.log('❌ No rankings to insert');
-    return;
+  if (DRY_RUN) {
+    console.log('\n🏜️  DRY RUN — no database writes');
+    console.log(`  Would insert ${rankingRows.length} rankings`);
+    console.log(`  Would update ${tlrUpdates.length} TLR player IDs`);
+    if (rankingRows.length > 0) {
+      console.log(`  Sample: #1 = ${rankingRows[0].points} pts (player_id: ${rankingRows[0].player_id})`);
+    }
+    return { inserted: 0, tlrUpdated: 0 };
   }
 
-  // Insert rankings
-  console.log(`\n📊 Inserting ${rankingRows.length} rankings for ${rankingDate}...`);
+  if (rankingRows.length === 0) {
+    const msg = '❌ No rankings to insert — all players unmatched';
+    console.log(msg);
+    await sendTelegramAlert(msg);
+    return { inserted: 0, tlrUpdated: 0 };
+  }
 
+  // Insert rankings in batches
+  console.log(`\n📊 Inserting ${rankingRows.length} rankings for ${rankingDate}...`);
   const BATCH = 100;
   let inserted = 0;
+
   for (let i = 0; i < rankingRows.length; i += BATCH) {
     const batch = rankingRows.slice(i, i + BATCH);
-    const { error: insertErr } = await supabase
+    const { error } = await supabase
       .from('rankings')
       .upsert(batch, { onConflict: 'ranking_date,player_id,tour' });
 
-    if (insertErr) {
-      console.error(`  ❌ Batch error: ${insertErr.message}`);
+    if (error) {
+      console.error(`  ❌ Batch error: ${error.message}`);
     } else {
       inserted += batch.length;
     }
   }
 
   console.log(`  ✅ Inserted ${inserted} ranking rows`);
-  console.log(`\n🎉 Rankings updated to ${rankingDate}!`);
+
+  // Update TLR IDs on players
+  let tlrUpdated = 0;
+  if (tlrUpdates.length > 0) {
+    console.log(`\n🔗 Saving ${tlrUpdates.length} TLR player ID mappings...`);
+    for (const upd of tlrUpdates) {
+      const { error } = await supabase
+        .from('players')
+        .update({ tlr_player_id: upd.tlr_player_id, tlr_slug: upd.tlr_slug })
+        .eq('player_id', upd.player_id);
+
+      if (error) {
+        console.error(`  ⚠️ TLR update failed for ${upd.player_id}: ${error.message}`);
+      } else {
+        tlrUpdated++;
+      }
+    }
+    console.log(`  ✅ Updated ${tlrUpdated} TLR mappings`);
+  }
+
+  return { inserted, tlrUpdated };
 }
 
-// ─── Run ────────────────────────────────────────────────
-main().catch(err => {
-  console.error('❌ Error:', err.message);
+// ─── Main ──────────────────────────────────────────────
+async function main() {
+  console.log('🎾 SUPER.TENNIS Rankings Updater (TennisLiveRanking)\n');
+  if (DRY_RUN) console.log('🏜️  DRY RUN MODE — no writes\n');
+
+  const today = new Date().toISOString().split('T')[0];
+  console.log(`📅 Ranking date: ${today}`);
+  console.log(`📄 Max pages per tour: ${MAX_PAGES} (${MAX_PAGES * 50} players)\n`);
+
+  // Fetch ATP
+  console.log('── ATP Singles ──');
+  const atpPlayers = await fetchTourRankings('atp');
+  console.log(`  Total ATP: ${atpPlayers.length} players\n`);
+
+  await sleep(1000);
+
+  // Fetch WTA
+  console.log('── WTA Singles ──');
+  const wtaPlayers = await fetchTourRankings('wta');
+  console.log(`  Total WTA: ${wtaPlayers.length} players\n`);
+
+  // Validate
+  console.log('── Validation ──');
+  const atpErrors = validateRankings(atpPlayers, 'atp');
+  const wtaErrors = validateRankings(wtaPlayers, 'wta');
+  const allErrors = [...atpErrors, ...wtaErrors];
+
+  if (allErrors.length > 0) {
+    console.log('❌ Validation FAILED:');
+    for (const err of allErrors) {
+      console.log(`   • ${err}`);
+    }
+    const alertMsg = `❌ Rankings validation failed:\n${allErrors.map(e => `• ${e}`).join('\n')}`;
+    await sendTelegramAlert(alertMsg);
+
+    // If critical errors (no data at all), abort
+    if (atpPlayers.length === 0 && wtaPlayers.length === 0) {
+      console.log('\n🛑 ABORT: No data parsed from either tour');
+      process.exit(1);
+    }
+    console.log('\n⚠️ Proceeding with partial data...');
+  } else {
+    console.log('✅ All validation checks passed');
+    if (atpPlayers.length > 0) {
+      console.log(`   ATP #1: ${atpPlayers[0].name} — ${atpPlayers[0].points} pts`);
+    }
+    if (wtaPlayers.length > 0) {
+      console.log(`   WTA #1: ${wtaPlayers[0].name} — ${wtaPlayers[0].points} pts`);
+    }
+  }
+
+  // Update DB
+  const allParsed = [...atpPlayers, ...wtaPlayers];
+  const { inserted, tlrUpdated } = await updateRankingsInDB(allParsed, today);
+
+  // Summary
+  const summary = [
+    `\n🎉 Rankings update complete!`,
+    `   Date: ${today}`,
+    `   ATP: ${atpPlayers.length} parsed`,
+    `   WTA: ${wtaPlayers.length} parsed`,
+    `   DB: ${inserted} rankings inserted`,
+    `   TLR mappings: ${tlrUpdated} saved`,
+  ].join('\n');
+  console.log(summary);
+
+  if (inserted > 0 && !DRY_RUN) {
+    await sendTelegramAlert(`✅ Rankings updated: ${inserted} rows\nATP #1: ${atpPlayers[0]?.name} (${atpPlayers[0]?.points})\nWTA #1: ${wtaPlayers[0]?.name} (${wtaPlayers[0]?.points})`);
+  }
+}
+
+main().catch(async (err) => {
+  console.error('❌ Fatal error:', err.message);
+  await sendTelegramAlert(`❌ Rankings script crashed: ${err.message}`);
   process.exit(1);
 });
