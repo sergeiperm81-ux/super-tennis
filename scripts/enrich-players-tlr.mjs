@@ -141,17 +141,18 @@ function parsePlayerProfile(html) {
   }
 
   // --- Serving stats ---
-  const serveSection = html.match(/Serving Stats[\s\S]*?(<div[\s\S]*?)<(?:section|h[234]|Return Stats)/i);
+  // HTML format: <div>Label</div>\n<strong>Value</strong>
+  const serveSection = html.match(/Serving Stats<\/h3>([\s\S]*?)(?:Return Stats|<\/section|$)/i);
   if (serveSection) {
     const sec = serveSection[1];
     const serveStat = (label) => {
-      const re = new RegExp(`${label}[:\\s]*<strong>\\s*([\\d,.]+)`, 'i');
+      const re = new RegExp(`<div>${label}<\\/div>[\\s\\S]*?<strong[^>]*>\\s*([\\d,.]+)`, 'i');
       const m = sec.match(re);
       return m ? parseFloat(m[1].replace(/,/g, '')) : null;
     };
 
-    data.serve_aces = serveStat('Aces') ? Math.round(serveStat('Aces')) : null;
-    data.serve_double_faults = serveStat('Double Faults') ? Math.round(serveStat('Double Faults')) : null;
+    data.serve_aces = serveStat('Aces') != null ? Math.round(serveStat('Aces')) : null;
+    data.serve_double_faults = serveStat('Double Faults') != null ? Math.round(serveStat('Double Faults')) : null;
     data.serve_1st_pct = serveStat('1st Serve %');
     data.serve_1st_won_pct = serveStat('1st Serve Won');
     data.serve_2nd_won_pct = serveStat('2nd Serve Won');
@@ -161,11 +162,11 @@ function parsePlayerProfile(html) {
   }
 
   // --- Return stats ---
-  const returnSection = html.match(/Return Stats[\s\S]*?(<div[\s\S]*?)<(?:section|h[234]|$)/i);
+  const returnSection = html.match(/Return Stats<\/h3>([\s\S]*?)(?:<\/section|<h[23]|$)/i);
   if (returnSection) {
     const sec = returnSection[1];
     const retStat = (label) => {
-      const re = new RegExp(`${label}[:\\s]*<strong>\\s*([\\d,.]+)`, 'i');
+      const re = new RegExp(`<div>${label}<\\/div>[\\s\\S]*?<strong[^>]*>\\s*([\\d,.]+)`, 'i');
       const m = sec.match(re);
       return m ? parseFloat(m[1].replace(/,/g, '')) : null;
     };

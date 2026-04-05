@@ -130,18 +130,56 @@ async function main() {
     slugToPlayer.set(p.slug, p);
   }
 
+  // Known VS article slug → [player1-slug, player2-slug] mapping
+  // Must match src/lib/player-photos.ts vsPlayerSlugs
+  const vsPlayerSlugs = {
+    'alcaraz-vs-sinner': ['carlos-alcaraz', 'jannik-sinner'],
+    'djokovic-vs-alcaraz': ['novak-djokovic', 'carlos-alcaraz'],
+    'swiatek-vs-sabalenka': ['iga-swiatek', 'aryna-sabalenka'],
+    'medvedev-vs-sinner': ['daniil-medvedev', 'jannik-sinner'],
+    'zverev-vs-alcaraz': ['alexander-zverev', 'carlos-alcaraz'],
+    'gauff-vs-swiatek': ['coco-gauff', 'iga-swiatek'],
+    'kyrgios-vs-djokovic': ['nick-kyrgios', 'novak-djokovic'],
+    'djokovic-vs-nadal': ['novak-djokovic', 'rafael-nadal'],
+    'federer-vs-nadal': ['roger-federer', 'rafael-nadal'],
+    'djokovic-vs-federer': ['novak-djokovic', 'roger-federer'],
+    'djokovic-vs-murray': ['novak-djokovic', 'andy-murray'],
+    'federer-vs-murray': ['roger-federer', 'andy-murray'],
+    'tsitsipas-vs-medvedev': ['stefanos-tsitsipas', 'daniil-medvedev'],
+    'sampras-vs-agassi': ['pete-sampras', 'andre-agassi'],
+    'williams-vs-williams': ['serena-williams', 'venus-williams'],
+    'sharapova-vs-williams': ['maria-sharapova', 'serena-williams'],
+  };
+
+  // Also try to extract pairs from slugs we don't have hardcoded
+  function findPairFromSlug(artSlug) {
+    // Check hardcoded mapping first
+    if (vsPlayerSlugs[artSlug]) return vsPlayerSlugs[artSlug];
+    // Try to match any known mapping where slug starts with the pattern
+    for (const [key, pair] of Object.entries(vsPlayerSlugs)) {
+      if (artSlug.startsWith(key)) return pair;
+    }
+    return null;
+  }
+
   let fetched = 0;
   let failed = 0;
 
+  // Deduplicate player pairs to avoid fetching same H2H twice
+  const seenPairs = new Set();
+
   for (const art of vsArticles) {
-    // Parse slug: "player1-vs-player2" or "player1-vs-player2-grand-slams" etc.
-    const vsMatch = art.slug.match(/^(.+?)-vs-(.+?)(?:-grand-slams|-rivalry|-h2h)?$/);
-    if (!vsMatch) {
-      console.log(`  ⏭️ Can't parse pair from: ${art.slug}`);
+    const pair = findPairFromSlug(art.slug);
+    if (!pair) {
+      console.log(`  ⏭️ No pair mapping for: ${art.slug}`);
       continue;
     }
 
-    const [, slug1, slug2] = vsMatch;
+    const [slug1, slug2] = pair;
+    const pairKey = [slug1, slug2].sort().join('|');
+    if (seenPairs.has(pairKey)) continue;
+    seenPairs.add(pairKey);
+
     const p1 = slugToPlayer.get(slug1);
     const p2 = slugToPlayer.get(slug2);
 

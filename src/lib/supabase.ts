@@ -30,6 +30,53 @@ export interface Player {
   career_prize_usd: number;
   meta_title: string | null;
   meta_description: string | null;
+  // TennisLiveRanking enrichment fields
+  tlr_player_id: string | null;
+  birthplace: string | null;
+  coach: string | null;
+  backhand: string | null;
+  weight_kg: number | null;
+  turned_pro: number | null;
+  social_instagram: string | null;
+  social_twitter: string | null;
+  social_facebook: string | null;
+  best_ranking: number | null;
+  ytd_titles: number;
+  ytd_win: number;
+  ytd_loss: number;
+  ytd_prize_usd: number;
+  // Serving stats
+  serve_aces: number | null;
+  serve_double_faults: number | null;
+  serve_1st_pct: number | null;
+  serve_1st_won_pct: number | null;
+  serve_2nd_won_pct: number | null;
+  serve_bp_saved_pct: number | null;
+  serve_hold_pct: number | null;
+  serve_points_won_pct: number | null;
+  // Return stats
+  return_points_won_pct: number | null;
+  return_1st_won_pct: number | null;
+  return_2nd_won_pct: number | null;
+  return_bp_converted_pct: number | null;
+  return_games_won_pct: number | null;
+  stats_updated_at: string | null;
+}
+
+export interface H2HData {
+  player1_id: string;
+  player2_id: string;
+  player1_wins: number;
+  player2_wins: number;
+  last_match_date: string | null;
+  last_match_score: string | null;
+  last_match_tournament: string | null;
+  surface_hard_p1: number;
+  surface_hard_p2: number;
+  surface_clay_p1: number;
+  surface_clay_p2: number;
+  surface_grass_p1: number;
+  surface_grass_p2: number;
 }
 
 export interface Ranking {
@@ -286,6 +333,26 @@ export async function getPlayerBySlug(slug: string) {
 export async function getLatestRankings(tour: 'atp' | 'wta', limit = 100) {
   const { data } = await ensureRankingsCache(tour);
   return data.slice(0, limit);
+}
+
+// Helper: get H2H data for two players
+export async function getH2H(player1Id: string, player2Id: string): Promise<H2HData | null> {
+  // h2h_cache stores with player1_id < player2_id for consistency
+  const [pid1, pid2] = [player1Id, player2Id].sort();
+  try {
+    const { data, error } = await supabase
+      .from('h2h_cache')
+      .select('*')
+      .eq('player1_id', pid1)
+      .eq('player2_id', pid2)
+      .limit(1)
+      .single();
+
+    if (error || !data) return null;
+    return data as H2HData;
+  } catch {
+    return null;
+  }
 }
 
 // Helper: get top player slugs for static path generation

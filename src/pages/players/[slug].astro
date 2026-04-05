@@ -143,17 +143,26 @@ const h2hMap: Record<string, { slug: string; vs: string }[]> = {
 };
 const playerH2h = h2hMap[slug as string] || [];
 
-// Try to load full profile article
-let profileArticleHtml: string | null = null;
-try {
-  const profileArticle = await getArticleBySlug(player.slug);
-  if (profileArticle?.body) {
-    const rawHtml = marked.parse(profileArticle.body) as string;
-    profileArticleHtml = await addInterlinks(rawHtml, `/players/${player.slug}/`);
+// Load all article sections (profile, stats, grand-slams, career-timeline, net-worth, racket, partner, age)
+const articleSlugs = ['profile', 'stats', 'grand-slams', 'career-timeline', 'net-worth', 'racket', 'partner', 'age'];
+const articles: Record<string, { html: string | null; exists: boolean }> = {};
+
+for (const articleType of articleSlugs) {
+  const slug = articleType === 'profile' ? player.slug : `${player.slug}-${articleType}`;
+  let html: string | null = null;
+  try {
+    const article = await getArticleBySlug(slug);
+    if (article?.body) {
+      const rawHtml = marked.parse(article.body) as string;
+      html = await addInterlinks(rawHtml, `/players/${player.slug}/`);
+    }
+  } catch (e) {
+    // Article not found
   }
-} catch (e) {
-  // No article exists, that's fine
+  articles[articleType] = { html, exists: !!html };
 }
+
+const profileArticleHtml = articles['profile'].html;
 ---
 
 <BaseLayout
@@ -240,8 +249,11 @@ try {
     <div class="content-grid">
       <div class="content-main">
         <!-- Quick Facts -->
-        <section class="quick-facts">
-          <h2>Quick Facts</h2>
+        <section class="quick-facts" id="facts">
+          <div class="section-header">
+            <span class="section-icon">📋</span>
+            <h2>Quick Facts</h2>
+          </div>
           <div class="facts-grid">
             {age && (
               <div class="fact">
@@ -280,27 +292,85 @@ try {
               <span class="fact-label">Tour</span>
               <span class="fact-value"><span class="mini-badge" style={`background: ${tourColor}`}>{tourLabel}</span></span>
             </div>
+            {player.weight_kg && (
+              <div class="fact">
+                <span class="fact-label">Weight</span>
+                <span class="fact-value">{player.weight_kg} kg ({Math.round(player.weight_kg * 2.205)} lbs)</span>
+              </div>
+            )}
+            {player.birthplace && (
+              <div class="fact">
+                <span class="fact-label">Birthplace</span>
+                <span class="fact-value">{player.birthplace}</span>
+              </div>
+            )}
+            {player.coach && (
+              <div class="fact">
+                <span class="fact-label">Coach</span>
+                <span class="fact-value">{player.coach}</span>
+              </div>
+            )}
+            {player.backhand && (
+              <div class="fact">
+                <span class="fact-label">Backhand</span>
+                <span class="fact-value" style="text-transform:capitalize">{player.backhand}</span>
+              </div>
+            )}
+            {player.turned_pro && (
+              <div class="fact">
+                <span class="fact-label">Turned Pro</span>
+                <span class="fact-value">{player.turned_pro}</span>
+              </div>
+            )}
+            {player.best_ranking && (
+              <div class="fact">
+                <span class="fact-label">Career-High Ranking</span>
+                <span class="fact-value">#{player.best_ranking}</span>
+              </div>
+            )}
           </div>
+
+          {/* Social Media Links */}
+          {(player.social_instagram || player.social_twitter || player.social_facebook) && (
+            <div class="social-links">
+              {player.social_instagram && (
+                <a href={player.social_instagram} target="_blank" rel="noopener" class="social-link instagram" title="Instagram">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                </a>
+              )}
+              {player.social_twitter && (
+                <a href={player.social_twitter} target="_blank" rel="noopener" class="social-link twitter" title="X / Twitter">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+              )}
+              {player.social_facebook && (
+                <a href={player.social_facebook} target="_blank" rel="noopener" class="social-link facebook" title="Facebook">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </a>
+              )}
+            </div>
+          )}
         </section>
 
-        <!-- Biography -->
-        {player.bio_short && (
-          <section class="bio-section">
-            <h2>Biography</h2>
-            <p class="bio-text">{player.bio_short}</p>
-          </section>
-        )}
+        <!-- Achievements & Career Section -->
+        <section class="section-group achievements" id="achievements">
+          <div class="section-header">
+            <span class="section-icon">🏆</span>
+            <h2>Career Achievements</h2>
+          </div>
 
-        <!-- Full Profile Article (if available) -->
-        {profileArticleHtml && (
-          <section class="profile-article">
-            <div class="article-content" set:html={profileArticleHtml} />
-          </section>
-        )}
+          <!-- Key Highlight -->
+          {player.grand_slam_titles > 0 && (
+            <div class="key-highlight">
+              <div class="highlight-value">{player.grand_slam_titles}</div>
+              <div class="highlight-label">Grand Slam Titles</div>
+              <div class="highlight-note">
+                {player.grand_slam_titles === 24 ? '2nd All-Time Record' : `${Math.max(0, 24 - player.grand_slam_titles)} behind Nadal's record`}
+              </div>
+            </div>
+          )}
 
-        <!-- Career Stats -->
-        <section class="career-stats">
-          <h2>Career Statistics</h2>
+          <!-- Career Stats Table -->
           <div class="stats-table">
             <table>
               <thead>
@@ -339,55 +409,205 @@ try {
               </tbody>
             </table>
           </div>
+
+          {/* YTD Stats */}
+          {(player.ytd_win > 0 || player.ytd_titles > 0) && (
+            <div class="ytd-stats">
+              <h3>2026 Season</h3>
+              <div class="ytd-grid">
+                {player.ytd_titles > 0 && (
+                  <div class="ytd-item">
+                    <span class="ytd-val">{player.ytd_titles}</span>
+                    <span class="ytd-label">Titles</span>
+                  </div>
+                )}
+                <div class="ytd-item">
+                  <span class="ytd-val">{player.ytd_win}-{player.ytd_loss}</span>
+                  <span class="ytd-label">W-L</span>
+                </div>
+                {(player.ytd_prize_usd || 0) > 0 && (
+                  <div class="ytd-item">
+                    <span class="ytd-val">{formatPrize(player.ytd_prize_usd)}</span>
+                    <span class="ytd-label">Prize Money</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Serving & Return Stats */}
+          {player.serve_1st_pct && (
+            <div class="serve-return-stats" id="serve-stats">
+              <h3>Serving & Return Stats</h3>
+              <div class="sr-grid">
+                <div class="sr-col">
+                  <h4>Serve</h4>
+                  {player.serve_aces != null && (
+                    <div class="sr-row"><span class="sr-label">Aces</span><span class="sr-val">{player.serve_aces.toLocaleString()}</span></div>
+                  )}
+                  {player.serve_double_faults != null && (
+                    <div class="sr-row"><span class="sr-label">Double Faults</span><span class="sr-val">{player.serve_double_faults.toLocaleString()}</span></div>
+                  )}
+                  {player.serve_1st_pct != null && (
+                    <div class="sr-row"><span class="sr-label">1st Serve %</span><span class="sr-val">{player.serve_1st_pct}%</span></div>
+                  )}
+                  {player.serve_1st_won_pct != null && (
+                    <div class="sr-row"><span class="sr-label">1st Serve Won</span><span class="sr-val">{player.serve_1st_won_pct}%</span></div>
+                  )}
+                  {player.serve_2nd_won_pct != null && (
+                    <div class="sr-row"><span class="sr-label">2nd Serve Won</span><span class="sr-val">{player.serve_2nd_won_pct}%</span></div>
+                  )}
+                  {player.serve_bp_saved_pct != null && (
+                    <div class="sr-row"><span class="sr-label">Break Points Saved</span><span class="sr-val">{player.serve_bp_saved_pct}%</span></div>
+                  )}
+                  {player.serve_hold_pct != null && (
+                    <div class="sr-row"><span class="sr-label">Service Games Won</span><span class="sr-val">{player.serve_hold_pct}%</span></div>
+                  )}
+                </div>
+                <div class="sr-col">
+                  <h4>Return</h4>
+                  {player.return_points_won_pct != null && (
+                    <div class="sr-row"><span class="sr-label">Return Points Won</span><span class="sr-val">{player.return_points_won_pct}%</span></div>
+                  )}
+                  {player.return_1st_won_pct != null && (
+                    <div class="sr-row"><span class="sr-label">1st Return Won</span><span class="sr-val">{player.return_1st_won_pct}%</span></div>
+                  )}
+                  {player.return_2nd_won_pct != null && (
+                    <div class="sr-row"><span class="sr-label">2nd Return Won</span><span class="sr-val">{player.return_2nd_won_pct}%</span></div>
+                  )}
+                  {player.return_bp_converted_pct != null && (
+                    <div class="sr-row"><span class="sr-label">Break Points Converted</span><span class="sr-val">{player.return_bp_converted_pct}%</span></div>
+                  )}
+                  {player.return_games_won_pct != null && (
+                    <div class="sr-row"><span class="sr-label">Return Games Won</span><span class="sr-val">{player.return_games_won_pct}%</span></div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <!-- Detailed Stats Article (merged) -->
+          {articles['stats'].exists && (
+            <div class="detailed-stats">
+              <h3>Detailed Statistics</h3>
+              <div class="article-content" set:html={articles['stats'].html} />
+            </div>
+          )}
+
+          <!-- Grand Slams -->
+          {articles['grand-slams'].exists && (
+            <div class="grand-slams-section">
+              <h3>Grand Slam Record</h3>
+              <div class="article-content" set:html={articles['grand-slams'].html} />
+            </div>
+          )}
         </section>
 
-        <!-- Related Articles -->
-        <section class="related-articles">
-          <h2>More About {player.first_name} {player.last_name}</h2>
-          <div class="articles-grid">
-            <a href={`/players/${player.slug}/net-worth/`} class="article-link">
-              <div class="article-link-icon">💰</div>
-              <div>
-                <h3>{player.first_name} {player.last_name} Net Worth in 2026</h3>
-                <p>Earnings, endorsements, and total wealth breakdown</p>
-              </div>
-            </a>
-            <a href={`/players/${player.slug}/racket/`} class="article-link">
-              <div class="article-link-icon">🎾</div>
-              <div>
-                <h3>What Racket Does {player.first_name} {player.last_name} Use?</h3>
-                <p>Equipment specs, strings, and setup details</p>
-              </div>
-            </a>
-            <a href={`/players/${player.slug}/partner/`} class="article-link">
-              <div class="article-link-icon">❤️</div>
-              <div>
-                <h3>{player.first_name} {player.last_name} {player.tour === 'wta' ? 'Boyfriend & Husband' : 'Girlfriend & Wife'}</h3>
-                <p>Relationship, dating history, and personal life</p>
-              </div>
-            </a>
-            <a href={`/players/${player.slug}/career-timeline/`} class="article-link">
-              <div class="article-link-icon">📅</div>
-              <div>
-                <h3>{player.first_name} {player.last_name} Career Timeline</h3>
-                <p>Key milestones and turning points</p>
-              </div>
-            </a>
-            <a href={`/players/${player.slug}/grand-slams/`} class="article-link">
-              <div class="article-link-icon">🏆</div>
-              <div>
-                <h3>{player.first_name} {player.last_name} Grand Slam Record</h3>
-                <p>Titles, finals, and results at all four majors</p>
-              </div>
-            </a>
+        <!-- Biography & Playing Style Section -->
+        <section class="section-group biography" id="biography">
+          <div class="section-header">
+            <span class="section-icon">🎾</span>
+            <h2>Biography & Playing Style</h2>
           </div>
+
+          {player.bio_short && (
+            <div class="bio-section">
+              <p class="bio-text">{player.bio_short}</p>
+            </div>
+          )}
+
+          {profileArticleHtml && (
+            <div class="profile-article">
+              <div class="article-content" set:html={profileArticleHtml} />
+            </div>
+          )}
+
+          {articles['career-timeline'].exists && (
+            <div class="timeline-section">
+              <h3>Career Timeline</h3>
+              <div class="article-content" set:html={articles['career-timeline'].html} />
+            </div>
+          )}
         </section>
+
+        <!-- Equipment & Gear Section -->
+        {articles['racket'].exists && (
+          <section class="section-group equipment" id="equipment">
+            <div class="section-header">
+              <span class="section-icon">🎾</span>
+              <h2>Equipment & Gear</h2>
+            </div>
+            <div class="article-content" set:html={articles['racket'].html} />
+          </section>
+        )}
+
+        <!-- Finance & Net Worth Section -->
+        {articles['net-worth'].exists && (
+          <section class="section-group finance" id="finance">
+            <div class="section-header">
+              <span class="section-icon">💰</span>
+              <h2>Net Worth & Earnings</h2>
+            </div>
+            <div class="article-content" set:html={articles['net-worth'].html} />
+          </section>
+        )}
+
+        <!-- Personal Life Section -->
+        {articles['partner'].exists && (
+          <section class="section-group personal" id="personal">
+            <div class="section-header">
+              <span class="section-icon">👤</span>
+              <h2>Personal Life & Background</h2>
+            </div>
+            <div class="article-content" set:html={articles['partner'].html} />
+          </section>
+        )}
+
+        {articles['age'].exists && (
+          <div class="age-section">
+            <h3>Age & Life Facts</h3>
+            <div class="article-content" set:html={articles['age'].html} />
+          </div>
+        )}
       </div>
 
       <!-- Sidebar -->
       <aside class="sidebar">
+        <!-- Table of Contents -->
+        <div class="sidebar-widget toc-widget">
+          <h3>📑 Contents</h3>
+          <nav class="toc-nav">
+            <a href="#facts" class="toc-link">Quick Facts</a>
+            <a href="#achievements" class="toc-link">Achievements</a>
+            <a href="#biography" class="toc-link">Biography</a>
+            {articles['racket'].exists && <a href="#equipment" class="toc-link">Equipment</a>}
+            {articles['net-worth'].exists && <a href="#finance" class="toc-link">Earnings</a>}
+            {articles['partner'].exists && <a href="#personal" class="toc-link">Personal Life</a>}
+          </nav>
+        </div>
+
+        <!-- Compare Player -->
+        <div class="sidebar-widget compare-widget">
+          <h3>⚖️ Compare</h3>
+          <p class="compare-text">Compare stats with another player</p>
+          <a href={`/vs/${player.slug}-vs-${relatedSlugs[0]?.slug || 'nadal'}/`} class="compare-btn">
+            Compare with {relatedSlugs[0]?.last_name || 'Nadal'} →
+          </a>
+        </div>
+
+        <!-- Share Buttons -->
+        <div class="sidebar-widget share-widget">
+          <h3>📤 Share</h3>
+          <div class="share-buttons">
+            <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${player.first_name} ${player.last_name}'s profile on SUPER.TENNIS`)}&url=https://super.tennis/players/${player.slug}/`} target="_blank" rel="noopener noreferrer" class="share-btn twitter" title="Share on Twitter">𝕏</a>
+            <a href={`https://www.linkedin.com/sharing/share-offsite/?url=https://super.tennis/players/${player.slug}/`} target="_blank" rel="noopener noreferrer" class="share-btn linkedin" title="Share on LinkedIn">in</a>
+            <a href={`https://reddit.com/submit?url=https://super.tennis/players/${player.slug}/&title=${encodeURIComponent(player.first_name + ' ' + player.last_name)}`} target="_blank" rel="noopener noreferrer" class="share-btn reddit" title="Share on Reddit">🔗</a>
+          </div>
+        </div>
+
+        <!-- Similar Players -->
         <div class="sidebar-widget">
-          <h3>Similar Players</h3>
+          <h3>👥 Similar Players</h3>
           <div class="similar-players">
             {relatedSlugs.map((p: any) => (
               <a href={`/players/${p.slug}/`} class="similar-player">
@@ -414,11 +634,11 @@ try {
 
         {playerH2h.length > 0 && (
           <div class="sidebar-widget">
-            <h3>Head to Head</h3>
+            <h3>⚔️ Head to Head</h3>
             <div class="h2h-links">
               {playerH2h.map(h => (
                 <a href={`/vs/${h.slug}/`} class="h2h-link">
-                  <span class="h2h-icon">&#9876;</span>
+                  <span class="h2h-icon">vs</span>
                   <span>{player.last_name} {h.vs}</span>
                 </a>
               ))}
@@ -430,7 +650,7 @@ try {
         )}
 
         <div class="sidebar-widget">
-          <h3>Quick Links</h3>
+          <h3>🔗 Quick Links</h3>
           <ul class="quick-links">
             <li><a href="/rankings/">{tourLabel} Rankings</a></li>
             <li><a href="/records/">Tennis Records</a></li>
@@ -574,9 +794,21 @@ try {
   /* Content Grid */
   .content-grid {
     display: grid;
-    grid-template-columns: 1fr 300px;
+    grid-template-columns: 1fr 350px;
     gap: 40px;
     align-items: start;
+  }
+
+  /* Section Headers with Icons */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .section-icon {
+    font-size: 1.5rem;
+    line-height: 1;
   }
 
   /* Quick Facts */
@@ -634,8 +866,83 @@ try {
     color: var(--gray-700);
   }
 
-  /* Profile Article */
-  .profile-article { margin-bottom: 40px; }
+  /* Section Groups */
+  .section-group {
+    padding: 28px;
+    border-radius: var(--radius);
+    margin-bottom: 28px;
+    border-left: 4px solid var(--court-green);
+  }
+  .section-group.achievements {
+    background: #f0fdf4;
+  }
+  .section-group.biography {
+    background: #f5f3ff;
+  }
+  .section-group.equipment {
+    background: #fef3c7;
+  }
+  .section-group.finance {
+    background: #fef2f2;
+  }
+  .section-group.personal {
+    background: #f0f9ff;
+  }
+  .section-group h2 {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0;
+  }
+  .section-group h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin: 24px 0 12px;
+  }
+  .section-group h3:first-child {
+    margin-top: 0;
+  }
+
+  /* Key Highlight Callout */
+  .key-highlight {
+    background: white;
+    border: 2px solid var(--court-green);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .highlight-value {
+    font-family: var(--font-heading);
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--court-green);
+    line-height: 1.2;
+  }
+  .highlight-label {
+    font-size: 0.95rem;
+    color: var(--gray-700);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .highlight-note {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+    margin-top: 6px;
+  }
+
+  /* Profile Article & Extended Sections */
+  .profile-article { margin-bottom: 20px; }
+  .detailed-stats,
+  .grand-slams-section,
+  .timeline-section,
+  .age-section {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 2px solid rgba(0,0,0,0.1);
+  }
   .article-content :global(h2) {
     font-family: var(--font-heading);
     font-size: 1.3rem;
@@ -759,14 +1066,119 @@ try {
     border-radius: var(--radius);
     padding: 20px;
     margin-bottom: 20px;
+    border-top: 3px solid var(--court-green);
   }
   .sidebar-widget h3 {
-    font-family: var(--font-heading);
-    font-size: 1rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 700;
     text-transform: uppercase;
-    margin: 0 0 16px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid var(--gray-200);
+    margin: 0 0 14px;
+    padding-bottom: 0;
+    border-bottom: none;
+    color: var(--gray-900);
+    letter-spacing: 0.05em;
+  }
+
+  /* Table of Contents */
+  .toc-widget {
+    background: linear-gradient(135deg, #f0fdf4 0%, #e8f5e9 100%);
+    border-top: 3px solid var(--court-green);
+  }
+  .toc-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .toc-link {
+    display: block;
+    padding: 8px 12px;
+    font-size: 0.88rem;
+    color: var(--gray-700);
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+    border-left: 2px solid transparent;
+    margin-left: -2px;
+  }
+  .toc-link:hover {
+    background: white;
+    color: var(--court-green);
+    border-left-color: var(--court-green);
+    font-weight: 600;
+  }
+
+  /* Compare Widget */
+  .compare-widget {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-top: 3px solid #f59e0b;
+  }
+  .compare-text {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    margin: 0 0 12px;
+  }
+  .compare-btn {
+    display: block;
+    padding: 10px 14px;
+    background: white;
+    border: 1px solid #f59e0b;
+    border-radius: var(--radius-sm);
+    color: #d97706;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .compare-btn:hover {
+    background: #f59e0b;
+    color: white;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+  }
+
+  /* Share Widget */
+  .share-widget {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-top: 3px solid #0284c7;
+  }
+  .share-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .share-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: white;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .share-btn.twitter {
+    background: #000;
+  }
+  .share-btn.twitter:hover {
+    background: #1d9bf0;
+    transform: scale(1.1);
+  }
+  .share-btn.linkedin {
+    background: #0a66c2;
+  }
+  .share-btn.linkedin:hover {
+    background: #084b9f;
+    transform: scale(1.1);
+  }
+  .share-btn.reddit {
+    background: #ff4500;
+  }
+  .share-btn.reddit:hover {
+    background: #cc3600;
+    transform: scale(1.1);
   }
 
   .similar-players {
@@ -887,9 +1299,18 @@ try {
     .sidebar {
       grid-template-columns: 1fr;
     }
+    .share-buttons {
+      justify-content: center;
+    }
+    .toc-widget {
+      grid-column: 1 / -1;
+    }
   }
 
   @media (max-width: 480px) {
+    .player-profile {
+      padding: 0 16px 40px;
+    }
     .hero-photo {
       max-width: 200px;
     }
@@ -897,5 +1318,96 @@ try {
     .hero-info h1 { font-size: 1.2rem; }
     .hero-info h1 strong { font-size: 1.8rem; }
     .hero-stat-value { font-size: 1.4rem; }
+    .section-group {
+      padding: 20px 16px;
+      margin-bottom: 20px;
+    }
+    .section-group h2 {
+      font-size: 1.2rem;
+    }
+    .key-highlight {
+      padding: 16px;
+    }
+    .highlight-value {
+      font-size: 2rem;
+    }
+  }
+
+  /* Social links */
+  .social-links {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+  .social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    color: #555;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .social-link:hover { transform: scale(1.1); }
+  .social-link.instagram:hover { background: #E1306C; color: #fff; }
+  .social-link.twitter:hover { background: #000; color: #fff; }
+  .social-link.facebook:hover { background: #1877F2; color: #fff; }
+
+  /* YTD Stats */
+  .ytd-stats {
+    margin: 1.5rem 0;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, #f0f9ff, #e8f4fd);
+    border-radius: 12px;
+    border-left: 4px solid #0ea5e9;
+  }
+  .ytd-stats h3 { margin: 0 0 0.75rem; font-size: 1.1rem; color: #0369a1; }
+  .ytd-grid {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .ytd-item { text-align: center; }
+  .ytd-val { display: block; font-size: 1.5rem; font-weight: 700; color: #0c4a6e; }
+  .ytd-label { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* Serving & Return Stats */
+  .serve-return-stats {
+    margin: 1.5rem 0;
+    padding: 1.25rem;
+    background: #fafafa;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+  }
+  .serve-return-stats h3 { margin: 0 0 1rem; font-size: 1.1rem; }
+  .sr-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .sr-col h4 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+    margin: 0 0 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e5e7eb;
+  }
+  .sr-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.35rem 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .sr-label { color: #374151; }
+  .sr-val { font-weight: 600; color: #111827; }
+
+  @media (max-width: 600px) {
+    .sr-grid { grid-template-columns: 1fr; gap: 1rem; }
   }
 </style>

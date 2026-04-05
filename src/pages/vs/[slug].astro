@@ -2,7 +2,8 @@
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
 import ArticleFooter from '../../components/ArticleFooter.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
-import { getArticleBySlug, getArticleSlugs } from '../../lib/supabase';
+import { getArticleBySlug, getArticleSlugs, getPlayerBySlug, getH2H } from '../../lib/supabase';
+import type { H2HData, Player } from '../../lib/supabase';
 import { addInterlinks } from '../../lib/interlinks';
 import { getVsPhotos, vsPlayerSlugs, slugToName } from '../../lib/player-photos';
 import { marked } from 'marked';
@@ -53,6 +54,35 @@ const name2 = pair ? slugToName(pair[1]) : '';
 
 const rawHtml = article.body ? marked.parse(article.body) : '';
 const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/vs/${slug}/`) : '';
+
+// Fetch H2H data from database
+let h2h: H2HData | null = null;
+let p1: Player | null = null;
+let p2: Player | null = null;
+if (pair) {
+  [p1, p2] = await Promise.all([
+    getPlayerBySlug(pair[0]),
+    getPlayerBySlug(pair[1]),
+  ]);
+  if (p1 && p2) {
+    h2h = await getH2H(p1.player_id, p2.player_id);
+    // Ensure correct orientation: h2h.player1_id is the smaller sorted ID
+    if (h2h && p1.player_id > p2.player_id) {
+      // Swap display — h2h data is stored with sorted IDs
+      h2h = {
+        ...h2h,
+        player1_wins: h2h.player2_wins,
+        player2_wins: h2h.player1_wins,
+        surface_hard_p1: h2h.surface_hard_p2,
+        surface_hard_p2: h2h.surface_hard_p1,
+        surface_clay_p1: h2h.surface_clay_p2,
+        surface_clay_p2: h2h.surface_clay_p1,
+        surface_grass_p1: h2h.surface_grass_p2,
+        surface_grass_p2: h2h.surface_grass_p1,
+      };
+    }
+  }
+}
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -109,6 +139,54 @@ const jsonLd = {
           <span class="vs-player-name">{name2}</span>
         </div>
       </div>
+    </div>
+  )}
+
+  {h2h && (h2h.player1_wins > 0 || h2h.player2_wins > 0) && (
+    <div class="h2h-card">
+      <h2 class="h2h-title">Head to Head Record</h2>
+      <div class="h2h-score">
+        <div class="h2h-side">
+          <span class="h2h-name">{name1}</span>
+          <span class="h2h-wins">{h2h.player1_wins}</span>
+        </div>
+        <span class="h2h-divider">-</span>
+        <div class="h2h-side">
+          <span class="h2h-wins">{h2h.player2_wins}</span>
+          <span class="h2h-name">{name2}</span>
+        </div>
+      </div>
+
+      {(h2h.surface_hard_p1 > 0 || h2h.surface_hard_p2 > 0 || h2h.surface_clay_p1 > 0 || h2h.surface_clay_p2 > 0 || h2h.surface_grass_p1 > 0 || h2h.surface_grass_p2 > 0) && (
+        <div class="h2h-surfaces">
+          {(h2h.surface_hard_p1 > 0 || h2h.surface_hard_p2 > 0) && (
+            <div class="h2h-surface">
+              <span class="surface-label">Hard</span>
+              <span class="surface-score">{h2h.surface_hard_p1} - {h2h.surface_hard_p2}</span>
+            </div>
+          )}
+          {(h2h.surface_clay_p1 > 0 || h2h.surface_clay_p2 > 0) && (
+            <div class="h2h-surface">
+              <span class="surface-label">Clay</span>
+              <span class="surface-score">{h2h.surface_clay_p1} - {h2h.surface_clay_p2}</span>
+            </div>
+          )}
+          {(h2h.surface_grass_p1 > 0 || h2h.surface_grass_p2 > 0) && (
+            <div class="h2h-surface">
+              <span class="surface-label">Grass</span>
+              <span class="surface-score">{h2h.surface_grass_p1} - {h2h.surface_grass_p2}</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {h2h.last_match_tournament && (
+        <div class="h2h-last">
+          Last match: {h2h.last_match_tournament}
+          {h2h.last_match_score && ` — ${h2h.last_match_score}`}
+          {h2h.last_match_date && ` (${new Date(h2h.last_match_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })})`}
+        </div>
+      )}
     </div>
   )}
 
@@ -217,5 +295,81 @@ const jsonLd = {
     .vs-player-name {
       font-size: 0.78rem;
     }
+  }
+
+  /* H2H Data Card */
+  .h2h-card {
+    margin: 0 0 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border-radius: 16px;
+    color: #fff;
+    text-align: center;
+  }
+  .h2h-title {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #94a3b8;
+    margin: 0 0 1rem;
+  }
+  .h2h-score {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .h2h-side {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .h2h-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #cbd5e1;
+  }
+  .h2h-wins {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #d4a017;
+    line-height: 1;
+  }
+  .h2h-divider {
+    font-size: 2rem;
+    color: #475569;
+    font-weight: 300;
+  }
+  .h2h-surfaces {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin: 0.75rem 0;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .h2h-surface {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .surface-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+  }
+  .surface-score {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #e2e8f0;
+  }
+  .h2h-last {
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: #64748b;
+    font-style: italic;
   }
 </style>
