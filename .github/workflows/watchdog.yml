@@ -2,10 +2,10 @@ name: Watchdog — Health Monitor + Telegram Alerts
 
 on:
   schedule:
-    # 08:00 Sofia (05:00 UTC) — after news + deploy
-    - cron: '0 5 * * *'
-    # 13:00 Sofia (10:00 UTC) — midday check
-    - cron: '0 10 * * *'
+    # 10:00 Sofia (07:00 UTC) — after news + deploy + first Bluesky posts
+    - cron: '0 7 * * *'
+    # 16:00 Sofia (13:00 UTC) — afternoon check
+    - cron: '0 13 * * *'
   workflow_dispatch: {}
 
 jobs:
