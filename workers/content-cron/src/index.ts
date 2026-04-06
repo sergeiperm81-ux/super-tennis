@@ -640,11 +640,22 @@ async function generateNews(env: Env): Promise<string> {
     log(`  ✅ ${(c.category || 'buzz').toUpperCase().padEnd(8)} ${c.title}`);
   }
 
-  // 7. Upsert into Supabase, then deactivate old news only on success
-  log(`💾 Upserting ${newsRows.length} items...`);
+  // 7. Deduplicate slugs within the batch (Supabase rejects same-slug twice in one upsert)
+  const seenSlugs = new Set<string>();
+  const dedupedRows = newsRows.filter(r => {
+    if (seenSlugs.has(r.slug)) {
+      log(`  ⚠️ Dedup: skipping duplicate slug ${r.slug}`);
+      return false;
+    }
+    seenSlugs.add(r.slug);
+    return true;
+  });
+
+  // 8. Upsert into Supabase, then deactivate old news only on success
+  log(`💾 Upserting ${dedupedRows.length} items (${newsRows.length - dedupedRows.length} dupes removed)...`);
   try {
-    await supabaseQuery(env, 'news', 'POST', { 'on_conflict': 'slug' }, newsRows);
-    log(`   ✅ Saved ${newsRows.length} items`);
+    await supabaseQuery(env, 'news', 'POST', { 'on_conflict': 'slug' }, dedupedRows);
+    log(`   ✅ Saved ${dedupedRows.length} items`);
     // Keep all news active — they serve as SSG pages for Google indexing
     // Old news stay in the archive, only the latest batch shows first in the feed
     log('📦  All news preserved in archive (no deactivation)');
