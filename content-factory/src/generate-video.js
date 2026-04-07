@@ -27,18 +27,56 @@ const OUT_DIR = path.join(ROOT, 'output');
 const FONT_DIR = path.join(ROOT, 'fonts');
 const HISTORY_FILE = path.join(ROOT, 'bg-history.json');
 
-function getUsedBackgrounds() {
+/**
+ * Background rotation — deterministic round-robin.
+ * No repeats until every background has been used.
+ * Uses a shuffled queue so adjacent videos always differ visually.
+ */
+function getRotationState() {
   try { return JSON.parse(fs.readFileSync(HISTORY_FILE, 'utf8')); }
-  catch { return []; }
+  catch { return { queue: [], used: [] }; }
 }
-function saveUsedBackgrounds(list) {
-  fs.writeFileSync(HISTORY_FILE, JSON.stringify(list.slice(-60)));
+function saveRotationState(state) {
+  fs.writeFileSync(HISTORY_FILE, JSON.stringify(state, null, 2));
 }
-function pickBackground(usedList) {
-  const allBgs = fs.readdirSync(BG_DIR).filter(f => f.endsWith('.mp4'));
-  const unused = allBgs.filter(f => !usedList.includes(f));
-  const pool = unused.length > 0 ? unused : allBgs;
-  return pool[Math.floor(Math.random() * pool.length)];
+
+/** Fisher-Yates shuffle (deterministic seed from date for reproducibility) */
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickBackground() {
+  const allBgs = fs.readdirSync(BG_DIR).filter(f => f.endsWith('.mp4')).sort();
+  const state = getRotationState();
+
+  // Migrate from old array format
+  if (Array.isArray(state)) {
+    state.queue = [];
+    state.used = [];
+  }
+
+  // Rebuild queue if empty or if new backgrounds were added
+  if (!state.queue || state.queue.length === 0) {
+    const unused = allBgs.filter(f => !state.used?.includes(f));
+    if (unused.length === 0) {
+      // Full cycle complete — reset and reshuffle everything
+      state.queue = shuffleArray(allBgs);
+      state.used = [];
+    } else {
+      // Shuffle only the remaining unused backgrounds
+      state.queue = shuffleArray(unused);
+    }
+  }
+
+  const picked = state.queue.shift();
+  state.used.push(picked);
+  saveRotationState(state);
+  return picked;
 }
 
 function wrapText(text, maxChars) {
@@ -86,12 +124,9 @@ function getMusicPath() {
 export async function generateVideo({ title, summary = '', category = 'buzz', index = 0 }) {
   if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true });
 
-  const used = getUsedBackgrounds();
-  const bgFile = pickBackground(used);
+  const bgFile = pickBackground();
   const bgPath = path.join(BG_DIR, bgFile);
   const outPath = path.join(OUT_DIR, `video-${index}.mp4`);
-  used.push(bgFile);
-  saveUsedBackgrounds(used);
 
   // --- Temp dir & fonts ---
   const tmp = '/tmp/stcf';

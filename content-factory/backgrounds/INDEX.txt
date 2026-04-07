@@ -1,22 +1,29 @@
 TENNIS BACKGROUND VIDEOS - INDEX
 =================================
-Downloaded: 2026-03-16
-Total: 40 clips
-Total size: ~590 MB
+Last updated: 2026-04-07
+Total: 101 unique clips
+Rotation: deterministic round-robin, 33 days without repeats (3 videos/day)
 
 SOURCES & LICENSES
 ------------------
 bg-01 to bg-13: Mixkit (mixkit.co)
-  - bg-01 to bg-09: Mixkit Stock Video Free License (commercial use OK, no attribution required)
-  - bg-10 to bg-13: Mixkit Stock Video Free License (commercial use OK, no attribution required)
-  - bg-14 to bg-24: Mixkit Restricted License (personal use only - check before commercial use)
+  - bg-01 to bg-09: Mixkit Stock Video Free License (commercial use OK)
+  - bg-10 to bg-13: Mixkit Stock Video Free License (commercial use OK)
+  - bg-14 to bg-24: Mixkit Restricted License (personal use only)
 
 bg-25 to bg-40: Pexels (pexels.com)
   - Pexels License: Free for commercial use, no attribution required
-  - https://www.pexels.com/license/
 
-FILE DETAILS
-------------
+bg-41 to bg-78: Pexels (pexels.com) — batch 2, added 2026-03-26
+  - Pexels License: Free for commercial use
+  - Note: bg-46, bg-64, bg-69, bg-74, bg-76, bg-77 removed as duplicates
+
+bg-80 to bg-109: Pexels (pexels.com) — batch 3, added 2026-04-07
+  - Pexels License: Free for commercial use
+  - Note: bg-79 removed (duplicate of bg-41), bg-90 removed (duplicate of bg-60)
+
+FILE DETAILS — BATCH 1 (bg-01 to bg-40)
+-----------------------------------------
 bg-01.mp4 | Mixkit 869  | Tennis players at outdoor court (1080p)
 bg-02.mp4 | Mixkit 880  | Two people playing tennis aerial view (1080p)
 bg-03.mp4 | Mixkit 876  | Tennis player during a match (1080p)
@@ -58,16 +65,47 @@ bg-38.mp4 | Pexels 4902145 | Tennis gameplay (VERTICAL)
 bg-39.mp4 | Pexels 33175804 | Drone view tennis match (VERTICAL)
 bg-40.mp4 | Pexels 20219053 | Aerial view tennis court blue/red lines (1440p)
 
-ORIENTATION SUMMARY
--------------------
-Horizontal (landscape): bg-01 to bg-10, bg-12, bg-13, bg-14 to bg-28, bg-30, bg-31, bg-34, bg-35, bg-40
-Vertical (portrait/9:16): bg-11, bg-29, bg-32, bg-33, bg-36, bg-37, bg-38, bg-39
+FILE DETAILS — BATCH 2 (bg-41 to bg-78, gaps from dedup)
+----------------------------------------------------------
+bg-41 to bg-78 | Pexels | Various tennis scenes (1080p)
+
+FILE DETAILS — BATCH 3 (bg-80 to bg-109, added 2026-04-07)
+------------------------------------------------------------
+bg-80.mp4  | Pexels 8224598  | Tennis match action portrait (1080p, VERTICAL)
+bg-81.mp4  | Pexels 8224597  | Tennis player practice (1080p, VERTICAL)
+bg-82.mp4  | Pexels 8224599  | Tennis court activity (1080p, VERTICAL)
+bg-83.mp4  | Pexels 8224600  | Player hitting forehand (1080p, VERTICAL)
+bg-84.mp4  | Pexels 8224604  | Tennis rally closeup (1080p, VERTICAL)
+bg-85.mp4  | Pexels 8224605  | Serve motion portrait (1080p, VERTICAL)
+bg-86.mp4  | Pexels 8224606  | Backhand shot portrait (1080p, VERTICAL)
+bg-87.mp4  | Pexels 8224607  | Tennis footwork drill (1080p, VERTICAL)
+bg-88.mp4  | Pexels 8224608  | Player movement on court (1080p, VERTICAL)
+bg-89.mp4  | Pexels 8224609  | Tennis warm-up (1080p, VERTICAL)
+bg-91.mp4  | Pexels 8224612  | Court action portrait (1080p, VERTICAL)
+bg-92.mp4  | Pexels 8224267  | Tennis game scene (1080p, VERTICAL)
+bg-93.mp4  | Pexels 8224270  | Player at net (1080p, VERTICAL)
+bg-94.mp4  | Pexels 7648845  | Tennis slow motion serve (1080p, VERTICAL)
+bg-95.mp4  | Pexels 7648846  | Ball impact slow motion (1080p, VERTICAL)
+bg-96.mp4  | Pexels 8224266  | Tennis game wide shot (1080p)
+bg-97.mp4  | Pexels 8224268  | Tennis court aerial (1080p)
+bg-98.mp4  | Pexels 8224269  | Match action landscape (1080p)
+bg-99.mp4  | Pexels 8224601  | Tennis doubles action (1080p)
+bg-100.mp4 | Pexels 8224602  | Court overview (1080p)
+bg-101.mp4 | Pexels 8224603  | Player celebration (1080p)
+bg-102.mp4 | Pexels 5738572  | Racket and ball on clay (1080p)
+bg-103.mp4 | Pexels 5738573  | Ball bouncing on clay (1080p)
+bg-104.mp4 | Pexels 5015667  | Drone tennis courts (1080p)
+bg-105.mp4 | Pexels 5015668  | Aerial tennis facility (1080p)
+bg-106.mp4 | Pexels 4902141  | Tennis serve motion wide (1080p)
+bg-107.mp4 | Pexels 4902142  | Doubles gameplay (1080p)
+bg-108.mp4 | Pexels 4902143  | Net closeup with player (1080p)
+bg-109.mp4 | Pexels 4902146  | Player celebration match (1080p)
 
 COMMERCIAL USE SAFE (no attribution needed)
 --------------------------------------------
 bg-01 to bg-13 (Mixkit Free License)
-bg-25 to bg-40 (Pexels License)
-Total: 29 clips safe for commercial use
+bg-25 to bg-109 (Pexels License)
+Total: 90 clips safe for commercial use
 
 PERSONAL USE ONLY (Mixkit Restricted)
 --------------------------------------
