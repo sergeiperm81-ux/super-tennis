@@ -113,7 +113,11 @@ const sbCatLabels: Record<string, string> = {
       <nav class="breadcrumbs"><a href="/">Home</a> <span class="sep">/</span> <span class="current">Rankings</span></nav>
       <section class="page-hero">
         <h1>Tennis Rankings</h1>
-        <p class="subtitle">Official ATP & WTA rankings as of {rankingDate}</p>
+        <p class="subtitle">ATP & WTA rankings as of {rankingDate}</p>
+        <p class="data-source">
+          Source: <a href="https://tennisliveranking.com" target="_blank" rel="noopener nofollow">TennisLiveRanking.com</a>
+          {' · '}Updated every Monday
+        </p>
       </section>
 
       <!-- TWO-COLUMN LAYOUT -->
@@ -345,6 +349,15 @@ const sbCatLabels: Record<string, string> = {
     color: var(--gray-600);
     font-size: 1.05rem;
     margin: 8px 0 0;
+  }
+  .data-source {
+    color: var(--gray-500);
+    font-size: 0.8rem;
+    margin: 6px 0 0;
+  }
+  .data-source a {
+    color: var(--gray-500);
+    text-decoration: underline;
   }
 
   /* ===== TWO-COLUMN LAYOUT ===== */

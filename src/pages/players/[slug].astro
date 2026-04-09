@@ -221,20 +221,24 @@ const profileArticleHtml = articles['profile'].html;
         <p class="hero-country">{country}</p>
 
         <div class="hero-stats">
-          <div class="hero-stat">
-            <span class="hero-stat-value">{player.career_titles}</span>
-            <span class="hero-stat-label">Career Titles</span>
-          </div>
-          {player.grand_slam_titles > 0 && (
+          {(player.career_titles != null && player.career_titles > 0) && (
+            <div class="hero-stat">
+              <span class="hero-stat-value">{player.career_titles}</span>
+              <span class="hero-stat-label">Career Titles</span>
+            </div>
+          )}
+          {(player.grand_slam_titles != null && player.grand_slam_titles > 0) && (
             <div class="hero-stat gs">
               <span class="hero-stat-value">{player.grand_slam_titles}</span>
               <span class="hero-stat-label">Grand Slams</span>
             </div>
           )}
-          <div class="hero-stat">
-            <span class="hero-stat-value">{player.career_win}-{player.career_loss}</span>
-            <span class="hero-stat-label">Win-Loss ({winPct}%)</span>
-          </div>
+          {(player.career_win != null && player.career_win > 0) && (
+            <div class="hero-stat">
+              <span class="hero-stat-value">{player.career_win}-{player.career_loss}</span>
+              <span class="hero-stat-label">Win-Loss{winPct ? ` (${winPct}%)` : ''}</span>
+            </div>
+          )}
           {(player.career_prize_usd || 0) > 0 && (
             <div class="hero-stat">
               <span class="hero-stat-value">{formatPrize(player.career_prize_usd)}</span>
@@ -484,6 +488,14 @@ const profileArticleHtml = articles['profile'].html;
                 </div>
               </div>
             </div>
+          )}
+
+          {/* Data source attribution */}
+          {player.stats_updated_at && (
+            <p class="data-source">
+              Stats: <a href="https://tennisliveranking.com" target="_blank" rel="noopener nofollow">TennisLiveRanking.com</a>
+              {' · '}Updated {new Date(player.stats_updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </p>
           )}
 
           <!-- Detailed Stats Article (merged) -->
@@ -1406,6 +1418,15 @@ const profileArticleHtml = articles['profile'].html;
   }
   .sr-label { color: #374151; }
   .sr-val { font-weight: 600; color: #111827; }
+  .data-source {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    margin: 0.75rem 0 0;
+  }
+  .data-source a {
+    color: #9ca3af;
+    text-decoration: underline;
+  }
 
   @media (max-width: 600px) {
     .sr-grid { grid-template-columns: 1fr; gap: 1rem; }
