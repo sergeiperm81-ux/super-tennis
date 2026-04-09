@@ -30,6 +30,7 @@ const LIMIT = LIMIT_FLAG ? parseInt(LIMIT_FLAG.split('=')[1]) : 200;
 
 const BASE_URL = 'https://tennisliveranking.com';
 const FETCH_DELAY_MS = 1200; // polite scraping
+const MAX_RETRIES = 2;      // retry transient network errors
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
   console.error('❌ Missing SUPABASE_URL or SUPABASE_SERVICE_KEY');
@@ -40,6 +41,20 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ─── Utilities ─────────────────────────────────────────
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+/** Fetch with exponential-backoff retry on network errors (not HTTP errors) */
+async function fetchWithRetry(url, options) {
+  let lastErr;
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    if (attempt > 0) await sleep(FETCH_DELAY_MS * attempt * 2);
+    try {
+      return await fetch(url, options);
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+  throw lastErr;
+}
 
 async function sendTelegramAlert(message) {
   if (!TELEGRAM_BOT || !TELEGRAM_CHAT) return;
@@ -341,6 +356,7 @@ async function main() {
   let enriched = 0;
   let failed = 0;
   let skipped = 0;
+  const fieldCounts = {}; // track which fields get updated most
 
   for (let i = 0; i < players.length; i++) {
     const p = players[i];
@@ -348,7 +364,7 @@ async function main() {
     const label = `[${i + 1}/${players.length}] ${p.first_name} ${p.last_name}`;
 
     try {
-      const res = await fetch(url, {
+      const res = await fetchWithRetry(url, {
         headers: {
           'User-Agent': 'SuperTennis/1.0 (https://super.tennis)',
           'Accept': 'text/html',
@@ -385,6 +401,7 @@ async function main() {
           failed++;
         } else {
           const keys = Object.keys(update).filter(k => k !== 'stats_updated_at');
+          keys.forEach(k => { fieldCounts[k] = (fieldCounts[k] || 0) + 1; });
           console.log(`  ✅ ${label}: ${changes} fields updated (${keys.slice(0, 5).join(', ')}${keys.length > 5 ? '...' : ''})`);
           enriched++;
         }
@@ -400,10 +417,27 @@ async function main() {
   const summary = `\n🎉 Enrichment complete!\n  ✅ Enriched: ${enriched}\n  ⏭️ Skipped: ${skipped}\n  ❌ Failed: ${failed}`;
   console.log(summary);
 
-  if (failed > players.length * 0.3) {
-    await sendTelegramAlert(`⚠️ High failure rate: ${failed}/${players.length} players failed enrichment`);
-  } else if (enriched > 0 && !DRY_RUN) {
-    await sendTelegramAlert(`✅ Enriched ${enriched} players (${failed} failed, ${skipped} skipped)`);
+  // Build detailed Telegram report
+  if (!DRY_RUN) {
+    const topFields = Object.entries(fieldCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([k, n]) => `${k}(${n})`)
+      .join(', ');
+    const failRate = players.length > 0 ? Math.round((failed / players.length) * 100) : 0;
+    if (failed > players.length * 0.3) {
+      await sendTelegramAlert(
+        `⚠️ Enrichment: HIGH FAILURE RATE\n` +
+        `${failed}/${players.length} players failed (${failRate}%)\n` +
+        `✅ ${enriched} updated · ⏭️ ${skipped} skipped`
+      );
+    } else if (enriched > 0) {
+      await sendTelegramAlert(
+        `🎾 Player enrichment done\n` +
+        `✅ ${enriched} updated · ⏭️ ${skipped} skipped · ❌ ${failed} failed\n` +
+        `📊 Top fields: ${topFields || 'n/a'}`
+      );
+    }
   }
 }
 

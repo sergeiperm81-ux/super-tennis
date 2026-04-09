@@ -40,8 +40,8 @@ const months = [
     abbr: 'APR',
     season: 'clay',
     tournaments: [
-      { name: 'Monte-Carlo Masters', dates: 'Apr 6 – 13', location: 'Monte Carlo, Monaco', surface: 'Clay', level: 'Masters 1000', emoji: '🏅' },
-      { name: 'Barcelona Open', dates: 'Apr 14 – 20', location: 'Barcelona, Spain', surface: 'Clay', level: 'ATP 500', emoji: '⭐' },
+      { name: 'Monte-Carlo Masters', dates: 'Apr 5 – 12', location: 'Monte Carlo, Monaco', surface: 'Clay', level: 'Masters 1000', emoji: '🏅' },
+      { name: 'Barcelona Open', dates: 'Apr 13 – 19', location: 'Barcelona, Spain', surface: 'Clay', level: 'ATP 500', emoji: '⭐' },
       { name: 'Stuttgart Open', dates: 'Apr 21 – 27', location: 'Stuttgart, Germany', surface: 'Clay', level: 'WTA 500', emoji: '⭐' },
     ]
   },
@@ -50,9 +50,9 @@ const months = [
     abbr: 'MAY',
     season: 'clay',
     tournaments: [
-      { name: 'Madrid Open', dates: 'May 1 – 11', location: 'Madrid, Spain', surface: 'Clay', level: 'Masters 1000', emoji: '🏅' },
-      { name: 'Italian Open', dates: 'May 12 – 18', location: 'Rome, Italy', surface: 'Clay', level: 'Masters 1000', emoji: '🏅' },
-      { name: 'Roland Garros', dates: 'May 25 – Jun 8', location: 'Paris, France', surface: 'Clay', level: 'Grand Slam', emoji: '🏆' },
+      { name: 'Madrid Open', dates: 'Apr 22 – May 3', location: 'Madrid, Spain', surface: 'Clay', level: 'Masters 1000', emoji: '🏅' },
+      { name: 'Italian Open', dates: 'May 6 – 17', location: 'Rome, Italy', surface: 'Clay', level: 'Masters 1000', emoji: '🏅' },
+      { name: 'Roland Garros', dates: 'May 24 – Jun 7', location: 'Paris, France', surface: 'Clay', level: 'Grand Slam', emoji: '🏆' },
     ]
   },
   {
@@ -286,6 +286,11 @@ const eventsJsonLd = allTournaments.map(t => {
       <section class="page-hero">
         <h1>2026 Tennis Calendar</h1>
         <p class="subtitle">Complete tournament schedule for the ATP and WTA tours</p>
+        <p class="data-source">
+          Source: <a href="https://www.atptour.com" target="_blank" rel="noopener nofollow">ATP Tour</a>
+          {' · '}<a href="https://www.wtatennis.com" target="_blank" rel="noopener nofollow">WTA</a>
+          {' · '}Dates approximate, subject to change
+        </p>
       </section>
 
       <div class="calendar-layout">

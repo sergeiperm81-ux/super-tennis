@@ -1,16 +1,17 @@
-name: Weekly Rankings & Player Enrichment
+name: Player Enrichment Boost (Tue+Fri)
 
 on:
   schedule:
-    # Run every Monday at 08:00 UTC (11:00 Sofia)
-    # TLR updates daily ~07:04 GMT, so 08:00 is safe
-    - cron: '0 8 * * 1'
+    # Tuesday 07:00 UTC (10:00 Sofia) — midweek refresh
+    - cron: '0 7 * * 2'
+    # Friday 07:00 UTC (10:00 Sofia) — end-of-week refresh
+    - cron: '0 7 * * 5'
   workflow_dispatch: # Allow manual trigger
 
 jobs:
-  update-and-deploy:
+  enrich-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40 # 400 players × 1.2s = ~8 min fetch + build/deploy
 
     steps:
       - name: Checkout
@@ -25,24 +26,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Update rankings from TennisLiveRanking
-        run: node scripts/update-rankings.mjs --pages=4
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-
       - name: Enrich player profiles (top 400)
+        # Skips players enriched within 24h (those done on Monday)
+        # so this effectively covers ranks 201-400 on Tues, full refresh on Fri
         run: node scripts/enrich-players-tlr.mjs --limit=400
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-
-      - name: Fetch H2H data for vs-articles
-        run: node scripts/fetch-h2h-tlr.mjs
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
