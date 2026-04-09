@@ -130,34 +130,87 @@ async function main() {
     slugToPlayer.set(p.slug, p);
   }
 
-  // Known VS article slug → [player1-slug, player2-slug] mapping
-  // Must match src/lib/player-photos.ts vsPlayerSlugs
+  // Non-player articles — no H2H data possible, skip explicitly
+  const NON_PLAYER_SLUGS = new Set([
+    'atp-vs-wta-differences', 'australian-open-vs-us-open', 'big-three-comparison',
+    'hard-court-vs-clay-court-tennis', 'head-heavy-vs-head-light-rackets',
+    'indoor-vs-outdoor-tennis', 'natural-gut-vs-polyester-strings',
+    'private-coaching-vs-tennis-academy',
+  ]);
+
+  // VS article slug → [player1-slug, player2-slug] mapping
+  // Retired/historical players without TLR IDs are kept but will be skipped gracefully.
+  // Deduplication by player pair is handled below (seenPairs).
   const vsPlayerSlugs = {
+    // ── Active / recent — all have TLR IDs ──────────────────────
     'alcaraz-vs-sinner': ['carlos-alcaraz', 'jannik-sinner'],
+    'alcaraz-vs-medvedev': ['carlos-alcaraz', 'daniil-medvedev'],
     'djokovic-vs-alcaraz': ['novak-djokovic', 'carlos-alcaraz'],
-    'swiatek-vs-sabalenka': ['iga-swiatek', 'aryna-sabalenka'],
+    'djokovic-vs-sinner': ['novak-djokovic', 'jannik-sinner'],
+    'djokovic-vs-zverev': ['novak-djokovic', 'alexander-zverev'],
+    'djokovic-vs-nadal': ['novak-djokovic', 'rafael-nadal'],
     'medvedev-vs-sinner': ['daniil-medvedev', 'jannik-sinner'],
     'zverev-vs-alcaraz': ['alexander-zverev', 'carlos-alcaraz'],
+    'rune-vs-sinner': ['holger-rune', 'jannik-sinner'],
+    'ruud-vs-alcaraz': ['casper-ruud', 'carlos-alcaraz'],
+    'draper-vs-sinner': ['jack-draper', 'jannik-sinner'],
+    'draper-vs-shelton': ['jack-draper', 'ben-shelton'],
+    'fritz-vs-tiafoe': ['taylor-fritz', 'frances-tiafoe'],
+    'tsitsipas-vs-medvedev': ['stefanos-tsitsipas', 'daniil-medvedev'],
+    'nadal-vs-alcaraz': ['rafael-nadal', 'carlos-alcaraz'],
+    'nadal-vs-djokovic': ['rafael-nadal', 'novak-djokovic'],
+    // ── WTA active ───────────────────────────────────────────────
+    'swiatek-vs-sabalenka': ['iga-swiatek', 'aryna-sabalenka'],
     'gauff-vs-swiatek': ['coco-gauff', 'iga-swiatek'],
-    'kyrgios-vs-djokovic': ['nick-kyrgios', 'novak-djokovic'],
-    'djokovic-vs-nadal': ['novak-djokovic', 'rafael-nadal'],
+    'gauff-vs-sabalenka': ['coco-gauff', 'aryna-sabalenka'],
+    'gauff-vs-rybakina': ['coco-gauff', 'elena-rybakina'],
+    'gauff-vs-keys': ['coco-gauff', 'madison-keys'],
+    'gauff-vs-pegula': ['coco-gauff', 'jessica-pegula'],
+    'rybakina-vs-sabalenka': ['elena-rybakina', 'aryna-sabalenka'],
+    'pegula-vs-sabalenka': ['jessica-pegula', 'aryna-sabalenka'],
+    'sabalenka-vs-swiatek': ['aryna-sabalenka', 'iga-swiatek'],
+    // ── Retired — no TLR IDs, skipped gracefully ────────────────
     'federer-vs-nadal': ['roger-federer', 'rafael-nadal'],
     'djokovic-vs-federer': ['novak-djokovic', 'roger-federer'],
     'djokovic-vs-murray': ['novak-djokovic', 'andy-murray'],
     'federer-vs-murray': ['roger-federer', 'andy-murray'],
-    'tsitsipas-vs-medvedev': ['stefanos-tsitsipas', 'daniil-medvedev'],
+    'kyrgios-vs-djokovic': ['nick-kyrgios', 'novak-djokovic'],
     'sampras-vs-agassi': ['pete-sampras', 'andre-agassi'],
+    'agassi-vs-federer': ['andre-agassi', 'roger-federer'],
     'williams-vs-williams': ['serena-williams', 'venus-williams'],
     'sharapova-vs-williams': ['maria-sharapova', 'serena-williams'],
+    'nadal-vs-murray': ['rafael-nadal', 'andy-murray'],
+    'federer-vs-wawrinka': ['roger-federer', 'stan-wawrinka'],
   };
 
-  // Also try to extract pairs from slugs we don't have hardcoded
+  // Find player pair for a vs-article slug.
+  // Handles: exact match, prefix match (e.g. "alcaraz-vs-sinner-wimbledon"),
+  // and reversed order (e.g. "sabalenka-vs-gauff" → "gauff-vs-sabalenka").
   function findPairFromSlug(artSlug) {
-    // Check hardcoded mapping first
+    if (NON_PLAYER_SLUGS.has(artSlug)) return null;
+    // 1. Exact match
     if (vsPlayerSlugs[artSlug]) return vsPlayerSlugs[artSlug];
-    // Try to match any known mapping where slug starts with the pattern
+    // 2. Prefix match: artSlug starts with a known key + '-' (avoids false matches)
     for (const [key, pair] of Object.entries(vsPlayerSlugs)) {
-      if (artSlug.startsWith(key)) return pair;
+      if (artSlug.startsWith(key + '-')) return pair;
+    }
+    // 3. Reversed slug: "X-vs-Y..." → try "Y-vs-X"
+    const vsIdx = artSlug.indexOf('-vs-');
+    if (vsIdx !== -1) {
+      const p1Part = artSlug.slice(0, vsIdx);
+      const rest = artSlug.slice(vsIdx + 4); // after '-vs-'
+      // Strip trailing suffixes ("-wimbledon", "-2026-...", etc.)
+      const p2Part = rest.split('-').slice(0, 3).join('-'); // take up to 3 segments
+      const reversedBase = `${p2Part}-vs-${p1Part}`;
+      if (vsPlayerSlugs[reversedBase]) {
+        const [a, b] = vsPlayerSlugs[reversedBase];
+        return [b, a]; // swap so p1 stays correct
+      }
+      for (const [key, pair] of Object.entries(vsPlayerSlugs)) {
+        if (reversedBase.startsWith(key + '-') || reversedBase === key) {
+          return [pair[1], pair[0]];
+        }
+      }
     }
     return null;
   }
