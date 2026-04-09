@@ -59,11 +59,25 @@ async function sendTelegramAlert(message) {
 function parsePlayerProfile(html) {
   const data = {};
 
-  // --- Bio fields via <strong>Label</strong> value pattern ---
+  // --- Bio fields: tries multiple HTML patterns used by TLR ---
+  // TLR uses both <strong>Label</strong> Value AND <div>Label</div>...<strong>Value</strong>
   const bioField = (label) => {
-    const re = new RegExp(`<strong[^>]*>${label}<\\/strong>\\s*([^<]+)`, 'i');
-    const m = html.match(re);
-    return m ? m[1].trim() : null;
+    // Pattern 1: <strong>Label</strong> Value (old format)
+    const re1 = new RegExp(`<strong[^>]*>${label}<\\/strong>\\s*([^<]+)`, 'i');
+    const m1 = html.match(re1);
+    if (m1 && m1[1].trim()) return m1[1].trim();
+
+    // Pattern 2: <div>Label</div>...<strong>Value</strong> (same as serving stats)
+    const re2 = new RegExp(`<div[^>]*>\\s*${label}\\s*<\\/div>[\\s\\S]{0,300}?<strong[^>]*>\\s*([^<]+?)\\s*<\\/strong>`, 'i');
+    const m2 = html.match(re2);
+    if (m2 && m2[1].trim()) return m2[1].trim();
+
+    // Pattern 3: <th/td/dt/span>Label</...> <td/dd/span>Value</...>
+    const re3 = new RegExp(`>${label}(?::|)<\\/(?:th|td|dt|span|li)[^>]*>\\s*<(?:td|dd|span|li)[^>]*>\\s*([^<]+)`, 'i');
+    const m3 = html.match(re3);
+    if (m3 && m3[1].trim()) return m3[1].trim();
+
+    return null;
   };
 
   data.birthplace = bioField('Birthplace');
@@ -100,26 +114,55 @@ function parsePlayerProfile(html) {
   }
 
   // --- Career stats ---
-  const careerSection = html.match(/Career[\s\S]*?(<div[\s\S]*?)<(?:section|h[234])/i);
-  if (careerSection) {
-    const sec = careerSection[1];
-    const titlesMatch = sec.match(/<strong>\s*(\d+)\s*<\/strong>\s*Titles/i)
-      || sec.match(/Titles[\s\S]*?<strong>\s*(\d+)/i);
-    if (titlesMatch) data.career_titles = parseInt(titlesMatch[1]);
+  // TLR uses <div>Label</div>...<strong>Value</strong> structure (same as serving stats)
+  // We use two section strategies: isolated section + full-page fallback
+  const careerSectionMatch = html.match(/(<(?:section|div)[^>]*>(?:(?!<\/section|<\/div).)*Career(?:(?!<\/section|<\/div).)*<\/(?:section|div)>)/is)
+    || html.match(/Career[\s\S]{0,50}?(<div[\s\S]*?)<(?:section|h[234])/i);
 
-    const wlMatch = sec.match(/<strong>\s*(\d+)\s*W\s*\/\s*(\d+)\s*L/i)
-      || sec.match(/(\d+)\s*W\s*\/\s*(\d+)\s*L/i);
+  // Helper: find <div>Label</div>...<strong>Number</strong> in a block
+  const sectionStat = (block, label) => {
+    const re = new RegExp(`<div[^>]*>\\s*${label}\\s*<\\/div>[\\s\\S]{0,200}?<strong[^>]*>\\s*([\\d,.]+)\\s*<\\/strong>`, 'i');
+    const m = block.match(re);
+    return m ? m[1].replace(/,/g, '') : null;
+  };
+
+  // Also try <strong>Number</strong> Label (reversed pattern)
+  const reverseStat = (block, label) => {
+    const re = new RegExp(`<strong[^>]*>\\s*(\\d+)\\s*<\\/strong>\\s*(?:<[^>]*>\\s*)*${label}`, 'i');
+    const m = block.match(re);
+    return m ? m[1] : null;
+  };
+
+  const careerBlock = careerSectionMatch ? (careerSectionMatch[1] || careerSectionMatch[0]) : null;
+
+  if (careerBlock) {
+    // Titles — must be a distinct stat (NOT wins count). Validate: titles << wins for most players
+    const titlesRaw = sectionStat(careerBlock, 'Titles') || reverseStat(careerBlock, 'Titles');
+    if (titlesRaw) data.career_titles = parseInt(titlesRaw);
+
+    // W/L record — original regex that was proven to work
+    const wlMatch = careerBlock.match(/<strong>\s*(\d+)\s*W\s*\/\s*(\d+)\s*L/i)
+      || careerBlock.match(/(\d+)\s*W\s*\/\s*(\d+)\s*L/i)
+      || careerBlock.match(/<strong[^>]*>\s*(\d+)\s*<\/strong>\s*[/]\s*<strong[^>]*>\s*(\d+)\s*<\/strong>/i);
     if (wlMatch) {
       data.career_win = parseInt(wlMatch[1]);
       data.career_loss = parseInt(wlMatch[2]);
     }
 
-    const prizeMatch = sec.match(/\$\s*([\d,]+)/);
+    // Prize money
+    const prizeMatch = careerBlock.match(/\$\s*([\d,]+)/);
     if (prizeMatch) data.career_prize_usd = parseInt(prizeMatch[1].replace(/,/g, ''));
 
-    const bestRankMatch = sec.match(/<strong>\s*(\d+)\s*<\/strong>\s*Best Rank/i)
-      || sec.match(/Best Rank[\s\S]*?<strong>\s*(\d+)/i);
-    if (bestRankMatch) data.best_ranking = parseInt(bestRankMatch[1]);
+    // Best ranking — strict: must be a small integer 1-999, not a year
+    const rankRaw = sectionStat(careerBlock, 'Best Rank(?:ing)?')
+      || reverseStat(careerBlock, 'Best Rank(?:ing)?');
+    if (rankRaw) {
+      const rankNum = parseInt(rankRaw);
+      // Reject year-like values (1990-2030) and implausibly high rankings
+      if (rankNum > 0 && rankNum < 1500 && !(rankNum >= 1990 && rankNum <= 2030)) {
+        data.best_ranking = rankNum;
+      }
+    }
   }
 
   // --- YTD stats ---
@@ -181,8 +224,63 @@ function parsePlayerProfile(html) {
   return data;
 }
 
+// ─── Post-parse validation: reject implausible values ──
+function validateParsed(parsed, existing) {
+  const issues = [];
+
+  // career_titles must be much less than career_win for real players
+  // If equal or very close, it's a parser bug (wins written as titles)
+  if (parsed.career_titles !== undefined && parsed.career_win !== undefined) {
+    if (parsed.career_titles === parsed.career_win) {
+      issues.push(`career_titles(${parsed.career_titles}) == career_win — parser bug, nulling titles`);
+      delete parsed.career_titles;
+    }
+    // Titles can't exceed wins (impossible in tennis)
+    if (parsed.career_titles > parsed.career_win) {
+      issues.push(`career_titles(${parsed.career_titles}) > career_win(${parsed.career_win}) — impossible, nulling`);
+      delete parsed.career_titles;
+    }
+    // Sanity: no active player has more than 200 ATP/WTA titles
+    if (parsed.career_titles > 200) {
+      issues.push(`career_titles(${parsed.career_titles}) > 200 — implausible, nulling`);
+      delete parsed.career_titles;
+    }
+  } else if (parsed.career_titles !== undefined && existing.career_win) {
+    if (parsed.career_titles === existing.career_win || parsed.career_titles > existing.career_win) {
+      issues.push(`career_titles(${parsed.career_titles}) matches/exceeds existing career_win — parser bug, nulling`);
+      delete parsed.career_titles;
+    }
+  }
+
+  // best_ranking: must be a real ranking 1-999, not a year or title count
+  if (parsed.best_ranking !== undefined) {
+    const rank = parsed.best_ranking;
+    // Reject year-like values (15-30 are suspiciously close to abbreviated years 2015-2030)
+    // Specifically: if career_win > 100, career high can't be worse than #80
+    if (rank > 80 && existing.career_win && existing.career_win >= 100) {
+      issues.push(`best_ranking(${rank}) implausible for player with ${existing.career_win} wins — nulling`);
+      delete parsed.best_ranking;
+    }
+    // Reject if value looks like a title count (e.g., Nadal 92 titles → rank 92)
+    if (existing.career_titles && rank === existing.career_titles) {
+      issues.push(`best_ranking(${rank}) == career_titles — likely title count captured as rank, nulling`);
+      delete parsed.best_ranking;
+    }
+  }
+
+  return issues;
+}
+
 // ─── Safety: never overwrite good data with null/zero ──
 function safeMerge(existing, parsed) {
+  // Run validation first, removing implausible values
+  const validationIssues = validateParsed(parsed, existing);
+  if (validationIssues.length > 0) {
+    for (const issue of validationIssues) {
+      console.log(`    ⚠️  Validation: ${issue}`);
+    }
+  }
+
   const update = {};
   let changes = 0;
 
