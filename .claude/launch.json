@@ -2,15 +2,9 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "dev",
-      "runtimeExecutable": "node",
-      "runtimeArgs": ["node_modules/astro/astro.js", "dev", "--host"],
-      "port": 4321
-    },
-    {
-      "name": "preview",
-      "runtimeExecutable": "node",
-      "runtimeArgs": ["node_modules/astro/astro.js", "preview", "--host"],
+      "name": "super-tennis-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "4321"],
       "port": 4321
     }
   ]

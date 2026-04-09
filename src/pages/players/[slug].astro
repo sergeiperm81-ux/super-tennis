@@ -384,11 +384,13 @@ const profileArticleHtml = articles['profile'].html;
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>Career Titles</td>
-                  <td class="stat-val">{player.career_titles}</td>
-                </tr>
-                {player.grand_slam_titles > 0 && (
+                {(player.career_titles != null && player.career_titles > 0) && (
+                  <tr>
+                    <td>Career Titles</td>
+                    <td class="stat-val">{player.career_titles}</td>
+                  </tr>
+                )}
+                {(player.grand_slam_titles != null && player.grand_slam_titles > 0) && (
                   <tr class="gs-row">
                     <td>Grand Slam Titles</td>
                     <td class="stat-val gs-val">{player.grand_slam_titles}</td>
