@@ -161,16 +161,15 @@ async function main() {
     process.exit(0);
   }
 
-  // Get one unposted news item
-  const today4am = new Date();
-  today4am.setUTCHours(4, 0, 0, 0);
+  // Get one unposted news item — look back 36h so edge cases don't get missed
+  const since = new Date(Date.now() - 36 * 60 * 60 * 1000);
 
   const { data: news, error } = await supabase
     .from('news')
-    .select('id, slug, title, category, summary')
+    .select('id, slug, title, category, summary, player_slugs')
     .eq('is_active', true)
     .is('bluesky_posted_at', null)
-    .gte('published_at', today4am.toISOString())
+    .gte('published_at', since.toISOString())
     .order('published_at', { ascending: true })
     .limit(1)
     .single();
@@ -180,12 +179,12 @@ async function main() {
     process.exit(0);
   }
 
-  // Verify the page exists (avoid posting 404 links)
   const articleUrl = `${SITE_URL}/news/${news.slug}/`;
+
+  // Soft check — log if page is 404 but still post (Cloudflare deploy may lag ~5 min)
   const pageCheck = await fetch(articleUrl, { method: 'HEAD' }).catch(() => null);
   if (!pageCheck || pageCheck.status === 404) {
-    console.log(`⏭️  Page not deployed yet: ${articleUrl} — skipping`);
-    process.exit(0);
+    console.log(`⚠️  Page may not be deployed yet: ${articleUrl} — posting anyway`);
   }
 
   console.log(`📝 Posting: "${news.title}"`);
