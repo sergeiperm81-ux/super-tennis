@@ -155,6 +155,7 @@ async function main() {
     'ruud-vs-alcaraz': ['casper-ruud', 'carlos-alcaraz'],
     'draper-vs-sinner': ['jack-draper', 'jannik-sinner'],
     'draper-vs-shelton': ['jack-draper', 'ben-shelton'],
+    'sinner-vs-zverev': ['jannik-sinner', 'alexander-zverev'],
     'fritz-vs-tiafoe': ['taylor-fritz', 'frances-tiafoe'],
     'tsitsipas-vs-medvedev': ['stefanos-tsitsipas', 'daniil-medvedev'],
     'nadal-vs-alcaraz': ['rafael-nadal', 'carlos-alcaraz'],
@@ -169,6 +170,7 @@ async function main() {
     'rybakina-vs-sabalenka': ['elena-rybakina', 'aryna-sabalenka'],
     'pegula-vs-sabalenka': ['jessica-pegula', 'aryna-sabalenka'],
     'sabalenka-vs-swiatek': ['aryna-sabalenka', 'iga-swiatek'],
+    'swiatek-vs-rybakina': ['iga-swiatek', 'elena-rybakina'],
     // ── Retired — no TLR IDs, skipped gracefully ────────────────
     'federer-vs-nadal': ['roger-federer', 'rafael-nadal'],
     'djokovic-vs-federer': ['novak-djokovic', 'roger-federer'],
@@ -194,21 +196,25 @@ async function main() {
     for (const [key, pair] of Object.entries(vsPlayerSlugs)) {
       if (artSlug.startsWith(key + '-')) return pair;
     }
-    // 3. Reversed slug: "X-vs-Y..." → try "Y-vs-X"
+    // 3. Reversed slug: "X-vs-Y[-suffix]..." → try "Y-vs-X"
+    // Tries first-segment-only first (handles "sinner-vs-alcaraz-grand-slams"),
+    // then 3-segment (handles "player-with-long-name-vs-other").
     const vsIdx = artSlug.indexOf('-vs-');
     if (vsIdx !== -1) {
       const p1Part = artSlug.slice(0, vsIdx);
       const rest = artSlug.slice(vsIdx + 4); // after '-vs-'
-      // Strip trailing suffixes ("-wimbledon", "-2026-...", etc.)
-      const p2Part = rest.split('-').slice(0, 3).join('-'); // take up to 3 segments
-      const reversedBase = `${p2Part}-vs-${p1Part}`;
-      if (vsPlayerSlugs[reversedBase]) {
-        const [a, b] = vsPlayerSlugs[reversedBase];
-        return [b, a]; // swap so p1 stays correct
-      }
-      for (const [key, pair] of Object.entries(vsPlayerSlugs)) {
-        if (reversedBase.startsWith(key + '-') || reversedBase === key) {
-          return [pair[1], pair[0]];
+      const restParts = rest.split('-');
+      const p2Candidates = [restParts[0], restParts.slice(0, 3).join('-')];
+      for (const p2Part of p2Candidates) {
+        const reversedBase = `${p2Part}-vs-${p1Part}`;
+        if (vsPlayerSlugs[reversedBase]) {
+          const [a, b] = vsPlayerSlugs[reversedBase];
+          return [b, a]; // swap so p1 stays correct
+        }
+        for (const [key, pair] of Object.entries(vsPlayerSlugs)) {
+          if (reversedBase.startsWith(key + '-') || reversedBase === key) {
+            return [pair[1], pair[0]];
+          }
         }
       }
     }
