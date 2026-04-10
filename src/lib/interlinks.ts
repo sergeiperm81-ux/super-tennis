@@ -77,9 +77,29 @@ async function getArticleLinks(): Promise<EntityLink[]> {
     { name: 'Monte Carlo', url: '/tournaments/monte-carlo-masters-guide/', pattern: /\bMonte Carlo\b/g },
     { name: 'Davis Cup', url: '/tournaments/davis-cup-guide/', pattern: /\bDavis Cup\b/g },
     { name: 'Laver Cup', url: '/tournaments/laver-cup-guide/', pattern: /\bLaver Cup\b/g },
+    // Section hub links
+    { name: 'ATP rankings', url: '/rankings/', pattern: /\bATP rankings\b/g },
+    { name: 'WTA rankings', url: '/rankings/', pattern: /\bWTA rankings\b/g },
+    { name: 'tennis gear', url: '/gear/', pattern: /\btennis gear\b/gi },
+    { name: 'tennis racket', url: '/gear/best-tennis-rackets-2026/', pattern: /\btennis racket\b/gi },
+    { name: 'tennis rackets', url: '/gear/best-tennis-rackets-2026/', pattern: /\btennis rackets\b/gi },
+    { name: 'tennis shoes', url: '/gear/best-tennis-court-shoes-2026/', pattern: /\btennis shoes\b/gi },
   ];
 
-  _articleLinks = staticLinks;
+  // Top H2H rivalry links from vs/ section
+  const vsLinks: EntityLink[] = [
+    { name: 'Federer vs Nadal', url: '/vs/federer-vs-nadal/', pattern: /\bFederer vs\.? Nadal\b/gi },
+    { name: 'Djokovic vs Nadal', url: '/vs/djokovic-vs-nadal/', pattern: /\bDjokovic vs\.? Nadal\b/gi },
+    { name: 'Djokovic vs Federer', url: '/vs/djokovic-vs-federer/', pattern: /\bDjokovic vs\.? Federer\b/gi },
+    { name: 'Sinner vs Alcaraz', url: '/vs/sinner-vs-alcaraz/', pattern: /\bSinner vs\.? Alcaraz\b/gi },
+    { name: 'Djokovic vs Alcaraz', url: '/vs/djokovic-vs-alcaraz/', pattern: /\bDjokovic vs\.? Alcaraz\b/gi },
+    { name: 'Swiatek vs Sabalenka', url: '/vs/swiatek-vs-sabalenka/', pattern: /\bSwi[aą]tek vs\.? Sabalenka\b/gi },
+    { name: 'Sampras vs Agassi', url: '/vs/sampras-vs-agassi/', pattern: /\bSampras vs\.? Agassi\b/gi },
+    { name: 'Evert vs Navratilova', url: '/vs/evert-vs-navratilova/', pattern: /\bEvert vs\.? Navratilova\b/gi },
+    { name: 'Borg vs McEnroe', url: '/vs/borg-vs-mcenroe/', pattern: /\bBorg vs\.? McEnroe\b/gi },
+  ];
+
+  _articleLinks = [...staticLinks, ...vsLinks];
   return _articleLinks;
 }
 

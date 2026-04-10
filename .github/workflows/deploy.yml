@@ -101,3 +101,15 @@ jobs:
           # Submit top 100 pages (200/day quota — Mon/Wed/Fri splits)
           # Skips gracefully if GOOGLE_SA_JSON not configured
           node scripts/request-indexing.mjs --limit=100 --type=all || true
+
+      - name: Telegram alert on failure
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\",
+              \"text\": \"❌ *Build & Deploy FAILED*\\n\\nRun: [#${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\\nBranch: ${{ github.ref_name }}\\nTrigger: ${{ github.event_name }}\",
+              \"parse_mode\": \"Markdown\",
+              \"disable_web_page_preview\": true
+            }" || true

@@ -52,11 +52,16 @@ const jsonLd = {
   headline: article.title,
   description: article.meta_description || article.excerpt,
   url: `https://super.tennis/gear/${slug}/`,
+  ...(article.created_at && { datePublished: article.created_at }),
+  ...(article.updated_at && { dateModified: article.updated_at }),
+  author: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
   publisher: {
     '@type': 'Organization',
     name: 'SUPER.TENNIS',
     url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og-image.png' },
   },
+  ...(heroImage && { image: heroImage }),
   about: {
     '@type': 'Thing',
     name: 'Tennis Equipment',
