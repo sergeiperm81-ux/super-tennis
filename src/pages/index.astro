@@ -141,13 +141,13 @@ const row2 = [
     title: "How Novak Djokovic Built a $250 Million Empire",
     badge: "MONEY",
     image: djokovicPhoto,
-    href: "/players/novak-djokovic/net-worth/",
+    href: "/players/novak-djokovic/",
   },
   {
     title: "Roger Federer's Net Worth — $550 Million Tennis Empire",
     badge: "MONEY",
     image: federerPhoto,
-    href: "/players/roger-federer/net-worth/",
+    href: "/players/roger-federer/",
   },
 ];
 
@@ -191,7 +191,7 @@ const row3b = [
     title: "What Racket Does Rafael Nadal Use?",
     badge: "GEAR",
     image: nadalPhoto,
-    href: "/players/rafael-nadal/racket/",
+    href: "/players/rafael-nadal/",
   },
   {
     title: "Aryna Sabalenka — Dominating Women's Tennis",
@@ -263,14 +263,11 @@ const categoryUrl: Record<string, string> = {
 // Build correct URL for an article (handles player sub-pages)
 function articleUrl(art: { category: string; slug: string }): string {
   if (art.category === 'players') {
-    // Player sub-pages: "coco-gauff-racket" → /players/coco-gauff/racket/
-    if (art.slug.endsWith('-racket')) {
-      return `/players/${art.slug.replace(/-racket$/, '')}/racket/`;
-    }
-    if (art.slug.endsWith('-net-worth')) {
-      return `/players/${art.slug.replace(/-net-worth$/, '')}/net-worth/`;
-    }
-    return `/players/${art.slug}/`;
+    // All player content is now on the main profile page (sub-pages consolidated 2026-04-02)
+    // Extract base player slug from slugs like "coco-gauff-racket" or "djokovic-net-worth"
+    const subPageSuffixes = ['-racket', '-net-worth', '-stats', '-grand-slams', '-career-timeline', '-partner', '-age'];
+    const baseSlugs = subPageSuffixes.reduce((slug, suffix) => slug.endsWith(suffix) ? slug.slice(0, -suffix.length) : slug, art.slug);
+    return `/players/${baseSlugs}/`;
   }
   return `${categoryUrl[art.category] || '/'}${art.slug}/`;
 }

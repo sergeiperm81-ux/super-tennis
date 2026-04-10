@@ -203,9 +203,9 @@ function articleUrl(art: { category: string; slug: string }): string {
     lifestyle: '/lifestyle/', tournaments: '/tournaments/', vs: '/vs/',
   };
   if (art.category === 'players') {
-    if (art.slug.endsWith('-racket')) return `/players/${art.slug.replace(/-racket$/, '')}/racket/`;
-    if (art.slug.endsWith('-net-worth')) return `/players/${art.slug.replace(/-net-worth$/, '')}/net-worth/`;
-    return `/players/${art.slug}/`;
+    const subPageSuffixes = ['-racket', '-net-worth', '-stats', '-grand-slams', '-career-timeline', '-partner', '-age'];
+    const baseSlug = subPageSuffixes.reduce((s, sfx) => s.endsWith(sfx) ? s.slice(0, -sfx.length) : s, art.slug);
+    return `/players/${baseSlug}/`;
   }
   return `${categoryUrl[art.category] || '/'}${art.slug}/`;
 }
