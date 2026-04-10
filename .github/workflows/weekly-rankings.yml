@@ -60,3 +60,13 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: pages deploy dist --project-name supertennis
+
+      - name: Submit updated pages to IndexNow + Google
+        if: success()
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
+        run: |
+          node scripts/submit-indexnow.mjs --limit=200 || true
+          node scripts/request-indexing.mjs --limit=100 --type=all || true
