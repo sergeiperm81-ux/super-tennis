@@ -1,0 +1,84 @@
+name: Lighthouse CI
+
+on:
+  # Run after every deploy to production
+  workflow_run:
+    workflows: ["Build & Deploy"]
+    types: [completed]
+  # Also allow manual runs
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'URL to audit (default: super.tennis)'
+        required: false
+        default: 'https://super.tennis'
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    timeout-minutes: 15
+
+    steps:
+      - name: Run Lighthouse on key pages
+        id: lighthouse
+        run: |
+          BASE="${{ inputs.url || 'https://super.tennis' }}"
+
+          # Install Lighthouse
+          npm install -g @lhci/cli@0.14.x lighthouse 2>/dev/null
+
+          PAGES=(
+            "$BASE/"
+            "$BASE/players/novak-djokovic/"
+            "$BASE/vs/federer-vs-nadal-goat-debate/"
+            "$BASE/gear/best-tennis-rackets-2026/"
+            "$BASE/rankings/"
+          )
+
+          RESULTS=""
+          FAILED=0
+
+          for URL in "${PAGES[@]}"; do
+            echo "Auditing: $URL"
+            lighthouse "$URL" \
+              --output json \
+              --output-path /tmp/lh-result.json \
+              --chrome-flags="--headless --no-sandbox --disable-gpu" \
+              --only-categories=performance,accessibility,seo \
+              --quiet 2>/dev/null || true
+
+            if [ -f /tmp/lh-result.json ]; then
+              PERF=$(cat /tmp/lh-result.json | python3 -c "import sys,json; d=json.load(sys.stdin); print(round(d['categories']['performance']['score']*100))")
+              A11Y=$(cat /tmp/lh-result.json | python3 -c "import sys,json; d=json.load(sys.stdin); print(round(d['categories']['accessibility']['score']*100))")
+              SEO=$(cat /tmp/lh-result.json | python3 -c "import sys,json; d=json.load(sys.stdin); print(round(d['categories']['seo']['score']*100))")
+              LCP=$(cat /tmp/lh-result.json | python3 -c "import sys,json; d=json.load(sys.stdin); print(round(d['audits']['largest-contentful-paint']['numericValue']/1000,2))")
+
+              STATUS="✅"
+              [ "$PERF" -lt 70 ] && STATUS="⚠️" && FAILED=1
+              [ "$PERF" -lt 50 ] && STATUS="❌"
+
+              LINE="${STATUS} Perf:${PERF} A11y:${A11Y} SEO:${SEO} LCP:${LCP}s — $(echo $URL | sed 's|https://super.tennis||')"
+              RESULTS="${RESULTS}${LINE}\n"
+              echo "$LINE"
+              rm -f /tmp/lh-result.json
+            else
+              RESULTS="${RESULTS}⚠️ Could not audit: $URL\n"
+              FAILED=1
+            fi
+          done
+
+          echo "RESULTS<<EOF" >> $GITHUB_ENV
+          echo -e "$RESULTS" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          echo "FAILED=$FAILED" >> $GITHUB_ENV
+
+      - name: Telegram report
+        if: always()
+        run: |
+          ICON="${{ env.FAILED == '0' && '✅' || '⚠️' }}"
+          TEXT="${ICON} *Lighthouse CI — super.tennis*%0A%0A${{ env.RESULTS }}"
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d "text=${TEXT}" \
+            -d "parse_mode=Markdown"
