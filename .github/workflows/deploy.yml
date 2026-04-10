@@ -65,16 +65,24 @@ jobs:
       - name: Notify search engines (IndexNow + sitemap ping)
         if: success()
         run: |
-          # IndexNow — instant indexing for Bing, Yandex, Seznam, Naver
           INOW_KEY="91c5dc98807613af2ffb83361ebbd154"
-          echo "Submitting sitemap via IndexNow..."
+
+          # IndexNow — batch submit top pages (Bing, Yandex, Seznam, Naver)
+          echo "Submitting top pages via IndexNow..."
           curl -s -X POST "https://api.indexnow.org/indexnow" \
             -H "Content-Type: application/json" \
             -d "{
               \"host\": \"super.tennis\",
               \"key\": \"${INOW_KEY}\",
               \"keyLocation\": \"https://super.tennis/${INOW_KEY}.txt\",
-              \"urlList\": [\"https://super.tennis/sitemap-index.xml\"]
+              \"urlList\": [
+                \"https://super.tennis/\",
+                \"https://super.tennis/rankings/\",
+                \"https://super.tennis/players/\",
+                \"https://super.tennis/news/\",
+                \"https://super.tennis/calendar/\",
+                \"https://super.tennis/sitemap-index.xml\"
+              ]
             }" || true
 
           # Google — sitemap ping
@@ -82,3 +90,14 @@ jobs:
           curl -s "https://www.google.com/ping?sitemap=https://super.tennis/sitemap-index.xml" || true
 
           echo "Search engines notified"
+
+      - name: Submit new pages to Google Indexing API
+        if: success() && env.GOOGLE_SA_JSON != ''
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
+        run: |
+          # Submit top 100 pages (200/day quota — Mon/Wed/Fri splits)
+          # Skips gracefully if GOOGLE_SA_JSON not configured
+          node scripts/request-indexing.mjs --limit=100 --type=all || true
