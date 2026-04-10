@@ -50,8 +50,18 @@ function shuffleArray(arr) {
   return a;
 }
 
+// Permanently banned backgrounds — ball-only clips without players (user: "never again")
+const BANNED_BACKGROUNDS = new Set([
+  'bg-10.mp4', // Tennis ball suspended in bounce (no players)
+  'bg-11.mp4', // Tennis ball bouncing slow motion (no players)
+  'bg-12.mp4', // Bouncing tennis ball training environment (no players)
+  'bg-13.mp4', // Tennis ball bouncing on training field — GRASS (appeared 9x)
+]);
+
 function pickBackground() {
-  const allBgs = fs.readdirSync(BG_DIR).filter(f => f.endsWith('.mp4')).sort();
+  const allBgs = fs.readdirSync(BG_DIR)
+    .filter(f => f.endsWith('.mp4') && !BANNED_BACKGROUNDS.has(f))
+    .sort();
   const state = getRotationState();
 
   // Migrate from old array format

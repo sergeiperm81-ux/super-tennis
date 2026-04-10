@@ -33,10 +33,10 @@ bg-06.mp4 | Mixkit 5014 | Tennis courts filmed from the air (1080p)
 bg-07.mp4 | Mixkit 877  | Man playing tennis (1080p)
 bg-08.mp4 | Mixkit 878  | Man serving tennis ball (1080p)
 bg-09.mp4 | Mixkit 875  | Tennis player feet closeup (1080p)
-bg-10.mp4 | Mixkit 101285 | Tennis ball suspended in bounce (1080p)
-bg-11.mp4 | Mixkit 101289 | Tennis ball bouncing slow motion (1080p, VERTICAL)
-bg-12.mp4 | Mixkit 101283 | Bouncing tennis ball training environment (1080p)
-bg-13.mp4 | Mixkit 101284 | Tennis ball bouncing on training field (1080p)
+bg-10.mp4 | Mixkit 101285 | Tennis ball suspended in bounce (1080p) [BANNED: ball-only, no players]
+bg-11.mp4 | Mixkit 101289 | Tennis ball bouncing slow motion (1080p, VERTICAL) [BANNED: ball-only, no players]
+bg-12.mp4 | Mixkit 101283 | Bouncing tennis ball training environment (1080p) [BANNED: ball-only, no players]
+bg-13.mp4 | Mixkit 101284 | Tennis ball bouncing on training field (1080p) [BANNED: grass, ball-only, 9x repeat]
 bg-14.mp4 | Mixkit 47278 | Tennis player hitting ball during game (720p, restricted)
 bg-15.mp4 | Mixkit 47279 | Tennis player hitting the ball (720p, restricted)
 bg-16.mp4 | Mixkit 13999 | Tennis player bouncing ball on wall (720p, restricted)
