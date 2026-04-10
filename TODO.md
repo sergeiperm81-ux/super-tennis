@@ -1,95 +1,81 @@
 # SUPER.TENNIS — TODO
 
-Последнее обновление: 23 марта 2026
+Последнее обновление: 10 апреля 2026
 
 ---
 
 ## Критично (блокеры)
 
-- [ ] **TikTok API** — ждём одобрения приложения (повторная подача). После одобрения: написать `publish-tiktok.js`, добавить в `daily-run.js`
-- [ ] **YouTube Advanced Features** — канал создан 17 марта, ограничение снимется ~17 апреля. После: переключить на 3 видео/день в GitHub Actions (`cron: '0 7,13,19 * * *'`)
-- [ ] **Supabase RLS** — таблица `articles` доступна только через service key. Нужно добавить RLS policy для анонимного чтения published статей
+- [ ] **TikTok API** — ждём одобрения приложения. После: написать `publish-tiktok.js`, добавить в `daily-run.js`
+- [ ] **YouTube 3x/день** — Advanced Features открываются ~17 апреля. Переключить cron на `'0 7,13,19 * * *'` в `content-factory.yml`
 
 ---
 
-## Контент (новые разделы и статьи)
+## Контент
 
-- [ ] **Расширить базу статей** — сейчас 260, контракт на 260 страниц выполнен, но можно больше:
-  - [ ] Больше lifestyle статей (18 → 30+)
-  - [ ] Больше gear reviews (22 → 35+)
-  - [ ] Больше H2H/versus (25 → 40+)
-  - [ ] Больше tournament guides (12 → 20+)
-- [ ] **Актуализация AI-контента** — некоторые статьи ссылаются на "October 2023", нужна регенерация с актуальными датами
-- [ ] **Live Scores** — решено НЕ делать, но если инвестор попросит — рассмотреть виджет от стороннего API
-- [ ] **Мультиязычность (RU)** — только после запуска EN версии. Отдельный хостинг (CF заблокирован в РФ)
+- [x] **Расширить базу статей** — выполнено: gear 60, lifestyle 100, vs 79, records 49, tournaments 24 (все цели перевыполнены)
+- [x] **Актуализация AI-контента** — исправлены "as of 2023" → "as of 2026", Davis Cup, Djokovic $200M+
+- [ ] **Internal linking** — усилить перелинковку между разделами (interlinks.ts уже работает, но можно добавить больше паттернов)
+- [ ] **Мультиязычность (RU)** — только после EN версии. Отдельный хостинг (CF заблокирован в РФ)
 
 ---
 
 ## Видеопубликации
 
 - [ ] **TikTok publish script** — `content-factory/src/publish-tiktok.js` (после одобрения API)
-- [ ] **Улучшить видео** — протестировать разные фоны, шрифты, длительность
-- [ ] **Персистентное состояние** — `bg-history.json` и `published-log.json` теряются между GitHub Actions запусками. Перенести в Supabase или использовать `actions/cache`
-- [ ] **Instagram Reels** — когда будет аккаунт, добавить публикацию (те же видео)
+- [ ] **Instagram Reels** — после создания аккаунта (те же видео что и YouTube)
+- [x] **bg-history.json** — персистируется через GitHub Actions cache
 
 ---
 
 ## Производительность
 
-- [ ] **Оптимизация изображений** — 17 МБ в dist/images/, средний размер 255 КБ. Нужно:
-  - [ ] Конвертировать в WebP (с JPG fallback)
-  - [ ] Сжать до <100 КБ каждое
-  - [ ] Добавить `srcset` для responsive размеров
-- [ ] **OG images** — 9 PNG × 122 КБ = 1.1 МБ. Перегенерировать в WebP (~50 КБ каждый)
-- [ ] **CSS дедупликация** — Lite YouTube стили дублируются в компоненте и в global CSS
-- [ ] **Условная загрузка CSS** — `dynamic-content.css` (9.7 КБ) грузится на всех страницах, нужен только на /news/ и /video/
-- [ ] **Font subsetting** — подключить только Latin subset для Inter и Oswald
+- [x] **Оптимизация изображений** — 203 JPEG → WebP, 15.4MB → 13.5MB; stub-файлы удалены
+- [x] **OG images** — 9 PNG сжаты: 1069KB → 150KB (-86%)
+- [x] **Условная загрузка CSS** — `dynamic-content.css` только на 5 страницах с динамикой
+- [x] **Font subsetting** — `&subset=latin` для Inter и Oswald
+- [ ] **CSS дедупликация** — LiteYouTube стили дублируются в компоненте и в global CSS
+- [ ] **srcset** — добавить responsive sizes для article card изображений
 
 ---
 
-## Безопасность (после аудита)
+## Безопасность
 
-- [x] Auth на `/trigger/*` и `/api/publications`
+- [x] Auth на `/trigger/*`, `/api/publications`, `/api/analytics`, `/api/brief`
 - [x] XSS sanitization в `dynamic-content.js`
-- [x] Password через Authorization header (не в URL)
-- [x] CORS: убран localhost
-- [x] CSP: добавлен cloudflareinsights.com
-- [x] `.gitignore`: добавлен `**/.env`
-- [x] `vite.define`: убран SUPABASE_SERVICE_KEY
-- [x] HTML escaping в stats dashboard
-- [ ] **Убрать `unsafe-inline` из CSP** — перенести inline скрипты в external файлы
-- [ ] **Rate limiting** на /api/analytics — сейчас без ограничений
-- [ ] **Supabase RLS policies** — настроить для всех таблиц
+- [x] Rate limiting на auth endpoints — KV-based, 15 попыток / 15 мин / IP
+- [x] Supabase RLS — проверено, public SELECT policies настроены на всех таблицах
+- [ ] **Убрать `unsafe-inline` из CSP** — перенести inline скрипты в external файлы (сложно, низкий приоритет)
 
 ---
 
 ## SEO и аналитика
 
-- [x] Google Search Console — подключен, индексация запущена
-- [x] Cloudflare Web Analytics — beacon на каждой странице
-- [ ] **Мониторинг GSC** — через 2-3 недели начнут поступать данные по запросам
-- [ ] **Sitemap** — проверить что все 1942 страницы в sitemap-index.xml
-- [ ] **Structured Data** — проверить JSON-LD на всех типах страниц через Google Rich Results Test
-- [ ] **Internal linking** — усилить перелинковку между разделами
+- [x] Google Search Console — подключён
+- [x] Microsoft Clarity — подключён
+- [x] 301 redirects — `/players/[slug]/(stats|grand-slams|...)` → `/players/[slug]/` (в `_redirects` с 2 апреля)
+- [x] Все внутренние ссылки исправлены на канонические (10 апреля)
+- [x] Structured Data — publisher.logo добавлен, @type исправлены (SportsEvent, Product)
+- [ ] **Google Rich Results Test** — проверить вручную несколько страниц через search.google.com/rich-results
+- [ ] **Мониторинг GSC** — данные по запросам появятся через 2-4 недели после индексации
 
 ---
 
 ## Инфраструктура
 
-- [ ] **Worker мониторинг** — настроить алерты если cron падает (Cloudflare Notifications)
-- [ ] **GitHub Actions notifications** — уведомления при failed workflows
-- [ ] **Backup** — периодический экспорт Supabase данных
-- [ ] **Staging environment** — отдельный CF Pages preview для тестирования
-- [ ] **Lighthouse CI** — автоматическая проверка производительности при деплое
+- [x] **Worker мониторинг** — Telegram алерты при падении cron (news, videos, article, brief, rankings)
+- [x] **GitHub Actions notifications** — Telegram при failed workflows (deploy, weekly-rankings, enrich-boost, content-factory)
+- [x] **Backup** — `backup-supabase.yml`: каждое воскресенье, 4 таблицы, 90 дней retention
+- [x] **Lighthouse CI** — `.github/workflows/lighthouse-ci.yml`: запускается после деплоя, 5 страниц, Telegram-отчёт
+- [ ] **Staging environment** — отдельный CF Pages preview для тестирования (низкий приоритет)
 
 ---
 
 ## Дизайн и UX
 
 - [ ] **Мобильная версия** — протестировать на реальных устройствах
-- [ ] **Dark mode** — при желании (низкий приоритет)
-- [ ] **Улучшить главную** — hero section, более engaging контент above the fold
-- [ ] **Newsletter подписка** — если инвестор решит
+- [ ] **Улучшить главную** — hero section, engaging контент above the fold
+- [ ] **Dark mode** — низкий приоритет
 
 ---
 
@@ -97,6 +83,5 @@
 
 | Период | Фокус |
 |--------|-------|
-| Март 2026 (сейчас) | Запуск, автоматизация, видео, аналитика |
-| Апрель 2026 | YouTube 3x/день, TikTok, оптимизация изображений, SEO |
-| Май 2026 | Расширение контента, мультиязычность (RU), Instagram |
+| Апрель 2026 | YouTube 3x/день (17 апр), TikTok, мониторинг GSC |
+| Май 2026 | RU версия, Instagram, расширение контента |
