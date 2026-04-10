@@ -9,8 +9,57 @@ export default defineConfig({
     react(),
     sitemap({
       serialize(item) {
-        // Add lastmod to all pages — today's date for daily-rebuilt SSG site
-        item.lastmod = new Date().toISOString().split('T')[0];
+        const url = item.url;
+        const today = new Date().toISOString().split('T')[0];
+        item.lastmod = today;
+
+        // Priority tiers:
+        // 1.0 — Homepage + Rankings (highest traffic)
+        // 0.9 — Player profiles, News articles, VS pages
+        // 0.8 — Gear, Lifestyle, Records articles
+        // 0.7 — Tournaments, Calendar, Search
+        // 0.5 — Legal, About, FAQ (low SEO value)
+        // Skip stats/ (password-protected)
+
+        if (url === 'https://super.tennis/' || url.includes('/rankings/')) {
+          item.priority = 1.0;
+          item.changefreq = 'daily';
+        } else if (
+          url.includes('/players/') ||
+          url.includes('/news/') ||
+          url.includes('/vs/')
+        ) {
+          item.priority = 0.9;
+          item.changefreq = 'weekly';
+        } else if (
+          url.includes('/gear/') ||
+          url.includes('/lifestyle/') ||
+          url.includes('/records/')
+        ) {
+          item.priority = 0.8;
+          item.changefreq = 'monthly';
+        } else if (
+          url.includes('/tournaments/') ||
+          url.includes('/calendar/') ||
+          url.includes('/search/')
+        ) {
+          item.priority = 0.7;
+          item.changefreq = 'monthly';
+        } else if (
+          url.includes('/privacy') ||
+          url.includes('/terms') ||
+          url.includes('/about') ||
+          url.includes('/faq') ||
+          url.includes('/contact') ||
+          url.includes('/stats/')
+        ) {
+          // Skip utility pages from sitemap
+          return undefined;
+        } else {
+          item.priority = 0.6;
+          item.changefreq = 'monthly';
+        }
+
         return item;
       },
     }),
