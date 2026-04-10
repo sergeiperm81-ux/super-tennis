@@ -1,0 +1,18 @@
+# 301 Redirects for consolidated player sub-pages
+# These 7 sub-page types were merged into the main player profile on 2026-04-02
+# All traffic redirected permanently to the canonical player page
+
+/players/:slug/stats           /players/:slug/   301
+/players/:slug/stats/          /players/:slug/   301
+/players/:slug/grand-slams     /players/:slug/   301
+/players/:slug/grand-slams/    /players/:slug/   301
+/players/:slug/career-timeline /players/:slug/   301
+/players/:slug/career-timeline/ /players/:slug/   301
+/players/:slug/net-worth       /players/:slug/   301
+/players/:slug/net-worth/      /players/:slug/   301
+/players/:slug/racket          /players/:slug/   301
+/players/:slug/racket/         /players/:slug/   301
+/players/:slug/partner         /players/:slug/   301
+/players/:slug/partner/        /players/:slug/   301
+/players/:slug/age             /players/:slug/   301
+/players/:slug/age/            /players/:slug/   301
