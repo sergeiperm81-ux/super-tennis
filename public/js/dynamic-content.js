@@ -69,11 +69,11 @@
     var target = item.body ? '' : ' target="_blank" rel="noopener"';
     var color = catColors[item.category] || '#16a34a';
     var label = catLabels[item.category] || 'Buzz';
-    var img = item.image_url || '/images/news/court-01.jpg';
+    var img = item.image_url || '/images/news/court-01.webp';
 
     return '<a href="' + esc(href) + '"' + target + ' class="buzz-card">' +
       '<div class="buzz-card__image">' +
-        '<img src="' + esc(img) + '" alt="" loading="lazy" onerror="this.src=\'/images/news/court-01.jpg\'" />' +
+        '<img src="' + esc(img) + '" alt="" loading="lazy" onerror="this.src=\'/images/news/court-01.webp\'" />' +
         '<span class="buzz-badge" style="background:' + color + '">' + label + '</span>' +
       '</div>' +
       '<div class="buzz-card__body">' +
@@ -93,7 +93,7 @@
   function renderVideoThumb(v) {
     return '<div class="video-thumb">' +
       '<div class="lite-yt" data-video-id="' + esc(v.video_id) + '">' +
-        '<img src="https://i.ytimg.com/vi/' + esc(v.video_id) + '/hqdefault.jpg" alt="' + esc(v.title) + '" loading="lazy" onerror="this.src=\'/images/news/court-01.jpg\'" />' +
+        '<img src="https://i.ytimg.com/vi/' + esc(v.video_id) + '/hqdefault.jpg" alt="' + esc(v.title) + '" loading="lazy" onerror="this.src=\'/images/news/court-01.webp\'" />' +
         '<button class="lite-yt__play" aria-label="Play: ' + esc(v.title) + '">' + playSvg + '</button>' +
         '<span class="lite-yt__title">' + esc(v.title) + '</span>' +
       '</div>' +
@@ -107,7 +107,7 @@
   // ── Render: news page full item (details/accordion) ──
   function renderNewsFullItem(item) {
     var href = item.source_url || '#';
-    var img = item.image_url || '/images/news/court-01.jpg';
+    var img = item.image_url || '/images/news/court-01.webp';
     var color = catColors[item.category] || '#16a34a';
     var label = catLabels[item.category] || 'Buzz';
     var date = item.published_at ? new Date(item.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
@@ -138,7 +138,7 @@
     return '<details class="np-item" data-cat="' + esc(item.category) + '" id="' + esc(item.slug) + '">' +
       '<summary class="np-item__header">' +
         '<a href="' + esc(href) + '" target="_blank" rel="noopener" class="np-item__thumb" onclick="event.stopPropagation()">' +
-          '<img src="' + esc(img) + '" alt="" loading="lazy" onerror="this.src=\'/images/news/court-01.jpg\'" />' +
+          '<img src="' + esc(img) + '" alt="" loading="lazy" onerror="this.src=\'/images/news/court-01.webp\'" />' +
           '<span class="np-item__thumb-source">' + esc(item.source_name || 'Source') + '</span>' +
         '</a>' +
         '<div class="np-item__info">' +
@@ -185,7 +185,7 @@
   function renderSidebarVideo(v) {
     return '<div class="sb-video">' +
       '<div class="lite-yt" data-video-id="' + esc(v.video_id) + '">' +
-        '<img src="https://i.ytimg.com/vi/' + esc(v.video_id) + '/hqdefault.jpg" alt="' + esc(v.title) + '" loading="lazy" onerror="this.src=\'/images/news/court-01.jpg\'" />' +
+        '<img src="https://i.ytimg.com/vi/' + esc(v.video_id) + '/hqdefault.jpg" alt="' + esc(v.title) + '" loading="lazy" onerror="this.src=\'/images/news/court-01.webp\'" />' +
         '<button class="lite-yt__play" aria-label="Play: ' + esc(v.title) + '">' + playSvg + '</button>' +
         '<span class="lite-yt__title">' + esc(v.title) + '</span>' +
       '</div>' +

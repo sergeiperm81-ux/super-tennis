@@ -20,7 +20,7 @@ function hashCode(s: string): number {
   return Math.abs(h);
 }
 
-const fallbackImage = '/images/news/court-01.jpg';
+const fallbackImage = '/images/news/court-01.webp';
 let related: any[] = [];
 try {
   const all = await getArticles({ category, limit: 50 });
@@ -52,7 +52,7 @@ try {
               src={article.image_url}
               alt={article.image_alt || article.title}
               loading="lazy"
-              onerror="this.src='/images/news/court-01.jpg'"
+              onerror="this.src='/images/news/court-01.webp'"
             />
           </div>
           <h3 class="related-card__title">{article.title}</h3>

@@ -34,7 +34,7 @@ export const grandSlams: GrandSlam[] = [
     months: 'January',
     established: 1905,
     emoji: '🇦🇺',
-    photo: '/images/tournaments/melbourne-park.jpg',
+    photo: '/images/tournaments/melbourne-park.webp',
     champions: [
       { year: 2026, menssingles: 'Jannik Sinner', womenssingles: 'Aryna Sabalenka' },
       { year: 2025, menssingles: 'Jannik Sinner', womenssingles: 'Madison Keys' },
@@ -64,7 +64,7 @@ export const grandSlams: GrandSlam[] = [
     months: 'May–June',
     established: 1891,
     emoji: '🇫🇷',
-    photo: '/images/tournaments/roland-garros.jpg',
+    photo: '/images/tournaments/roland-garros.webp',
     champions: [
       { year: 2025, menssingles: 'Carlos Alcaraz', womenssingles: 'Iga Swiatek' },
       { year: 2024, menssingles: 'Carlos Alcaraz', womenssingles: 'Iga Swiatek' },
@@ -93,7 +93,7 @@ export const grandSlams: GrandSlam[] = [
     months: 'June–July',
     established: 1877,
     emoji: '🇬🇧',
-    photo: '/images/tournaments/wimbledon.jpg',
+    photo: '/images/tournaments/wimbledon.webp',
     champions: [
       { year: 2025, menssingles: 'Novak Djokovic', womenssingles: 'Jasmine Paolini' },
       { year: 2024, menssingles: 'Carlos Alcaraz', womenssingles: 'Barbora Krejcikova' },
@@ -121,7 +121,7 @@ export const grandSlams: GrandSlam[] = [
     months: 'August–September',
     established: 1881,
     emoji: '🇺🇸',
-    photo: '/images/tournaments/us-open.jpg',
+    photo: '/images/tournaments/us-open.webp',
     champions: [
       { year: 2025, menssingles: 'Jannik Sinner', womenssingles: 'Aryna Sabalenka' },
       { year: 2024, menssingles: 'Jannik Sinner', womenssingles: 'Aryna Sabalenka' },
