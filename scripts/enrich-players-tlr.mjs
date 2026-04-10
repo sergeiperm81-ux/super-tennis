@@ -96,7 +96,20 @@ function parsePlayerProfile(html) {
   };
 
   data.birthplace = bioField('Birthplace');
-  data.coach = bioField('Coach');
+
+  // Coach: try HTML patterns first, then JSON-LD, then loose text
+  data.coach = bioField('Coach')
+    || bioField('Trainer')
+    // JSON-LD: "coach":{"name":"..."}  or  "coach":"..."
+    || (() => {
+      const m = html.match(/"coach"\s*:\s*(?:\{[^}]*"name"\s*:\s*"([^"]+)"[^}]*\}|"([^"]+)")/i);
+      return m ? (m[1] || m[2] || null) : null;
+    })()
+    // Loose: "Coach: Name" in any text block
+    || (() => {
+      const m = html.match(/\bCoach\s*(?::|–|-)\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,3})/);
+      return m ? m[1].trim() : null;
+    })();
 
   const plays = bioField('Plays');
   if (plays) {
@@ -107,7 +120,7 @@ function parsePlayerProfile(html) {
   const turnedPro = bioField('Turned pro');
   data.turned_pro = turnedPro ? parseInt(turnedPro) || null : null;
 
-  // Height/weight from schema.org JSON-LD
+  // Height/weight/DOB/birthplace from schema.org JSON-LD
   const heightMatch = html.match(/"height"\s*:\s*"(\d+)\s*cm"/);
   if (heightMatch) data.height_cm = parseInt(heightMatch[1]);
 
@@ -116,6 +129,12 @@ function parsePlayerProfile(html) {
 
   const dobMatch = html.match(/"birthDate"\s*:\s*"(\d{4}-\d{2}-\d{2})"/);
   if (dobMatch) data.birth_date = dobMatch[1];
+
+  // Birthplace from JSON-LD if HTML pattern missed it
+  if (!data.birthplace) {
+    const bpMatch = html.match(/"birthPlace"\s*:\s*(?:\{[^}]*"name"\s*:\s*"([^"]+)"[^}]*\}|"([^"]+)")/i);
+    if (bpMatch) data.birthplace = (bpMatch[1] || bpMatch[2] || null);
+  }
 
   // --- Social links ---
   const socialPatterns = [
