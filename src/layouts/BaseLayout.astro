@@ -9,6 +9,7 @@ interface Props {
   ogImage?: string;
   jsonLd?: Record<string, any>;
   publishedTime?: string;
+  dynamicContent?: boolean;
 }
 
 const {
@@ -17,6 +18,7 @@ const {
   ogImage = '/og/default.png',
   jsonLd,
   publishedTime,
+  dynamicContent = false,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -79,15 +81,15 @@ const fullTitle = cleanTitle === 'Home' ? 'SUPER.TENNIS — Tennis for Everyone'
   <link rel="preconnect" href="https://i.ytimg.com" />
   <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
 
-  <!-- Preload critical CSS for faster first paint -->
-  <link rel="preload" href="/css/dynamic-content.css?v=2" as="style" />
+  <!-- Preload dynamic content CSS only on pages that need it -->
+  {dynamicContent && <link rel="preload" href="/css/dynamic-content.css?v=2" as="style" />}
 
-  <!-- Fonts (display=swap for better LCP) -->
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" as="style" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
+  <!-- Fonts (Latin subset only, display=swap for better LCP) -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap&subset=latin" as="style" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap&subset=latin" rel="stylesheet" />
 
   <!-- Dynamic content styles (client-side rendered news/videos) -->
-  <link rel="stylesheet" href="/css/dynamic-content.css?v=2" />
+  {dynamicContent && <link rel="stylesheet" href="/css/dynamic-content.css?v=2" />}
   <!-- Magazine article layout styles -->
   <link rel="stylesheet" href="/css/magazine.css?v=1" />
 

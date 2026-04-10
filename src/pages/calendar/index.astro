@@ -276,6 +276,7 @@ const eventsJsonLd = allTournaments.map(t => {
   title="Tennis Calendar 2026 — Tournament Schedule"
   description="Complete 2026 tennis tournament calendar. Grand Slams, Masters 1000, ATP and WTA tour dates, locations, and surfaces."
   ogImage="/og/calendar.png"
+  dynamicContent={true}
 >
   {eventsJsonLd.map(event => (
     <script type="application/ld+json" set:html={JSON.stringify(event)} />

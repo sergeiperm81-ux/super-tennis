@@ -106,6 +106,7 @@ const sbCatLabels: Record<string, string> = {
   description="Current ATP and WTA tennis rankings. Updated weekly with points, country, and links to player profiles."
   ogImage="/og/rankings.png"
   jsonLd={rankingsJsonLd}
+  dynamicContent={true}
 >
   <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
   <div class="rankings-page">

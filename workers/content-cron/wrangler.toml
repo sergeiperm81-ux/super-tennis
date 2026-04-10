@@ -8,5 +8,11 @@ compatibility_flags = ["nodejs_compat"]
 [triggers]
 crons = ["0 4 * * *"]
 
+# KV namespace for rate limiting (brute-force protection on auth endpoints)
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "1c137d6469484e939146d7d224833e96"
+preview_id = "1c137d6469484e939146d7d224833e96"
+
 # Environment variables (non-secret) — set via dashboard or wrangler.toml
 # Secrets are set via: wrangler secret put OPENAI_API_KEY (etc.)

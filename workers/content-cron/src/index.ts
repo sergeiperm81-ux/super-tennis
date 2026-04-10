@@ -21,6 +21,9 @@ export interface Env {
   ANALYTICS_PASSWORD?: string; // Password for /stats/ dashboard
   CF_API_TOKEN?: string; // Cloudflare API token with Analytics:Read
   CF_ZONE_ID?: string; // Cloudflare zone ID for super.tennis
+  RATE_LIMIT?: KVNamespace; // KV for brute-force protection on auth endpoints
+  TELEGRAM_BOT_TOKEN?: string; // Telegram bot token for cron failure alerts
+  TELEGRAM_CHAT_ID?: string; // Telegram chat ID for cron failure alerts
 }
 
 // ============================================================
@@ -1537,35 +1540,75 @@ async function refreshTopArticles(env: Env): Promise<string> {
 }
 
 // ============================================================
+// TELEGRAM ALERT HELPER
+// ============================================================
+async function sendTelegramAlert(env: Env, text: string): Promise<void> {
+  if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: env.TELEGRAM_CHAT_ID,
+        text,
+        parse_mode: 'Markdown',
+        disable_web_page_preview: true,
+      }),
+    });
+  } catch {
+    // Alert failures must not crash the worker
+  }
+}
+
+// ============================================================
 // WORKER ENTRY POINT
 // ============================================================
 export default {
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
     console.log(`⏰ Cron fired at ${new Date().toISOString()}`);
     const now = new Date();
+    const failures: string[] = [];
 
     // DAILY: News (client-side fetch — no rebuild needed)
-    // Quick retry only (10s) — GitHub Actions failsafe handles longer outages
     try {
       await withRetry(() => generateNews(env), 'Daily news generation', 2, [10_000]);
     } catch (e: any) {
-      console.error(`⚠️ News generation failed, GitHub Actions failsafe will retry at 06:20 UTC: ${e.message}`);
+      console.error(`⚠️ News generation failed: ${e.message}`);
+      failures.push(`📰 News generation: ${e.message}`);
     }
 
     // EVERY 3 DAYS: Videos (client-side fetch — no rebuild needed)
     const dayOfYear = Math.floor((Date.now() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000);
     if (dayOfYear % 3 === 0) {
       console.log('🎬 Video update day (every 3 days)');
-      await updateVideos(env);
+      try {
+        await updateVideos(env);
+      } catch (e: any) {
+        console.error(`⚠️ Video update failed: ${e.message}`);
+        failures.push(`🎬 Video update: ${e.message}`);
+      }
     }
 
     // WEEKLY (Monday): New evergreen article + weekly brief → REBUILD
     const dayOfWeek = now.getUTCDay(); // 0=Sun, 1=Mon
     if (dayOfWeek === 1) {
       console.log('📝 Weekly article generation (Monday)');
-      await generateWeeklyArticle(env);
+      try {
+        await generateWeeklyArticle(env);
+      } catch (e: any) {
+        console.error(`⚠️ Weekly article failed: ${e.message}`);
+        failures.push(`📝 Weekly article: ${e.message}`);
+      }
       console.log('📋 Weekly brief generation (Monday)');
-      await generateWeeklyBrief(env);
+      try {
+        await generateWeeklyBrief(env);
+      } catch (e: any) {
+        console.error(`⚠️ Weekly brief failed: ${e.message}`);
+        failures.push(`📋 Weekly brief: ${e.message}`);
+      }
+      if (failures.length > 0) {
+        ctx.waitUntil(sendTelegramAlert(env, `❌ *Cron Worker — Monday failures*\n\n${failures.join('\n')}`));
+      }
       ctx.waitUntil(triggerRebuild(env));
       return;
     }
@@ -1573,7 +1616,15 @@ export default {
     // MONTHLY (1st of month): Rankings update → REBUILD
     if (now.getUTCDate() === 1) {
       console.log('🏆 Monthly rankings update (1st of month)');
-      await updateRankings(env);
+      try {
+        await updateRankings(env);
+      } catch (e: any) {
+        console.error(`⚠️ Rankings update failed: ${e.message}`);
+        failures.push(`🏆 Rankings update: ${e.message}`);
+      }
+      if (failures.length > 0) {
+        ctx.waitUntil(sendTelegramAlert(env, `❌ *Cron Worker — Monthly failures*\n\n${failures.join('\n')}`));
+      }
       ctx.waitUntil(triggerRebuild(env));
       return;
     }
@@ -1581,13 +1632,25 @@ export default {
     // MID-MONTH (15th): Refresh old articles with "Last Updated" → REBUILD
     if (now.getUTCDate() === 15) {
       console.log('🔄 Mid-month content refresh (15th)');
-      await refreshTopArticles(env);
+      try {
+        await refreshTopArticles(env);
+      } catch (e: any) {
+        console.error(`⚠️ Content refresh failed: ${e.message}`);
+        failures.push(`🔄 Content refresh: ${e.message}`);
+      }
+      if (failures.length > 0) {
+        ctx.waitUntil(sendTelegramAlert(env, `❌ *Cron Worker — Mid-month failures*\n\n${failures.join('\n')}`));
+      }
       ctx.waitUntil(triggerRebuild(env));
       return;
     }
 
-    // Regular day — no rebuild needed (news/videos are client-side)
-    console.log('✅ Daily update done — no rebuild needed');
+    // Regular day — send alert if news generation failed
+    if (failures.length > 0) {
+      ctx.waitUntil(sendTelegramAlert(env, `❌ *Cron Worker — Daily failures*\n\n${failures.join('\n')}`));
+    } else {
+      console.log('✅ Daily update done — no rebuild needed');
+    }
   },
 
   // HTTP handler for manual triggers + API
@@ -1689,6 +1752,67 @@ export default {
       return u.searchParams.get('pwd'); // fallback for backwards compat
     }
 
+    // ── Rate limiter: max 15 failed auth attempts per IP per 15 minutes ──
+    const RATE_LIMIT_MAX = 15;
+    const RATE_LIMIT_WINDOW_S = 900; // 15 minutes
+
+    async function checkRateLimit(req: Request, e: Env): Promise<Response | null> {
+      if (!e.RATE_LIMIT) return null; // KV not configured, skip
+      const ip = req.headers.get('CF-Connecting-IP') || 'unknown';
+      const key = `rl:${ip}`;
+      const raw = await e.RATE_LIMIT.get(key);
+      const entry: { count: number; firstAt: number } = raw
+        ? JSON.parse(raw)
+        : { count: 0, firstAt: Date.now() };
+
+      if (entry.count >= RATE_LIMIT_MAX) {
+        const retryAfter = Math.ceil((entry.firstAt + RATE_LIMIT_WINDOW_S * 1000 - Date.now()) / 1000);
+        return new Response(JSON.stringify({ error: 'Too many requests. Try again later.' }), {
+          status: 429,
+          headers: {
+            'Content-Type': 'application/json',
+            'Retry-After': String(Math.max(retryAfter, 1)),
+            ...corsHeaders(req),
+          },
+        });
+      }
+      return null;
+    }
+
+    async function recordFailedAttempt(req: Request, e: Env): Promise<void> {
+      if (!e.RATE_LIMIT) return;
+      const ip = req.headers.get('CF-Connecting-IP') || 'unknown';
+      const key = `rl:${ip}`;
+      const raw = await e.RATE_LIMIT.get(key);
+      const entry: { count: number; firstAt: number } = raw
+        ? JSON.parse(raw)
+        : { count: 0, firstAt: Date.now() };
+      entry.count += 1;
+      await e.RATE_LIMIT.put(key, JSON.stringify(entry), { expirationTtl: RATE_LIMIT_WINDOW_S });
+    }
+
+    async function clearRateLimit(req: Request, e: Env): Promise<void> {
+      if (!e.RATE_LIMIT) return;
+      const ip = req.headers.get('CF-Connecting-IP') || 'unknown';
+      await e.RATE_LIMIT.delete(`rl:${ip}`);
+    }
+
+    async function requireAuthWithRateLimit(req: Request, u: URL, e: Env): Promise<Response | null> {
+      const rateLimitErr = await checkRateLimit(req, e);
+      if (rateLimitErr) return rateLimitErr;
+
+      const pwd = getAuthPassword(req, u);
+      if (!e.ANALYTICS_PASSWORD || !pwd || pwd !== e.ANALYTICS_PASSWORD) {
+        await recordFailedAttempt(req, e);
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders(req) },
+        });
+      }
+      await clearRateLimit(req, e); // reset on successful auth
+      return null; // auth OK
+    }
+
     function requireAuth(req: Request, u: URL, e: Env): Response | null {
       const pwd = getAuthPassword(req, u);
       if (!e.ANALYTICS_PASSWORD || !pwd || pwd !== e.ANALYTICS_PASSWORD) {
@@ -1703,7 +1827,7 @@ export default {
     // ── PUBLICATIONS API (password-protected) ──
 
     if (url.pathname === '/api/publications') {
-      const authErr = requireAuth(request, url, env);
+      const authErr = await requireAuthWithRateLimit(request, url, env);
       if (authErr) return authErr;
       try {
         const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 200);
@@ -1721,7 +1845,7 @@ export default {
     // ── ANALYTICS API (password-protected) ──
 
     if (url.pathname === '/api/analytics') {
-      const authErr = requireAuth(request, url, env);
+      const authErr = await requireAuthWithRateLimit(request, url, env);
       if (authErr) return authErr;
       if (!env.CF_API_TOKEN || !env.CF_ZONE_ID) {
         return jsonResponse({ error: 'Analytics not configured (missing CF_API_TOKEN or CF_ZONE_ID)' }, 0, request);
@@ -1744,7 +1868,7 @@ export default {
     // ── WEEKLY BRIEF API (password-protected) ──
 
     if (url.pathname === '/api/brief') {
-      const authErr = requireAuth(request, url, env);
+      const authErr = await requireAuthWithRateLimit(request, url, env);
       if (authErr) return authErr;
       try {
         const data = await supabaseQuery(env, 'weekly_briefs', 'GET', {
@@ -1764,7 +1888,7 @@ export default {
     // ── MANUAL TRIGGERS (password-protected) ──
 
     if (url.pathname.startsWith('/trigger/')) {
-      const authErr = requireAuth(request, url, env);
+      const authErr = await requireAuthWithRateLimit(request, url, env);
       if (authErr) return authErr;
 
       if (url.pathname === '/trigger/news') {
