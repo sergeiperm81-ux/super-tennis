@@ -67,6 +67,17 @@ export const vsPlayerSlugs: Record<string, [string, string]> = {
   'connors-vs-lendl': ['jimmy-connors', 'ivan-lendl'],
   'lendl-vs-mcenroe': ['ivan-lendl', 'john-mcenroe'],
   'edberg-vs-becker': ['stefan-edberg', 'boris-becker'],
+  // New additions — high search volume
+  'tsitsipas-vs-alcaraz': ['stefanos-tsitsipas', 'carlos-alcaraz'],
+  'tsitsipas-vs-djokovic': ['stefanos-tsitsipas', 'novak-djokovic'],
+  'tsitsipas-vs-sinner': ['stefanos-tsitsipas', 'jannik-sinner'],
+  'rublev-vs-medvedev': ['andrey-rublev', 'daniil-medvedev'],
+  'federer-vs-sampras': ['roger-federer', 'pete-sampras'],
+  'nadal-vs-sampras': ['rafael-nadal', 'pete-sampras'],
+  'fritz-vs-alcaraz': ['taylor-fritz', 'carlos-alcaraz'],
+  'azarenka-vs-williams': ['victoria-azarenka', 'serena-williams'],
+  'halep-vs-swiatek': ['simona-halep', 'iga-swiatek'],
+  'djokovic-vs-lendl': ['novak-djokovic', 'ivan-lendl'],
 };
 
 // Cache for player photos (grows across build — never evicted)
