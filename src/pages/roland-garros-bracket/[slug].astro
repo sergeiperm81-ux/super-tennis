@@ -25,8 +25,27 @@ function slug(name: string) {
 }
 
 export function getStaticPaths() {
-  return PLAYERS.map(p => ({
-    params: { slug: `${slug(p.name)}-${p.tour}` },
+  const toSlug = (name: string) => name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  const players = [
+    { cc: 'es', name: 'Carlos Alcaraz',     note: 'Defending Champion', tour: 'atp' },
+    { cc: 'it', name: 'Jannik Sinner',      note: 'World No. 1',        tour: 'atp' },
+    { cc: 'de', name: 'Alexander Zverev',   note: '3× finalist',        tour: 'atp' },
+    { cc: 'rs', name: 'Novak Djokovic',     note: 'Won RG 2023',        tour: 'atp' },
+    { cc: 'no', name: 'Casper Ruud',        note: '3× finalist',        tour: 'atp' },
+    { cc: 'gr', name: 'Stefanos Tsitsipas', note: 'Finalist 2021',      tour: 'atp' },
+    { cc: 'dk', name: 'Holger Rune',        note: 'Clay specialist',    tour: 'atp' },
+    { cc: 'ru', name: 'Andrey Rublev',      note: 'Top 10 clay',        tour: 'atp' },
+    { cc: 'pl', name: 'Iga Swiatek',        note: '4× champion',        tour: 'wta' },
+    { cc: 'by', name: 'Aryna Sabalenka',    note: 'World No. 2',        tour: 'wta' },
+    { cc: 'us', name: 'Coco Gauff',         note: 'US Open champion',   tour: 'wta' },
+    { cc: 'kz', name: 'Elena Rybakina',     note: 'Wimbledon champion', tour: 'wta' },
+    { cc: 'it', name: 'Jasmine Paolini',    note: 'Finalist 2024',      tour: 'wta' },
+    { cc: 'ru', name: 'Mirra Andreeva',     note: 'Rising star',        tour: 'wta' },
+    { cc: 'cz', name: 'Karolína Muchová',   note: 'Finalist 2023',      tour: 'wta' },
+    { cc: 'ru', name: 'Daria Kasatkina',    note: 'Clay specialist',    tour: 'wta' },
+  ];
+  return players.map(p => ({
+    params: { slug: `${toSlug(p.name)}-${p.tour}` },
     props: p,
   }));
 }
