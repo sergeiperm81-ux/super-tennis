@@ -572,31 +572,10 @@ const playerProfile = profilePlayer ? {
             ))}
           </div>
 
-          <!-- PLAYER PROFILE -->
-          <div class="sb-profile">
-            <div class="sb-profile__header">
-              <span class="sb-profile__label">Featured Player</span>
-              <a href="/players/" class="sb-link">View all &rarr;</a>
-            </div>
-            <a href={playerProfile.href} class="sb-profile__card">
-              <div class="sb-profile__img">
-                <img src={playerProfile.image} alt={playerProfile.name} loading="lazy" decoding="async" width="400" height="400" />
-                <div class="sb-profile__name">
-                  {getFlagUrl(playerProfile.country) ? (
-                    <img src={getFlagUrl(playerProfile.country, 40)} alt={playerProfile.country} class="sb-flag" width="20" height="15" loading="lazy" decoding="async" />
-                  ) : (
-                    <span>{playerProfile.flag}</span>
-                  )}
-                  {playerProfile.name}
-                </div>
-              </div>
-              <div class="sb-profile__stats">
-                <div class="sb-profile__row"><span>Grand Slams</span><span>{playerProfile.grandSlams}</span></div>
-                <div class="sb-profile__row"><span>Career Titles</span><span>{playerProfile.titles}</span></div>
-                <div class="sb-profile__row"><span>Record</span><span>{playerProfile.wl}</span></div>
-              </div>
-            </a>
-          </div>
+          <!-- RG 2026 BANNER -->
+          <a href="/roland-garros-bracket" class="rg-banner-link">
+            <img src="/images/rg-banner.png" alt="Roland Garros 2026 — Pick your winner" class="rg-banner-img" width="800" loading="eager" decoding="async" />
+          </a>
 
           <!-- TRENDING NEWS (loaded client-side) -->
           <div class="sb-trending">
@@ -1060,6 +1039,22 @@ const playerProfile = profilePlayer ? {
   }
 
   /* Sidebar: Player Profile */
+  .rg-banner-link {
+    display: block;
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform 0.18s, box-shadow 0.18s;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  }
+  .rg-banner-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+  }
+  .rg-banner-img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
   .sb-profile {
     background: #fff;
     border-radius: var(--radius);
