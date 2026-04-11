@@ -3,62 +3,64 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout
-  title="Roland Garros 2026 Bracket Predictor — Make Your Picks"
-  description="Pick your Roland Garros 2026 champion! Fill in the bracket, predict the winner, and share your predictions on social media. ATP & WTA draws."
+  title="Roland Garros 2026 Winner Prediction — Who Will Win?"
+  description="Pick who you think will win Roland Garros 2026. ATP & WTA top contenders — one tap, shareable card. Make your prediction!"
 >
 
 <style>
-  .bracket-wrap {
-    max-width: 760px;
+  .rg-wrap {
+    max-width: 680px;
     margin: 0 auto;
     padding: 2rem 1rem 4rem;
   }
-  .bracket-header {
+
+  .rg-header {
     text-align: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
   }
-  .bracket-header h1 {
-    font-size: clamp(1.5rem, 4vw, 2.2rem);
+  .clay-badge {
+    background: rgba(180,80,30,0.2);
+    border: 1px solid rgba(180,80,30,0.4);
+    border-radius: 20px;
+    color: #e8845a;
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 0.75rem;
+    padding: 0.3rem 0.9rem;
+    text-transform: uppercase;
+  }
+  .rg-header h1 {
+    font-size: clamp(1.5rem, 4vw, 2.1rem);
     font-weight: 800;
     color: var(--text-primary, #fff);
     margin-bottom: 0.4rem;
   }
-  .bracket-header p {
+  .rg-header p {
     color: var(--text-secondary, #aaa);
     font-size: 0.95rem;
   }
-  .clay-badge {
-    background: rgba(180, 80, 30, 0.2);
-    border: 1px solid rgba(180, 80, 30, 0.4);
-    border-radius: 20px;
-    color: #e8845a;
-    display: inline-block;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    margin-bottom: 1rem;
-    padding: 0.3rem 0.9rem;
-    text-transform: uppercase;
-  }
 
-  /* Tab toggle */
+  /* Tabs */
   .tour-tabs {
     display: flex;
     background: rgba(255,255,255,0.05);
     border-radius: 12px;
-    margin-bottom: 2rem;
+    margin-bottom: 1.75rem;
     padding: 4px;
+    gap: 4px;
   }
   .tour-tab {
     background: none;
     border: none;
     border-radius: 9px;
-    color: rgba(255,255,255,0.5);
+    color: rgba(255,255,255,0.45);
     cursor: pointer;
     flex: 1;
     font-size: 0.9rem;
     font-weight: 700;
-    padding: 0.6rem;
+    padding: 0.65rem;
     transition: all 0.2s;
   }
   .tour-tab.active {
@@ -66,532 +68,312 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     color: #e8c547;
   }
 
-  /* Round label */
-  .round-label {
+  /* Player grid */
+  .players-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  @media (min-width: 480px) {
+    .players-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .player-tile {
+    background: rgba(255,255,255,0.04);
+    border: 2px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    cursor: pointer;
+    padding: 1rem 0.5rem;
+    text-align: center;
+    transition: all 0.18s;
+    position: relative;
+    overflow: hidden;
+  }
+  .player-tile:hover {
+    background: rgba(232,197,71,0.08);
+    border-color: rgba(232,197,71,0.4);
+    transform: translateY(-2px);
+  }
+  .player-tile.selected {
+    background: rgba(232,197,71,0.15);
+    border-color: #e8c547;
+  }
+  .player-tile.dimmed {
+    opacity: 0.3;
+    transform: none;
+  }
+  .tile-flag {
+    font-size: 1.6rem;
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+  .tile-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-primary, #fff);
+    line-height: 1.2;
+    margin-bottom: 0.3rem;
+  }
+  .tile-label {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.3;
+  }
+  .player-tile.selected .tile-label { color: #e8c547; }
+  .tile-check {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    color: #e8c547;
+    font-size: 0.9rem;
+    display: none;
+  }
+  .player-tile.selected .tile-check { display: block; }
+
+  /* Result card */
+  #result-box {
+    display: none;
+    margin-top: 1.75rem;
+  }
+  #result-card {
+    background: linear-gradient(135deg, #2d1209 0%, #1a0a04 60%, #3d1a07 100%);
+    border: 1px solid rgba(232,197,71,0.3);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .rc-site {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #e8845a;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+  }
+  .rc-event {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 1.25rem;
+  }
+  .rc-label {
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: #e8845a;
-    margin: 2rem 0 1rem;
-  }
-
-  /* Match card */
-  .matches-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-  }
-  @media (max-width: 500px) {
-    .matches-grid { grid-template-columns: 1fr; }
-  }
-  .match-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  .match-card.decided { border-color: rgba(232,197,71,0.3); }
-  .player-row {
-    align-items: center;
-    cursor: pointer;
-    display: flex;
-    gap: 0.6rem;
-    padding: 0.7rem 0.9rem;
-    transition: background 0.15s;
-  }
-  .player-row:hover { background: rgba(232,197,71,0.08); }
-  .player-row + .player-row { border-top: 1px solid rgba(255,255,255,0.07); }
-  .player-row.winner {
-    background: rgba(232,197,71,0.15);
-    color: #e8c547;
-    font-weight: 700;
-  }
-  .player-row.loser { opacity: 0.35; }
-  .seed-num {
-    background: rgba(255,255,255,0.1);
-    border-radius: 4px;
-    color: rgba(255,255,255,0.5);
-    font-size: 0.65rem;
-    font-weight: 700;
-    min-width: 22px;
-    padding: 2px 4px;
-    text-align: center;
-  }
-  .player-row.winner .seed-num { background: rgba(232,197,71,0.2); color: #e8c547; }
-  .player-flag { font-size: 1rem; }
-  .player-name { flex: 1; font-size: 0.88rem; }
-  .pick-hint {
-    color: rgba(255,255,255,0.3);
-    font-size: 0.75rem;
-    padding: 0.35rem 0.9rem;
-    text-align: center;
-  }
-  .match-divider {
-    background: rgba(255,255,255,0.07);
-    height: 1px;
-  }
-
-  /* Champion display */
-  .champion-wrap {
-    background: linear-gradient(135deg, rgba(180,80,30,0.15), rgba(232,197,71,0.08));
-    border: 1px solid rgba(232,197,71,0.25);
-    border-radius: 16px;
-    margin-top: 2rem;
-    padding: 1.5rem;
-    text-align: center;
-  }
-  .champion-wrap h3 {
-    color: #e8c547;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-  }
-  .champion-name {
-    color: #fff;
-    font-size: 1.6rem;
-    font-weight: 800;
-  }
-  .champion-trophy { font-size: 2rem; display: block; margin-bottom: 0.4rem; }
-
-  /* Share card (hidden, used for html2canvas) */
-  #share-card {
-    background: linear-gradient(135deg, #2d1209 0%, #1a0a04 50%, #3d1a07 100%);
-    border-radius: 20px;
-    display: none;
-    padding: 2rem;
-    width: 420px;
-    font-family: system-ui, sans-serif;
-  }
-  #share-card .sc-header {
-    text-align: center;
-    margin-bottom: 1.5rem;
-  }
-  #share-card .sc-site {
-    color: #e8845a;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 2px;
+    color: rgba(255,255,255,0.4);
     text-transform: uppercase;
     margin-bottom: 0.3rem;
   }
-  #share-card .sc-title {
-    color: #fff;
-    font-size: 1.2rem;
-    font-weight: 800;
+  .rc-trophy { font-size: 2.5rem; display: block; margin-bottom: 0.4rem; }
+  .rc-pick-label {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.4rem;
   }
-  #share-card .sc-year {
-    color: rgba(255,255,255,0.5);
+  .rc-player-flag { font-size: 2rem; display: block; margin-bottom: 0.3rem; }
+  .rc-player-name {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 0.3rem;
+  }
+  .rc-player-note {
     font-size: 0.8rem;
-  }
-  #share-card .sc-champion {
-    background: rgba(232,197,71,0.12);
-    border: 1px solid rgba(232,197,71,0.3);
-    border-radius: 12px;
-    text-align: center;
-    padding: 1rem;
-    margin-bottom: 1rem;
-  }
-  #share-card .sc-champion-label {
     color: #e8c547;
+    margin-bottom: 1.25rem;
+  }
+  .rc-footer {
     font-size: 0.7rem;
-    font-weight: 700;
+    color: rgba(255,255,255,0.25);
     letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  #share-card .sc-champion-name {
-    color: #fff;
-    font-size: 1.4rem;
-    font-weight: 800;
-    margin-top: 0.2rem;
-  }
-  #share-card .sc-picks {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-  #share-card .sc-pick-row {
-    align-items: center;
-    display: flex;
-    gap: 0.6rem;
-  }
-  #share-card .sc-round-tag {
-    background: rgba(255,255,255,0.08);
-    border-radius: 4px;
-    color: rgba(255,255,255,0.5);
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    min-width: 28px;
-    padding: 2px 5px;
-    text-align: center;
-    text-transform: uppercase;
-  }
-  #share-card .sc-pick-name {
-    color: rgba(255,255,255,0.85);
-    font-size: 0.82rem;
-  }
-  #share-card .sc-footer {
-    color: rgba(255,255,255,0.3);
-    font-size: 0.65rem;
-    margin-top: 1.2rem;
-    text-align: center;
-    letter-spacing: 1px;
+    margin-top: 1rem;
   }
 
-  /* CTA buttons */
-  .bracket-cta {
-    margin-top: 2rem;
+  /* Action buttons */
+  .result-actions {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.65rem;
   }
-  .btn-generate {
-    background: #e8c547;
-    border: none;
-    border-radius: 12px;
-    color: #111;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 800;
-    padding: 1rem;
-    transition: transform 0.15s, opacity 0.15s;
-  }
-  .btn-generate:hover { transform: scale(1.02); opacity: 0.9; }
-  .btn-generate:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-  .btn-twitter-share {
-    background: #111;
-    border: 1px solid rgba(255,255,255,0.15);
+  .btn-twitter {
+    background: #000;
+    border: 1px solid rgba(255,255,255,0.2);
     border-radius: 12px;
     color: #fff;
     cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 0.95rem;
+    font-weight: 700;
     padding: 0.9rem;
     text-align: center;
     text-decoration: none;
     display: block;
     transition: background 0.2s;
   }
-  .btn-twitter-share:hover { background: rgba(255,255,255,0.08); }
-  .btn-reset {
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.1);
+  .btn-twitter:hover { background: #111; }
+  .btn-download {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 12px;
-    color: rgba(255,255,255,0.4);
+    color: rgba(255,255,255,0.8);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.85rem;
+    transition: background 0.2s;
+  }
+  .btn-download:hover { background: rgba(255,255,255,0.1); }
+  .btn-change {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.35);
     cursor: pointer;
     font-size: 0.82rem;
-    padding: 0.7rem;
-    transition: all 0.2s;
+    padding: 0.5rem;
+    transition: color 0.2s;
   }
-  .btn-reset:hover { color: #fff; border-color: rgba(255,255,255,0.25); }
-
-  .picks-progress {
-    color: rgba(255,255,255,0.4);
-    font-size: 0.82rem;
-    text-align: center;
-    margin-top: 0.5rem;
-  }
+  .btn-change:hover { color: rgba(255,255,255,0.7); }
 </style>
 
-<div class="bracket-wrap">
-  <div class="bracket-header">
-    <div><span class="clay-badge">🏺 Roland Garros 2026</span></div>
-    <h1>Bracket Predictor</h1>
-    <p>Pick your way to the champion — then share your predictions</p>
+<div class="rg-wrap">
+  <div class="rg-header">
+    <span class="clay-badge">🏺 Roland Garros 2026 · May 25 – June 8</span>
+    <h1>Who Will Win?</h1>
+    <p>Pick your champion — one tap, shareable card</p>
   </div>
 
   <div class="tour-tabs">
-    <button class="tour-tab active" onclick="switchTour('atp', this)">🎾 ATP Men's</button>
-    <button class="tour-tab" onclick="switchTour('wta', this)">🎾 WTA Women's</button>
+    <button class="tour-tab active" onclick="switchTour('atp', this)">🎾 Men's ATP</button>
+    <button class="tour-tab" onclick="switchTour('wta', this)">🎾 Women's WTA</button>
   </div>
 
-  <div id="bracket-atp"></div>
-  <div id="bracket-wta" style="display:none"></div>
+  <div id="grid-atp" class="players-grid"></div>
+  <div id="grid-wta" class="players-grid" style="display:none"></div>
 
-  <!-- Hidden share card -->
-  <div id="share-card"></div>
-
-  <div class="bracket-cta">
-    <button class="btn-generate" id="btn-generate" onclick="generateCard()" disabled>
-      🏆 Generate My Predictions Card
-    </button>
-    <a id="btn-twitter" class="btn-twitter-share" href="#" target="_blank" rel="noopener" style="display:none">
-      Share on X / Twitter
-    </a>
-    <button class="btn-reset" onclick="resetBracket()">↺ Reset Picks</button>
+  <div id="result-box">
+    <div id="result-card">
+      <div class="rc-site">SUPER.TENNIS</div>
+      <div class="rc-event">🏺 Roland Garros 2026</div>
+      <span class="rc-trophy">🏆</span>
+      <div class="rc-pick-label">My pick to win</div>
+      <span class="rc-player-flag" id="rc-flag"></span>
+      <div class="rc-player-name" id="rc-name"></div>
+      <div class="rc-player-note" id="rc-note"></div>
+      <div class="rc-footer">super.tennis/roland-garros-bracket</div>
+    </div>
+    <div class="result-actions">
+      <a id="btn-twitter" class="btn-twitter" href="#" target="_blank" rel="noopener">
+        𝕏 Share on Twitter / X
+      </a>
+      <button class="btn-download" onclick="downloadCard()">💾 Save as Image</button>
+      <button class="btn-change" onclick="changePick()">↺ Change my pick</button>
+    </div>
   </div>
-  <div class="picks-progress" id="picks-progress">Pick all 15 matches to generate your card</div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script is:inline>
-const DRAWS = {
+const PLAYERS = {
   atp: [
-    // R16 matchups [seed, name, flag]
-    { m: [[1,'Jannik Sinner','🇮🇹'],[16,'Sebastián Báez','🇦🇷']], r:'r16' },
-    { m: [[9,'Stefanos Tsitsipas','🇬🇷'],[8,'Holger Rune','🇩🇰']], r:'r16' },
-    { m: [[5,'Taylor Fritz','🇺🇸'],[12,'Grigor Dimitrov','🇧🇬']], r:'r16' },
-    { m: [[13,'Andrey Rublev','🇷🇺'],[4,'Novak Djokovic','🇷🇸']], r:'r16' },
-    { m: [[3,'Alexander Zverev','🇩🇪'],[14,'Jack Draper','🇬🇧']], r:'r16' },
-    { m: [[11,'Ben Shelton','🇺🇸'],[6,'Daniil Medvedev','🇷🇺']], r:'r16' },
-    { m: [[7,'Casper Ruud','🇳🇴'],[10,'Tommy Paul','🇺🇸']], r:'r16' },
-    { m: [[15,'Ugo Humbert','🇫🇷'],[2,'Carlos Alcaraz','🇪🇸']], r:'r16' },
+    { flag: '🇪🇸', name: 'Carlos Alcaraz',    note: 'Defending Champion' },
+    { flag: '🇮🇹', name: 'Jannik Sinner',     note: 'World No. 1' },
+    { flag: '🇩🇪', name: 'Alexander Zverev',  note: '3× finalist' },
+    { flag: '🇷🇸', name: 'Novak Djokovic',    note: 'Won RG 2023' },
+    { flag: '🇳🇴', name: 'Casper Ruud',       note: '3× finalist' },
+    { flag: '🇬🇷', name: 'Stefanos Tsitsipas',note: 'Finalist 2021' },
+    { flag: '🇩🇰', name: 'Holger Rune',       note: 'Clay specialist' },
+    { flag: '🇷🇺', name: 'Andrey Rublev',     note: 'Top 10 clay' },
   ],
   wta: [
-    { m: [[1,'Iga Swiatek','🇵🇱'],[16,'Paula Badosa','🇪🇸']], r:'r16' },
-    { m: [[9,'Madison Keys','🇺🇸'],[8,'Barbora Krejčíková','🇨🇿']], r:'r16' },
-    { m: [[5,'Mirra Andreeva','🇷🇺'],[12,'Diana Shnaider','🇷🇺']], r:'r16' },
-    { m: [[13,'Victoria Azarenka','🇧🇾'],[4,'Elena Rybakina','🇰🇿']], r:'r16' },
-    { m: [[3,'Coco Gauff','🇺🇸'],[14,'Markéta Vondroušová','🇨🇿']], r:'r16' },
-    { m: [[11,'Emma Navarro','🇺🇸'],[6,'Jasmine Paolini','🇮🇹']], r:'r16' },
-    { m: [[7,'Daria Kasatkina','🇷🇺'],[10,'Beatriz Haddad Maia','🇧🇷']], r:'r16' },
-    { m: [[15,'Karolína Muchová','🇨🇿'],[2,'Aryna Sabalenka','🇧🇾']], r:'r16' },
-  ]
+    { flag: '🇵🇱', name: 'Iga Swiatek',       note: '4× champion' },
+    { flag: '🇧🇾', name: 'Aryna Sabalenka',   note: 'World No. 2' },
+    { flag: '🇺🇸', name: 'Coco Gauff',        note: 'US Open champion' },
+    { flag: '🇰🇿', name: 'Elena Rybakina',    note: 'Wimbledon champion' },
+    { flag: '🇮🇹', name: 'Jasmine Paolini',   note: 'Finalist 2024' },
+    { flag: '🇷🇺', name: 'Mirra Andreeva',    note: 'Rising star' },
+    { flag: '🇨🇿', name: 'Karolína Muchová',  note: 'Finalist 2023' },
+    { flag: '🇷🇺', name: 'Daria Kasatkina',   note: 'Clay specialist' },
+  ],
 };
 
-// picks[tour][matchId] = playerIndex (0 or 1)
-const picks = { atp: {}, wta: {} };
 let activeTour = 'atp';
+let currentPick = null;
 
-// Build bracket state: round by round
-// r16(0-7) → qf(8-11) → sf(12-13) → f(14)
-function getMatchPlayers(tour, matchId) {
-  if (matchId < 8) {
-    const d = DRAWS[tour][matchId];
-    return d.m.map(p => ({ seed: p[0], name: p[1], flag: p[2] }));
-  }
-  if (matchId < 12) {
-    // QF: winners from pairs of R16
-    const base = (matchId - 8) * 2;
-    const p1 = getWinner(tour, base);
-    const p2 = getWinner(tour, base + 1);
-    return [p1, p2].map(p => p || null);
-  }
-  if (matchId < 14) {
-    // SF: winners from pairs of QF
-    const base = 8 + (matchId - 12) * 2;
-    const p1 = getWinner(tour, base);
-    const p2 = getWinner(tour, base + 1);
-    return [p1, p2].map(p => p || null);
-  }
-  // Final
-  const p1 = getWinner(tour, 12);
-  const p2 = getWinner(tour, 13);
-  return [p1, p2].map(p => p || null);
+function renderGrid(tour) {
+  const grid = document.getElementById(`grid-${tour}`);
+  grid.innerHTML = PLAYERS[tour].map((p, i) => `
+    <div class="player-tile" id="tile-${tour}-${i}" onclick="pickPlayer('${tour}', ${i})">
+      <span class="tile-check">✓</span>
+      <span class="tile-flag">${p.flag}</span>
+      <div class="tile-name">${p.name}</div>
+      <div class="tile-label">${p.note}</div>
+    </div>
+  `).join('');
 }
 
-function getWinner(tour, matchId) {
-  const idx = picks[tour][matchId];
-  if (idx === undefined) return null;
-  const players = getMatchPlayers(tour, matchId);
-  return players[idx];
-}
+function pickPlayer(tour, idx) {
+  const player = PLAYERS[tour][idx];
+  currentPick = { tour, idx, player };
 
-function canPlay(tour, matchId) {
-  const players = getMatchPlayers(tour, matchId);
-  return players[0] !== null && players[1] !== null;
-}
-
-function countPicks(tour) {
-  return Object.keys(picks[tour]).length;
-}
-
-function renderBracket(tour) {
-  const container = document.getElementById(`bracket-${tour}`);
-  const rounds = [
-    { label: 'Round of 16', ids: [0,1,2,3,4,5,6,7] },
-    { label: 'Quarterfinals', ids: [8,9,10,11] },
-    { label: 'Semifinals', ids: [12,13] },
-    { label: 'Final', ids: [14] },
-  ];
-
-  let html = '';
-  for (const round of rounds) {
-    html += `<div class="round-label">${round.label}</div>`;
-    html += `<div class="matches-grid" style="${round.ids.length === 1 ? 'grid-template-columns:1fr;max-width:360px' : ''}">`;
-    for (const id of round.ids) {
-      html += renderMatch(tour, id);
-    }
-    html += '</div>';
-  }
-
-  // Champion
-  const champion = getWinner(tour, 14);
-  if (champion) {
-    html += `<div class="champion-wrap">
-      <span class="champion-trophy">🏆</span>
-      <h3>My ${tour.toUpperCase()} Champion</h3>
-      <div class="champion-name">${champion.flag} ${champion.name}</div>
-    </div>`;
-  }
-
-  container.innerHTML = html;
-  updateCTA(tour);
-}
-
-function renderMatch(tour, matchId) {
-  const players = getMatchPlayers(tour, matchId);
-  const decided = picks[tour][matchId] !== undefined;
-  const playable = canPlay(tour, matchId);
-
-  if (!playable) {
-    return `<div class="match-card">
-      <div class="pick-hint">Waiting for previous picks…</div>
-    </div>`;
-  }
-
-  let rows = '';
-  players.forEach((p, i) => {
-    if (!p) return;
-    const isWinner = decided && picks[tour][matchId] === i;
-    const isLoser = decided && picks[tour][matchId] !== i;
-    rows += `<div class="player-row ${isWinner ? 'winner' : ''} ${isLoser ? 'loser' : ''}"
-      onclick="${playable ? `pick('${tour}', ${matchId}, ${i})` : ''}">
-      <span class="seed-num">${p.seed}</span>
-      <span class="player-flag">${p.flag}</span>
-      <span class="player-name">${p.name}</span>
-      ${isWinner ? '<span>✓</span>' : ''}
-    </div>`;
+  // Update tile states
+  document.querySelectorAll(`#grid-${tour} .player-tile`).forEach((t, i) => {
+    t.classList.toggle('selected', i === idx);
+    t.classList.toggle('dimmed', i !== idx);
   });
 
-  return `<div class="match-card ${decided ? 'decided' : ''}">
-    ${rows}
-    ${!decided ? `<div class="divider"></div><div class="pick-hint">tap to pick</div>` : ''}
-  </div>`;
-}
+  // Fill result card
+  document.getElementById('rc-flag').textContent = player.flag;
+  document.getElementById('rc-name').textContent = player.name;
+  document.getElementById('rc-note').textContent = player.note;
 
-function pick(tour, matchId, playerIdx) {
-  const old = picks[tour][matchId];
+  // Twitter link
+  const tourLabel = tour === 'atp' ? 'ATP' : 'WTA';
+  const tweet = `My Roland Garros 2026 ${tourLabel} pick: ${player.flag} ${player.name} 🏆\n\nWho's your pick? 👇\nsuper.tennis/roland-garros-bracket`;
+  document.getElementById('btn-twitter').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}`;
 
-  // If same pick, deselect
-  if (old === playerIdx) {
-    delete picks[tour][matchId];
-    // Clear all downstream picks
-    clearDownstream(tour, matchId);
-    renderBracket(tour);
-    return;
-  }
-
-  // If changing pick, clear downstream
-  if (old !== undefined && old !== playerIdx) {
-    clearDownstream(tour, matchId);
-  }
-
-  picks[tour][matchId] = playerIdx;
-  renderBracket(tour);
-}
-
-function clearDownstream(tour, matchId) {
-  // Figure out which matches depend on this one
-  // r16(0-7) feeds qf(8-11), qf feeds sf(12-13), sf feeds f(14)
-  let affected = [];
-  if (matchId < 8) {
-    const qfId = 8 + Math.floor(matchId / 2);
-    affected.push(qfId);
-    const sfId = 12 + Math.floor((qfId - 8) / 2);
-    affected.push(sfId);
-    affected.push(14);
-  } else if (matchId < 12) {
-    const sfId = 12 + Math.floor((matchId - 8) / 2);
-    affected.push(sfId);
-    affected.push(14);
-  } else if (matchId < 14) {
-    affected.push(14);
-  }
-  affected.forEach(id => delete picks[tour][id]);
-}
-
-function updateCTA(tour) {
-  const total = 15; // 8+4+2+1
-  const done = countPicks(tour);
-  const btn = document.getElementById('btn-generate');
-  const prog = document.getElementById('picks-progress');
-  if (done >= total) {
-    btn.disabled = false;
-    prog.textContent = '✅ All picks made — generate your card!';
-  } else {
-    btn.disabled = true;
-    prog.textContent = `${done} / ${total} picks made`;
-  }
+  // Show result
+  document.getElementById('result-box').style.display = 'block';
+  document.getElementById('result-box').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function switchTour(tour, el) {
   activeTour = tour;
+  currentPick = null;
   document.querySelectorAll('.tour-tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById('bracket-atp').style.display = tour === 'atp' ? 'block' : 'none';
-  document.getElementById('bracket-wta').style.display = tour === 'wta' ? 'block' : 'none';
-  updateCTA(tour);
+  document.getElementById('grid-atp').style.display = tour === 'atp' ? 'grid' : 'none';
+  document.getElementById('grid-wta').style.display = tour === 'wta' ? 'grid' : 'none';
+  document.getElementById('result-box').style.display = 'none';
 }
 
-function generateCard() {
-  const tour = activeTour;
-  const champion = getWinner(tour, 14);
-  if (!champion) return;
+function changePick() {
+  if (!currentPick) return;
+  document.querySelectorAll(`#grid-${currentPick.tour} .player-tile`).forEach(t => {
+    t.classList.remove('selected', 'dimmed');
+  });
+  document.getElementById('result-box').style.display = 'none';
+  currentPick = null;
+}
 
-  const finalists = [getWinner(tour, 12), getWinner(tour, 13)].filter(Boolean);
-  const semis = [8,9,10,11].map(id => getWinner(tour, id)).filter(Boolean);
-
-  const card = document.getElementById('share-card');
-  card.style.display = 'block';
-
-  const sfNames = semis.map(p => `${p.flag} ${p.name}`).join(', ');
-  const fNames = finalists.map(p => `${p.flag} ${p.name}`).join(' vs ');
-
-  card.innerHTML = `
-    <div class="sc-header">
-      <div class="sc-site">SUPER.TENNIS</div>
-      <div class="sc-title">🏺 Roland Garros 2026</div>
-      <div class="sc-year">${tour.toUpperCase()} Predictions</div>
-    </div>
-    <div class="sc-champion">
-      <div class="sc-champion-label">🏆 My Champion</div>
-      <div class="sc-champion-name">${champion.flag} ${champion.name}</div>
-    </div>
-    <div class="sc-picks">
-      <div class="sc-pick-row">
-        <span class="sc-round-tag">Final</span>
-        <span class="sc-pick-name">${fNames}</span>
-      </div>
-      <div class="sc-pick-row">
-        <span class="sc-round-tag">SF</span>
-        <span class="sc-pick-name">${sfNames}</span>
-      </div>
-    </div>
-    <div class="sc-footer">super.tennis/roland-garros-bracket</div>
-  `;
-
+function downloadCard() {
+  const card = document.getElementById('result-card');
   html2canvas(card, {
     backgroundColor: '#2d1209',
     scale: 2,
     useCORS: true,
     logging: false,
   }).then(canvas => {
-    card.style.display = 'none';
     const link = document.createElement('a');
-    link.download = 'roland-garros-2026-bracket.png';
+    link.download = 'roland-garros-2026-pick.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
-
-    // Also show Twitter button
-    const tweet = `My Roland Garros 2026 ${tour.toUpperCase()} pick: 🏆 ${champion.flag} ${champion.name}!\n\nFinal: ${fNames}\n\nMake your picks 👇\nsuper.tennis/roland-garros-bracket`;
-    const twitterBtn = document.getElementById('btn-twitter');
-    twitterBtn.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}`;
-    twitterBtn.style.display = 'block';
   });
 }
 
-function resetBracket() {
-  picks[activeTour] = {};
-  renderBracket(activeTour);
-}
-
 // Init
-renderBracket('atp');
-renderBracket('wta');
+renderGrid('atp');
+renderGrid('wta');
 </script>
 
 </BaseLayout>
