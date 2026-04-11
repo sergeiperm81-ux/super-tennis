@@ -478,6 +478,11 @@ const playerProfile = profilePlayer ? {
           <!-- VIDEO PAIR 3 (loaded client-side) -->
           <div class="video-pair" data-dynamic="videos" data-slots="4,5"></div>
 
+          <!-- STYLE QUIZ BANNER -->
+          <a href="/tennis-playing-style" class="inline-banner-link">
+            <img src="/images/style-banner.png" alt="What's Your Tennis Style? — Take the Quiz" class="inline-banner-img" width="1600" height="900" loading="lazy" decoding="async" />
+          </a>
+
           <!-- FOLLOW US — Compact Social Strip -->
           <div class="social-strip">
             <span class="social-strip__label">Follow us</span>
@@ -1036,6 +1041,25 @@ const playerProfile = profilePlayer ? {
     color: var(--ball-yellow);
     white-space: nowrap;
     letter-spacing: 1px;
+  }
+
+  /* Inline banner (main content area) */
+  .inline-banner-link {
+    display: block;
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform 0.18s, box-shadow 0.18s;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    margin-bottom: 0;
+  }
+  .inline-banner-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+  }
+  .inline-banner-img {
+    display: block;
+    width: 100%;
+    height: auto;
   }
 
   /* Sidebar: Player Profile */
