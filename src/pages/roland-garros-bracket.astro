@@ -274,7 +274,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
       </div>
       <div class="result-actions">
-        <button class="btn-download" onclick="downloadCard()">💾 Save as Image</button>
+        <button class="btn-download" id="btn-share" onclick="shareCard()">🔗 Share my pick</button>
         <button class="btn-change" onclick="changePick()">↺ Change my pick</button>
       </div>
     </div>
@@ -358,10 +358,9 @@ function changePick() {
   currentPick = null;
 }
 
-function downloadCard() {
+function buildCanvas(callback) {
   if (!currentPick) return;
   const { player, tour } = currentPick;
-
   const canvas = document.createElement('canvas');
   canvas.width = 1600;
   canvas.height = 900;
@@ -371,16 +370,13 @@ function downloadCard() {
   img.crossOrigin = 'anonymous';
   img.onload = () => {
     ctx.drawImage(img, 0, 0, 1600, 900);
-
-    // Flag image overlay
     const flagImg = new Image();
     flagImg.crossOrigin = 'anonymous';
 
-    function drawNameAndSave(flagDrawn) {
+    function finish(flagDrawn) {
       if (flagDrawn) {
         ctx.drawImage(flagImg, 158, 320, 72, 48);
       } else {
-        // fallback: text country code
         ctx.font = 'bold 40px Arial';
         ctx.fillStyle = '#333';
         ctx.fillText(player.cc.toUpperCase(), 158, 322);
@@ -401,21 +397,47 @@ function downloadCard() {
       ctx.font = 'bold 26px Arial, sans-serif';
       ctx.fillStyle = '#555555';
       ctx.fillText(tourLabel, 160, 390 + fontSize + 58);
-      try {
-        const link = document.createElement('a');
-        link.download = `rg2026-${player.name.replace(/\s+/g, '-').toLowerCase()}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-      } catch(e) {
-        alert('Не удалось сохранить: ' + e.message);
-      }
+      callback(canvas, player);
     }
 
-    flagImg.onload = () => drawNameAndSave(true);
-    flagImg.onerror = () => drawNameAndSave(false);
+    flagImg.onload = () => finish(true);
+    flagImg.onerror = () => finish(false);
     flagImg.src = `https://flagcdn.com/w40/${player.cc}.png`;
   };
   img.src = '/images/rg-card-template.png';
+}
+
+function shareCard() {
+  buildCanvas(async (canvas, player) => {
+    const fileName = `rg2026-${player.name.replace(/\s+/g, '-').toLowerCase()}.png`;
+    const tourLabel = currentPick.tour === 'atp' ? 'ATP' : 'WTA';
+
+    canvas.toBlob(async (blob) => {
+      const file = new File([blob], fileName, { type: 'image/png' });
+
+      // Try native Web Share API (one-tap share to any app)
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: `My Roland Garros 2026 ${tourLabel} pick: ${player.name}`,
+            text: `I'm picking ${player.name} to win Roland Garros 2026 ${tourLabel}! Who's your pick? 🎾\nsuper.tennis/roland-garros-bracket`,
+          });
+          return;
+        } catch (e) {
+          if (e.name === 'AbortError') return; // user cancelled — do nothing
+        }
+      }
+
+      // Fallback: download the file
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
+    }, 'image/png');
+  });
 }
 
 renderGrid('atp');
