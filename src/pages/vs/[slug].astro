@@ -6,6 +6,7 @@ import { getArticleBySlug, getArticleSlugs, getPlayerBySlug, getH2H } from '../.
 import type { H2HData, Player } from '../../lib/supabase';
 import { addInterlinks } from '../../lib/interlinks';
 import { getVsPhotos, vsPlayerSlugs, slugToName } from '../../lib/player-photos';
+import { getVsGear } from '../../lib/player-gear';
 import { marked } from 'marked';
 
 export async function getStaticPaths() {
@@ -51,6 +52,7 @@ const [photo1, photo2] = await getVsPhotos(slug as string);
 const pair = vsPlayerSlugs[slug as string];
 const name1 = pair ? slugToName(pair[0]) : '';
 const name2 = pair ? slugToName(pair[1]) : '';
+const [gear1, gear2] = pair ? getVsGear(pair[0], pair[1]) : [null, null];
 
 const rawHtml = article.body ? marked.parse(article.body) : '';
 const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/vs/${slug}/`) : '';
@@ -197,8 +199,31 @@ const jsonLd = {
 
   <div set:html={bodyHtml} />
 
-  {/* Gear CTA — affiliate cross-promotion */}
-  {(name1 || name2) && (
+  {/* Gear section — player racket affiliate links */}
+  {(gear1 || gear2) ? (
+    <div class="gear-section">
+      <h3 class="gear-title">🎾 Shop the Rackets</h3>
+      <div class="gear-cards">
+        {gear1 && (
+          <a href={gear1.amazonUrl} class="gear-card" target="_blank" rel="noopener sponsored">
+            <span class="gear-brand">{gear1.brand}</span>
+            <span class="gear-racket">{gear1.racket}</span>
+            <span class="gear-player">{name1}'s racket</span>
+            <span class="gear-cta-link">View on Amazon →</span>
+          </a>
+        )}
+        {gear2 && (
+          <a href={gear2.amazonUrl} class="gear-card" target="_blank" rel="noopener sponsored">
+            <span class="gear-brand">{gear2.brand}</span>
+            <span class="gear-racket">{gear2.racket}</span>
+            <span class="gear-player">{name2}'s racket</span>
+            <span class="gear-cta-link">View on Amazon →</span>
+          </a>
+        )}
+      </div>
+      <p class="gear-disclaimer">As an Amazon Associate, SUPER.TENNIS earns from qualifying purchases.</p>
+    </div>
+  ) : (name1 || name2) && (
     <div class="gear-cta">
       <span class="gear-cta-icon">🎾</span>
       <div class="gear-cta-text">
@@ -390,7 +415,45 @@ const jsonLd = {
     font-style: italic;
   }
 
-  /* Gear CTA */
+  /* Gear Section — player racket cards */
+  .gear-section {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border-radius: 12px;
+    border: 1px solid #f59e0b;
+  }
+  .gear-title {
+    margin: 0 0 1rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #92400e;
+  }
+  .gear-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  .gear-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #f59e0b;
+    text-decoration: none;
+    transition: box-shadow 0.2s, transform 0.15s;
+  }
+  .gear-card:hover { box-shadow: 0 4px 12px rgba(245,158,11,0.25); transform: translateY(-1px); }
+  .gear-brand { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #78350f; font-weight: 700; }
+  .gear-racket { font-size: 0.95rem; font-weight: 700; color: #1e293b; }
+  .gear-player { font-size: 0.78rem; color: #64748b; }
+  .gear-cta-link { margin-top: 0.5rem; font-size: 0.8rem; color: #d97706; font-weight: 600; }
+  .gear-disclaimer { margin: 0.75rem 0 0; font-size: 0.7rem; color: #92400e; opacity: 0.7; }
+  @media (max-width: 480px) { .gear-cards { grid-template-columns: 1fr; } }
+
+  /* Gear CTA (fallback for players not in map) */
   .gear-cta {
     display: flex;
     align-items: center;
