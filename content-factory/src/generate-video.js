@@ -50,12 +50,18 @@ function shuffleArray(arr) {
   return a;
 }
 
-// Permanently banned backgrounds — ball-only clips without players (user: "never again")
+// Permanently banned backgrounds — ball-only / equipment-only / grass clips (user: "never again")
 const BANNED_BACKGROUNDS = new Set([
-  'bg-10.mp4', // Tennis ball suspended in bounce (no players)
-  'bg-11.mp4', // Tennis ball bouncing slow motion (no players)
-  'bg-12.mp4', // Bouncing tennis ball training environment (no players)
-  'bg-13.mp4', // Tennis ball bouncing on training field — GRASS (appeared 9x)
+  'bg-05.mp4', // Pexels 5738572 — racket and ball on clay, no player
+  'bg-06.mp4', // Pexels 5738573 — ball bouncing on clay/grass, no player
+  'bg-07.mp4', // Pexels 5740607 — tennis balls on court surface, no player
+  'bg-08.mp4', // Pexels 5740608 — tennis equipment on bench, no player
+  'bg-10.mp4', // Pexels 4902141 — ball bounce suspended, no player
+  'bg-11.mp4', // Pexels 4902142 — ball bouncing slow motion, no player
+  'bg-12.mp4', // Pexels 4902143 — ball bouncing training field, no player
+  'bg-13.mp4', // Pexels 4902144 — GRASS + ball, no player (appeared 9x, banned)
+  'bg-21.mp4', // Pexels 992694 — outdoor grass court golden hour (no close action)
+  'bg-22.mp4', // Pexels 992696 — grass court practice (no close action)
 ]);
 
 function pickBackground() {
