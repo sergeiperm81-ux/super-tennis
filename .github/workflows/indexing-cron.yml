@@ -1,0 +1,62 @@
+name: Google Indexing API — Daily Bulk Submit
+
+on:
+  # Run daily at 05:30 UTC (08:30 Sofia) — after deploy at 07:30 Sofia
+  schedule:
+    - cron: '30 5 * * *'
+  # Manual trigger with optional offset override
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'URLs to submit (max 200)'
+        default: '200'
+        required: false
+      dry_run:
+        description: 'Dry run (no actual submissions)'
+        default: 'false'
+        required: false
+
+jobs:
+  bulk-index:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Skip entirely if GOOGLE_SA_JSON secret not configured
+    if: ${{ vars.INDEXING_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Submit URLs to Google Indexing API
+        env:
+          GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
+        run: |
+          LIMIT="${{ github.event.inputs.limit || '200' }}"
+          DRY="${{ github.event.inputs.dry_run || 'false' }}"
+
+          if [ "$DRY" = "true" ]; then
+            node scripts/bulk-indexing.mjs --limit="$LIMIT" --dry-run
+          else
+            node scripts/bulk-indexing.mjs --limit="$LIMIT"
+          fi
+
+      - name: Telegram alert on failure
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\",
+              \"text\": \"⚠️ *Indexing API FAILED*\\n\\nRun: [#${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\",
+              \"parse_mode\": \"Markdown\",
+              \"disable_web_page_preview\": true
+            }" || true
