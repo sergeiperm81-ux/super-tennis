@@ -522,6 +522,33 @@ const playerProfile = profilePlayer ? {
             </section>
           )}
 
+          <!-- ========== FUN TOOLS SECTION ========== -->
+          <section class="fun-tools-section">
+            <div class="fun-tools-header">
+              <h2 class="fun-tools-title">🎾 Tennis Fan Tools</h2>
+            </div>
+            <div class="fun-tools-grid">
+              <a href="/roland-garros-bracket/" class="fun-tool-card rg-card">
+                <div class="fun-tool-icon">🏺</div>
+                <div class="fun-tool-body">
+                  <div class="fun-tool-badge">LIVE NOW</div>
+                  <div class="fun-tool-name">Roland Garros 2026<br/>Bracket Predictor</div>
+                  <div class="fun-tool-desc">Pick your champion & share your predictions</div>
+                </div>
+                <div class="fun-tool-arrow">→</div>
+              </a>
+              <a href="/tennis-legend-quiz/" class="fun-tool-card quiz-card">
+                <div class="fun-tool-icon">🏆</div>
+                <div class="fun-tool-body">
+                  <div class="fun-tool-badge">QUIZ</div>
+                  <div class="fun-tool-name">Which Tennis Legend<br/>Are You?</div>
+                  <div class="fun-tool-desc">6 questions to find your tennis spirit animal</div>
+                </div>
+                <div class="fun-tool-arrow">→</div>
+              </a>
+            </div>
+          </section>
+
         </main>
 
         <!-- ========== SIDEBAR ========== -->
@@ -1722,6 +1749,71 @@ const playerProfile = profilePlayer ? {
     background: #0085ff;
   }
   .social-strip__link svg {
+    flex-shrink: 0;
+  }
+
+  /* Fun Tools Section */
+  .fun-tools-section {
+    margin: 2.5rem 0;
+  }
+  .fun-tools-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .fun-tools-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  .fun-tools-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .fun-tool-card {
+    align-items: center;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    color: inherit;
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .fun-tool-card:hover { background: rgba(255,255,255,0.07); text-decoration: none; }
+  .rg-card { border-color: rgba(180,80,30,0.3); }
+  .rg-card:hover { border-color: rgba(180,80,30,0.6); background: rgba(180,80,30,0.08); }
+  .quiz-card { border-color: rgba(232,197,71,0.2); }
+  .quiz-card:hover { border-color: rgba(232,197,71,0.5); background: rgba(232,197,71,0.06); }
+  .fun-tool-icon { font-size: 1.8rem; flex-shrink: 0; }
+  .fun-tool-body { flex: 1; }
+  .fun-tool-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #e8845a;
+    margin-bottom: 0.2rem;
+  }
+  .quiz-card .fun-tool-badge { color: #e8c547; }
+  .fun-tool-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.3;
+    margin-bottom: 0.2rem;
+  }
+  .fun-tool-desc {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+  }
+  .fun-tool-arrow {
+    color: rgba(255,255,255,0.3);
+    font-size: 1rem;
     flex-shrink: 0;
   }
 </style>
