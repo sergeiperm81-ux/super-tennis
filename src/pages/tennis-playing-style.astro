@@ -1,0 +1,297 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="What's Your Tennis Playing Style? — Find Out Now"
+  description="Are you an Aggressive Baseliner, Counterpuncher, or Net Rusher? Pick your style and get a shareable card. super.tennis"
+  ogImage="/images/style-card-template.png"
+>
+
+<style is:global>
+  .style-section {
+    background: var(--gray-50, #f8f9fa);
+    padding: 3rem 1rem 5rem;
+  }
+  .style-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* ── Header ── */
+  .style-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .style-badge {
+    background: #3aaa35;
+    border-radius: 4px;
+    color: #fff;
+    display: inline-block;
+    font-family: var(--font-heading, 'Oswald', sans-serif);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 1rem;
+    padding: 0.3rem 0.9rem;
+    text-transform: uppercase;
+  }
+  .style-header h1 {
+    font-family: var(--font-heading, 'Oswald', sans-serif);
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    color: var(--gray-900, #212529);
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .style-header p {
+    color: var(--gray-600, #868e96);
+    font-size: 0.95rem;
+  }
+
+  /* ── Grid ── */
+  .style-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  @media (min-width: 500px) {
+    .style-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .style-tile {
+    background: #fff;
+    border: 2px solid #dee2e6;
+    border-radius: 14px;
+    cursor: pointer;
+    padding: 1.25rem 0.75rem 1.1rem;
+    text-align: center;
+    transition: all 0.18s ease;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .style-tile:hover {
+    border-color: #3aaa35;
+    box-shadow: 0 6px 20px rgba(58,170,53,0.18);
+    transform: translateY(-3px);
+    background: #f4fdf4;
+  }
+  .style-tile.selected {
+    border-color: #3aaa35;
+    background: #eaf7ec;
+    box-shadow: 0 0 0 2px #3aaa35, 0 6px 20px rgba(58,170,53,0.18);
+    transform: translateY(-2px);
+  }
+  .style-tile.dimmed {
+    opacity: 0.28;
+    transform: none !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+    border-color: #dee2e6 !important;
+    background: #fff !important;
+  }
+  .tile-check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #3aaa35;
+    color: #fff;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    font-weight: 900;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .style-tile.selected .tile-check { display: flex; }
+  .tile-emoji {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  .tile-name {
+    font-family: 'Oswald', var(--font-heading, sans-serif);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #212529;
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .tile-like {
+    font-size: 0.62rem;
+    color: #868e96;
+  }
+  .style-tile.selected .tile-name { color: #1e6b2b; }
+  .style-tile.selected .tile-like { color: #3aaa35; }
+
+  /* ── Result ── */
+  #style-result-box {
+    display: none;
+    margin-top: 2rem;
+  }
+  #style-result-card {
+    width: 100%;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    display: block;
+    margin-bottom: 1rem;
+  }
+  .style-result-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+  .btn-style-share {
+    background: #3aaa35;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 0.9rem;
+    text-align: center;
+    transition: background 0.2s;
+  }
+  .btn-style-share:hover { background: #2d8c2a; }
+  .btn-style-dl {
+    background: #fff;
+    border: 2px solid #dee2e6;
+    border-radius: 10px;
+    color: #495057;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0.85rem;
+    transition: border-color 0.2s;
+  }
+  .btn-style-dl:hover { border-color: #3aaa35; color: #2d8c2a; }
+  .btn-style-change {
+    background: transparent;
+    border: none;
+    color: var(--gray-500, #adb5bd);
+    cursor: pointer;
+    font-size: 0.82rem;
+    padding: 0.5rem;
+    transition: color 0.2s;
+  }
+  .btn-style-change:hover { color: var(--gray-700, #495057); }
+</style>
+
+<div class="style-section">
+  <div class="style-wrap">
+    <div class="style-header">
+      <span class="style-badge">Tennis Style Quiz</span>
+      <h1>What's Your Tennis Style?</h1>
+      <p>Pick the style that fits you best — get a shareable card</p>
+    </div>
+
+    <div class="style-grid" id="style-grid"></div>
+
+    <div id="style-result-box">
+      <img id="style-result-img" class="style-result-card" src="" alt="" width="1080" height="1350" loading="eager" />
+      <div class="style-result-actions">
+        <button class="btn-style-share" onclick="shareStyleCard()">🔗 Share my style</button>
+        <button class="btn-style-dl" onclick="downloadStyleCard()">💾 Save as Image</button>
+        <button class="btn-style-change" onclick="changeStyle()">↺ Change my pick</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+const STYLES = [
+  { id: 'aggressive-baseliner', emoji: '💥', name: 'Aggressive Baseliner', like: 'Like Carlos Alcaraz', desc: 'Hit hard, attack early' },
+  { id: 'counterpuncher',       emoji: '🛡️', name: 'The Counterpuncher',   like: 'Like Novak Djokovic', desc: 'Patience wins points' },
+  { id: 'clay-king',            emoji: '🏆', name: 'The Clay King',        like: 'Like Rafael Nadal',   desc: 'Born to grind on clay' },
+  { id: 'serve-machine',        emoji: '🚀', name: 'Serve Machine',        like: 'Like John Isner',     desc: 'Aces win matches' },
+  { id: 'all-court-wizard',     emoji: '🎩', name: 'All-Court Wizard',     like: 'Like Roger Federer',  desc: 'Elegant on any surface' },
+  { id: 'speed-demon',          emoji: '⚡', name: 'The Speed Demon',      like: 'Like Andy Murray',    desc: 'Fastest legs on tour' },
+  { id: 'net-rusher',           emoji: '🎾', name: 'The Net Rusher',       like: 'Like Stefan Edberg',  desc: 'Win at the net' },
+  { id: 'tactician',            emoji: '🧠', name: 'The Tactician',        like: 'Like Andre Agassi',   desc: 'Outsmart every opponent' },
+];
+
+let currentStyle = null;
+
+function renderGrid() {
+  const grid = document.getElementById('style-grid');
+  grid.innerHTML = STYLES.map((s, i) => `
+    <div class="style-tile" id="style-tile-${i}" onclick="pickStyle(${i})">
+      <div class="tile-check">✓</div>
+      <span class="tile-emoji">${s.emoji}</span>
+      <div class="tile-name">${s.name}</div>
+      <div class="tile-like">${s.like}</div>
+    </div>
+  `).join('');
+}
+
+function pickStyle(idx) {
+  currentStyle = STYLES[idx];
+
+  document.querySelectorAll('.style-tile').forEach((t, i) => {
+    t.classList.toggle('selected', i === idx);
+    t.classList.toggle('dimmed', i !== idx);
+  });
+
+  const imgEl = document.getElementById('style-result-img');
+  imgEl.src = `/images/style-cards/${currentStyle.id}.png`;
+  imgEl.alt = `My tennis style: ${currentStyle.name}`;
+
+  const box = document.getElementById('style-result-box');
+  box.style.display = 'block';
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function changeStyle() {
+  document.querySelectorAll('.style-tile').forEach(t => t.classList.remove('selected', 'dimmed'));
+  document.getElementById('style-result-box').style.display = 'none';
+  currentStyle = null;
+}
+
+async function getStyleBlob() {
+  const res = await fetch(`/images/style-cards/${currentStyle.id}.png`);
+  return await res.blob();
+}
+
+async function shareStyleCard() {
+  if (!currentStyle) return;
+  const blob = await getStyleBlob();
+  const file = new File([blob], `my-tennis-style-${currentStyle.id}.png`, { type: 'image/png' });
+
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({
+        files: [file],
+        title: `My Tennis Style: ${currentStyle.name}`,
+        text: `My tennis style is ${currentStyle.name} — ${currentStyle.like} 🎾\nWhat's yours? super.tennis/tennis-playing-style`,
+      });
+      return;
+    } catch (e) {
+      if (e.name === 'AbortError') return;
+    }
+  }
+  // Fallback: download
+  downloadStyleCard();
+}
+
+async function downloadStyleCard() {
+  if (!currentStyle) return;
+  const blob = await getStyleBlob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `my-tennis-style-${currentStyle.id}.png`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+renderGrid();
+</script>
+
+</BaseLayout>
