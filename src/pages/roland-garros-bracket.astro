@@ -125,7 +125,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
     border-color: #dee2e6 !important;
     background: #fff !important;
-    pointer-events: none;
   }
 
   .tile-check {
@@ -179,53 +178,44 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     margin-top: 2rem;
   }
   #result-card {
-    background: #a9e040;
-    border-radius: 20px;
-    padding: 1.75rem 1.5rem 1.5rem;
-    margin-bottom: 1rem;
+    background: url('/images/rg-card-template.png') center/cover no-repeat;
+    border-radius: 16px;
+    aspect-ratio: 16/9;
+    width: 100%;
     position: relative;
     overflow: hidden;
-    min-height: 160px;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
   }
-  .rc-event {
-    font-size: 0.78rem;
-    font-weight: 800;
-    color: #1a1a1a;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 0.4rem;
+  .rc-player-overlay {
+    position: absolute;
+    top: 36%;
+    left: 11%;
+    max-width: 48%;
   }
-  .rc-pick-label {
-    font-size: 0.72rem;
+  .rc-flag-img {
+    display: block;
+    width: 44px;
+    height: 30px;
+    object-fit: cover;
+    border-radius: 3px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    margin-bottom: 0.5rem;
+  }
+  .rc-player-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(1.1rem, 3.5vw, 2rem);
     font-weight: 700;
-    color: #333;
+    color: #000;
+    line-height: 1.05;
+    margin-bottom: 0.25rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: 0.35rem;
-  }
-  .rc-player-flag { font-size: 1.6rem; display: block; margin-bottom: 0.15rem; }
-  .rc-player-name {
-    font-size: clamp(1.4rem, 5vw, 2rem);
-    font-weight: 900;
-    color: #000;
-    line-height: 1.1;
-    margin-bottom: 0.2rem;
-    text-transform: uppercase;
   }
   .rc-player-note {
-    font-size: 0.75rem;
+    font-size: clamp(0.6rem, 1.5vw, 0.8rem);
     color: #333;
-    margin-bottom: 0;
-  }
-  .rc-site {
-    position: absolute;
-    bottom: 1rem;
-    left: 1.5rem;
-    font-size: 0.65rem;
-    font-weight: 800;
-    letter-spacing: 1.5px;
-    color: #1a1a1a;
-    text-transform: uppercase;
+    font-weight: 500;
   }
 
   /* ── Action buttons ── */
@@ -290,12 +280,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     <div id="result-box">
       <div id="result-card">
-        <div class="rc-event">ROLAND GARROS 2026</div>
-        <div class="rc-pick-label">My pick to win</div>
-        <span class="rc-player-flag" id="rc-flag"></span>
-        <div class="rc-player-name" id="rc-name"></div>
-        <div class="rc-player-note" id="rc-note"></div>
-        <div class="rc-site">SUPER.TENNIS</div>
+        <div class="rc-player-overlay">
+          <img class="rc-flag-img" id="rc-flag-img" src="" alt="" width="44" height="30">
+          <div class="rc-player-name" id="rc-name"></div>
+          <div class="rc-player-note" id="rc-note"></div>
+        </div>
       </div>
       <div class="result-actions">
         <a id="btn-twitter" class="btn-twitter" href="#" target="_blank" rel="noopener">
@@ -356,7 +345,9 @@ function pickPlayer(tour, idx) {
     t.classList.toggle('dimmed', i !== idx);
   });
 
-  document.getElementById('rc-flag').textContent = player.cc.toUpperCase();
+  const flagEl = document.getElementById('rc-flag-img');
+  flagEl.src = `https://flagcdn.com/w40/${player.cc}.png`;
+  flagEl.alt = player.name;
   document.getElementById('rc-name').textContent = player.name;
   document.getElementById('rc-note').textContent = player.note;
 
