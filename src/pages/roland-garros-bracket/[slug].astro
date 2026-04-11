@@ -1,0 +1,151 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const PLAYERS = [
+  { cc: 'es', name: 'Carlos Alcaraz',     note: 'Defending Champion', tour: 'atp' },
+  { cc: 'it', name: 'Jannik Sinner',      note: 'World No. 1',        tour: 'atp' },
+  { cc: 'de', name: 'Alexander Zverev',   note: '3× finalist',        tour: 'atp' },
+  { cc: 'rs', name: 'Novak Djokovic',     note: 'Won RG 2023',        tour: 'atp' },
+  { cc: 'no', name: 'Casper Ruud',        note: '3× finalist',        tour: 'atp' },
+  { cc: 'gr', name: 'Stefanos Tsitsipas', note: 'Finalist 2021',      tour: 'atp' },
+  { cc: 'dk', name: 'Holger Rune',        note: 'Clay specialist',    tour: 'atp' },
+  { cc: 'ru', name: 'Andrey Rublev',      note: 'Top 10 clay',        tour: 'atp' },
+  { cc: 'pl', name: 'Iga Swiatek',        note: '4× champion',        tour: 'wta' },
+  { cc: 'by', name: 'Aryna Sabalenka',    note: 'World No. 2',        tour: 'wta' },
+  { cc: 'us', name: 'Coco Gauff',         note: 'US Open champion',   tour: 'wta' },
+  { cc: 'kz', name: 'Elena Rybakina',     note: 'Wimbledon champion', tour: 'wta' },
+  { cc: 'it', name: 'Jasmine Paolini',    note: 'Finalist 2024',      tour: 'wta' },
+  { cc: 'ru', name: 'Mirra Andreeva',     note: 'Rising star',        tour: 'wta' },
+  { cc: 'cz', name: 'Karolína Muchová',   note: 'Finalist 2023',      tour: 'wta' },
+  { cc: 'ru', name: 'Daria Kasatkina',    note: 'Clay specialist',    tour: 'wta' },
+];
+
+function slug(name: string) {
+  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
+export function getStaticPaths() {
+  return PLAYERS.map(p => ({
+    params: { slug: `${slug(p.name)}-${p.tour}` },
+    props: p,
+  }));
+}
+
+const { name, note, tour, cc } = Astro.props;
+const tourLabel = tour === 'atp' ? 'ATP' : 'WTA';
+const cardSlug  = `${slug(name)}-${tour}`;
+const ogImage   = `/images/rg-cards/${cardSlug}.png`;
+const pageUrl   = `https://super.tennis/roland-garros-bracket/${cardSlug}`;
+---
+
+<BaseLayout
+  title={`My Roland Garros 2026 pick: ${name} | SUPER.TENNIS`}
+  description={`I'm picking ${name} (${note}) to win Roland Garros 2026 ${tourLabel}. Who's your pick?`}
+  ogImage={ogImage}
+>
+<style is:global>
+  .rg-share-page {
+    background: var(--gray-50, #f8f9fa);
+    min-height: 60vh;
+    padding: 3rem 1rem 5rem;
+  }
+  .rg-share-wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .rg-share-wrap h1 {
+    font-family: var(--font-heading, 'Oswald', sans-serif);
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 700;
+    color: var(--gray-900, #212529);
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+  }
+  .rg-share-wrap p.sub {
+    color: var(--gray-600, #868e96);
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+  }
+  .rg-share-card {
+    width: 100%;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    margin-bottom: 1.5rem;
+    display: block;
+  }
+  .share-btns {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+  }
+  .btn-fb {
+    flex: 1;
+    background: #1877f2;
+    color: #fff;
+    border-radius: 10px;
+    padding: 0.85rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    text-align: center;
+    display: block;
+    transition: opacity 0.2s;
+  }
+  .btn-li {
+    flex: 1;
+    background: #0a66c2;
+    color: #fff;
+    border-radius: 10px;
+    padding: 0.85rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    text-align: center;
+    display: block;
+    transition: opacity 0.2s;
+  }
+  .btn-fb:hover, .btn-li:hover { opacity: 0.85; color: #fff; }
+  .btn-back {
+    display: block;
+    margin-top: 1rem;
+    color: var(--gray-600, #868e96);
+    font-size: 0.88rem;
+    text-decoration: none;
+  }
+  .btn-back:hover { color: var(--court-green, #2d8c3c); }
+</style>
+
+<div class="rg-share-page">
+  <div class="rg-share-wrap">
+    <h1>My RG 2026 pick: {name}</h1>
+    <p class="sub">Roland Garros 2026 · {tourLabel} · {note}</p>
+
+    <img
+      class="rg-share-card"
+      src={ogImage}
+      alt={`Roland Garros 2026 pick: ${name}`}
+      width="1600"
+      height="900"
+      loading="eager"
+    />
+
+    <div class="share-btns">
+      <a
+        class="btn-fb"
+        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`}
+        target="_blank"
+        rel="noopener"
+      >f&nbsp; Share on Facebook</a>
+      <a
+        class="btn-li"
+        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`}
+        target="_blank"
+        rel="noopener"
+      >in&nbsp; Share on LinkedIn</a>
+    </div>
+
+    <a class="btn-back" href="/roland-garros-bracket">← Change my pick</a>
+  </div>
+</div>
+</BaseLayout>

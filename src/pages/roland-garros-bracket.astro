@@ -247,12 +247,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     transition: color 0.2s;
   }
   .btn-change:hover { color: var(--gray-700, #495057); }
-  .share-hint {
+  .btn-share-page {
+    background: var(--court-green, #2d8c3c);
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 0.9rem;
     text-align: center;
-    font-size: 0.82rem;
-    color: #868e96;
-    margin-top: 0.25rem;
+    text-decoration: none;
+    display: block;
+    transition: background 0.2s;
   }
+  .btn-share-page:hover { background: var(--court-green-dark, #1e6b2b); color: #fff; }
 </style>
 
 <div class="rg-section">
@@ -280,10 +288,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
       </div>
       <div class="result-actions">
-        <button class="btn-download" onclick="downloadCard()">💾 Save as Image & Share</button>
+        <a class="btn-share-page" id="btn-share-page" href="#" target="_blank" rel="noopener">🔗 Share my pick</a>
+        <button class="btn-download" onclick="downloadCard()">💾 Save as Image</button>
         <button class="btn-change" onclick="changePick()">↺ Change my pick</button>
       </div>
-      <p class="share-hint">Save the card and share it on Instagram, Facebook, or Twitter</p>
     </div>
   </div>
 </div>
@@ -341,6 +349,9 @@ function pickPlayer(tour, idx) {
   flagEl.alt = player.name;
   document.getElementById('rc-name').textContent = player.name;
   document.getElementById('rc-note').textContent = player.note;
+
+  const playerSlug = player.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  document.getElementById('btn-share-page').href = `/roland-garros-bracket/${playerSlug}-${tour}`;
 
   document.getElementById('result-box').style.display = 'block';
   document.getElementById('result-box').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
