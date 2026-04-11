@@ -547,25 +547,25 @@ export const tournamentVideos: Record<string, YouTubeVideo[]> = {
     { id: 'SEFnfcfvLkw', title: 'Alcaraz vs Ruud | 2022 US Open Final', channelName: 'US Open Tennis' },
     { id: 'MEFpXBwnyQA', title: 'Medvedev vs Djokovic | 2021 US Open Final', channelName: 'US Open Tennis' },
   ],
-  'indian-wells-guide': [
+  'indian-wells-complete-guide': [
     { id: 'jVM-23iyFvg', title: 'Alcaraz, Djokovic, Draper & Bublik | Indian Wells 2026', channelName: 'Tennis TV' },
     { id: 'SOZF-mdDIBg', title: 'Alcaraz vs Dimitrov | Indian Wells 2026', channelName: 'Tennis TV' },
     { id: 'D3Ezm-6gr8Q', title: 'Alcaraz vs Medvedev For The Title | Indian Wells 2023 Final', channelName: 'Tennis TV' },
     { id: 'r_u4fVOD9Ng', title: 'Rune vs Draper For The Title | Indian Wells 2025 Final', channelName: 'Tennis TV' },
   ],
-  'atp-finals-guide': [
+  'atp-finals-complete-guide': [
     { id: '2n70tHqPWDQ', title: 'Sinner vs Alcaraz For The Title | ATP Finals 2025', channelName: 'Tennis TV' },
     { id: 'lWpvAhyK2go', title: 'EPIC Djokovic vs Sinner | ATP Finals 2023', channelName: 'Tennis TV' },
     { id: 'BO9S2WB8I64', title: 'Djokovic vs Sinner For The Title! | ATP Finals 2023 Final', channelName: 'Tennis TV' },
     { id: 'dvSN1tmNJnQ', title: 'Sinner vs Ben Shelton | ATP Finals 2025', channelName: 'Tennis TV' },
   ],
-  'miami-open-guide': [
+  'miami-open-complete-guide': [
     { id: 'X00UI4vOKLU', title: 'Sinner & Alcaraz EPIC Match | Miami 2023', channelName: 'Tennis TV' },
     { id: 'thEt28eCkJc', title: 'Alcaraz vs Ruud For The Title | Miami 2022 Final', channelName: 'Tennis TV' },
     { id: 'W_lTYpPp3Ig', title: 'Sinner vs Dimitrov For The Title | Miami 2024 Final', channelName: 'Tennis TV' },
     { id: 'NfPR1FdjtcM', title: 'Djokovic vs Mensik For The Title | Miami 2025 Final', channelName: 'Tennis TV' },
   ],
-  'monte-carlo-masters-guide': [
+  'monte-carlo-masters-complete-guide': [
     { id: 'pHf2SoYWbFE', title: 'Jannik Sinner Full On-Court Warm Up in Monte Carlo 2024', channelName: 'Functional Tennis' },
   ],
 };

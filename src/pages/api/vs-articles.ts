@@ -3,8 +3,8 @@ import { stripMarkdown } from '../../lib/fallback-data';
 import { vsPlayerSlugs, getPlayerPhotosBatch, slugToName } from '../../lib/player-photos';
 
 function getEra(slug: string): string {
-  const modern = ['alcaraz-vs-sinner', 'djokovic-vs-alcaraz', 'swiatek-vs-sabalenka', 'medvedev-vs-sinner', 'zverev-vs-alcaraz', 'gauff-vs-swiatek', 'kyrgios-vs-djokovic'];
-  const bigThree = ['djokovic-vs-nadal', 'federer-vs-nadal', 'djokovic-vs-federer', 'djokovic-vs-murray', 'nadal-vs-federer-clay', 'federer-vs-djokovic-wimbledon', 'nadal-vs-djokovic-french-open', 'big-three-comparison', 'federer-vs-murray', 'tsitsipas-vs-medvedev'];
+  const modern = ['alcaraz-vs-sinner', 'djokovic-vs-alcaraz', 'swiatek-vs-sabalenka', 'sinner-vs-medvedev', 'zverev-vs-alcaraz', 'gauff-vs-swiatek', 'kyrgios-vs-djokovic'];
+  const bigThree = ['djokovic-vs-nadal', 'federer-vs-nadal', 'djokovic-vs-federer', 'djokovic-vs-murray', 'federer-vs-djokovic-wimbledon', 'big-three-comparison', 'federer-vs-murray', 'tsitsipas-vs-medvedev'];
   const women = ['evert-vs-navratilova', 'williams-vs-williams', 'graf-vs-seles', 'sharapova-vs-williams', 'henin-vs-clijsters'];
   const classic = ['sampras-vs-agassi', 'borg-vs-mcenroe', 'connors-vs-lendl'];
 

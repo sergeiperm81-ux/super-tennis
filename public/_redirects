@@ -2,6 +2,53 @@
 # These 7 sub-page types were merged into the main player profile on 2026-04-02
 # All traffic redirected permanently to the canonical player page
 
+# --- Duplicate content cleanup 2026-04-11 (35 articles merged) ---
+
+# Records
+/records/fastest-serve-tennis                    /records/fastest-tennis-serves-ever              301
+/records/most-aces-tennis-records                /records/most-aces-tennis-history-records        301
+/records/longest-match-tennis                    /records/longest-tennis-matches-history          301
+
+# Tournaments
+/tournaments/atp-finals-guide                    /tournaments/atp-finals-complete-guide           301
+/tournaments/indian-wells-guide                  /tournaments/indian-wells-complete-guide         301
+/tournaments/miami-open-guide                    /tournaments/miami-open-complete-guide           301
+/tournaments/monte-carlo-masters-guide           /tournaments/monte-carlo-masters-complete-guide  301
+/tournaments/shanghai-masters-guide              /tournaments/shanghai-masters-complete-guide     301
+
+# VS — same rivalry, different slug
+/vs/djokovic-vs-sinner-2026-passing-torch        /vs/djokovic-vs-sinner                          301
+/vs/gauff-vs-sabalenka-us-open                   /vs/sabalenka-vs-gauff                          301
+/vs/rybakina-vs-sabalenka-power-vs-power         /vs/sabalenka-vs-rybakina                       301
+/vs/sabalenka-vs-swiatek-wta-rivalry             /vs/swiatek-vs-sabalenka                        301
+/vs/zverev-vs-alcaraz-masters-rivalry            /vs/zverev-vs-alcaraz                           301
+/vs/medvedev-vs-sinner                           /vs/sinner-vs-medvedev                          301
+/vs/alcaraz-vs-djokovic-wimbledon                /vs/djokovic-vs-alcaraz                         301
+/vs/agassi-vs-sampras-us-open                    /vs/sampras-vs-agassi                           301
+/vs/nadal-vs-djokovic-french-open                /vs/djokovic-vs-nadal                           301
+/vs/nadal-vs-federer-clay                        /vs/federer-vs-nadal                            301
+/vs/sinner-vs-alcaraz-2026-new-era               /vs/alcaraz-vs-sinner                           301
+/vs/sinner-vs-alcaraz-grand-slams                /vs/alcaraz-vs-sinner                           301
+
+# Gear
+/gear/tennis-overgrip-guide                      /gear/tennis-overgrip-comparison                301
+/gear/best-tennis-dampeners                      /gear/best-tennis-dampeners-guide               301
+/gear/tennis-bag-guide                           /gear/best-tennis-bags-guide                    301
+/gear/best-tennis-ball-machines-2026             /gear/best-tennis-ball-machines                 301
+/gear/tennis-racket-string-tension-guide         /gear/tennis-string-tension-guide               301
+/gear/tennis-sunglasses-guide                    /gear/best-tennis-sunglasses                    301
+/gear/best-tennis-balls-2026                     /gear/best-tennis-balls-comparison              301
+
+# Lifestyle
+/lifestyle/tennis-diet-nutrition                 /lifestyle/tennis-diet-nutrition-guide          301
+/lifestyle/tennis-couples-relationship           /lifestyle/tennis-couples-love-stories          301
+/lifestyle/tennis-etiquette-rules-fans           /lifestyle/tennis-etiquette-unwritten-rules     301
+/lifestyle/tennis-scoring-explained              /lifestyle/tennis-scoring-love-deuce-explained  301
+/lifestyle/tennis-vs-padel-differences           /lifestyle/tennis-vs-padel                      301
+/lifestyle/tennis-wags-partners-biggest-stars    /lifestyle/tennis-wags-power-couples            301
+/lifestyle/how-to-watch-tennis-beginners-guide   /lifestyle/how-to-watch-tennis                  301
+/lifestyle/best-tennis-video-games               /lifestyle/best-tennis-video-games-ever         301
+
 /players/:slug/stats           /players/:slug/   301
 /players/:slug/stats/          /players/:slug/   301
 /players/:slug/grand-slams     /players/:slug/   301
