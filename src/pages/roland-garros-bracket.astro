@@ -225,20 +225,25 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     flex-direction: column;
     gap: 0.65rem;
   }
-  .btn-twitter {
-    background: #000;
+  .share-row {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .btn-share {
+    flex: 1;
     border-radius: 10px;
     color: #fff;
-    cursor: pointer;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 700;
-    padding: 0.9rem;
+    padding: 0.85rem;
     text-align: center;
     text-decoration: none;
     display: block;
-    transition: background 0.2s;
+    transition: opacity 0.2s;
   }
-  .btn-twitter:hover { background: #222; }
+  .btn-share:hover { opacity: 0.85; color: #fff; }
+  .btn-fb { background: #1877f2; }
+  .btn-li { background: #0a66c2; }
   .btn-download {
     background: var(--court-green, #2d8c3c);
     border-radius: 10px;
@@ -295,10 +300,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </div>
       <div class="result-actions">
         <button class="btn-download" onclick="downloadCard()">💾 Save as Image</button>
-        <a class="btn-twitter" id="btn-twitter" href="#" target="_blank" rel="noopener">𝕏 Share on Twitter / X</a>
+        <div class="share-row">
+          <a class="btn-share btn-fb" id="btn-fb" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fsuper.tennis%2Froland-garros-bracket" target="_blank" rel="noopener">f Share</a>
+          <a class="btn-share btn-li" id="btn-li" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fsuper.tennis%2Froland-garros-bracket" target="_blank" rel="noopener">in Share</a>
+        </div>
         <button class="btn-change" onclick="changePick()">↺ Change my pick</button>
       </div>
-      <p class="share-hint">📎 Save the card above and attach it to your tweet</p>
+      <p class="share-hint">💡 Save the card and post it on Instagram or attach it to any post</p>
     </div>
   </div>
 </div>
@@ -356,10 +364,6 @@ function pickPlayer(tour, idx) {
   flagEl.alt = player.name;
   document.getElementById('rc-name').textContent = player.name;
   document.getElementById('rc-note').textContent = player.note;
-
-  const tourLabel = tour === 'atp' ? 'ATP' : 'WTA';
-  const tweet = `My Roland Garros 2026 ${tourLabel} pick: ${player.name} 🏆\n\nWho's your pick? 👇\nsuper.tennis/roland-garros-bracket`;
-  document.getElementById('btn-twitter').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}`;
 
   document.getElementById('result-box').style.display = 'block';
   document.getElementById('result-box').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
