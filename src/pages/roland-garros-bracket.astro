@@ -7,133 +7,176 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   description="Pick who you think will win Roland Garros 2026. ATP & WTA top contenders — one tap, shareable card. Make your prediction!"
 >
 
-<style>
+<style is:global>
+  .rg-section {
+    background: var(--gray-50, #f8f9fa);
+    padding: 3rem 1rem 5rem;
+  }
   .rg-wrap {
-    max-width: 680px;
+    max-width: 720px;
     margin: 0 auto;
-    padding: 2rem 1rem 4rem;
   }
 
+  /* ── Header ── */
   .rg-header {
     text-align: center;
-    margin-bottom: 1.75rem;
+    margin-bottom: 2rem;
   }
   .clay-badge {
-    background: rgba(180,80,30,0.2);
-    border: 1px solid rgba(180,80,30,0.4);
-    border-radius: 20px;
-    color: #e8845a;
+    background: #c85a20;
+    border-radius: 4px;
+    color: #fff;
     display: inline-block;
+    font-family: var(--font-heading, 'Oswald', sans-serif);
     font-size: 0.72rem;
     font-weight: 700;
-    letter-spacing: 1px;
-    margin-bottom: 0.75rem;
+    letter-spacing: 1.5px;
+    margin-bottom: 1rem;
     padding: 0.3rem 0.9rem;
     text-transform: uppercase;
   }
   .rg-header h1 {
-    font-size: clamp(1.5rem, 4vw, 2.1rem);
-    font-weight: 800;
-    color: var(--text-primary, #fff);
+    font-family: var(--font-heading, 'Oswald', sans-serif);
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    color: var(--gray-900, #212529);
     margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
   }
   .rg-header p {
-    color: var(--text-secondary, #aaa);
+    color: var(--gray-600, #868e96);
     font-size: 0.95rem;
   }
 
-  /* Tabs */
+  /* ── Tabs ── */
   .tour-tabs {
     display: flex;
-    background: rgba(255,255,255,0.05);
-    border-radius: 12px;
-    margin-bottom: 1.75rem;
+    background: var(--gray-200, #e9ecef);
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
     padding: 4px;
     gap: 4px;
   }
   .tour-tab {
     background: none;
     border: none;
-    border-radius: 9px;
-    color: rgba(255,255,255,0.45);
+    border-radius: 7px;
+    color: var(--gray-600, #868e96);
     cursor: pointer;
     flex: 1;
-    font-size: 0.9rem;
-    font-weight: 700;
+    font-family: var(--font-heading, 'Oswald', sans-serif);
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
     padding: 0.65rem;
-    transition: all 0.2s;
+    transition: all 0.18s;
+    text-transform: uppercase;
   }
   .tour-tab.active {
-    background: rgba(255,255,255,0.1);
-    color: #e8c547;
+    background: #fff;
+    color: var(--court-green, #2d8c3c);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    font-weight: 700;
+  }
+  .tour-tab:hover:not(.active) {
+    color: var(--gray-800, #343a40);
   }
 
-  /* Player grid */
+  /* ── Player grid ── */
   .players-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
   }
-  @media (min-width: 480px) {
+  @media (min-width: 500px) {
     .players-grid { grid-template-columns: repeat(4, 1fr); }
   }
 
   .player-tile {
-    background: rgba(255,255,255,0.04);
-    border: 2px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
+    background: #fff;
+    border: 2px solid #dee2e6;
+    border-radius: 14px;
     cursor: pointer;
-    padding: 1rem 0.5rem;
+    padding: 1.25rem 0.75rem 1.1rem;
     text-align: center;
-    transition: all 0.18s;
+    transition: all 0.18s ease;
     position: relative;
-    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    user-select: none;
+    -webkit-user-select: none;
   }
   .player-tile:hover {
-    background: rgba(232,197,71,0.08);
-    border-color: rgba(232,197,71,0.4);
-    transform: translateY(-2px);
+    border-color: #2d8c3c;
+    box-shadow: 0 6px 20px rgba(45,140,60,0.18);
+    transform: translateY(-3px);
+    background: #f6fff7;
   }
   .player-tile.selected {
-    background: rgba(232,197,71,0.15);
-    border-color: #e8c547;
+    border-color: #2d8c3c;
+    border-width: 2px;
+    background: #eaf7ec;
+    box-shadow: 0 0 0 2px #2d8c3c, 0 6px 20px rgba(45,140,60,0.18);
+    transform: translateY(-2px);
   }
   .player-tile.dimmed {
-    opacity: 0.3;
-    transform: none;
+    opacity: 0.28;
+    transform: none !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+    border-color: #dee2e6 !important;
+    background: #fff !important;
+    pointer-events: none;
   }
-  .tile-flag {
-    font-size: 1.6rem;
-    display: block;
-    margin-bottom: 0.3rem;
-  }
-  .tile-name {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--text-primary, #fff);
-    line-height: 1.2;
-    margin-bottom: 0.3rem;
-  }
-  .tile-label {
-    font-size: 0.65rem;
-    color: rgba(255,255,255,0.4);
-    line-height: 1.3;
-  }
-  .player-tile.selected .tile-label { color: #e8c547; }
+
   .tile-check {
     position: absolute;
-    top: 6px;
+    top: 8px;
     right: 8px;
-    color: #e8c547;
-    font-size: 0.9rem;
+    background: #2d8c3c;
+    color: #fff;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    font-weight: 900;
     display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
   }
-  .player-tile.selected .tile-check { display: block; }
+  .player-tile.selected .tile-check { display: flex; }
 
-  /* Result card */
+  .tile-flag-img {
+    display: block;
+    margin: 0 auto 0.65rem;
+    border-radius: 3px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    width: 40px;
+    height: 27px;
+    object-fit: cover;
+  }
+  .tile-name {
+    font-family: 'Oswald', var(--font-heading, sans-serif);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #212529;
+    line-height: 1.2;
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .tile-label {
+    font-size: 0.63rem;
+    color: #868e96;
+    line-height: 1.3;
+  }
+  .player-tile.selected .tile-name { color: #1e6b2b; }
+  .player-tile.selected .tile-label { color: #2d8c3c; }
+
+  /* ── Result card ── */
   #result-box {
     display: none;
-    margin-top: 1.75rem;
+    margin-top: 2rem;
   }
   #result-card {
     background: #a9e040;
@@ -185,7 +228,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     text-transform: uppercase;
   }
 
-  /* Action buttons */
+  /* ── Action buttons ── */
   .result-actions {
     display: flex;
     flex-direction: column;
@@ -193,8 +236,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   }
   .btn-twitter {
     background: #000;
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 12px;
+    border-radius: 10px;
     color: #fff;
     cursor: pointer;
     font-size: 0.95rem;
@@ -205,61 +247,63 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     display: block;
     transition: background 0.2s;
   }
-  .btn-twitter:hover { background: #111; }
+  .btn-twitter:hover { background: #222; }
   .btn-download {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 12px;
-    color: rgba(255,255,255,0.8);
+    background: var(--court-green, #2d8c3c);
+    border-radius: 10px;
+    color: #fff;
     cursor: pointer;
     font-size: 0.9rem;
-    font-weight: 600;
+    font-weight: 700;
     padding: 0.85rem;
     transition: background 0.2s;
+    border: none;
   }
-  .btn-download:hover { background: rgba(255,255,255,0.1); }
+  .btn-download:hover { background: var(--court-green-dark, #1e6b2b); }
   .btn-change {
     background: transparent;
     border: none;
-    color: rgba(255,255,255,0.35);
+    color: var(--gray-500, #adb5bd);
     cursor: pointer;
     font-size: 0.82rem;
     padding: 0.5rem;
     transition: color 0.2s;
   }
-  .btn-change:hover { color: rgba(255,255,255,0.7); }
+  .btn-change:hover { color: var(--gray-700, #495057); }
 </style>
 
-<div class="rg-wrap">
-  <div class="rg-header">
-    <span class="clay-badge">🏺 Roland Garros 2026 · May 25 – June 8</span>
-    <h1>Who Will Win?</h1>
-    <p>Pick your champion — one tap, shareable card</p>
-  </div>
-
-  <div class="tour-tabs">
-    <button class="tour-tab active" onclick="switchTour('atp', this)">🎾 Men's ATP</button>
-    <button class="tour-tab" onclick="switchTour('wta', this)">🎾 Women's WTA</button>
-  </div>
-
-  <div id="grid-atp" class="players-grid"></div>
-  <div id="grid-wta" class="players-grid" style="display:none"></div>
-
-  <div id="result-box">
-    <div id="result-card">
-      <div class="rc-event">ROLAND GARROS 2026</div>
-      <div class="rc-pick-label">My pick to win</div>
-      <span class="rc-player-flag" id="rc-flag"></span>
-      <div class="rc-player-name" id="rc-name"></div>
-      <div class="rc-player-note" id="rc-note"></div>
-      <div class="rc-site">SUPER.TENNIS</div>
+<div class="rg-section">
+  <div class="rg-wrap">
+    <div class="rg-header">
+      <span class="clay-badge">Roland Garros 2026 · May 25 – June 8</span>
+      <h1>Who Will Win?</h1>
+      <p>Pick your champion — one tap, shareable card</p>
     </div>
-    <div class="result-actions">
-      <a id="btn-twitter" class="btn-twitter" href="#" target="_blank" rel="noopener">
-        𝕏 Share on Twitter / X
-      </a>
-      <button class="btn-download" onclick="downloadCard()">💾 Save as Image</button>
-      <button class="btn-change" onclick="changePick()">↺ Change my pick</button>
+
+    <div class="tour-tabs">
+      <button class="tour-tab active" onclick="switchTour('atp', this)">Men's ATP</button>
+      <button class="tour-tab" onclick="switchTour('wta', this)">Women's WTA</button>
+    </div>
+
+    <div id="grid-atp" class="players-grid"></div>
+    <div id="grid-wta" class="players-grid" style="display:none"></div>
+
+    <div id="result-box">
+      <div id="result-card">
+        <div class="rc-event">ROLAND GARROS 2026</div>
+        <div class="rc-pick-label">My pick to win</div>
+        <span class="rc-player-flag" id="rc-flag"></span>
+        <div class="rc-player-name" id="rc-name"></div>
+        <div class="rc-player-note" id="rc-note"></div>
+        <div class="rc-site">SUPER.TENNIS</div>
+      </div>
+      <div class="result-actions">
+        <a id="btn-twitter" class="btn-twitter" href="#" target="_blank" rel="noopener">
+          𝕏 Share on Twitter / X
+        </a>
+        <button class="btn-download" onclick="downloadCard()">💾 Save as Image</button>
+        <button class="btn-change" onclick="changePick()">↺ Change my pick</button>
+      </div>
     </div>
   </div>
 </div>
@@ -267,24 +311,24 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 <script is:inline>
 const PLAYERS = {
   atp: [
-    { flag: '🇪🇸', name: 'Carlos Alcaraz',    note: 'Defending Champion' },
-    { flag: '🇮🇹', name: 'Jannik Sinner',     note: 'World No. 1' },
-    { flag: '🇩🇪', name: 'Alexander Zverev',  note: '3× finalist' },
-    { flag: '🇷🇸', name: 'Novak Djokovic',    note: 'Won RG 2023' },
-    { flag: '🇳🇴', name: 'Casper Ruud',       note: '3× finalist' },
-    { flag: '🇬🇷', name: 'Stefanos Tsitsipas',note: 'Finalist 2021' },
-    { flag: '🇩🇰', name: 'Holger Rune',       note: 'Clay specialist' },
-    { flag: '🇷🇺', name: 'Andrey Rublev',     note: 'Top 10 clay' },
+    { cc: 'es', name: 'Carlos Alcaraz',    note: 'Defending Champion' },
+    { cc: 'it', name: 'Jannik Sinner',     note: 'World No. 1' },
+    { cc: 'de', name: 'Alexander Zverev',  note: '3× finalist' },
+    { cc: 'rs', name: 'Novak Djokovic',    note: 'Won RG 2023' },
+    { cc: 'no', name: 'Casper Ruud',       note: '3× finalist' },
+    { cc: 'gr', name: 'Stefanos Tsitsipas',note: 'Finalist 2021' },
+    { cc: 'dk', name: 'Holger Rune',       note: 'Clay specialist' },
+    { cc: 'ru', name: 'Andrey Rublev',     note: 'Top 10 clay' },
   ],
   wta: [
-    { flag: '🇵🇱', name: 'Iga Swiatek',       note: '4× champion' },
-    { flag: '🇧🇾', name: 'Aryna Sabalenka',   note: 'World No. 2' },
-    { flag: '🇺🇸', name: 'Coco Gauff',        note: 'US Open champion' },
-    { flag: '🇰🇿', name: 'Elena Rybakina',    note: 'Wimbledon champion' },
-    { flag: '🇮🇹', name: 'Jasmine Paolini',   note: 'Finalist 2024' },
-    { flag: '🇷🇺', name: 'Mirra Andreeva',    note: 'Rising star' },
-    { flag: '🇨🇿', name: 'Karolína Muchová',  note: 'Finalist 2023' },
-    { flag: '🇷🇺', name: 'Daria Kasatkina',   note: 'Clay specialist' },
+    { cc: 'pl', name: 'Iga Swiatek',       note: '4× champion' },
+    { cc: 'by', name: 'Aryna Sabalenka',   note: 'World No. 2' },
+    { cc: 'us', name: 'Coco Gauff',        note: 'US Open champion' },
+    { cc: 'kz', name: 'Elena Rybakina',    note: 'Wimbledon champion' },
+    { cc: 'it', name: 'Jasmine Paolini',   note: 'Finalist 2024' },
+    { cc: 'ru', name: 'Mirra Andreeva',    note: 'Rising star' },
+    { cc: 'cz', name: 'Karolína Muchová',  note: 'Finalist 2023' },
+    { cc: 'ru', name: 'Daria Kasatkina',   note: 'Clay specialist' },
   ],
 };
 
@@ -295,8 +339,8 @@ function renderGrid(tour) {
   const grid = document.getElementById(`grid-${tour}`);
   grid.innerHTML = PLAYERS[tour].map((p, i) => `
     <div class="player-tile" id="tile-${tour}-${i}" onclick="pickPlayer('${tour}', ${i})">
-      <span class="tile-check">✓</span>
-      <span class="tile-flag">${p.flag}</span>
+      <div class="tile-check">✓</div>
+      <img class="tile-flag-img" src="https://flagcdn.com/w40/${p.cc}.png" width="36" height="24" alt="${p.name}" loading="lazy">
       <div class="tile-name">${p.name}</div>
       <div class="tile-label">${p.note}</div>
     </div>
@@ -307,23 +351,19 @@ function pickPlayer(tour, idx) {
   const player = PLAYERS[tour][idx];
   currentPick = { tour, idx, player };
 
-  // Update tile states
   document.querySelectorAll(`#grid-${tour} .player-tile`).forEach((t, i) => {
     t.classList.toggle('selected', i === idx);
     t.classList.toggle('dimmed', i !== idx);
   });
 
-  // Fill result card
-  document.getElementById('rc-flag').textContent = player.flag;
+  document.getElementById('rc-flag').textContent = player.cc.toUpperCase();
   document.getElementById('rc-name').textContent = player.name;
   document.getElementById('rc-note').textContent = player.note;
 
-  // Twitter link
   const tourLabel = tour === 'atp' ? 'ATP' : 'WTA';
-  const tweet = `My Roland Garros 2026 ${tourLabel} pick: ${player.flag} ${player.name} 🏆\n\nWho's your pick? 👇\nsuper.tennis/roland-garros-bracket`;
+  const tweet = `My Roland Garros 2026 ${tourLabel} pick: ${player.name} 🏆\n\nWho's your pick? 👇\nsuper.tennis/roland-garros-bracket`;
   document.getElementById('btn-twitter').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}`;
 
-  // Show result
   document.getElementById('result-box').style.display = 'block';
   document.getElementById('result-box').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
@@ -358,47 +398,45 @@ function downloadCard() {
 
   const img = new Image();
   img.onload = () => {
-    // 1. Draw Canva template (lime green bg + tennis player photo + ROLAND GARROS + SUPER.TENNIS)
     ctx.drawImage(img, 0, 0, 1600, 900);
 
-    // 2. Flag emoji — left column, below "MY PICK TO WIN" label
-    ctx.font = '72px serif';
-    ctx.textBaseline = 'top';
-    ctx.fillText(player.flag, 158, 320);
+    // Flag image overlay
+    const flagImg = new Image();
+    flagImg.onload = () => {
+      ctx.drawImage(flagImg, 158, 320, 72, 48);
 
-    // 3. Player name — bold, black, uppercase
-    ctx.textBaseline = 'top';
-    ctx.fillStyle = '#000000';
-    const nameUpper = player.name.toUpperCase();
-    // Fit text within ~620px (left content area)
-    let fontSize = 100;
-    do {
-      ctx.font = `900 ${fontSize}px Arial, sans-serif`;
-      fontSize -= 4;
-    } while (ctx.measureText(nameUpper).width > 620 && fontSize > 40);
-    ctx.fillText(nameUpper, 158, 415);
+      // Player name
+      ctx.textBaseline = 'top';
+      ctx.fillStyle = '#000000';
+      const nameUpper = player.name.toUpperCase();
+      let fontSize = 100;
+      do {
+        ctx.font = `900 ${fontSize}px Arial, sans-serif`;
+        fontSize -= 4;
+      } while (ctx.measureText(nameUpper).width > 620 && fontSize > 40);
+      ctx.fillText(nameUpper, 158, 390);
 
-    // 4. Note / subtitle
-    ctx.font = '500 32px Arial, sans-serif';
-    ctx.fillStyle = '#333333';
-    ctx.fillText(player.note, 160, 415 + fontSize + 12);
+      // Note
+      ctx.font = '500 32px Arial, sans-serif';
+      ctx.fillStyle = '#333333';
+      ctx.fillText(player.note, 160, 390 + fontSize + 14);
 
-    // 5. Tour badge (ATP / WTA)
-    const tourLabel = tour === 'atp' ? 'ATP' : 'WTA';
-    ctx.font = 'bold 26px Arial, sans-serif';
-    ctx.fillStyle = '#555555';
-    ctx.fillText(tourLabel, 160, 415 + fontSize + 56);
+      // Tour badge
+      const tourLabel = tour === 'atp' ? 'ATP' : 'WTA';
+      ctx.font = 'bold 26px Arial, sans-serif';
+      ctx.fillStyle = '#555555';
+      ctx.fillText(tourLabel, 160, 390 + fontSize + 58);
 
-    // 6. Download
-    const link = document.createElement('a');
-    link.download = `rg2026-${player.name.replace(/\s+/g, '-').toLowerCase()}.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+      const link = document.createElement('a');
+      link.download = `rg2026-${player.name.replace(/\s+/g, '-').toLowerCase()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+    flagImg.src = `https://flagcdn.com/w40/${player.cc}.png`;
   };
   img.src = '/images/rg-card-template.png';
 }
 
-// Init
 renderGrid('atp');
 renderGrid('wta');
 </script>
