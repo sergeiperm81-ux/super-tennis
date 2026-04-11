@@ -1691,7 +1691,7 @@ export default {
 
     if (url.pathname === '/api/news') {
       try {
-        const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 1000);
+        const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 2000);
         const dateParam = url.searchParams.get('date'); // YYYY-MM-DD
         const params: Record<string, string> = {
           'is_active': 'eq.true',

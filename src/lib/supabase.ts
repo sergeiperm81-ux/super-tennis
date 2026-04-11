@@ -394,11 +394,11 @@ export async function getTopPlayerSlugs(limit = 200): Promise<string[]> {
       ensureRankingsCache('atp'),
       ensureRankingsCache('wta'),
     ]);
-    for (const r of atpRankings.data.slice(0, 100)) {
+    for (const r of atpRankings.data.slice(0, 200)) {
       const slug = (r as any).players?.slug;
       if (slug) slugs.push(slug);
     }
-    for (const r of wtaRankings.data.slice(0, 100)) {
+    for (const r of wtaRankings.data.slice(0, 200)) {
       const slug = (r as any).players?.slug;
       if (slug) slugs.push(slug);
     }

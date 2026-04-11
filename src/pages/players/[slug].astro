@@ -7,11 +7,11 @@ import { marked } from 'marked';
 
 // SSG: generate paths for all top players from Supabase + fallback
 export async function getStaticPaths() {
-  // Try to get slugs from Supabase (top 100 ATP + top 100 WTA by career titles)
+  // Try to get slugs from Supabase (top 500 ATP + top 500 WTA by career titles)
   let dbSlugs: string[] = [];
   try {
     const { getTopPlayerSlugs: getSlugs } = await import('../../lib/supabase');
-    dbSlugs = await getSlugs(100);
+    dbSlugs = await getSlugs(500);
   } catch (e) {
     console.warn('getStaticPaths: Supabase unavailable, using fallback slugs');
   }
@@ -1428,6 +1428,9 @@ const profileArticleHtml = articles['profile'].html;
   .data-source a {
     color: #9ca3af;
     text-decoration: underline;
+    display: inline-block;
+    padding: 6px 2px;
+    margin: -6px -2px;
   }
 
   @media (max-width: 600px) {
