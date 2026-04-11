@@ -264,12 +264,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .share-hint {
     text-align: center;
     font-size: 0.82rem;
-    color: #2d8c3c;
-    font-weight: 600;
+    color: #868e96;
     margin-top: 0.25rem;
-    animation: fadeIn 0.3s ease;
   }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 </style>
 
 <div class="rg-section">
@@ -297,15 +294,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
       </div>
       <div class="result-actions">
-        <button class="btn-twitter" onclick="shareTwitter()">
-          𝕏 Share on Twitter / X
-        </button>
         <button class="btn-download" onclick="downloadCard()">💾 Save as Image</button>
+        <a class="btn-twitter" id="btn-twitter" href="#" target="_blank" rel="noopener">𝕏 Share on Twitter / X</a>
         <button class="btn-change" onclick="changePick()">↺ Change my pick</button>
       </div>
-      <p class="share-hint" id="share-hint" style="display:none">
-        📎 Image saved! Attach it to your tweet →
-      </p>
+      <p class="share-hint">📎 Save the card above and attach it to your tweet</p>
     </div>
   </div>
 </div>
@@ -364,6 +357,10 @@ function pickPlayer(tour, idx) {
   document.getElementById('rc-name').textContent = player.name;
   document.getElementById('rc-note').textContent = player.note;
 
+  const tourLabel = tour === 'atp' ? 'ATP' : 'WTA';
+  const tweet = `My Roland Garros 2026 ${tourLabel} pick: ${player.name} 🏆\n\nWho's your pick? 👇\nsuper.tennis/roland-garros-bracket`;
+  document.getElementById('btn-twitter').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}`;
+
   document.getElementById('result-box').style.display = 'block';
   document.getElementById('result-box').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
@@ -378,18 +375,6 @@ function switchTour(tour, el) {
   document.getElementById('result-box').style.display = 'none';
 }
 
-function shareTwitter() {
-  if (!currentPick) return;
-  const { player, tour } = currentPick;
-  const tourLabel = tour === 'atp' ? 'ATP' : 'WTA';
-  const tweet = `My Roland Garros 2026 ${tourLabel} pick: ${player.name} 🏆\n\nWho's your pick? 👇\nsuper.tennis/roland-garros-bracket`;
-  // Download image first, then open Twitter
-  downloadCard(true);
-  setTimeout(() => {
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}`, '_blank');
-  }, 800);
-}
-
 function changePick() {
   if (!currentPick) return;
   document.querySelectorAll(`#grid-${currentPick.tour} .player-tile`).forEach(t => {
@@ -399,7 +384,7 @@ function changePick() {
   currentPick = null;
 }
 
-function downloadCard(forSharing = false) {
+function downloadCard() {
   if (!currentPick) return;
   const { player, tour } = currentPick;
 
@@ -447,10 +432,6 @@ function downloadCard(forSharing = false) {
         link.download = `rg2026-${player.name.replace(/\s+/g, '-').toLowerCase()}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
-        if (forSharing) {
-          const hint = document.getElementById('share-hint');
-          if (hint) hint.style.display = 'block';
-        }
       } catch(e) {
         alert('Не удалось сохранить: ' + e.message);
       }
