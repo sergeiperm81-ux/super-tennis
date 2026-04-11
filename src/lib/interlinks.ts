@@ -66,15 +66,20 @@ async function getArticleLinks(): Promise<EntityLink[]> {
 
   // Static tournament links
   const staticLinks: EntityLink[] = [
+    // Grand Slams
     { name: 'Australian Open', url: '/tournaments/australian-open-guide/', pattern: /\bAustralian Open\b/g },
     { name: 'Roland Garros', url: '/tournaments/roland-garros-french-open-guide/', pattern: /\bRoland Garros\b/g },
     { name: 'French Open', url: '/tournaments/roland-garros-french-open-guide/', pattern: /\bFrench Open\b/g },
     { name: 'Wimbledon', url: '/tournaments/wimbledon-guide/', pattern: /\bWimbledon\b/g },
     { name: 'US Open', url: '/tournaments/us-open-guide/', pattern: /\bUS Open\b/g },
+    // Masters & year-end
     { name: 'ATP Finals', url: '/tournaments/atp-finals-guide/', pattern: /\bATP Finals\b/g },
     { name: 'WTA Finals', url: '/tournaments/wta-finals-guide/', pattern: /\bWTA Finals\b/g },
     { name: 'Indian Wells', url: '/tournaments/indian-wells-guide/', pattern: /\bIndian Wells\b/g },
-    { name: 'Monte Carlo', url: '/tournaments/monte-carlo-masters-guide/', pattern: /\bMonte Carlo\b/g },
+    { name: 'Miami Open', url: '/tournaments/miami-open-guide/', pattern: /\bMiami Open\b/g },
+    { name: 'Monte Carlo', url: '/tournaments/monte-carlo-masters-guide/', pattern: /\bMonte[- ]Carlo\b/g },
+    { name: 'Shanghai Masters', url: '/tournaments/shanghai-masters-guide/', pattern: /\bShanghai (?:Masters|Open)\b/g },
+    // Team events
     { name: 'Davis Cup', url: '/tournaments/davis-cup-guide/', pattern: /\bDavis Cup\b/g },
     { name: 'Laver Cup', url: '/tournaments/laver-cup-guide/', pattern: /\bLaver Cup\b/g },
     // Section hub links
@@ -83,20 +88,49 @@ async function getArticleLinks(): Promise<EntityLink[]> {
     { name: 'tennis gear', url: '/gear/', pattern: /\btennis gear\b/gi },
     { name: 'tennis racket', url: '/gear/best-tennis-rackets-2026/', pattern: /\btennis racket\b/gi },
     { name: 'tennis rackets', url: '/gear/best-tennis-rackets-2026/', pattern: /\btennis rackets\b/gi },
-    { name: 'tennis shoes', url: '/gear/best-tennis-court-shoes-2026/', pattern: /\btennis shoes\b/gi },
+    { name: 'tennis shoes', url: '/gear/best-tennis-shoes-2026/', pattern: /\btennis shoes\b/gi },
+    { name: 'tennis strings', url: '/gear/best-tennis-strings-guide/', pattern: /\btennis strings?\b/gi },
+    { name: 'tennis bags', url: '/gear/best-tennis-bags-guide/', pattern: /\btennis bags?\b/gi },
+    { name: 'tennis balls', url: '/gear/best-tennis-balls-2026/', pattern: /\btennis balls?\b/gi },
+    // Records section cross-links
+    { name: 'Grand Slam records', url: '/records/most-grand-slam-titles/', pattern: /\bGrand Slam records?\b/gi },
+    { name: 'most Grand Slam titles', url: '/records/most-grand-slam-titles/', pattern: /\bmost Grand Slam titles\b/gi },
+    { name: 'fastest serve', url: '/records/fastest-serve-tennis/', pattern: /\bfastest serve\b/gi },
+    { name: 'world No. 1', url: '/records/most-weeks-number-one/', pattern: /\bworld No\.?\s*1\b/gi },
+    { name: 'GOAT debate', url: '/records/tennis-goat-debate/', pattern: /\bGOAT debate\b/gi },
+    { name: 'career titles', url: '/records/most-career-titles-tennis/', pattern: /\bmost career titles\b/gi },
+    // Lifestyle hub
+    { name: 'tennis fitness', url: '/lifestyle/', pattern: /\btennis fitness\b/gi },
   ];
 
   // Top H2H rivalry links from vs/ section
   const vsLinks: EntityLink[] = [
+    // Big Three rivalries
     { name: 'Federer vs Nadal', url: '/vs/federer-vs-nadal/', pattern: /\bFederer vs\.? Nadal\b/gi },
     { name: 'Djokovic vs Nadal', url: '/vs/djokovic-vs-nadal/', pattern: /\bDjokovic vs\.? Nadal\b/gi },
     { name: 'Djokovic vs Federer', url: '/vs/djokovic-vs-federer/', pattern: /\bDjokovic vs\.? Federer\b/gi },
+    // Next gen
     { name: 'Sinner vs Alcaraz', url: '/vs/sinner-vs-alcaraz/', pattern: /\bSinner vs\.? Alcaraz\b/gi },
+    { name: 'Alcaraz vs Sinner', url: '/vs/sinner-vs-alcaraz/', pattern: /\bAlcaraz vs\.? Sinner\b/gi },
     { name: 'Djokovic vs Alcaraz', url: '/vs/djokovic-vs-alcaraz/', pattern: /\bDjokovic vs\.? Alcaraz\b/gi },
+    { name: 'Djokovic vs Sinner', url: '/vs/djokovic-vs-sinner/', pattern: /\bDjokovic vs\.? Sinner\b/gi },
+    { name: 'Sinner vs Medvedev', url: '/vs/sinner-vs-medvedev/', pattern: /\bSinner vs\.? Medvedev\b/gi },
+    { name: 'Medvedev vs Sinner', url: '/vs/sinner-vs-medvedev/', pattern: /\bMedvedev vs\.? Sinner\b/gi },
+    { name: 'Zverev vs Alcaraz', url: '/vs/zverev-vs-alcaraz/', pattern: /\bZverev vs\.? Alcaraz\b/gi },
+    // WTA rivalries
     { name: 'Swiatek vs Sabalenka', url: '/vs/swiatek-vs-sabalenka/', pattern: /\bSwi[aą]tek vs\.? Sabalenka\b/gi },
+    { name: 'Sabalenka vs Swiatek', url: '/vs/swiatek-vs-sabalenka/', pattern: /\bSabalenka vs\.? Swi[aą]tek\b/gi },
+    { name: 'Gauff vs Swiatek', url: '/vs/gauff-vs-swiatek/', pattern: /\bGauff vs\.? Swi[aą]tek\b/gi },
+    { name: 'Sabalenka vs Rybakina', url: '/vs/sabalenka-vs-rybakina/', pattern: /\bSabalenka vs\.? Rybakina\b/gi },
+    { name: 'Rybakina vs Sabalenka', url: '/vs/sabalenka-vs-rybakina/', pattern: /\bRybakina vs\.? Sabalenka\b/gi },
+    // Legends
     { name: 'Sampras vs Agassi', url: '/vs/sampras-vs-agassi/', pattern: /\bSampras vs\.? Agassi\b/gi },
+    { name: 'Agassi vs Sampras', url: '/vs/sampras-vs-agassi/', pattern: /\bAgassi vs\.? Sampras\b/gi },
     { name: 'Evert vs Navratilova', url: '/vs/evert-vs-navratilova/', pattern: /\bEvert vs\.? Navratilova\b/gi },
     { name: 'Borg vs McEnroe', url: '/vs/borg-vs-mcenroe/', pattern: /\bBorg vs\.? McEnroe\b/gi },
+    { name: 'Graf vs Navratilova', url: '/vs/graf-vs-navratilova/', pattern: /\bGraf vs\.? Navratilova\b/gi },
+    { name: 'Nadal vs Federer', url: '/vs/federer-vs-nadal/', pattern: /\bNadal vs\.? Federer\b/gi },
+    { name: 'Williams vs Williams', url: '/vs/williams-vs-williams/', pattern: /\bWilliams vs\.? Williams\b/gi },
   ];
 
   _articleLinks = [...staticLinks, ...vsLinks];
@@ -116,12 +150,12 @@ function escapeRegex(str: string): string {
  *
  * @param html - The rendered HTML string
  * @param currentUrl - The current page URL to avoid self-links
- * @param maxLinks - Maximum number of links to add (default: 15)
+ * @param maxLinks - Maximum number of links to add (default: 20)
  */
 export async function addInterlinks(
   html: string,
   currentUrl: string = '',
-  maxLinks: number = 15
+  maxLinks: number = 20
 ): Promise<string> {
   const [playerLinks, articleLinks] = await Promise.all([
     getPlayerLinks(),

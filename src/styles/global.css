@@ -90,6 +90,9 @@ h1, h2, h3, h4, h5, h6 {
 .breadcrumbs a {
     color: var(--gray-600);
     transition: color 0.2s;
+    display: inline-block;
+    padding: 6px 2px;
+    margin: -6px -2px;
 }
 .breadcrumbs a:hover { color: var(--court-green); }
 .breadcrumbs .sep { margin: 0 8px; }
