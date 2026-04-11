@@ -31,7 +31,9 @@ jobs:
         run: |
           mkdir -p backgrounds
           gh release download backgrounds-v1 --pattern '*.tar.gz' --dir /tmp --clobber
-          tar xzf /tmp/backgrounds-clean.tar.gz -C backgrounds/ 2>/dev/null || tar xzf /tmp/backgrounds.tar.gz -C backgrounds/
+          for f in /tmp/backgrounds-p1.tar.gz /tmp/backgrounds-p2.tar.gz /tmp/backgrounds-clean.tar.gz /tmp/backgrounds.tar.gz; do
+            [ -f "$f" ] && tar xzf "$f" -C backgrounds/ 2>/dev/null || true
+          done
           echo "Backgrounds: $(ls backgrounds/*.mp4 | wc -l) files"
         env:
           GH_TOKEN: ${{ github.token }}
