@@ -5,6 +5,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 <BaseLayout
   title="Roland Garros 2026 Winner Prediction — Who Will Win?"
   description="Pick who you think will win Roland Garros 2026. ATP & WTA top contenders — one tap, shareable card. Make your prediction!"
+  ogImage="/images/rg-card-template.png"
 >
 
 <style is:global>
@@ -388,15 +389,23 @@ function downloadCard() {
   const ctx = canvas.getContext('2d');
 
   const img = new Image();
+  img.crossOrigin = 'anonymous';
   img.onload = () => {
     ctx.drawImage(img, 0, 0, 1600, 900);
 
     // Flag image overlay
     const flagImg = new Image();
-    flagImg.onload = () => {
-      ctx.drawImage(flagImg, 158, 320, 72, 48);
+    flagImg.crossOrigin = 'anonymous';
 
-      // Player name
+    function drawNameAndSave(flagDrawn) {
+      if (flagDrawn) {
+        ctx.drawImage(flagImg, 158, 320, 72, 48);
+      } else {
+        // fallback: text country code
+        ctx.font = 'bold 40px Arial';
+        ctx.fillStyle = '#333';
+        ctx.fillText(player.cc.toUpperCase(), 158, 322);
+      }
       ctx.textBaseline = 'top';
       ctx.fillStyle = '#000000';
       const nameUpper = player.name.toUpperCase();
@@ -406,23 +415,25 @@ function downloadCard() {
         fontSize -= 4;
       } while (ctx.measureText(nameUpper).width > 620 && fontSize > 40);
       ctx.fillText(nameUpper, 158, 390);
-
-      // Note
       ctx.font = '500 32px Arial, sans-serif';
       ctx.fillStyle = '#333333';
       ctx.fillText(player.note, 160, 390 + fontSize + 14);
-
-      // Tour badge
       const tourLabel = tour === 'atp' ? 'ATP' : 'WTA';
       ctx.font = 'bold 26px Arial, sans-serif';
       ctx.fillStyle = '#555555';
       ctx.fillText(tourLabel, 160, 390 + fontSize + 58);
+      try {
+        const link = document.createElement('a');
+        link.download = `rg2026-${player.name.replace(/\s+/g, '-').toLowerCase()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch(e) {
+        alert('Не удалось сохранить: ' + e.message);
+      }
+    }
 
-      const link = document.createElement('a');
-      link.download = `rg2026-${player.name.replace(/\s+/g, '-').toLowerCase()}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    };
+    flagImg.onload = () => drawNameAndSave(true);
+    flagImg.onerror = () => drawNameAndSave(false);
     flagImg.src = `https://flagcdn.com/w40/${player.cc}.png`;
   };
   img.src = '/images/rg-card-template.png';
