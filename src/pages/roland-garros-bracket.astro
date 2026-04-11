@@ -136,59 +136,53 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     margin-top: 1.75rem;
   }
   #result-card {
-    background: linear-gradient(135deg, #2d1209 0%, #1a0a04 60%, #3d1a07 100%);
-    border: 1px solid rgba(232,197,71,0.3);
+    background: #a9e040;
     border-radius: 20px;
-    padding: 2rem;
-    text-align: center;
+    padding: 1.75rem 1.5rem 1.5rem;
     margin-bottom: 1rem;
-  }
-  .rc-site {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: #e8845a;
-    text-transform: uppercase;
-    margin-bottom: 0.25rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 160px;
   }
   .rc-event {
-    font-size: 0.85rem;
-    color: rgba(255,255,255,0.5);
-    margin-bottom: 1.25rem;
-  }
-  .rc-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    color: rgba(255,255,255,0.4);
-    text-transform: uppercase;
-    margin-bottom: 0.3rem;
-  }
-  .rc-trophy { font-size: 2.5rem; display: block; margin-bottom: 0.4rem; }
-  .rc-pick-label {
-    font-size: 0.75rem;
-    color: rgba(255,255,255,0.4);
-    text-transform: uppercase;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #1a1a1a;
     letter-spacing: 1px;
+    text-transform: uppercase;
     margin-bottom: 0.4rem;
   }
-  .rc-player-flag { font-size: 2rem; display: block; margin-bottom: 0.3rem; }
+  .rc-pick-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.35rem;
+  }
+  .rc-player-flag { font-size: 1.6rem; display: block; margin-bottom: 0.15rem; }
   .rc-player-name {
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: #fff;
-    margin-bottom: 0.3rem;
+    font-size: clamp(1.4rem, 5vw, 2rem);
+    font-weight: 900;
+    color: #000;
+    line-height: 1.1;
+    margin-bottom: 0.2rem;
+    text-transform: uppercase;
   }
   .rc-player-note {
-    font-size: 0.8rem;
-    color: #e8c547;
-    margin-bottom: 1.25rem;
+    font-size: 0.75rem;
+    color: #333;
+    margin-bottom: 0;
   }
-  .rc-footer {
-    font-size: 0.7rem;
-    color: rgba(255,255,255,0.25);
-    letter-spacing: 1px;
-    margin-top: 1rem;
+  .rc-site {
+    position: absolute;
+    bottom: 1rem;
+    left: 1.5rem;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #1a1a1a;
+    text-transform: uppercase;
   }
 
   /* Action buttons */
@@ -253,14 +247,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   <div id="result-box">
     <div id="result-card">
-      <div class="rc-site">SUPER.TENNIS</div>
-      <div class="rc-event">🏺 Roland Garros 2026</div>
-      <span class="rc-trophy">🏆</span>
+      <div class="rc-event">ROLAND GARROS 2026</div>
       <div class="rc-pick-label">My pick to win</div>
       <span class="rc-player-flag" id="rc-flag"></span>
       <div class="rc-player-name" id="rc-name"></div>
       <div class="rc-player-note" id="rc-note"></div>
-      <div class="rc-footer">super.tennis/roland-garros-bracket</div>
+      <div class="rc-site">SUPER.TENNIS</div>
     </div>
     <div class="result-actions">
       <a id="btn-twitter" class="btn-twitter" href="#" target="_blank" rel="noopener">
@@ -272,7 +264,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script is:inline>
 const PLAYERS = {
   atp: [
@@ -357,18 +348,54 @@ function changePick() {
 }
 
 function downloadCard() {
-  const card = document.getElementById('result-card');
-  html2canvas(card, {
-    backgroundColor: '#2d1209',
-    scale: 2,
-    useCORS: true,
-    logging: false,
-  }).then(canvas => {
+  if (!currentPick) return;
+  const { player, tour } = currentPick;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 1600;
+  canvas.height = 900;
+  const ctx = canvas.getContext('2d');
+
+  const img = new Image();
+  img.onload = () => {
+    // 1. Draw Canva template (lime green bg + tennis player photo + ROLAND GARROS + SUPER.TENNIS)
+    ctx.drawImage(img, 0, 0, 1600, 900);
+
+    // 2. Flag emoji — left column, below "MY PICK TO WIN" label
+    ctx.font = '72px serif';
+    ctx.textBaseline = 'top';
+    ctx.fillText(player.flag, 158, 320);
+
+    // 3. Player name — bold, black, uppercase
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = '#000000';
+    const nameUpper = player.name.toUpperCase();
+    // Fit text within ~620px (left content area)
+    let fontSize = 100;
+    do {
+      ctx.font = `900 ${fontSize}px Arial, sans-serif`;
+      fontSize -= 4;
+    } while (ctx.measureText(nameUpper).width > 620 && fontSize > 40);
+    ctx.fillText(nameUpper, 158, 415);
+
+    // 4. Note / subtitle
+    ctx.font = '500 32px Arial, sans-serif';
+    ctx.fillStyle = '#333333';
+    ctx.fillText(player.note, 160, 415 + fontSize + 12);
+
+    // 5. Tour badge (ATP / WTA)
+    const tourLabel = tour === 'atp' ? 'ATP' : 'WTA';
+    ctx.font = 'bold 26px Arial, sans-serif';
+    ctx.fillStyle = '#555555';
+    ctx.fillText(tourLabel, 160, 415 + fontSize + 56);
+
+    // 6. Download
     const link = document.createElement('a');
-    link.download = 'roland-garros-2026-pick.png';
+    link.download = `rg2026-${player.name.replace(/\s+/g, '-').toLowerCase()}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
-  });
+  };
+  img.src = '/images/rg-card-template.png';
 }
 
 // Init
