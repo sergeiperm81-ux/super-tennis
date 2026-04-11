@@ -79,6 +79,16 @@ const jsonLd = {
     name: 'Tennis Records',
   },
 };
+
+const faqJsonLd = article.faqs && Array.isArray(article.faqs) && article.faqs.length > 0 ? {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: article.faqs.map((faq: { question: string; answer: string }) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+} : null;
 ---
 
 <ArticleLayout
@@ -96,6 +106,7 @@ const jsonLd = {
 >
   <!-- JSON-LD -->
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  {faqJsonLd && <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />}
 
   <div set:html={bodyHtml} />
 
