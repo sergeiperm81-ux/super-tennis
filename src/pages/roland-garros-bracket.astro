@@ -275,6 +275,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </div>
       <div class="result-actions">
         <button class="btn-download" id="btn-share" onclick="shareCard()">🔗 Share my pick</button>
+        <button class="btn-download" onclick="downloadCard()">💾 Save as Image</button>
         <button class="btn-change" onclick="changePick()">↺ Change my pick</button>
       </div>
     </div>
@@ -405,6 +406,20 @@ function buildCanvas(callback) {
     flagImg.src = `https://flagcdn.com/w40/${player.cc}.png`;
   };
   img.src = '/images/rg-card-template.png';
+}
+
+function downloadCard() {
+  buildCanvas((canvas, player) => {
+    const fileName = `rg2026-${player.name.replace(/\s+/g, '-').toLowerCase()}.png`;
+    canvas.toBlob((blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
+    }, 'image/png');
+  });
 }
 
 function shareCard() {
