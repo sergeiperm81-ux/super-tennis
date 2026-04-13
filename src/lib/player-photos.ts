@@ -153,7 +153,7 @@ export const gearArticlePhotos: Record<string, ArticlePhoto> = {
   'best-pre-strung-tennis-rackets': { type: 'local', value: 'https://images.unsplash.com/photo-1529926706528-db9e5010cd3e?w=800&q=80' },
   'head-vs-wilson-vs-babolat': { type: 'local', value: '/images/gear/tennis-racket-brands.webp' },
   'head-speed-vs-babolat-pure-aero': { type: 'local', value: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&q=80' },
-  'wilson-pro-staff-vs-blade-comparison': { type: 'local', value: 'https://images.unsplash.com/photo-1617083934551-ac1f1c58d04b?w=800&q=80' },
+  'wilson-pro-staff-vs-blade-comparison': { type: 'local', value: '/images/gear/tennis-racket-detail.webp' },
   'tennis-racket-weight-guide': { type: 'local', value: '/images/gear/tennis-racket-detail.webp' },
   'tennis-racket-brands-ranked': { type: 'local', value: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&q=80' },
   'tennis-racket-technology-evolution': { type: 'local', value: 'https://images.unsplash.com/photo-1542144582-1ba00456b5e3?w=800&q=80' },

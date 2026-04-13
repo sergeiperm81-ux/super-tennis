@@ -9,7 +9,7 @@ interface Props {
 }
 
 import { getArticles } from '../lib/supabase';
-import { getArticlePhotoUrl } from '../lib/player-photos';
+import { getArticlePhotosForCategory } from '../lib/player-photos';
 
 const { category, currentSlug } = Astro.props;
 
@@ -26,15 +26,16 @@ try {
   const all = await getArticles({ category, limit: 50 });
   const filtered = all.filter((a: any) => a.slug !== currentSlug);
   // Use slug hash as seed for deterministic but unique ordering per article
-  const seed = hashCode(currentSlug);
   const shuffled = [...filtered].sort((a, b) => {
     const ha = hashCode(a.slug + currentSlug) % 10000;
     const hb = hashCode(b.slug + currentSlug) % 10000;
     return ha - hb;
   });
-  related = shuffled.slice(0, 3).map((a: any) => ({
+  const candidates = shuffled.slice(0, 3);
+  const photoMap = await getArticlePhotosForCategory(candidates, category);
+  related = candidates.map((a: any) => ({
     ...a,
-    image_url: a.image_url || fallbackImage,
+    image_url: photoMap.get(a.slug) || a.image_url || fallbackImage,
   }));
 } catch (e) {
   // silently fail
