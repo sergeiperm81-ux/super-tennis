@@ -1,4 +1,6 @@
 ---
+import { getFlagUrl, countryFlags } from '../lib/fallback-data';
+
 interface Props {
   category: string;
   accentColor: string;
@@ -6,104 +8,172 @@ interface Props {
 
 const { category, accentColor } = Astro.props;
 
-// Static section links per category context
-const exploreSections = [
-  { label: 'Rankings', href: '/rankings/', icon: '🏆', desc: 'ATP & WTA live rankings' },
-  { label: 'Head to Head', href: '/vs/', icon: '⚔️', desc: 'Player rivalry stats' },
-  { label: 'Records', href: '/records/', icon: '📊', desc: 'All-time tennis records' },
-  { label: 'Gear', href: '/gear/', icon: '🎾', desc: 'Rackets, shoes & strings' },
-  { label: 'Tournaments', href: '/tournaments/', icon: '🗓', desc: 'Slams & Masters guide' },
-  { label: 'Lifestyle', href: '/lifestyle/', icon: '✨', desc: 'Tennis beyond the court' },
-].filter(s => !s.href.includes(`/${category}/`));
-
-// Featured top players — static, updated periodically
-const topPlayers = [
-  { name: 'Jannik Sinner', slug: 'jannik-sinner', rank: 1, tour: 'ATP' },
-  { name: 'Carlos Alcaraz', slug: 'carlos-alcaraz', rank: 2, tour: 'ATP' },
-  { name: 'Novak Djokovic', slug: 'novak-djokovic', rank: 3, tour: 'ATP' },
-  { name: 'Aryna Sabalenka', slug: 'aryna-sabalenka', rank: 1, tour: 'WTA' },
-  { name: 'Iga Swiatek', slug: 'iga-swiatek', rank: 2, tour: 'WTA' },
+// Current ATP top 5 — updated with deploy, fallback kept in sync with update-rankings
+const atpTop5 = [
+  { rank: 1, name: 'Jannik Sinner',     slug: 'jannik-sinner',     country: 'ITA', points: '11,830' },
+  { rank: 2, name: 'Alexander Zverev',  slug: 'alexander-zverev',  country: 'GER', points: '9,855' },
+  { rank: 3, name: 'Carlos Alcaraz',    slug: 'carlos-alcaraz',    country: 'ESP', points: '7,190' },
+  { rank: 4, name: 'Novak Djokovic',    slug: 'novak-djokovic',    country: 'SRB', points: '6,875' },
+  { rank: 5, name: 'Daniil Medvedev',   slug: 'daniil-medvedev',   country: 'RUS', points: '6,445' },
 ];
+
+// Explore links — filtered to exclude current category
+const exploreLinks = [
+  { label: 'Records',     href: '/records/',     cat: 'records',     color: '#dc2626' },
+  { label: 'Head to Head', href: '/vs/',          cat: 'vs',          color: '#d4a017' },
+  { label: 'Gear',        href: '/gear/',         cat: 'gear',        color: '#2563eb' },
+  { label: 'Lifestyle',   href: '/lifestyle/',    cat: 'lifestyle',   color: '#7c3aed' },
+  { label: 'Tournaments', href: '/tournaments/',  cat: 'tournaments', color: '#059669' },
+  { label: 'News',        href: '/news/',         cat: 'news',        color: '#16a34a' },
+  { label: 'Players',     href: '/players/',      cat: 'players',     color: '#0ea5e9' },
+  { label: 'Rankings',    href: '/rankings/',     cat: 'rankings',    color: '#f97316' },
+].filter(l => l.cat !== category).slice(0, 6);
+
+// Featured player — #1 ATP always relevant
+const featuredPlayer = {
+  name: 'Jannik Sinner',
+  slug: 'jannik-sinner',
+  country: 'ITA',
+  grandSlams: 3,
+  careerTitles: 23,
+  image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Jannik_Sinner_Roland_Garros_2024.jpg/480px-Jannik_Sinner_Roland_Garros_2024.jpg',
+};
 ---
 
-<aside class="article-sidebar">
+<aside class="as">
 
-  <!-- Latest News -->
-  <div class="sb-block">
-    <h3 class="sb-title" style={`border-color: ${accentColor}`}>Latest News</h3>
-    <div id="sb-news-list" class="sb-news-list">
-      <div class="sb-news-skeleton"></div>
-      <div class="sb-news-skeleton"></div>
-      <div class="sb-news-skeleton"></div>
-      <div class="sb-news-skeleton"></div>
-      <div class="sb-news-skeleton"></div>
+  <!-- LATEST NEWS -->
+  <div class="as-block">
+    <div class="as-block__header">
+      <span class="as-block__label">Latest News</span>
+      <a href="/news/" class="as-link">All news →</a>
     </div>
-    <a href="/news/" class="sb-more-link">All news →</a>
-  </div>
-
-  <!-- Explore Sections -->
-  <div class="sb-block">
-    <h3 class="sb-title" style={`border-color: ${accentColor}`}>Explore</h3>
-    <ul class="sb-sections">
-      {exploreSections.slice(0, 5).map(s => (
-        <li>
-          <a href={s.href} class="sb-section-link">
-            <span class="sb-section-icon">{s.icon}</span>
-            <span class="sb-section-text">
-              <strong>{s.label}</strong>
-              <span>{s.desc}</span>
-            </span>
-          </a>
-        </li>
+    <div id="as-news-list" class="as-news-list">
+      {Array.from({length: 5}).map(() => (
+        <div class="as-news-skeleton"></div>
       ))}
-    </ul>
+    </div>
   </div>
 
-  <!-- Top Players -->
-  <div class="sb-block">
-    <h3 class="sb-title" style={`border-color: ${accentColor}`}>Top Players</h3>
-    <ul class="sb-players">
-      {topPlayers.map(p => (
-        <li>
-          <a href={`/players/${p.slug}/`} class="sb-player-link">
-            <span class="sb-player-rank" style={`background: color-mix(in srgb, ${accentColor} 12%, transparent); color: ${accentColor}`}>{p.tour} {p.rank}</span>
-            <span class="sb-player-name">{p.name}</span>
-          </a>
-        </li>
+  <!-- FEATURED PLAYER -->
+  <div class="as-block as-profile">
+    <div class="as-block__header">
+      <span class="as-block__label">Featured Player</span>
+      <a href="/players/" class="as-link">All players →</a>
+    </div>
+    <a href={`/players/${featuredPlayer.slug}/`} class="as-profile__card">
+      <div class="as-profile__img">
+        <img
+          src={featuredPlayer.image}
+          alt={featuredPlayer.name}
+          loading="lazy"
+          decoding="async"
+          width="320"
+          height="160"
+          onerror="this.parentElement.style.background='#1f2937'"
+        />
+        <div class="as-profile__overlay">
+          {getFlagUrl(featuredPlayer.country) && (
+            <img src={getFlagUrl(featuredPlayer.country, 40)} alt={featuredPlayer.country} class="as-flag" width="20" height="15" loading="lazy" />
+          )}
+          <span class="as-profile__name">{featuredPlayer.name}</span>
+        </div>
+      </div>
+      <div class="as-profile__stats">
+        <div class="as-profile__row">
+          <span>Grand Slams</span>
+          <span>{featuredPlayer.grandSlams}</span>
+        </div>
+        <div class="as-profile__row">
+          <span>Career Titles</span>
+          <span>{featuredPlayer.careerTitles}</span>
+        </div>
+        <div class="as-profile__row">
+          <span>Current Ranking</span>
+          <span class="as-rank-num">ATP #1</span>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <!-- ATP RANKINGS -->
+  <div class="as-block">
+    <div class="as-block__header">
+      <span class="as-block__label">ATP Rankings</span>
+      <a href="/rankings/" class="as-link">Full table →</a>
+    </div>
+    <table class="as-rankings__table">
+      <tbody>
+        {atpTop5.map(r => (
+          <tr>
+            <td class="as-rank">{r.rank}</td>
+            <td class="as-player">
+              <a href={`/players/${r.slug}/`}>
+                {getFlagUrl(r.country) ? (
+                  <img src={getFlagUrl(r.country, 20)} alt={r.country} class="as-flag" width="20" height="15" loading="lazy" />
+                ) : (
+                  <span>{countryFlags[r.country] || ''}</span>
+                )}
+                {r.name}
+              </a>
+            </td>
+            <td class="as-pts">{r.points}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- EXPLORE SECTIONS -->
+  <div class="as-block">
+    <div class="as-block__header">
+      <span class="as-block__label">Explore</span>
+    </div>
+    <div class="as-explore">
+      {exploreLinks.map(l => (
+        <a href={l.href} class="as-explore__item">
+          <span class="as-explore__cat" style={`background: ${l.color}`}>{l.label}</span>
+          <span class="as-explore__arrow">→</span>
+        </a>
       ))}
-    </ul>
-    <a href="/rankings/" class="sb-more-link">Full rankings →</a>
+    </div>
   </div>
 
-  <!-- Tennis Style Quiz CTA -->
-  <div class="sb-block sb-cta" style={`border-color: ${accentColor}; background: color-mix(in srgb, ${accentColor} 6%, white)`}>
-    <div class="sb-cta-emoji">🎾</div>
-    <p class="sb-cta-title">What's Your Tennis Style?</p>
-    <p class="sb-cta-desc">Take the quiz and find out which pro plays like you.</p>
-    <a href="/style/" class="sb-cta-btn" style={`background: ${accentColor}`}>Take the Quiz</a>
+  <!-- CTA — Tennis Style Quiz -->
+  <div class="as-block as-cta" style={`border-top: 3px solid ${accentColor}`}>
+    <div class="as-cta__inner">
+      <div class="as-cta__emoji">🎾</div>
+      <p class="as-cta__title">What's Your Tennis Style?</p>
+      <p class="as-cta__desc">Find out which pro plays like you.</p>
+      <a href="/tennis-playing-style/" class="as-cta__btn" style={`background: ${accentColor}`}>Take the Quiz</a>
+    </div>
   </div>
 
 </aside>
 
 <script>
-  // Load latest news into sidebar
   async function loadSidebarNews() {
-    const list = document.getElementById('sb-news-list');
+    const list = document.getElementById('as-news-list');
     if (!list) return;
     try {
       const res = await fetch('https://supertennis-cron.sfedoroff.workers.dev/api/news?limit=6');
       if (!res.ok) return;
       const items = await res.json();
-      if (!Array.isArray(items) || items.length === 0) return;
+      if (!Array.isArray(items) || !items.length) return;
+
+      const catColors: Record<string, string> = {
+        scandal: '#dc2626', love: '#e11d7e', money: '#d4a017',
+        fashion: '#9333ea', viral: '#f97316', buzz: '#16a34a',
+      };
 
       list.innerHTML = items.slice(0, 6).map((item: any) => {
-        const slug = item.slug || item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').substring(0, 80);
+        const slug = (item.slug || item.title || '')
+          .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').substring(0, 80);
         const cat = item.category || 'buzz';
-        const catColors: Record<string, string> = { scandal: '#dc2626', love: '#ec4899', money: '#059669', fashion: '#7c3aed', viral: '#ea580c', buzz: '#2563eb' };
-        const color = catColors[cat] || '#2563eb';
-        return `<a href="/news/${slug}/" class="sb-news-item">
-          <span class="sb-news-cat" style="color:${color}">${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
-          <span class="sb-news-headline">${item.title}</span>
+        const color = catColors[cat] || '#16a34a';
+        return `<a href="/news/${slug}/" class="as-news-item">
+          <span class="as-news-cat" style="background:${color}">${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
+          <span class="as-news-headline">${item.title}</span>
         </a>`;
       }).join('');
     } catch {}
@@ -117,192 +187,271 @@ const topPlayers = [
 </script>
 
 <style>
-  .article-sidebar {
+  .as {
+    position: sticky;
+    top: calc(var(--header-height) + 8px);
     display: flex;
     flex-direction: column;
-    gap: 28px;
-    position: sticky;
-    top: calc(var(--header-height) + 24px);
-    max-height: calc(100vh - var(--header-height) - 48px);
+    gap: 20px;
+    max-height: calc(100vh - var(--header-height) - 24px);
     overflow-y: auto;
     scrollbar-width: none;
   }
-  .article-sidebar::-webkit-scrollbar { display: none; }
+  .as::-webkit-scrollbar { display: none; }
 
-  .sb-block {
+  /* Block — same pattern as news page sidebar */
+  .as-block {
     background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
     border: 1px solid var(--gray-200);
-    border-radius: 12px;
-    padding: 20px;
   }
 
-  .sb-title {
+  .as-block__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--gray-900);
+  }
+
+  .as-block__label {
     font-family: var(--font-heading);
-    font-size: 0.72rem;
+    font-size: 0.78rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--gray-500);
-    margin: 0 0 16px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--court-green);
+    letter-spacing: 2px;
+    color: #fff;
   }
 
-  /* News */
-  .sb-news-list {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+  .as-link {
+    font-size: 0.7rem;
+    color: var(--court-green);
+    font-weight: 600;
+    text-decoration: none;
   }
-  .sb-news-item {
+  .as-link:hover { text-decoration: underline; }
+
+  /* News list */
+  .as-news-list {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    padding: 10px 0;
+  }
+
+  .as-news-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
     border-bottom: 1px solid var(--gray-100);
     text-decoration: none;
     transition: background 0.15s;
-    border-radius: 6px;
-    padding: 8px 6px;
-    margin: 0 -6px;
   }
-  .sb-news-item:hover { background: var(--gray-50); }
-  .sb-news-item:last-child { border-bottom: none; }
-  .sb-news-cat {
-    font-size: 0.68rem;
+  .as-news-item:last-child { border-bottom: none; }
+  .as-news-item:hover { background: var(--gray-50); }
+
+  .as-news-cat {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.55rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.5px;
+    color: #fff;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
   }
-  .sb-news-headline {
-    font-size: 0.88rem;
-    line-height: 1.4;
+
+  .as-news-headline {
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.35;
     color: var(--gray-800);
-    font-weight: 500;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
-  .sb-news-skeleton {
-    height: 48px;
+  .as-news-item:hover .as-news-headline { color: var(--court-green); }
+
+  .as-news-skeleton {
+    height: 52px;
+    margin: 2px 8px;
+    border-radius: 4px;
     background: linear-gradient(90deg, var(--gray-100) 25%, var(--gray-50) 50%, var(--gray-100) 75%);
     background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-    border-radius: 6px;
-    margin-bottom: 4px;
+    animation: as-shimmer 1.4s infinite;
   }
-  @keyframes shimmer {
-    0% { background-position: 200% 0; }
+  @keyframes as-shimmer {
+    0%   { background-position: 200% 0; }
     100% { background-position: -200% 0; }
   }
 
-  .sb-more-link {
-    display: inline-block;
-    margin-top: 12px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--court-green);
+  /* Featured Player */
+  .as-profile__card {
+    display: block;
     text-decoration: none;
+    transition: opacity 0.15s;
   }
-  .sb-more-link:hover { text-decoration: underline; }
+  .as-profile__card:hover { opacity: 0.9; }
 
-  /* Sections */
-  .sb-sections {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  .as-profile__img {
+    position: relative;
+    height: 160px;
+    overflow: hidden;
+    background: var(--gray-200);
   }
-  .sb-section-link {
+  .as-profile__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+  .as-profile__overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 24px 14px 12px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.85));
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 8px 6px;
-    border-radius: 8px;
-    text-decoration: none;
-    transition: background 0.15s;
-    margin: 0 -6px;
+    gap: 8px;
   }
-  .sb-section-link:hover { background: var(--gray-50); }
-  .sb-section-icon { font-size: 1.2rem; flex-shrink: 0; }
-  .sb-section-text {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-  }
-  .sb-section-text strong {
-    font-size: 0.88rem;
-    color: var(--gray-900);
-    font-weight: 600;
-  }
-  .sb-section-text span {
-    font-size: 0.75rem;
-    color: var(--gray-500);
-  }
-
-  /* Players */
-  .sb-players {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .sb-player-link {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 7px 6px;
-    border-radius: 8px;
-    text-decoration: none;
-    transition: background 0.15s;
-    margin: 0 -6px;
-  }
-  .sb-player-link:hover { background: var(--gray-50); }
-  .sb-player-rank {
-    font-size: 0.68rem;
-    font-weight: 700;
-    padding: 2px 7px;
-    border-radius: 20px;
-    white-space: nowrap;
+  .as-flag {
+    border-radius: 2px;
+    vertical-align: middle;
     flex-shrink: 0;
   }
-  .sb-player-name {
-    font-size: 0.88rem;
-    color: var(--gray-800);
-    font-weight: 500;
-  }
-
-  /* CTA */
-  .sb-cta {
-    text-align: center;
-    border-width: 2px !important;
-  }
-  .sb-cta-emoji { font-size: 2rem; margin-bottom: 8px; }
-  .sb-cta-title {
+  .as-profile__name {
     font-family: var(--font-heading);
     font-size: 1rem;
     font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .as-profile__stats { padding: 2px 0; }
+  .as-profile__row {
+    display: flex;
+    justify-content: space-between;
+    padding: 9px 16px;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 0.8rem;
+  }
+  .as-profile__row:last-child { border-bottom: none; }
+  .as-profile__row span:first-child { color: var(--gray-500); }
+  .as-profile__row span:last-child { font-weight: 700; color: var(--gray-900); }
+  .as-rank-num { color: var(--court-green) !important; }
+
+  /* Rankings table */
+  .as-rankings__table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .as-rankings__table tr {
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .as-rankings__table tr:last-child { border-bottom: none; }
+  .as-rankings__table tr:hover td { background: var(--gray-50); }
+
+  .as-rank {
+    padding: 10px 14px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--court-green);
+    width: 32px;
+  }
+  .as-player {
+    padding: 10px 6px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--gray-900);
+  }
+  .as-player a {
+    color: var(--gray-900);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.15s;
+  }
+  .as-player a:hover { color: var(--court-green); }
+  .as-pts {
+    padding: 10px 14px;
+    text-align: right;
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--gray-400);
+  }
+
+  /* Explore sections */
+  .as-explore {
+    display: flex;
+    flex-direction: column;
+  }
+  .as-explore__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-100);
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .as-explore__item:last-child { border-bottom: none; }
+  .as-explore__item:hover { background: var(--gray-50); }
+
+  .as-explore__cat {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+  }
+  .as-explore__arrow {
+    font-size: 0.85rem;
+    color: var(--gray-400);
+  }
+  .as-explore__item:hover .as-explore__arrow { color: var(--court-green); }
+
+  /* CTA */
+  .as-cta {
+    text-align: center;
+    padding: 24px 20px;
+  }
+  .as-cta__inner { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .as-cta__emoji { font-size: 2rem; }
+  .as-cta__title {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 700;
     text-transform: uppercase;
     color: var(--gray-900);
-    margin: 0 0 6px;
+    margin: 4px 0 0;
   }
-  .sb-cta-desc {
-    font-size: 0.82rem;
-    color: var(--gray-600);
-    margin: 0 0 14px;
+  .as-cta__desc {
+    font-size: 0.8rem;
+    color: var(--gray-500);
     line-height: 1.5;
+    margin: 0 0 10px;
   }
-  .sb-cta-btn {
+  .as-cta__btn {
     display: inline-block;
-    padding: 9px 20px;
-    border-radius: 8px;
-    color: white;
-    font-size: 0.85rem;
+    padding: 9px 22px;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.82rem;
     font-weight: 700;
     text-decoration: none;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     transition: opacity 0.2s;
   }
-  .sb-cta-btn:hover { opacity: 0.85; }
+  .as-cta__btn:hover { opacity: 0.85; }
 </style>
