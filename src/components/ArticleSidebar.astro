@@ -8,28 +8,25 @@ interface Props {
 
 const { category, accentColor } = Astro.props;
 
-// Current ATP top 5 — updated with deploy, fallback kept in sync with update-rankings
 const atpTop5 = [
-  { rank: 1, name: 'Jannik Sinner',     slug: 'jannik-sinner',     country: 'ITA', points: '11,830' },
-  { rank: 2, name: 'Alexander Zverev',  slug: 'alexander-zverev',  country: 'GER', points: '9,855' },
-  { rank: 3, name: 'Carlos Alcaraz',    slug: 'carlos-alcaraz',    country: 'ESP', points: '7,190' },
-  { rank: 4, name: 'Novak Djokovic',    slug: 'novak-djokovic',    country: 'SRB', points: '6,875' },
-  { rank: 5, name: 'Daniil Medvedev',   slug: 'daniil-medvedev',   country: 'RUS', points: '6,445' },
+  { rank: 1, name: 'Jannik Sinner',    slug: 'jannik-sinner',    country: 'ITA', points: '11,830' },
+  { rank: 2, name: 'Alexander Zverev', slug: 'alexander-zverev', country: 'GER', points: '9,855' },
+  { rank: 3, name: 'Carlos Alcaraz',   slug: 'carlos-alcaraz',   country: 'ESP', points: '7,190' },
+  { rank: 4, name: 'Novak Djokovic',   slug: 'novak-djokovic',   country: 'SRB', points: '6,875' },
+  { rank: 5, name: 'Daniil Medvedev',  slug: 'daniil-medvedev',  country: 'RUS', points: '6,445' },
 ];
 
-// Explore links — filtered to exclude current category
 const exploreLinks = [
-  { label: 'Records',     href: '/records/',     cat: 'records',     color: '#dc2626' },
-  { label: 'Head to Head', href: '/vs/',          cat: 'vs',          color: '#d4a017' },
-  { label: 'Gear',        href: '/gear/',         cat: 'gear',        color: '#2563eb' },
-  { label: 'Lifestyle',   href: '/lifestyle/',    cat: 'lifestyle',   color: '#7c3aed' },
-  { label: 'Tournaments', href: '/tournaments/',  cat: 'tournaments', color: '#059669' },
-  { label: 'News',        href: '/news/',         cat: 'news',        color: '#16a34a' },
-  { label: 'Players',     href: '/players/',      cat: 'players',     color: '#0ea5e9' },
-  { label: 'Rankings',    href: '/rankings/',     cat: 'rankings',    color: '#f97316' },
+  { label: 'Records',      href: '/records/',     cat: 'records',     color: '#dc2626' },
+  { label: 'Head to Head', href: '/vs/',           cat: 'vs',          color: '#d4a017' },
+  { label: 'Gear',         href: '/gear/',          cat: 'gear',        color: '#2563eb' },
+  { label: 'Lifestyle',    href: '/lifestyle/',     cat: 'lifestyle',   color: '#7c3aed' },
+  { label: 'Tournaments',  href: '/tournaments/',   cat: 'tournaments', color: '#059669' },
+  { label: 'News',         href: '/news/',           cat: 'news',        color: '#16a34a' },
+  { label: 'Players',      href: '/players/',        cat: 'players',     color: '#0ea5e9' },
+  { label: 'Rankings',     href: '/rankings/',       cat: 'rankings',    color: '#f97316' },
 ].filter(l => l.cat !== category).slice(0, 6);
 
-// Featured player — #1 ATP always relevant
 const featuredPlayer = {
   name: 'Jannik Sinner',
   slug: 'jannik-sinner',
@@ -38,6 +35,8 @@ const featuredPlayer = {
   careerTitles: 23,
   image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Jannik_Sinner_Roland_Garros_2024.jpg/480px-Jannik_Sinner_Roland_Garros_2024.jpg',
 };
+
+const flagUrl = getFlagUrl(featuredPlayer.country, 20);
 ---
 
 <aside class="as">
@@ -56,7 +55,7 @@ const featuredPlayer = {
   </div>
 
   <!-- FEATURED PLAYER -->
-  <div class="as-block as-profile">
+  <div class="as-block as-profile-block">
     <div class="as-block__header">
       <span class="as-block__label">Featured Player</span>
       <a href="/players/" class="as-link">All players →</a>
@@ -73,25 +72,14 @@ const featuredPlayer = {
           onerror="this.parentElement.style.background='#1f2937'"
         />
         <div class="as-profile__overlay">
-          {getFlagUrl(featuredPlayer.country) && (
-            <img src={getFlagUrl(featuredPlayer.country, 40)} alt={featuredPlayer.country} class="as-flag" width="20" height="15" loading="lazy" />
-          )}
+          {flagUrl && <img src={flagUrl} alt={featuredPlayer.country} class="as-flag" width="20" height="14" />}
           <span class="as-profile__name">{featuredPlayer.name}</span>
         </div>
       </div>
       <div class="as-profile__stats">
-        <div class="as-profile__row">
-          <span>Grand Slams</span>
-          <span>{featuredPlayer.grandSlams}</span>
-        </div>
-        <div class="as-profile__row">
-          <span>Career Titles</span>
-          <span>{featuredPlayer.careerTitles}</span>
-        </div>
-        <div class="as-profile__row">
-          <span>Current Ranking</span>
-          <span class="as-rank-num">ATP #1</span>
-        </div>
+        <div class="as-profile__row"><span>Grand Slams</span><span>{featuredPlayer.grandSlams}</span></div>
+        <div class="as-profile__row"><span>Career Titles</span><span>{featuredPlayer.careerTitles}</span></div>
+        <div class="as-profile__row"><span>Ranking</span><span class="as-rank-badge">ATP #1</span></div>
       </div>
     </a>
   </div>
@@ -109,8 +97,8 @@ const featuredPlayer = {
             <td class="as-rank">{r.rank}</td>
             <td class="as-player">
               <a href={`/players/${r.slug}/`}>
-                {getFlagUrl(r.country) ? (
-                  <img src={getFlagUrl(r.country, 20)} alt={r.country} class="as-flag" width="20" height="15" loading="lazy" />
+                {getFlagUrl(r.country, 20) ? (
+                  <img src={getFlagUrl(r.country, 20)} alt={r.country} class="as-flag" width="20" height="14" loading="lazy" />
                 ) : (
                   <span>{countryFlags[r.country] || ''}</span>
                 )}
@@ -124,7 +112,7 @@ const featuredPlayer = {
     </table>
   </div>
 
-  <!-- EXPLORE SECTIONS -->
+  <!-- EXPLORE -->
   <div class="as-block">
     <div class="as-block__header">
       <span class="as-block__label">Explore</span>
@@ -132,20 +120,20 @@ const featuredPlayer = {
     <div class="as-explore">
       {exploreLinks.map(l => (
         <a href={l.href} class="as-explore__item">
-          <span class="as-explore__cat" style={`background: ${l.color}`}>{l.label}</span>
+          <span class="as-explore__cat" style={`background:${l.color}`}>{l.label}</span>
           <span class="as-explore__arrow">→</span>
         </a>
       ))}
     </div>
   </div>
 
-  <!-- CTA — Tennis Style Quiz -->
+  <!-- QUIZ CTA -->
   <div class="as-block as-cta" style={`border-top: 3px solid ${accentColor}`}>
     <div class="as-cta__inner">
       <div class="as-cta__emoji">🎾</div>
       <p class="as-cta__title">What's Your Tennis Style?</p>
       <p class="as-cta__desc">Find out which pro plays like you.</p>
-      <a href="/tennis-playing-style/" class="as-cta__btn" style={`background: ${accentColor}`}>Take the Quiz</a>
+      <a href="/tennis-playing-style/" class="as-cta__btn" style={`background:${accentColor}`}>Take the Quiz</a>
     </div>
   </div>
 
@@ -171,9 +159,10 @@ const featuredPlayer = {
           .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').substring(0, 80);
         const cat = item.category || 'buzz';
         const color = catColors[cat] || '#16a34a';
-        return `<a href="/news/${slug}/" class="as-news-item">
-          <span class="as-news-cat" style="background:${color}">${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
-          <span class="as-news-headline">${item.title}</span>
+        // Inline styles — bypasses Astro scoped CSS limitation on dynamic elements
+        return `<a href="/news/${slug}/" style="display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-bottom:1px solid #f3f4f6;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background=''">
+          <span style="display:inline-block;padding:2px 7px;border-radius:3px;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#fff;white-space:nowrap;flex-shrink:0;margin-top:3px;background:${color}">${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
+          <span style="font-size:0.82rem;font-weight:600;line-height:1.35;color:#1f2937;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${item.title}</span>
         </a>`;
       }).join('');
     } catch {}
@@ -199,12 +188,16 @@ const featuredPlayer = {
   }
   .as::-webkit-scrollbar { display: none; }
 
-  /* Block — same pattern as news page sidebar */
+  /* Block base — NO overflow:hidden here, it clips table rows */
   .as-block {
     background: var(--white);
     border-radius: var(--radius);
-    overflow: hidden;
     border: 1px solid var(--gray-200);
+  }
+
+  /* Only the profile card needs overflow:hidden (for the image crop) */
+  .as-profile-block {
+    overflow: hidden;
   }
 
   .as-block__header {
@@ -213,6 +206,7 @@ const featuredPlayer = {
     align-items: center;
     padding: 12px 16px;
     background: var(--gray-900);
+    border-radius: var(--radius) var(--radius) 0 0;
   }
 
   .as-block__label {
@@ -232,53 +226,11 @@ const featuredPlayer = {
   }
   .as-link:hover { text-decoration: underline; }
 
-  /* News list */
-  .as-news-list {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .as-news-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 10px 14px;
-    border-bottom: 1px solid var(--gray-100);
-    text-decoration: none;
-    transition: background 0.15s;
-  }
-  .as-news-item:last-child { border-bottom: none; }
-  .as-news-item:hover { background: var(--gray-50); }
-
-  .as-news-cat {
-    display: inline-block;
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-size: 0.55rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #fff;
-    white-space: nowrap;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  .as-news-headline {
-    font-size: 0.82rem;
-    font-weight: 600;
-    line-height: 1.35;
-    color: var(--gray-800);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .as-news-item:hover .as-news-headline { color: var(--court-green); }
-
+  /* News skeletons */
+  .as-news-list { display: flex; flex-direction: column; }
   .as-news-skeleton {
     height: 52px;
-    margin: 2px 8px;
+    margin: 6px 10px;
     border-radius: 4px;
     background: linear-gradient(90deg, var(--gray-100) 25%, var(--gray-50) 50%, var(--gray-100) 75%);
     background-size: 200% 100%;
@@ -293,17 +245,14 @@ const featuredPlayer = {
   .as-profile__card {
     display: block;
     text-decoration: none;
-    transition: opacity 0.15s;
   }
-  .as-profile__card:hover { opacity: 0.9; }
-
   .as-profile__img {
     position: relative;
     height: 160px;
     overflow: hidden;
     background: var(--gray-200);
   }
-  .as-profile__img img {
+  .as-profile__img > img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -312,16 +261,19 @@ const featuredPlayer = {
   .as-profile__overlay {
     position: absolute;
     bottom: 0; left: 0; right: 0;
-    padding: 24px 14px 12px;
+    padding: 28px 14px 12px;
     background: linear-gradient(transparent, rgba(0,0,0,0.85));
     display: flex;
     align-items: center;
     gap: 8px;
   }
   .as-flag {
+    width: 20px;
+    height: 14px;
+    object-fit: cover;
     border-radius: 2px;
-    vertical-align: middle;
     flex-shrink: 0;
+    vertical-align: middle;
   }
   .as-profile__name {
     font-family: var(--font-heading);
@@ -330,6 +282,7 @@ const featuredPlayer = {
     color: #fff;
     text-transform: uppercase;
     letter-spacing: 1px;
+    line-height: 1.2;
   }
   .as-profile__stats { padding: 2px 0; }
   .as-profile__row {
@@ -340,38 +293,35 @@ const featuredPlayer = {
     font-size: 0.8rem;
   }
   .as-profile__row:last-child { border-bottom: none; }
-  .as-profile__row span:first-child { color: var(--gray-500); }
-  .as-profile__row span:last-child { font-weight: 700; color: var(--gray-900); }
-  .as-rank-num { color: var(--court-green) !important; }
+  .as-profile__row > span:first-child { color: var(--gray-500); }
+  .as-profile__row > span:last-child { font-weight: 700; color: var(--gray-900); }
+  .as-rank-badge { color: var(--court-green) !important; }
 
   /* Rankings table */
   .as-rankings__table {
     width: 100%;
     border-collapse: collapse;
   }
-  .as-rankings__table tr {
-    border-bottom: 1px solid var(--gray-100);
-  }
+  .as-rankings__table tr { border-bottom: 1px solid var(--gray-100); }
   .as-rankings__table tr:last-child { border-bottom: none; }
   .as-rankings__table tr:hover td { background: var(--gray-50); }
 
   .as-rank {
-    padding: 10px 14px;
+    padding: 10px 12px;
     font-family: var(--font-heading);
     font-weight: 700;
     font-size: 0.9rem;
     color: var(--court-green);
-    width: 32px;
+    width: 28px;
   }
   .as-player {
     padding: 10px 6px;
-    font-weight: 600;
     font-size: 0.8rem;
-    color: var(--gray-900);
   }
   .as-player a {
     color: var(--gray-900);
     text-decoration: none;
+    font-weight: 600;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -387,11 +337,8 @@ const featuredPlayer = {
     color: var(--gray-400);
   }
 
-  /* Explore sections */
-  .as-explore {
-    display: flex;
-    flex-direction: column;
-  }
+  /* Explore */
+  .as-explore { display: flex; flex-direction: column; }
   .as-explore__item {
     display: flex;
     align-items: center;
@@ -403,7 +350,6 @@ const featuredPlayer = {
   }
   .as-explore__item:last-child { border-bottom: none; }
   .as-explore__item:hover { background: var(--gray-50); }
-
   .as-explore__cat {
     display: inline-block;
     padding: 3px 10px;
@@ -420,11 +366,8 @@ const featuredPlayer = {
   }
   .as-explore__item:hover .as-explore__arrow { color: var(--court-green); }
 
-  /* CTA */
-  .as-cta {
-    text-align: center;
-    padding: 24px 20px;
-  }
+  /* Quiz CTA */
+  .as-cta { text-align: center; padding: 24px 20px; }
   .as-cta__inner { display: flex; flex-direction: column; align-items: center; gap: 6px; }
   .as-cta__emoji { font-size: 2rem; }
   .as-cta__title {
