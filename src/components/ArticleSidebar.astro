@@ -1,0 +1,308 @@
+---
+interface Props {
+  category: string;
+  accentColor: string;
+}
+
+const { category, accentColor } = Astro.props;
+
+// Static section links per category context
+const exploreSections = [
+  { label: 'Rankings', href: '/rankings/', icon: '🏆', desc: 'ATP & WTA live rankings' },
+  { label: 'Head to Head', href: '/vs/', icon: '⚔️', desc: 'Player rivalry stats' },
+  { label: 'Records', href: '/records/', icon: '📊', desc: 'All-time tennis records' },
+  { label: 'Gear', href: '/gear/', icon: '🎾', desc: 'Rackets, shoes & strings' },
+  { label: 'Tournaments', href: '/tournaments/', icon: '🗓', desc: 'Slams & Masters guide' },
+  { label: 'Lifestyle', href: '/lifestyle/', icon: '✨', desc: 'Tennis beyond the court' },
+].filter(s => !s.href.includes(`/${category}/`));
+
+// Featured top players — static, updated periodically
+const topPlayers = [
+  { name: 'Jannik Sinner', slug: 'jannik-sinner', rank: 1, tour: 'ATP' },
+  { name: 'Carlos Alcaraz', slug: 'carlos-alcaraz', rank: 2, tour: 'ATP' },
+  { name: 'Novak Djokovic', slug: 'novak-djokovic', rank: 3, tour: 'ATP' },
+  { name: 'Aryna Sabalenka', slug: 'aryna-sabalenka', rank: 1, tour: 'WTA' },
+  { name: 'Iga Swiatek', slug: 'iga-swiatek', rank: 2, tour: 'WTA' },
+];
+---
+
+<aside class="article-sidebar">
+
+  <!-- Latest News -->
+  <div class="sb-block">
+    <h3 class="sb-title" style={`border-color: ${accentColor}`}>Latest News</h3>
+    <div id="sb-news-list" class="sb-news-list">
+      <div class="sb-news-skeleton"></div>
+      <div class="sb-news-skeleton"></div>
+      <div class="sb-news-skeleton"></div>
+      <div class="sb-news-skeleton"></div>
+      <div class="sb-news-skeleton"></div>
+    </div>
+    <a href="/news/" class="sb-more-link">All news →</a>
+  </div>
+
+  <!-- Explore Sections -->
+  <div class="sb-block">
+    <h3 class="sb-title" style={`border-color: ${accentColor}`}>Explore</h3>
+    <ul class="sb-sections">
+      {exploreSections.slice(0, 5).map(s => (
+        <li>
+          <a href={s.href} class="sb-section-link">
+            <span class="sb-section-icon">{s.icon}</span>
+            <span class="sb-section-text">
+              <strong>{s.label}</strong>
+              <span>{s.desc}</span>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <!-- Top Players -->
+  <div class="sb-block">
+    <h3 class="sb-title" style={`border-color: ${accentColor}`}>Top Players</h3>
+    <ul class="sb-players">
+      {topPlayers.map(p => (
+        <li>
+          <a href={`/players/${p.slug}/`} class="sb-player-link">
+            <span class="sb-player-rank" style={`background: color-mix(in srgb, ${accentColor} 12%, transparent); color: ${accentColor}`}>{p.tour} {p.rank}</span>
+            <span class="sb-player-name">{p.name}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+    <a href="/rankings/" class="sb-more-link">Full rankings →</a>
+  </div>
+
+  <!-- Tennis Style Quiz CTA -->
+  <div class="sb-block sb-cta" style={`border-color: ${accentColor}; background: color-mix(in srgb, ${accentColor} 6%, white)`}>
+    <div class="sb-cta-emoji">🎾</div>
+    <p class="sb-cta-title">What's Your Tennis Style?</p>
+    <p class="sb-cta-desc">Take the quiz and find out which pro plays like you.</p>
+    <a href="/style/" class="sb-cta-btn" style={`background: ${accentColor}`}>Take the Quiz</a>
+  </div>
+
+</aside>
+
+<script>
+  // Load latest news into sidebar
+  async function loadSidebarNews() {
+    const list = document.getElementById('sb-news-list');
+    if (!list) return;
+    try {
+      const res = await fetch('https://supertennis-cron.sfedoroff.workers.dev/api/news?limit=6');
+      if (!res.ok) return;
+      const items = await res.json();
+      if (!Array.isArray(items) || items.length === 0) return;
+
+      list.innerHTML = items.slice(0, 6).map((item: any) => {
+        const slug = item.slug || item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').substring(0, 80);
+        const cat = item.category || 'buzz';
+        const catColors: Record<string, string> = { scandal: '#dc2626', love: '#ec4899', money: '#059669', fashion: '#7c3aed', viral: '#ea580c', buzz: '#2563eb' };
+        const color = catColors[cat] || '#2563eb';
+        return `<a href="/news/${slug}/" class="sb-news-item">
+          <span class="sb-news-cat" style="color:${color}">${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
+          <span class="sb-news-headline">${item.title}</span>
+        </a>`;
+      }).join('');
+    } catch {}
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadSidebarNews);
+  } else {
+    loadSidebarNews();
+  }
+</script>
+
+<style>
+  .article-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    position: sticky;
+    top: calc(var(--header-height) + 24px);
+    max-height: calc(100vh - var(--header-height) - 48px);
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .article-sidebar::-webkit-scrollbar { display: none; }
+
+  .sb-block {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .sb-title {
+    font-family: var(--font-heading);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gray-500);
+    margin: 0 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--court-green);
+  }
+
+  /* News */
+  .sb-news-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .sb-news-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--gray-100);
+    text-decoration: none;
+    transition: background 0.15s;
+    border-radius: 6px;
+    padding: 8px 6px;
+    margin: 0 -6px;
+  }
+  .sb-news-item:hover { background: var(--gray-50); }
+  .sb-news-item:last-child { border-bottom: none; }
+  .sb-news-cat {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .sb-news-headline {
+    font-size: 0.88rem;
+    line-height: 1.4;
+    color: var(--gray-800);
+    font-weight: 500;
+  }
+  .sb-news-skeleton {
+    height: 48px;
+    background: linear-gradient(90deg, var(--gray-100) 25%, var(--gray-50) 50%, var(--gray-100) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 6px;
+    margin-bottom: 4px;
+  }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .sb-more-link {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--court-green);
+    text-decoration: none;
+  }
+  .sb-more-link:hover { text-decoration: underline; }
+
+  /* Sections */
+  .sb-sections {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .sb-section-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 6px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.15s;
+    margin: 0 -6px;
+  }
+  .sb-section-link:hover { background: var(--gray-50); }
+  .sb-section-icon { font-size: 1.2rem; flex-shrink: 0; }
+  .sb-section-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .sb-section-text strong {
+    font-size: 0.88rem;
+    color: var(--gray-900);
+    font-weight: 600;
+  }
+  .sb-section-text span {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+  }
+
+  /* Players */
+  .sb-players {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .sb-player-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 6px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.15s;
+    margin: 0 -6px;
+  }
+  .sb-player-link:hover { background: var(--gray-50); }
+  .sb-player-rank {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .sb-player-name {
+    font-size: 0.88rem;
+    color: var(--gray-800);
+    font-weight: 500;
+  }
+
+  /* CTA */
+  .sb-cta {
+    text-align: center;
+    border-width: 2px !important;
+  }
+  .sb-cta-emoji { font-size: 2rem; margin-bottom: 8px; }
+  .sb-cta-title {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0 0 6px;
+  }
+  .sb-cta-desc {
+    font-size: 0.82rem;
+    color: var(--gray-600);
+    margin: 0 0 14px;
+    line-height: 1.5;
+  }
+  .sb-cta-btn {
+    display: inline-block;
+    padding: 9px 20px;
+    border-radius: 8px;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: opacity 0.2s;
+  }
+  .sb-cta-btn:hover { opacity: 0.85; }
+</style>

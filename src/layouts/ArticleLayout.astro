@@ -1,5 +1,6 @@
 ---
 import BaseLayout from './BaseLayout.astro';
+import ArticleSidebar from '../components/ArticleSidebar.astro';
 
 interface Props {
   title: string;
@@ -81,6 +82,7 @@ const categoryColors: Record<string, string> = {
   news: '#16a34a',
 };
 const accentColor = categoryColors[category || ''] || 'var(--court-green)';
+const hasSidebar = ['vs', 'gear', 'lifestyle', 'tournaments', 'news'].includes(category || '');
 
 // OG image per category
 const categoryOgImages: Record<string, string> = {
@@ -102,6 +104,7 @@ const ogImage = categoryOgImages[category || ''] || '/og/default.png';
     <div class="reading-progress__bar" id="reading-progress-bar" style={`background: ${accentColor}`}></div>
   </div>
 
+  <div class={hasSidebar ? 'article-wrapper has-sidebar' : 'article-wrapper'}>
   <article class="article-page">
     <!-- Breadcrumbs -->
     <nav class="breadcrumbs">
@@ -159,6 +162,8 @@ const ogImage = categoryOgImages[category || ''] || '/og/default.png';
       <slot />
     </div>
   </article>
+  {hasSidebar && <ArticleSidebar category={category || ''} accentColor={accentColor} />}
+  </div>
 
   <script>
     // Auto-generate Table of Contents from H2 headings
@@ -242,10 +247,40 @@ const ogImage = categoryOgImages[category || ''] || '/og/default.png';
     border-radius: 0 2px 2px 0;
   }
 
-  .article-page {
+  /* Wrapper: single column by default, two-column with sidebar */
+  .article-wrapper {
     max-width: 800px;
     margin: 0 auto;
     padding: 0 24px 60px;
+  }
+  .article-wrapper.has-sidebar {
+    max-width: 1280px;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 48px;
+    align-items: start;
+  }
+
+  .article-page {
+    min-width: 0;
+  }
+
+  @media (max-width: 1100px) {
+    .article-wrapper.has-sidebar {
+      grid-template-columns: 1fr 280px;
+      gap: 32px;
+    }
+  }
+  @media (max-width: 860px) {
+    .article-wrapper.has-sidebar {
+      grid-template-columns: 1fr;
+    }
+    /* Sidebar moves below article on mobile */
+    .article-wrapper.has-sidebar :global(.article-sidebar) {
+      position: static;
+      max-height: none;
+      overflow: visible;
+    }
   }
 
   .breadcrumbs {
