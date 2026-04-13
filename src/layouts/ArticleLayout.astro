@@ -7,12 +7,24 @@ interface Props {
   breadcrumbs: { label: string; href?: string }[];
   image?: string;
   publishedDate?: string;
+  updatedDate?: string;
   category?: string;
   categoryLabel?: string;
   categoryHref?: string;
 }
 
-const { title, description, breadcrumbs, image, publishedDate, category, categoryLabel, categoryHref } = Astro.props;
+const { title, description, breadcrumbs, image, publishedDate, updatedDate, category, categoryLabel, categoryHref } = Astro.props;
+
+// Assign author persona by category
+const authorByCategory: Record<string, { name: string; id: string; title: string }> = {
+  gear: { name: 'Sara Kellner', id: 'sara-kellner', title: 'Gear & Equipment Editor' },
+  lifestyle: { name: 'Alex Morgan', id: 'alex-morgan', title: 'Senior Tennis Editor' },
+  records: { name: 'Alex Morgan', id: 'alex-morgan', title: 'Senior Tennis Editor' },
+  vs: { name: 'Alex Morgan', id: 'alex-morgan', title: 'Senior Tennis Editor' },
+  tournaments: { name: 'Alex Morgan', id: 'alex-morgan', title: 'Senior Tennis Editor' },
+  news: { name: 'Alex Morgan', id: 'alex-morgan', title: 'Senior Tennis Editor' },
+};
+const articleAuthor = authorByCategory[category || ''] || { name: 'Alex Morgan', id: 'alex-morgan', title: 'Senior Tennis Editor' };
 
 // Portrait detection is now handled client-side via JS (works for ALL image sources)
 
@@ -43,10 +55,13 @@ const articleJsonLd = {
   description,
   ...(image && { image }),
   ...(publishedDate && { datePublished: publishedDate }),
+  ...(updatedDate && { dateModified: updatedDate }),
   author: {
-    '@type': 'Organization',
-    name: 'SUPER.TENNIS',
-    url: 'https://super.tennis',
+    '@type': 'Person',
+    name: articleAuthor.name,
+    jobTitle: articleAuthor.title,
+    url: `https://super.tennis/authors/${articleAuthor.id}/`,
+    worksFor: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
   },
   publisher: {
     '@type': 'Organization',
@@ -119,6 +134,9 @@ const ogImage = categoryOgImages[category || ''] || '/og/default.png';
         <div class="hero-meta">
           {publishedDate && (
             <time class="article-date">{new Date(publishedDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</time>
+          )}
+          {updatedDate && (
+            <span class="article-updated">Updated {new Date(updatedDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
           )}
           <span class="reading-time" id="reading-time"></span>
         </div>
@@ -347,6 +365,11 @@ const ogImage = categoryOgImages[category || ''] || '/og/default.png';
   .article-date {
     font-size: 0.82rem;
     color: var(--gray-500);
+  }
+  .article-updated {
+    font-size: 0.82rem;
+    color: var(--gray-500);
+    font-style: italic;
   }
 
   .reading-time {

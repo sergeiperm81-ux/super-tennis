@@ -332,6 +332,7 @@ export const lifestyleArticlePhotos: Record<string, ArticlePhoto> = {
   'tennis-what-happens-after-match': { type: 'local', value: 'https://images.unsplash.com/photo-1471295253337-3ceaaedca402?w=800&q=80' },
   'reinventing-yourself-through-tennis': { type: 'local', value: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=800&q=80' },
   'aryna-sabalenka-rise-world-number-one': { type: 'local', value: '/images/lifestyle/sabalenka-action.webp' },
+  'tennis-culture-and-the-lifestyle-it-breeds': { type: 'local', value: '/images/lifestyle/tennis-fan-culture.webp' },
 };
 
 // Records articles → photos (diversified — avoid showing same player for every record)

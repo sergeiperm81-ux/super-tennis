@@ -54,7 +54,13 @@ const jsonLd = {
   url: `https://super.tennis/gear/${slug}/`,
   ...(article.created_at && { datePublished: article.created_at }),
   ...(article.updated_at && { dateModified: article.updated_at }),
-  author: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+  author: {
+    '@type': 'Person',
+    name: 'Sara Kellner',
+    jobTitle: 'Gear & Equipment Editor',
+    url: 'https://super.tennis/authors/sara-kellner/',
+    worksFor: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+  },
   publisher: {
     '@type': 'Organization',
     name: 'SUPER.TENNIS',
@@ -78,6 +84,8 @@ const jsonLd = {
     { label: article.title },
   ]}
   image={heroImage || undefined}
+  publishedDate={article.created_at || undefined}
+  updatedDate={article.updated_at || undefined}
   category="gear"
   categoryLabel="Gear Guide"
   categoryHref="/gear/"

@@ -1,0 +1,202 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const author = {
+  id: 'alex-morgan',
+  name: 'Alex Morgan',
+  title: 'Senior Tennis Editor',
+  bio: 'Alex has followed professional tennis for over a decade, covering ATP and WTA tours with a focus on player statistics, records, and the business of tennis. Alex specializes in data-driven analysis of ranking systems, Grand Slam records, and head-to-head rivalries.',
+  longBio: `Alex Morgan has been following professional tennis for over a decade, developing deep expertise in ATP and WTA tour statistics, Grand Slam history, and the economics of professional tennis.
+
+At SUPER.TENNIS, Alex oversees coverage of player rankings, records, head-to-head matchups, and tournament guides. Alex's approach combines official ATP and WTA data with historical context to create content that's accessible to casual fans and informative for hardcore followers alike.
+
+Areas of particular focus include Grand Slam title records, ranking point systems, and the evolving rivalries that define each era of the sport.`,
+  expertise: ['ATP/WTA Rankings', 'Grand Slam Records', 'Player Statistics', 'Head-to-Head Analysis'],
+  articles: [
+    { title: 'Most Grand Slam Titles of All Time', href: '/records/most-grand-slam-titles/' },
+    { title: 'How ATP Rankings Are Calculated', href: '/faq/#rankings' },
+    { title: 'Djokovic vs Nadal Head-to-Head', href: '/vs/djokovic-vs-nadal/' },
+    { title: 'Federer vs Nadal — The Greatest Rivalry', href: '/vs/federer-vs-nadal/' },
+    { title: 'Fastest Serves in Tennis History', href: '/records/fastest-serve-tennis/' },
+  ],
+};
+
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: author.name,
+  jobTitle: author.title,
+  url: `https://super.tennis/authors/${author.id}/`,
+  description: author.bio,
+  worksFor: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+  },
+  knowsAbout: author.expertise,
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Authors', item: 'https://super.tennis/authors/' },
+    { '@type': 'ListItem', position: 3, name: author.name },
+  ],
+};
+---
+
+<BaseLayout
+  title={`${author.name} — ${author.title} at SUPER.TENNIS`}
+  description={author.bio}
+  jsonLd={personJsonLd}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <div class="author-page">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/authors/">Authors</a> <span class="sep">/</span>
+      <span class="current">{author.name}</span>
+    </nav>
+
+    <header class="author-header">
+      <div class="author-avatar">{author.name.split(' ').map(n => n[0]).join('')}</div>
+      <div class="author-meta">
+        <h1>{author.name}</h1>
+        <p class="author-title">{author.title}</p>
+        <p class="author-org">SUPER.TENNIS</p>
+      </div>
+    </header>
+
+    <section class="author-bio">
+      {author.longBio.split('\n\n').map(para => <p>{para}</p>)}
+    </section>
+
+    <section class="expertise-section">
+      <h2>Areas of Expertise</h2>
+      <div class="tags">
+        {author.expertise.map(tag => <span class="tag">{tag}</span>)}
+      </div>
+    </section>
+
+    <section class="articles-section">
+      <h2>Selected Articles</h2>
+      <ul class="article-list">
+        {author.articles.map(a => (
+          <li><a href={a.href}>{a.title}</a></li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .author-page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+  .breadcrumbs {
+    padding: 20px 0;
+    font-size: 0.82rem;
+    color: var(--gray-500);
+  }
+  .breadcrumbs a { color: var(--gray-600); }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .author-header {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 40px 0 32px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 32px;
+  }
+  .author-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--court-green);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .author-meta h1 {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    text-transform: uppercase;
+    margin: 0 0 4px;
+    color: var(--gray-900);
+  }
+  .author-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--court-green);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 2px;
+  }
+  .author-org {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+    margin: 0;
+  }
+
+  .author-bio p {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--gray-700);
+    margin: 0 0 16px;
+  }
+
+  .expertise-section, .articles-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gray-200);
+  }
+  .expertise-section h2, .articles-section h2 {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    text-transform: uppercase;
+    color: var(--gray-800);
+    margin: 0 0 16px;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .tag {
+    padding: 5px 12px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-300);
+    border-radius: 20px;
+    font-size: 0.82rem;
+    color: var(--gray-700);
+  }
+  .article-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .article-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .article-list a {
+    color: var(--gray-800);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+  .article-list a:hover { color: var(--court-green); }
+</style>

@@ -94,7 +94,13 @@ const jsonLd = {
   url: `https://super.tennis/vs/${slug}/`,
   ...(article.created_at && { datePublished: article.created_at }),
   ...(article.updated_at && { dateModified: article.updated_at }),
-  author: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+  author: {
+    '@type': 'Person',
+    name: 'Alex Morgan',
+    jobTitle: 'Senior Tennis Editor',
+    url: 'https://super.tennis/authors/alex-morgan/',
+    worksFor: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+  },
   publisher: {
     '@type': 'Organization',
     name: 'SUPER.TENNIS',
@@ -107,6 +113,16 @@ const jsonLd = {
     name: 'Tennis Head to Head',
   },
 };
+
+const faqJsonLd = article.faqs && Array.isArray(article.faqs) && article.faqs.length > 0 ? {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: article.faqs.map((faq: { question: string; answer: string }) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+} : null;
 ---
 
 <ArticleLayout
@@ -122,6 +138,7 @@ const jsonLd = {
   categoryHref="/vs/"
 >
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  {faqJsonLd && <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />}
 
   {(photo1 || photo2) && (
     <div class="vs-hero">

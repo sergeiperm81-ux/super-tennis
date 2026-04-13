@@ -66,7 +66,13 @@ const jsonLd = {
   url: `https://super.tennis/records/${slug}/`,
   ...(article.created_at && { datePublished: article.created_at }),
   ...(article.updated_at && { dateModified: article.updated_at }),
-  author: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+  author: {
+    '@type': 'Person',
+    name: 'Alex Morgan',
+    jobTitle: 'Senior Tennis Editor',
+    url: 'https://super.tennis/authors/alex-morgan/',
+    worksFor: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+  },
   publisher: {
     '@type': 'Organization',
     name: 'SUPER.TENNIS',
@@ -100,6 +106,8 @@ const faqJsonLd = article.faqs && Array.isArray(article.faqs) && article.faqs.le
     { label: article.title },
   ]}
   image={heroImage || undefined}
+  publishedDate={article.created_at || undefined}
+  updatedDate={article.updated_at || undefined}
   category="records"
   categoryLabel="Tennis Records"
   categoryHref="/records/"
