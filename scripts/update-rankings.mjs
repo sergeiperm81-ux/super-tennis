@@ -1,13 +1,17 @@
 #!/usr/bin/env node
 /**
- * SUPER.TENNIS — Rankings Update (TennisLiveRanking.com)
+ * SUPER.TENNIS — Rankings Update
  *
- * Fetches current ATP & WTA rankings from tennisliveranking.com
- * with real points, validates data, updates Supabase.
- * Sends Telegram alert on failure.
+ * Sources (as of 2026-04):
+ *   ATP: atptour.com official HTML — 200 players (2 pages × 100)
+ *   WTA: ESPN tennis rankings HTML — 150 players (1 page)
+ *
+ * tennisliveranking.com was repurposed (no longer tennis),
+ * Sofascore blocks server-side requests (403),
+ * WTA official site only SSR's top 50.
  *
  * Usage:
- *   node scripts/update-rankings.mjs [--dry-run] [--pages=4]
+ *   node scripts/update-rankings.mjs [--dry-run]
  *
  * Requires env: SUPABASE_URL, SUPABASE_SERVICE_KEY
  * Optional env: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID (for alerts)
@@ -25,11 +29,8 @@ const TELEGRAM_BOT = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT = process.env.TELEGRAM_CHAT_ID;
 
 const DRY_RUN = process.argv.includes('--dry-run');
-const PAGES_FLAG = process.argv.find(a => a.startsWith('--pages='));
-const MAX_PAGES = PAGES_FLAG ? parseInt(PAGES_FLAG.split('=')[1]) : 4; // 4 pages = top 200
 
-const BASE_URL = 'https://tennisliveranking.com';
-const FETCH_DELAY_MS = 800; // polite delay between page fetches
+const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
   console.error('❌ Missing SUPABASE_URL or SUPABASE_SERVICE_KEY');
@@ -56,107 +57,37 @@ async function sendTelegramAlert(message) {
   }
 }
 
-// ─── Sleep utility ─────────────────────────────────────
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-// ─── Parse rankings from JSON-LD structured data ───────
-function parseRankingsPage(html, tour) {
-  const players = [];
-
-  // TennisLiveRanking embeds JSON-LD ItemList with all 50 players per page
-  // Much more reliable than parsing HTML tables
-  const jsonLdBlocks = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g);
-  if (!jsonLdBlocks) return players;
-
-  for (const block of jsonLdBlocks) {
-    const jsonStr = block.replace(/<script[^>]*>/, '').replace(/<\/script>/, '').trim();
-    let parsed;
-    try {
-      // Handle array or single object
-      const raw = JSON.parse(jsonStr);
-      const items = Array.isArray(raw) ? raw : [raw];
-      for (const item of items) {
-        if (item['@type'] !== 'ItemList' || !item.itemListElement) continue;
-        parsed = item;
-        break;
-      }
-    } catch {
-      continue;
-    }
-    if (!parsed) continue;
-
-    for (const entry of parsed.itemListElement) {
-      const person = entry.item;
-      if (!person || !person.name) continue;
-
-      // Extract rank and points from "award": "Ranking: #1, Points: 12050"
-      const awardMatch = (person.award || '').match(/Ranking:\s*#(\d+),\s*Points:\s*(\d+)/);
-      if (!awardMatch) continue;
-
-      const rank = parseInt(awardMatch[1]);
-      const points = parseInt(awardMatch[2]);
-
-      // Extract slug and TLR ID from URL: /player/carlos-alcaraz/DbA5
-      const urlMatch = (person.url || '').match(/\/player\/([^/]+)\/([^/?#]+)/);
-      const tlrSlug = urlMatch ? urlMatch[1] : '';
-      const tlrId = urlMatch ? urlMatch[2] : '';
-
-      players.push({
-        rank,
-        name: person.name,
-        country: '', // Not in JSON-LD, matched via DB
-        points,
-        tour,
-        tlr_slug: tlrSlug,
-        tlr_id: tlrId,
-      });
-    }
-  }
-
-  return players;
+// ─── Parse ESPN tennis rankings HTML ──────────────────
+function parseESPN(html, tour) {
+  const tb = html.match(/<tbody[\s\S]*?<\/tbody>/);
+  if (!tb) return [];
+  const rows = tb[0].match(/<tr[\s\S]*?<\/tr>/g) || [];
+  return rows.map(row => {
+    const rank = row.match(/class="rank_column">(\d+)</)?.[1];
+    const name = row.match(/class="AnchorLink"[^>]*>([^<]+)<\/a>/)?.[1];
+    const slug = row.match(/\/tennis\/player\/_\/id\/\d+\/([^"]+)"/)?.[1];
+    // Points: first <span class=""> in the row that contains a number
+    const ptSpans = row.match(/<span class="">([0-9,]+)<\/span>/g) || [];
+    const pts = ptSpans[0] ? +ptSpans[0].replace(/<[^>]*>/g, '').replace(/,/g, '') : null;
+    return rank && name ? { rank: +rank, name: name.trim(), slug, points: pts, tour } : null;
+  }).filter(Boolean);
 }
 
-// ─── Fetch all ranking pages for a tour ────────────────
+// ─── Fetch rankings from ESPN (ATP or WTA, top 150) ────
 async function fetchTourRankings(tour) {
-  const tourPath = tour === 'atp' ? 'atp-singles' : 'wta-singles';
-  const allPlayers = [];
+  const espnType = tour === 'atp' ? 'atp' : 'wta';
+  const url = `https://www.espn.com/tennis/rankings/_/type/${espnType}`;
+  console.log(`  📥 Fetching ${tour.toUpperCase()} from ESPN: ${url}`);
 
-  for (let page = 1; page <= MAX_PAGES; page++) {
-    const url = `${BASE_URL}/ranking/${tourPath}?pageNum=${page}`;
-    console.log(`  📥 Fetching ${tour.toUpperCase()} page ${page}/${MAX_PAGES}: ${url}`);
+  const res = await fetch(url, {
+    headers: { 'User-Agent': BROWSER_UA, 'Accept': 'text/html' },
+  });
 
-    try {
-      const res = await fetch(url, {
-        headers: {
-          'User-Agent': 'SuperTennis/1.0 (https://super.tennis; data aggregation)',
-          'Accept': 'text/html',
-        },
-      });
-
-      if (!res.ok) {
-        console.error(`  ❌ HTTP ${res.status} for page ${page}`);
-        break;
-      }
-
-      const html = await res.text();
-      const pagePlayers = parseRankingsPage(html, tour);
-      console.log(`     → Parsed ${pagePlayers.length} players`);
-
-      if (pagePlayers.length === 0) {
-        console.log(`     → Empty page, stopping pagination`);
-        break;
-      }
-
-      allPlayers.push(...pagePlayers);
-
-      if (page < MAX_PAGES) await sleep(FETCH_DELAY_MS);
-    } catch (err) {
-      console.error(`  ❌ Fetch error page ${page}: ${err.message}`);
-      break;
-    }
-  }
-
-  return allPlayers;
+  if (!res.ok) throw new Error(`ESPN ${tour.toUpperCase()} returned HTTP ${res.status}`);
+  const html = await res.text();
+  const players = parseESPN(html, tour);
+  console.log(`     → Parsed ${players.length} players`);
+  return players;
 }
 
 // ─── Slug from name ────────────────────────────────────
@@ -235,34 +166,24 @@ async function updateRankingsInDB(parsedPlayers, rankingDate) {
   // Build lookup maps
   const slugMap = new Map();
   const nameMap = new Map();
-  const tlrIdMap = new Map();
 
   for (const p of existingPlayers) {
     slugMap.set(p.slug, p);
     const fullName = `${p.first_name} ${p.last_name}`.toLowerCase();
     nameMap.set(fullName, p);
     nameMap.set(`${p.last_name} ${p.first_name}`.toLowerCase(), p);
-    if (p.tlr_player_id) {
-      tlrIdMap.set(p.tlr_player_id, p);
-    }
   }
 
   const rankingRows = [];
-  const tlrUpdates = []; // Update players with TLR IDs
   let matched = 0;
   let unmatched = 0;
 
   for (const r of parsedPlayers) {
-    // Try matching: 1) TLR ID, 2) slug, 3) name fuzzy
-    let player = tlrIdMap.get(r.tlr_id);
-
+    // Try matching: 1) source slug (ATP Tour / ESPN), 2) name slug, 3) full name, 4) fuzzy
+    let player = (r.slug ? slugMap.get(r.slug) : undefined);
     if (!player) {
       const slug = nameToSlug(r.name);
-      player = slugMap.get(slug);
-    }
-
-    if (!player) {
-      player = nameMap.get(r.name.toLowerCase());
+      player = slugMap.get(slug) || nameMap.get(r.name.toLowerCase());
     }
 
     if (!player) {
@@ -284,18 +205,8 @@ async function updateRankingsInDB(parsedPlayers, rankingDate) {
         player_id: player.player_id,
         tour: r.tour,
         ranking: r.rank,
-        points: r.points,
+        points: r.points ?? 0,
       });
-
-      // Save TLR mapping if not yet stored
-      if (!player.tlr_player_id && r.tlr_id) {
-        tlrUpdates.push({
-          player_id: player.player_id,
-          tlr_player_id: r.tlr_id,
-          tlr_slug: r.tlr_slug,
-        });
-      }
-
       matched++;
     } else {
       if (r.rank <= 30) {
@@ -310,18 +221,17 @@ async function updateRankingsInDB(parsedPlayers, rankingDate) {
   if (DRY_RUN) {
     console.log('\n🏜️  DRY RUN — no database writes');
     console.log(`  Would insert ${rankingRows.length} rankings`);
-    console.log(`  Would update ${tlrUpdates.length} TLR player IDs`);
     if (rankingRows.length > 0) {
       console.log(`  Sample: #1 = ${rankingRows[0].points} pts (player_id: ${rankingRows[0].player_id})`);
     }
-    return { inserted: 0, tlrUpdated: 0 };
+    return { inserted: 0 };
   }
 
   if (rankingRows.length === 0) {
     const msg = '❌ No rankings to insert — all players unmatched';
     console.log(msg);
     await sendTelegramAlert(msg);
-    return { inserted: 0, tlrUpdated: 0 };
+    return { inserted: 0 };
   }
 
   // Insert rankings in batches
@@ -343,44 +253,21 @@ async function updateRankingsInDB(parsedPlayers, rankingDate) {
   }
 
   console.log(`  ✅ Inserted ${inserted} ranking rows`);
-
-  // Update TLR IDs on players
-  let tlrUpdated = 0;
-  if (tlrUpdates.length > 0) {
-    console.log(`\n🔗 Saving ${tlrUpdates.length} TLR player ID mappings...`);
-    for (const upd of tlrUpdates) {
-      const { error } = await supabase
-        .from('players')
-        .update({ tlr_player_id: upd.tlr_player_id, tlr_slug: upd.tlr_slug })
-        .eq('player_id', upd.player_id);
-
-      if (error) {
-        console.error(`  ⚠️ TLR update failed for ${upd.player_id}: ${error.message}`);
-      } else {
-        tlrUpdated++;
-      }
-    }
-    console.log(`  ✅ Updated ${tlrUpdated} TLR mappings`);
-  }
-
-  return { inserted, tlrUpdated };
+  return { inserted };
 }
 
 // ─── Main ──────────────────────────────────────────────
 async function main() {
-  console.log('🎾 SUPER.TENNIS Rankings Updater (TennisLiveRanking)\n');
+  console.log('🎾 SUPER.TENNIS Rankings Updater (ATP Tour + ESPN)\n');
   if (DRY_RUN) console.log('🏜️  DRY RUN MODE — no writes\n');
 
   const today = new Date().toISOString().split('T')[0];
-  console.log(`📅 Ranking date: ${today}`);
-  console.log(`📄 Max pages per tour: ${MAX_PAGES} (${MAX_PAGES * 50} players)\n`);
+  console.log(`📅 Ranking date: ${today}\n`);
 
   // Fetch ATP
   console.log('── ATP Singles ──');
   const atpPlayers = await fetchTourRankings('atp');
   console.log(`  Total ATP: ${atpPlayers.length} players\n`);
-
-  await sleep(1000);
 
   // Fetch WTA
   console.log('── WTA Singles ──');
@@ -419,7 +306,7 @@ async function main() {
 
   // Update DB
   const allParsed = [...atpPlayers, ...wtaPlayers];
-  const { inserted, tlrUpdated } = await updateRankingsInDB(allParsed, today);
+  const { inserted } = await updateRankingsInDB(allParsed, today);
 
   // Summary
   const summary = [
@@ -428,7 +315,6 @@ async function main() {
     `   ATP: ${atpPlayers.length} parsed`,
     `   WTA: ${wtaPlayers.length} parsed`,
     `   DB: ${inserted} rankings inserted`,
-    `   TLR mappings: ${tlrUpdated} saved`,
   ].join('\n');
   console.log(summary);
 
