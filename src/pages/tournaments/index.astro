@@ -77,11 +77,21 @@ function getVenuePhoto(slug: string): string | null {
   return null;
 }
 
-// Separate Grand Slams from other tournaments
-const grandSlams = tournamentArticles.filter(a => getLevel(a.slug) === 'Grand Slam');
-const otherTournaments = tournamentArticles.filter(a => getLevel(a.slug) !== 'Grand Slam');
+// Main tournament guide slugs end with -guide or -complete-guide.
+// Feature/editorial articles (e.g. "roland-garros-clay-history") do NOT.
+function isTournamentGuide(slug: string): boolean {
+  return slug.endsWith('-guide') || slug.endsWith('-complete-guide');
+}
 
-// Sort others: Finals first, then Masters, then Team
+// Guides = dedicated tournament hub pages; features = editorial / in-depth articles
+const tournamentGuides = tournamentArticles.filter(a => isTournamentGuide(a.slug));
+const featureArticles = tournamentArticles.filter(a => !isTournamentGuide(a.slug));
+
+// Among guides only: separate Grand Slams from others
+const grandSlams = tournamentGuides.filter(a => getLevel(a.slug) === 'Grand Slam');
+const otherTournaments = tournamentGuides.filter(a => getLevel(a.slug) !== 'Grand Slam');
+
+// Sort other guides: Finals first, then Masters, then Team
 const levelOrder: Record<string, number> = { 'Finals': 0, 'Masters 1000': 1, 'Team Event': 2 };
 const sortedOthers = [...otherTournaments].sort((a, b) => {
   return (levelOrder[getLevel(a.slug)] ?? 9) - (levelOrder[getLevel(b.slug)] ?? 9);
@@ -107,7 +117,8 @@ const sortedOthers = [...otherTournaments].sort((a, b) => {
           <h2 class="section-title">Grand Slam Tournaments</h2>
           <div class="gs-grid">
             {grandSlams.map(article => {
-              const photo = getVenuePhoto(article.slug);
+              // Venue photo first for main guides — article.image_url is only a generic fallback for these
+              const photo = getVenuePhoto(article.slug) || article.image_url;
               const surface = getSurface(article.slug);
               return (
                 <div class={`gs-card surface-${surface}`}>
@@ -130,6 +141,37 @@ const sortedOthers = [...otherTournaments].sort((a, b) => {
                 </div>
               );
             })}
+          </div>
+        </section>
+      )}
+
+      {/* In-depth feature articles (non-guide editorial content) */}
+      {featureArticles.length > 0 && (
+        <section class="features-section">
+          <h2 class="section-title">In-Depth Articles</h2>
+          <div class="features-grid">
+            {featureArticles.map(article => (
+              <a href={`/tournaments/${article.slug}/`} class="feature-article-card">
+                {article.image_url && (
+                  <div class="feature-article-img">
+                    <img
+                      src={article.image_url}
+                      alt={article.image_alt || article.title}
+                      loading="lazy"
+                      width="400"
+                      height="267"
+                      onerror="this.parentElement.style.display='none'"
+                    />
+                  </div>
+                )}
+                <div class="feature-article-body">
+                  <span class="level-badge gs">{getIcon(article.slug)} {getSurface(article.slug) === 'clay' ? 'Roland Garros' : 'Feature'}</span>
+                  <h3>{article.title}</h3>
+                  <p>{stripMarkdown(article.excerpt || article.meta_description || '')}</p>
+                  <span class="read-more">Read Article →</span>
+                </div>
+              </a>
+            ))}
           </div>
         </section>
       )}
@@ -227,6 +269,70 @@ const sortedOthers = [...otherTournaments].sort((a, b) => {
   .gs-icon {
     font-size: 1.4rem;
     margin-bottom: 8px;
+  }
+
+  /* ===== FEATURE ARTICLE CARDS ===== */
+  .features-section {
+    margin-bottom: 48px;
+  }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .feature-article-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border-top: 3px solid #d97706;
+    transition: all 0.2s;
+  }
+  .feature-article-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  .feature-article-img {
+    aspect-ratio: 16/10;
+    overflow: hidden;
+  }
+  .feature-article-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+  .feature-article-card:hover .feature-article-img img {
+    transform: scale(1.05);
+  }
+  .feature-article-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+  .feature-article-body .level-badge { width: fit-content; }
+  .feature-article-body h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.35;
+  }
+  .feature-article-body p {
+    color: var(--gray-600);
+    font-size: 0.82rem;
+    line-height: 1.6;
+    margin: 0;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   /* ===== OTHER TOURNAMENT CARDS ===== */
@@ -368,10 +474,12 @@ const sortedOthers = [...otherTournaments].sort((a, b) => {
 
   @media (max-width: 1024px) {
     .tournaments-grid { grid-template-columns: repeat(2, 1fr); }
+    .features-grid { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 768px) {
     .gs-grid { grid-template-columns: 1fr; }
     .tournaments-grid { grid-template-columns: 1fr; }
+    .features-grid { grid-template-columns: 1fr; }
     .related-links { grid-template-columns: 1fr; }
     .page-hero h1 { font-size: 2rem; }
     .gs-card-img { aspect-ratio: 16 / 10; }

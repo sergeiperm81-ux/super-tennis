@@ -20,7 +20,38 @@ function hashCode(s: string): number {
   return Math.abs(h);
 }
 
-const fallbackImage = '/images/news/court-01.webp';
+// Category-specific fallback pools — slug hash picks a different image per article
+const FALLBACK_POOLS: Record<string, string[]> = {
+  news: [
+    '/images/news/atmo-01.webp', '/images/news/atmo-03.webp', '/images/news/atmo-05.webp',
+    '/images/news/court-04.webp', '/images/news/court-07.webp', '/images/news/court-11.webp',
+    '/images/news/venue-01.webp', '/images/news/venue-04.webp', '/images/news/detail-02.webp',
+  ],
+  tournaments: [
+    '/images/tournaments/roland-garros.webp', '/images/tournaments/wimbledon.webp',
+    '/images/tournaments/us-open.webp', '/images/tournaments/melbourne-park.webp',
+    '/images/tournaments/tennis-resort.webp',
+  ],
+  gear: [
+    '/images/gear/tennis-rackets.webp', '/images/gear/tennis-balls.webp',
+    '/images/gear/tennis-shoes.webp', '/images/gear/tennis-strings.webp',
+    '/images/gear/tennis-bags-guide.webp',
+  ],
+  lifestyle: [
+    '/images/lifestyle/tennis-court-sunset.webp', '/images/lifestyle/tennis-fans-crowd.webp',
+    '/images/lifestyle/tennis-mental-health.webp', '/images/lifestyle/tennis-nutrition.webp',
+  ],
+  records: [
+    '/images/tournaments/tennis-resort.webp', '/images/tournaments/wimbledon.webp',
+    '/images/news/atmo-02.webp',
+  ],
+};
+
+function categoryFallback(slug: string, cat: string): string {
+  const pool = FALLBACK_POOLS[cat] || FALLBACK_POOLS.news;
+  return pool[Math.abs(hashCode(slug)) % pool.length];
+}
+
 let related: any[] = [];
 try {
   const all = await getArticles({ category, limit: 50 });
@@ -35,7 +66,7 @@ try {
   const photoMap = await getArticlePhotosForCategory(candidates, category);
   related = candidates.map((a: any) => ({
     ...a,
-    image_url: photoMap.get(a.slug) || a.image_url || fallbackImage,
+    image_url: photoMap.get(a.slug) || a.image_url || categoryFallback(a.slug, category),
   }));
 } catch (e) {
   // silently fail
@@ -55,7 +86,7 @@ try {
               loading="lazy"
               width="400"
               height="267"
-              onerror="this.src='/images/news/court-01.webp'"
+              onerror="this.style.opacity='0'"
             />
           </div>
           <h3 class="related-card__title">{article.title}</h3>
