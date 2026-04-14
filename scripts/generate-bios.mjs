@@ -152,16 +152,18 @@ async function main() {
   console.log(`  Dry run: ${DRY_RUN}`);
   console.log('');
 
-  // Fetch players that need bios
+  // Fetch players that need bios:
+  // - has a page (career_titles > 0 OR tlr_player_id set)
+  // - missing bio_short (null or empty string)
   let query = supabase
     .from('players')
     .select('player_id, first_name, last_name, slug, country_code, tour, hand, birth_date, height_cm, career_titles, grand_slam_titles, career_win, career_loss, bio_short')
-    .gt('career_titles', 0)
+    .or('career_titles.gt.0,tlr_player_id.not.is.null')
     .order('career_titles', { ascending: false })
     .limit(LIMIT);
 
   if (TOUR_FILTER) query = query.eq('tour', TOUR_FILTER);
-  if (!FORCE) query = query.is('bio_short', null);
+  if (!FORCE) query = query.or('bio_short.is.null,bio_short.eq.');
 
   const { data: players, error } = await query;
 
