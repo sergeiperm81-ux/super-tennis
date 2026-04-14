@@ -124,7 +124,7 @@ const ogImage = categoryOgImages[category || ''] || '/og/default.png';
     <header class="article-hero" style={`--accent: ${accentColor}`}>
       {image && (
         <div class="hero-image">
-          <img src={image} alt={title} loading="eager" decoding="async" onerror="this.parentElement.style.display='none'" />
+          <img src={image} alt={title} loading="eager" decoding="async" width="800" height="440" onerror="this.parentElement.style.display='none'" />
           <div class="hero-image-overlay"></div>
         </div>
       )}
