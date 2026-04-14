@@ -4,6 +4,7 @@
  * with internal links at build time.
  */
 import { supabase } from './supabase';
+import { sanitizeArticleHtml } from './sanitize';
 
 interface EntityLink {
   name: string;
@@ -180,7 +181,7 @@ export async function addInterlinks(
     }
   }
 
-  return html;
+  return sanitizeArticleHtml(html);
 }
 
 /**

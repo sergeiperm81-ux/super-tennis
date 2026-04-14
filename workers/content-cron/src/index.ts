@@ -1674,6 +1674,13 @@ export default {
         if (!name || !email || !message) {
           return new Response(JSON.stringify({ error: 'Missing fields' }), { status: 400, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://super.tennis' } });
         }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          return new Response(JSON.stringify({ error: 'Invalid email' }), { status: 400, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://super.tennis' } });
+        }
+        if (name.length > 200 || email.length > 200 || message.length > 5000 || (subject || '').length > 200) {
+          return new Response(JSON.stringify({ error: 'Field too long' }), { status: 400, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://super.tennis' } });
+        }
         // Store in Supabase
         await supabaseQuery(env, 'contact_messages', 'POST', {}, {
           name, email, subject: subject || 'general', message,
@@ -1759,7 +1766,10 @@ export default {
     const RATE_LIMIT_WINDOW_S = 900; // 15 minutes
 
     async function checkRateLimit(req: Request, e: Env): Promise<Response | null> {
-      if (!e.RATE_LIMIT) return null; // KV not configured, skip
+      if (!e.RATE_LIMIT) {
+        console.warn('RATE_LIMIT KV not configured — rate limiting disabled');
+        return null;
+      }
       const ip = req.headers.get('CF-Connecting-IP') || 'unknown';
       const key = `rl:${ip}`;
       const raw = await e.RATE_LIMIT.get(key);
