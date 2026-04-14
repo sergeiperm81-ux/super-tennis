@@ -169,7 +169,7 @@ export const gearArticlePhotos: Record<string, ArticlePhoto> = {
   'tennis-shoe-technology-guide': { type: 'local', value: '/images/gear/tennis-shoe-tech.webp' },
   // Strings
   'best-tennis-strings-guide': { type: 'local', value: '/images/gear/tennis-strings.webp' },
-  'best-tennis-strings-spin': { type: 'local', value: '/images/gear/_new_strings3.webp' },
+  'best-tennis-strings-spin': { type: 'local', value: '/images/gear/spin-racket-showdown.webp' },
   'tennis-string-tension-guide': { type: 'local', value: '/images/gear/_new_strings1.webp' },
   'tennis-racket-string-tension-guide': { type: 'local', value: '/images/gear/_new_strings2.webp' },
   'tennis-stringing-machine-guide': { type: 'local', value: '/images/gear/tennis-stringing.webp' },
@@ -187,7 +187,7 @@ export const gearArticlePhotos: Record<string, ArticlePhoto> = {
   'tennis-bag-what-pros-carry': { type: 'local', value: '/images/gear/_test_equip08.webp' },
   // Balls & Machines
   'best-tennis-balls-2026': { type: 'local', value: '/images/gear/tennis-balls.webp' },
-  'best-tennis-balls-comparison': { type: 'local', value: '/images/gear/tennis-balls-comparison.webp' },
+  'best-tennis-balls-comparison': { type: 'local', value: '/images/gear/_new_balls1.webp' },
   'best-tennis-ball-machines': { type: 'local', value: '/images/gear/_test_balls.webp' },
   'best-tennis-ball-machines-2026': { type: 'local', value: '/images/gear/tennis-ball-machine.webp' },
   // Dampeners
