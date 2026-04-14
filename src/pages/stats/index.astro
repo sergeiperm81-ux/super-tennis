@@ -13,6 +13,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       <button class="stats-tab active" data-tab="analytics">📊 Analytics</button>
       <button class="stats-tab" data-tab="publications">🎬 Video Publications</button>
       <button class="stats-tab" data-tab="brief">📋 Weekly Brief</button>
+      <button class="stats-tab" data-tab="ops">⚙️ Ops</button>
     </div>
 
     <!-- ===== TAB: ANALYTICS ===== -->
@@ -202,6 +203,69 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       </div>
 
     </div><!-- end tab-brief -->
+
+    <!-- ===== TAB: OPS ===== -->
+    <div id="tab-ops" class="stats-tab-panel" hidden>
+      <p class="stats-dash__range" style="margin-bottom:1rem;">
+        Live view of every automated agent, content pipeline, and health check.
+        <span id="ops-generated" style="margin-left:.5rem;opacity:.6;"></span>
+      </p>
+
+      <div id="ops-loading" class="stats-loading">Loading ops status…</div>
+      <div id="ops-error" class="stats-loading" hidden style="color:#f87171;"></div>
+
+      <div id="ops-content" hidden>
+        <!-- Summary counters -->
+        <div class="stats-kpi" style="margin-bottom:1.25rem;">
+          <div class="stats-kpi__card">
+            <span class="stats-kpi__label">News · last 24h</span>
+            <span class="stats-kpi__value" id="ops-kpi-news">—</span>
+          </div>
+          <div class="stats-kpi__card">
+            <span class="stats-kpi__label">Articles · last 24h</span>
+            <span class="stats-kpi__value" id="ops-kpi-articles">—</span>
+          </div>
+          <div class="stats-kpi__card">
+            <span class="stats-kpi__label">Videos · last 24h</span>
+            <span class="stats-kpi__value" id="ops-kpi-videos">—</span>
+          </div>
+          <div class="stats-kpi__card">
+            <span class="stats-kpi__label">Agents OK</span>
+            <span class="stats-kpi__value" id="ops-kpi-health">—</span>
+          </div>
+        </div>
+
+        <!-- Agents table -->
+        <div class="stats-section">
+          <h2 class="stats-section__title">Agents</h2>
+          <table class="stats-table">
+            <thead>
+              <tr>
+                <th>Agent</th>
+                <th>What</th>
+                <th>Schedule</th>
+                <th>Last data</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="ops-agents-body"></tbody>
+          </table>
+        </div>
+
+        <!-- Health checks -->
+        <div class="stats-section">
+          <h2 class="stats-section__title">Health</h2>
+          <table class="stats-table">
+            <thead><tr><th>Check</th><th>Status</th><th>Detail</th></tr></thead>
+            <tbody id="ops-health-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Trigger result toast -->
+      <div id="ops-toast" class="stats-loading" hidden style="margin-top:1rem;white-space:pre-wrap;font-family:monospace;font-size:.85rem;"></div>
+    </div><!-- end tab-ops -->
 
   </div>
 </section>
@@ -393,6 +457,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         loadBrief();
       }
     }
+
+    if (tabName === 'ops') {
+      loadOps();
+    }
   }
 
   document.querySelectorAll('.stats-tab').forEach(function(tab) {
@@ -401,7 +469,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
   // Restore tab from URL hash on page load
   var hashTab = location.hash.replace('#', '');
-  if (hashTab === 'publications' || hashTab === 'brief') switchTab(hashTab);
+  if (hashTab === 'publications' || hashTab === 'brief' || hashTab === 'ops') switchTab(hashTab);
 
   // ===== PUBLICATIONS TAB =====
   var pubLoaded = false;
@@ -762,6 +830,130 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       document.getElementById('brief-recs-list').innerHTML = html;
       document.getElementById('brief-recs-section').hidden = false;
     }
+  }
+
+  // ===== OPS TAB =====
+  var opsLoaded = false;
+
+  function opsEscapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  function opsAgeText(hours) {
+    if (hours == null) return '—';
+    if (hours < 1) return Math.round(hours * 60) + ' min ago';
+    if (hours < 48) return hours.toFixed(1) + ' h ago';
+    return (hours / 24).toFixed(1) + ' d ago';
+  }
+
+  function opsStatusPill(status) {
+    var colors = {
+      ok: '#22c55e', warn: '#eab308', stale: '#f87171',
+      fail: '#ef4444', unknown: '#6b7280', 'no-data': '#6b7280'
+    };
+    var bg = colors[status] || '#6b7280';
+    return '<span style="background:' + bg + ';color:#fff;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:600;text-transform:uppercase;">' + opsEscapeHtml(status) + '</span>';
+  }
+
+  async function opsTrigger(triggerPath, btn) {
+    var sp = sessionStorage.getItem('stats_pwd') || '';
+    if (!sp) { alert('Login first on the Analytics tab.'); return; }
+    var toast = document.getElementById('ops-toast');
+    toast.hidden = false;
+    toast.textContent = 'Running ' + triggerPath + '…';
+    btn.disabled = true;
+    try {
+      var res = await fetch(API + triggerPath, { method: 'GET', headers: { 'Authorization': 'Bearer ' + sp } });
+      var text = await res.text();
+      toast.textContent = (res.ok ? '✓ ' : '✗ ') + triggerPath + ' → ' + res.status + '\n\n' + text.slice(0, 2000);
+      // Refresh after 2s so the "last run" updates
+      setTimeout(function() { opsLoaded = false; loadOps(); }, 2000);
+    } catch (e) {
+      toast.textContent = '✗ Error: ' + e.message;
+    } finally {
+      btn.disabled = false;
+    }
+  }
+  window.opsTrigger = opsTrigger;
+
+  function loadOps() {
+    var sp = sessionStorage.getItem('stats_pwd') || '';
+    var loadingEl = document.getElementById('ops-loading');
+    var errorEl = document.getElementById('ops-error');
+    var contentEl = document.getElementById('ops-content');
+    loadingEl.hidden = false;
+    errorEl.hidden = true;
+    contentEl.hidden = true;
+
+    if (!sp) {
+      loadingEl.hidden = true;
+      errorEl.hidden = false;
+      errorEl.textContent = 'Login first on the Analytics tab to view ops.';
+      return;
+    }
+
+    fetch(API + '/api/ops', { headers: { 'Authorization': 'Bearer ' + sp } })
+      .then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function(data) {
+        if (data.error) throw new Error(data.error);
+        renderOps(data);
+        opsLoaded = true;
+        loadingEl.hidden = true;
+        contentEl.hidden = false;
+      })
+      .catch(function(e) {
+        loadingEl.hidden = true;
+        errorEl.hidden = false;
+        errorEl.textContent = 'Failed to load ops: ' + e.message;
+      });
+  }
+
+  function renderOps(data) {
+    // Generated timestamp
+    if (data.generated_at) {
+      document.getElementById('ops-generated').textContent =
+        '· updated ' + new Date(data.generated_at).toLocaleTimeString();
+    }
+
+    // KPI counters
+    var c = data.content_24h || {};
+    document.getElementById('ops-kpi-news').textContent = c.news || 0;
+    document.getElementById('ops-kpi-articles').textContent = c.articles || 0;
+    document.getElementById('ops-kpi-videos').textContent = c.videos || 0;
+
+    var okCount = (data.agents || []).filter(function(a) { return a.status === 'ok'; }).length;
+    document.getElementById('ops-kpi-health').textContent = okCount + ' / ' + (data.agents || []).length;
+
+    // Agents table
+    var rows = (data.agents || []).map(function(a) {
+      var btn = a.triggerPath
+        ? '<button class="stats-period" style="padding:.25rem .55rem;font-size:.75rem;" onclick="opsTrigger(\'' + a.triggerPath + '\', this)">Run</button>'
+        : '';
+      return '<tr>' +
+        '<td><strong>' + opsEscapeHtml(a.name) + '</strong><br><small style="opacity:.55">' + opsEscapeHtml(a.id) + '</small></td>' +
+        '<td style="max-width:320px">' + opsEscapeHtml(a.what) + '<br><small style="opacity:.55">' + opsEscapeHtml(a.owner) + '</small></td>' +
+        '<td><small>' + opsEscapeHtml(a.schedule) + '</small></td>' +
+        '<td>' + opsAgeText(a.age_hours) + '</td>' +
+        '<td>' + opsStatusPill(a.status) + '</td>' +
+        '<td>' + btn + '</td>' +
+        '</tr>';
+    }).join('');
+    document.getElementById('ops-agents-body').innerHTML = rows || '<tr><td colspan="6" style="opacity:.6">No agents registered</td></tr>';
+
+    // Health table
+    var hRows = (data.health || []).map(function(h) {
+      return '<tr>' +
+        '<td>' + opsEscapeHtml(h.check) + '</td>' +
+        '<td>' + opsStatusPill(h.status) + '</td>' +
+        '<td><small style="opacity:.75">' + opsEscapeHtml(h.detail || '') + '</small></td>' +
+        '</tr>';
+    }).join('');
+    document.getElementById('ops-health-body').innerHTML = hRows || '<tr><td colspan="3" style="opacity:.6">No checks</td></tr>';
   }
 
 })();

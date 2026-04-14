@@ -1561,6 +1561,252 @@ async function sendTelegramAlert(env: Env, text: string): Promise<void> {
 }
 
 // ============================================================
+// OPS REGISTRY — single source of truth for the /stats/ Ops tab
+// Each entry describes one automated pipeline. If it writes to a
+// Supabase table, we read max(timestampField) and compute its age
+// so you can see "news last updated 2h ago" etc. on the dashboard.
+// ============================================================
+
+interface OpsAgent {
+  id: string;
+  name: string;
+  what: string;
+  schedule: string;                       // human readable
+  owner: string;                          // where it runs
+  /** Supabase table to check freshness; omit if no Supabase writes */
+  table?: string;
+  /** Timestamp field in that table (e.g. "created_at", "published_at") */
+  timestampField?: string;
+  /** If actual last-write is older than this many hours → status = "stale" */
+  freshWithinHours?: number;
+  /** Manual trigger URL path on this worker (for the "Run now" button) */
+  triggerPath?: string;
+}
+
+const OPS_REGISTRY: OpsAgent[] = [
+  {
+    id: 'news-fetch',
+    name: 'News fetch',
+    what: 'RSS → Supabase.news, curated via OpenAI',
+    schedule: 'daily 07:00 Sofia + failsafe backups',
+    owner: 'Cloudflare Worker cron + .github/news-failsafe.yml',
+    table: 'news',
+    timestampField: 'published_at',
+    freshWithinHours: 30,
+    triggerPath: '/trigger/news',
+  },
+  {
+    id: 'video-cache',
+    name: 'YouTube video cache',
+    what: 'Cache featured YouTube videos (homepage carousel)',
+    schedule: 'every 3 days (inside Worker cron)',
+    owner: 'Cloudflare Worker cron',
+    table: 'youtube_videos',
+    timestampField: 'created_at',
+    freshWithinHours: 24 * 4,
+    triggerPath: '/trigger/videos',
+  },
+  {
+    id: 'rankings-sync',
+    name: 'ATP/WTA rankings sync',
+    what: '200 ATP + 200 WTA from TennisLiveRanking → Supabase.rankings',
+    schedule: 'weekly (GitHub Actions)',
+    owner: '.github/workflows/weekly-rankings.yml',
+    table: 'rankings',
+    timestampField: 'updated_at',
+    freshWithinHours: 24 * 8,
+    triggerPath: '/trigger/rankings',
+  },
+  {
+    id: 'article-generator',
+    name: 'Weekly article',
+    what: 'Generate 1 long-form gear/lifestyle article via OpenAI',
+    schedule: 'weekly (manual trigger today)',
+    owner: 'Cloudflare Worker /trigger/article',
+    table: 'articles',
+    timestampField: 'created_at',
+    freshWithinHours: 24 * 10,
+    triggerPath: '/trigger/article',
+  },
+  {
+    id: 'weekly-brief',
+    name: 'Weekly brief',
+    what: 'Aggregate 7-day roundup for /stats/ Weekly Brief tab',
+    schedule: 'weekly',
+    owner: 'Cloudflare Worker /trigger/brief',
+    table: 'weekly_briefs',
+    timestampField: 'week_start',
+    freshWithinHours: 24 * 10,
+    triggerPath: '/trigger/brief',
+  },
+  {
+    id: 'youtube-shorts',
+    name: 'YouTube Shorts auto-publisher',
+    what: '1 Short/day generated + uploaded to YouTube',
+    schedule: 'daily 09:24 Sofia',
+    owner: '.github/workflows/content-factory.yml',
+    table: 'video_publications',
+    timestampField: 'scheduled_at',
+    freshWithinHours: 30,
+  },
+  {
+    id: 'bluesky-poster',
+    name: 'Bluesky social poster',
+    what: '~20 posts/day to supertennisnews.bsky.social',
+    schedule: 'every 30 min',
+    owner: '.github/workflows/social-poster.yml',
+  },
+  {
+    id: 'indexing-api',
+    name: 'Google Indexing API submitter',
+    what: '200 URLs/day submitted to Google Indexing API',
+    schedule: 'daily 08:30 Sofia',
+    owner: '.github/workflows/indexing-cron.yml',
+  },
+  {
+    id: 'watchdog',
+    name: 'Site watchdog (Telegram)',
+    what: 'Health probe; fires Telegram alert on failures',
+    schedule: 'daily 10:00 + 16:00 Sofia',
+    owner: '.github/workflows/watchdog.yml',
+  },
+  {
+    id: 'supabase-backup',
+    name: 'Supabase backup',
+    what: 'Dump critical tables to GitHub artifacts',
+    schedule: 'weekly',
+    owner: '.github/workflows/backup-supabase.yml',
+  },
+  {
+    id: 'enrich-boost',
+    name: 'Player enrichment',
+    what: 'Fill missing player bios/photos via OpenAI + Wikimedia',
+    schedule: 'weekly',
+    owner: '.github/workflows/enrich-boost.yml',
+  },
+  {
+    id: 'lighthouse-ci',
+    name: 'Lighthouse CI',
+    what: 'Perf/SEO audit on every main push',
+    schedule: 'on push to main',
+    owner: '.github/workflows/lighthouse-ci.yml',
+  },
+];
+
+/** Ask Supabase for the newest row in a table and return its timestamp. */
+async function getLatestTimestamp(
+  env: Env,
+  table: string,
+  field: string
+): Promise<string | null> {
+  try {
+    const rows = await supabaseQuery(env, table, 'GET', {
+      select: field,
+      order: `${field}.desc.nullslast`,
+      limit: '1',
+    });
+    if (!Array.isArray(rows) || rows.length === 0) return null;
+    return rows[0][field] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Count rows in `table` with `field` within the last N hours. */
+async function countRecentRows(
+  env: Env,
+  table: string,
+  field: string,
+  hours: number
+): Promise<number> {
+  try {
+    const since = new Date(Date.now() - hours * 3600_000).toISOString();
+    const rows = await supabaseQuery(
+      env,
+      table,
+      'GET',
+      { select: field, [`${field}`]: `gte.${since}` },
+      undefined,
+      { Prefer: 'count=exact' }
+    );
+    return Array.isArray(rows) ? rows.length : 0;
+  } catch {
+    return 0;
+  }
+}
+
+/** Main snapshot builder for the /api/ops endpoint. */
+async function buildOpsSnapshot(env: Env): Promise<any> {
+  const now = Date.now();
+
+  // 1. Per-agent freshness (parallel for speed)
+  const agents = await Promise.all(
+    OPS_REGISTRY.map(async (a) => {
+      if (!a.table || !a.timestampField) {
+        return { ...a, last_run_at: null, age_hours: null, status: 'unknown' };
+      }
+      const ts = await getLatestTimestamp(env, a.table, a.timestampField);
+      if (!ts) {
+        return { ...a, last_run_at: null, age_hours: null, status: 'no-data' };
+      }
+      const ageHours = (now - Date.parse(ts)) / 3600_000;
+      const limit = a.freshWithinHours ?? 24 * 30;
+      const status =
+        ageHours <= limit * 0.5 ? 'ok' : ageHours <= limit ? 'warn' : 'stale';
+      return {
+        ...a,
+        last_run_at: ts,
+        age_hours: Math.round(ageHours * 10) / 10,
+        status,
+      };
+    })
+  );
+
+  // 2. Content counts — last 24 hours
+  const [news24h, articles24h, videos24h] = await Promise.all([
+    countRecentRows(env, 'news', 'published_at', 24),
+    countRecentRows(env, 'articles', 'created_at', 24),
+    countRecentRows(env, 'video_publications', 'scheduled_at', 24),
+  ]);
+
+  // 3. Simple health checks
+  const health: { check: string; status: 'ok' | 'warn' | 'fail'; detail?: string }[] = [];
+  try {
+    const res = await fetch('https://super.tennis/sitemap-index.xml', { method: 'HEAD' });
+    health.push({
+      check: 'sitemap reachable',
+      status: res.ok ? 'ok' : 'fail',
+      detail: `HTTP ${res.status}`,
+    });
+  } catch (e: any) {
+    health.push({ check: 'sitemap reachable', status: 'fail', detail: e.message });
+  }
+  const newsAgent = agents.find((x) => x.id === 'news-fetch');
+  if (newsAgent?.age_hours != null) {
+    health.push({
+      check: 'news freshness',
+      status: newsAgent.status === 'ok' ? 'ok' : newsAgent.status === 'warn' ? 'warn' : 'fail',
+      detail: `latest ${newsAgent.age_hours}h old`,
+    });
+  }
+  const rankAgent = agents.find((x) => x.id === 'rankings-sync');
+  if (rankAgent?.age_hours != null) {
+    health.push({
+      check: 'rankings freshness',
+      status: rankAgent.status === 'ok' ? 'ok' : rankAgent.status === 'warn' ? 'warn' : 'fail',
+      detail: `latest ${rankAgent.age_hours}h old`,
+    });
+  }
+
+  return {
+    generated_at: new Date().toISOString(),
+    agents,
+    content_24h: { news: news24h, articles: articles24h, videos: videos24h },
+    health,
+  };
+}
+
+// ============================================================
 // WORKER ENTRY POINT
 // ============================================================
 export default {
@@ -1897,6 +2143,22 @@ export default {
       }
     }
 
+    // ── OPS DASHBOARD API (password-protected) ──
+    // Returns agent registry + freshness of each data pipeline + health checks.
+    // Powers the "Ops" tab in /stats/. See OPS_REGISTRY below for what each agent means.
+
+    if (url.pathname === '/api/ops') {
+      const authErr = await requireAuthWithRateLimit(request, url, env);
+      if (authErr) return authErr;
+      try {
+        const data = await buildOpsSnapshot(env);
+        return jsonResponse(data, 60, request); // cache 60s
+      } catch (e: any) {
+        console.error('API /api/ops error:', e.message);
+        return jsonResponse({ error: 'Internal error', detail: e.message }, 0, request);
+      }
+    }
+
     // ── MANUAL TRIGGERS (password-protected) ──
 
     if (url.pathname.startsWith('/trigger/')) {
@@ -1948,6 +2210,7 @@ API (client-side, no rebuild):
   /api/videos        GET 6 featured videos JSON
   /api/analytics     GET site analytics (password-protected)
   /api/brief         GET latest weekly brief (password-protected)
+  /api/ops           GET ops dashboard snapshot (password-protected)
 
 Manual triggers:
   /trigger/news      Generate news

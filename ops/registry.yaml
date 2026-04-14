@@ -1,0 +1,107 @@
+# Ops Registry — single source of truth for all automated agents & pipelines.
+#
+# The LIVE dashboard lives at https://super.tennis/stats/#ops (same password as
+# the Analytics tab). This YAML is for humans — so you can read it in one page.
+#
+# IMPORTANT: the worker endpoint /api/ops maintains its own TypeScript copy of
+# this list (OPS_REGISTRY in workers/content-cron/src/index.ts). When you add
+# or remove an agent, update BOTH files — the TS version is what the dashboard
+# actually queries, this YAML is documentation.
+
+agents:
+  # ─── Cloudflare Worker (supertennis-cron) ───
+  - id: news-fetch
+    name: News fetch
+    what: "RSS → Supabase.news, curated via OpenAI gpt-4o-mini"
+    schedule: "daily 07:00 Sofia (04:00 UTC) + github failsafe backups"
+    owner: "Cloudflare Worker cron + .github/workflows/news-failsafe.yml"
+    writes_to: { table: news, timestamp: published_at }
+    fresh_within_hours: 30
+    manual_trigger: /trigger/news
+
+  - id: video-cache
+    name: YouTube video cache
+    what: "Cache featured YouTube videos for homepage carousel"
+    schedule: "every 3 days (inside Worker daily cron)"
+    owner: "Cloudflare Worker cron"
+    writes_to: { table: youtube_videos, timestamp: created_at }
+    fresh_within_hours: 96
+    manual_trigger: /trigger/videos
+
+  - id: rankings-sync
+    name: ATP/WTA rankings sync
+    what: "200 ATP + 200 WTA pulled from TennisLiveRanking → Supabase.rankings"
+    schedule: "weekly"
+    owner: ".github/workflows/weekly-rankings.yml"
+    writes_to: { table: rankings, timestamp: updated_at }
+    fresh_within_hours: 192
+    manual_trigger: /trigger/rankings
+
+  - id: article-generator
+    name: Weekly article
+    what: "Generate 1 long-form gear/lifestyle article via OpenAI"
+    schedule: "weekly (manual trigger today)"
+    owner: "Cloudflare Worker /trigger/article"
+    writes_to: { table: articles, timestamp: created_at }
+    fresh_within_hours: 240
+    manual_trigger: /trigger/article
+
+  - id: weekly-brief
+    name: Weekly brief
+    what: "Aggregate 7-day roundup for /stats/ Weekly Brief tab"
+    schedule: "weekly"
+    owner: "Cloudflare Worker /trigger/brief"
+    writes_to: { table: weekly_briefs, timestamp: week_start }
+    fresh_within_hours: 240
+    manual_trigger: /trigger/brief
+
+  # ─── GitHub Actions ───
+  - id: youtube-shorts
+    name: YouTube Shorts auto-publisher
+    what: "1 Short/day generated + uploaded to YouTube"
+    schedule: "daily 09:24 Sofia"
+    owner: ".github/workflows/content-factory.yml"
+    writes_to: { table: video_publications, timestamp: scheduled_at }
+    fresh_within_hours: 30
+
+  - id: bluesky-poster
+    name: Bluesky social poster
+    what: "~20 posts/day to supertennisnews.bsky.social"
+    schedule: "every 30 min"
+    owner: ".github/workflows/social-poster.yml"
+
+  - id: indexing-api
+    name: Google Indexing API submitter
+    what: "200 URLs/day submitted to Google Indexing API"
+    schedule: "daily 08:30 Sofia"
+    owner: ".github/workflows/indexing-cron.yml"
+
+  - id: watchdog
+    name: Site watchdog (Telegram)
+    what: "Health probe; fires Telegram alert on failures"
+    schedule: "daily 10:00 + 16:00 Sofia"
+    owner: ".github/workflows/watchdog.yml"
+
+  - id: supabase-backup
+    name: Supabase backup
+    what: "Dump critical tables to GitHub artifacts"
+    schedule: "weekly"
+    owner: ".github/workflows/backup-supabase.yml"
+
+  - id: enrich-boost
+    name: Player enrichment
+    what: "Fill missing player bios/photos via OpenAI + Wikimedia"
+    schedule: "weekly"
+    owner: ".github/workflows/enrich-boost.yml"
+
+  - id: lighthouse-ci
+    name: Lighthouse CI
+    what: "Perf/SEO audit on every main push"
+    schedule: "on push to main"
+    owner: ".github/workflows/lighthouse-ci.yml"
+
+# How to add a new agent:
+# 1. Add a block here (documentation).
+# 2. Add the same entry to OPS_REGISTRY in workers/content-cron/src/index.ts
+#    so the live dashboard sees it.
+# 3. Deploy the worker: cd workers/content-cron && wrangler deploy
