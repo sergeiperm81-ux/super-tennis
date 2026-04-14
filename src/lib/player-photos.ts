@@ -155,7 +155,7 @@ export const gearArticlePhotos: Record<string, ArticlePhoto> = {
   'head-speed-vs-babolat-pure-aero': { type: 'local', value: '/images/gear/head-vs-babolat.webp' },
   'wilson-pro-staff-vs-blade-comparison': { type: 'local', value: '/images/gear/wilson-vs-blade.webp' },
   'tennis-racket-weight-guide': { type: 'local', value: '/images/gear/tennis-racket-detail.webp' },
-  'tennis-racket-brands-ranked': { type: 'local', value: '/images/gear/tennis-racket-brands.webp' },
+  'tennis-racket-brands-ranked': { type: 'local', value: '/images/gear/tennis-racket-detail.webp' },
   'tennis-racket-technology-evolution': { type: 'local', value: '/images/gear/tennis-racket-vintage.webp' },
   'junior-tennis-racket-guide': { type: 'local', value: '/images/gear/tennis-junior.webp' },
   'tennis-elbow-arm-friendly-rackets': { type: 'local', value: '/images/gear/tennis-elbow-rackets.webp' },
