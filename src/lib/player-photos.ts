@@ -184,7 +184,7 @@ export const gearArticlePhotos: Record<string, ArticlePhoto> = {
   'tennis-bag-guide': { type: 'local', value: '/images/gear/tennis-accessories.webp' },
   'best-tennis-bags-guide': { type: 'local', value: '/images/gear/tennis-bags-guide.webp' },
   'best-tennis-bags-under-50': { type: 'local', value: '/images/gear/tennis-bags-budget.webp' },
-  'tennis-bag-what-pros-carry': { type: 'local', value: '/images/gear/tennis-accessories.webp' },
+  'tennis-bag-what-pros-carry': { type: 'local', value: '/images/gear/tennis-bags-budget.webp' },
   // Balls & Machines
   'best-tennis-balls-2026': { type: 'local', value: '/images/gear/tennis-balls.webp' },
   'best-tennis-balls-comparison': { type: 'local', value: '/images/gear/tennis-balls-comparison.webp' },
@@ -193,7 +193,7 @@ export const gearArticlePhotos: Record<string, ArticlePhoto> = {
   // Dampeners
   'best-tennis-dampeners': { type: 'local', value: '/images/gear/tennis-dampener.webp' },
   'best-tennis-dampeners-guide': { type: 'local', value: '/images/gear/tennis-dampener.webp' },
-  'tennis-vibration-dampener-types': { type: 'local', value: '/images/gear/tennis-dampener.webp' },
+  'tennis-vibration-dampener-types': { type: 'local', value: '/images/gear/tennis-elbow.webp' },
   // Accessories & Apparel
   'tennis-accessories-essentials': { type: 'local', value: '/images/gear/tennis-accessories.webp' },
   'best-tennis-headbands-wristbands': { type: 'local', value: '/images/gear/tennis-headbands.webp' },
@@ -206,10 +206,10 @@ export const gearArticlePhotos: Record<string, ArticlePhoto> = {
   'best-tennis-watches-smartwatches': { type: 'local', value: '/images/gear/tennis-smartwatch.webp' },
   'best-tennis-apps-2026': { type: 'local', value: '/images/gear/smartwatch-tennis.webp' },
   // Training & Practice
-  'best-tennis-training-aids': { type: 'local', value: '/images/gear/tennis-ball-machine.webp' },
+  'best-tennis-training-aids': { type: 'local', value: '/images/gear/tennis-rackets-prestrung.webp' },
   'best-tennis-rebounders-practice-walls': { type: 'local', value: '/images/gear/tennis-net.webp' },
   // Gifts & Misc
-  'best-tennis-gifts-2026': { type: 'local', value: '/images/gear/tennis-accessories.webp' },
+  'best-tennis-gifts-2026': { type: 'local', value: '/images/lifestyle/tennis-fan-culture.webp' },
   'tennis-equipment-maintenance-guide': { type: 'local', value: '/images/gear/tennis-grip.webp' },
   // Courts & Elbow
   'tennis-court-equipment-setup': { type: 'local', value: '/images/gear/tennis-net.webp' },
