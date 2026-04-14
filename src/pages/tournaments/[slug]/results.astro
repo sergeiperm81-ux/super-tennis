@@ -27,6 +27,15 @@ for (const c of champions) {
 const mensLeaders = [...mensTitleCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
 const womensLeaders = [...womensTitleCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
 
+// Pre-compute interlinked HTML in frontmatter (await cannot be used inside .map() callbacks)
+const mensLeadersHtml = await Promise.all(mensLeaders.map(([player]) => addInterlinks(player)));
+const womensLeadersHtml = await Promise.all(womensLeaders.map(([player]) => addInterlinks(player)));
+const championsHtml = await Promise.all(champions.map(async (c: any) => ({
+  year: c.year,
+  mens: await addInterlinks(c.menssingles),
+  womens: await addInterlinks(c.womenssingles),
+})));
+
 const surfaceClass = surface.toLowerCase().includes('clay') ? 'clay' : surface.toLowerCase().includes('grass') ? 'grass' : 'hard';
 
 // FAQ data
@@ -98,9 +107,9 @@ const relatedLinks = [
           <div class="leaders-card">
             <h3>Men's Singles</h3>
             <ol class="leaders-list">
-              {mensLeaders.map(([player, count]) => (
+              {mensLeaders.map(([player, count], i) => (
                 <li>
-                  <span class="leader-name" set:html={await addInterlinks(player)} />
+                  <span class="leader-name" set:html={mensLeadersHtml[i]} />
                   <span class="leader-count">{count} title{count > 1 ? 's' : ''}</span>
                 </li>
               ))}
@@ -109,9 +118,9 @@ const relatedLinks = [
           <div class="leaders-card">
             <h3>Women's Singles</h3>
             <ol class="leaders-list">
-              {womensLeaders.map(([player, count]) => (
+              {womensLeaders.map(([player, count], i) => (
                 <li>
-                  <span class="leader-name" set:html={await addInterlinks(player)} />
+                  <span class="leader-name" set:html={womensLeadersHtml[i]} />
                   <span class="leader-count">{count} title{count > 1 ? 's' : ''}</span>
                 </li>
               ))}
@@ -133,11 +142,11 @@ const relatedLinks = [
               </tr>
             </thead>
             <tbody>
-              {champions.map(c => (
+              {championsHtml.map(c => (
                 <tr>
                   <td class="year-cell">{c.year}</td>
-                  <td set:html={await addInterlinks(c.menssingles)} />
-                  <td set:html={await addInterlinks(c.womenssingles)} />
+                  <td set:html={c.mens} />
+                  <td set:html={c.womens} />
                 </tr>
               ))}
             </tbody>
