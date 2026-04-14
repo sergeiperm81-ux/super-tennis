@@ -40,7 +40,7 @@ if (!article) {
   return Astro.redirect('/lifestyle/');
 }
 
-const heroImage = await getArticlePhotoUrl(slug as string, 'lifestyle');
+const heroImage = await getArticlePhotoUrl(slug as string, 'lifestyle') || article.image_url || null;
 
 const rawHtml = article.body ? marked.parse(article.body) : '';
 const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/lifestyle/${slug}/`) : '';

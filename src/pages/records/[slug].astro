@@ -52,7 +52,7 @@ if (!article) {
   return Astro.redirect('/records/');
 }
 
-const heroImage = await getArticlePhotoUrl(slug as string, 'records');
+const heroImage = await getArticlePhotoUrl(slug as string, 'records') || article.image_url || null;
 
 const rawHtml = article.body ? marked.parse(article.body) : '';
 const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/records/${slug}/`) : '';
