@@ -154,15 +154,20 @@ const flagUrl = getFlagUrl(featuredPlayer.country, 20);
         fashion: '#9333ea', viral: '#f97316', buzz: '#16a34a',
       };
 
+      function esc(s: string): string {
+        return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
       list.innerHTML = items.slice(0, 6).map((item: any) => {
         const slug = (item.slug || item.title || '')
           .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').substring(0, 80);
-        const cat = item.category || 'buzz';
-        const color = catColors[cat] || '#16a34a';
+        const cat = esc(item.category || 'buzz');
+        const color = catColors[item.category] || '#16a34a';
+        const catLabel = esc((item.category || 'buzz').charAt(0).toUpperCase() + (item.category || 'buzz').slice(1));
         // Inline styles — bypasses Astro scoped CSS limitation on dynamic elements
-        return `<a href="/news/${slug}/" style="display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-bottom:1px solid #f3f4f6;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background=''">
-          <span style="display:inline-block;padding:2px 7px;border-radius:3px;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#fff;white-space:nowrap;flex-shrink:0;margin-top:3px;background:${color}">${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
-          <span style="font-size:0.82rem;font-weight:600;line-height:1.35;color:#1f2937;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${item.title}</span>
+        return `<a href="/news/${esc(slug)}/" style="display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-bottom:1px solid #f3f4f6;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background=''">
+          <span style="display:inline-block;padding:2px 7px;border-radius:3px;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#fff;white-space:nowrap;flex-shrink:0;margin-top:3px;background:${color}">${catLabel}</span>
+          <span style="font-size:0.82rem;font-weight:600;line-height:1.35;color:#1f2937;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(item.title)}</span>
         </a>`;
       }).join('');
     } catch {}

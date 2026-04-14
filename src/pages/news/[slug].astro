@@ -81,7 +81,7 @@ const newsJsonLd = {
   <script type="application/ld+json" set:html={JSON.stringify(newsJsonLd)} />
 
   {/* Source attribution */}
-  {article.source_url && (
+  {article.source_url?.startsWith('https://') && (
     <div class="news-source">
       <span class="news-source-label">Source:</span>
       <a href={article.source_url} target="_blank" rel="noopener noreferrer">{article.source || 'Original Article'}</a>

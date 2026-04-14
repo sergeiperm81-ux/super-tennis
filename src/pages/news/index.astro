@@ -183,7 +183,7 @@ const sbCatLabels: Record<string, string> = {
                       <div class="np-article">
                         <div class="np-article__content" set:html={n.body || ''} />
                         <a href={`/news/${slug}/`} class="np-read-full">Read Full Article &rarr;</a>
-                        {n.source_url && (
+                        {n.source_url?.startsWith('https://') && (
                           <div class="np-source">
                             <div class="np-source__info">
                               <span class="np-source__label">Source</span>

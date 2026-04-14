@@ -54,10 +54,18 @@ const jsonLd = {
   headline: article.title,
   description: article.meta_description || article.excerpt,
   url: `https://super.tennis/tournaments/${slug}/`,
+  ...(article.created_at && { datePublished: article.created_at }),
+  ...(article.updated_at && { dateModified: article.updated_at }),
+  author: {
+    '@type': 'Person',
+    name: 'Alex Morgan',
+    url: 'https://super.tennis/authors/alex-morgan/',
+  },
   publisher: {
     '@type': 'Organization',
     name: 'SUPER.TENNIS',
     url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
   },
   about: {
     '@type': 'SportsEvent',

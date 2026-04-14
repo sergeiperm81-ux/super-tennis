@@ -1666,6 +1666,8 @@ export default {
 
     // Contact form handler
     if (url.pathname === '/api/contact' && request.method === 'POST') {
+      const rateLimitRes = await checkRateLimit(request, env);
+      if (rateLimitRes) return rateLimitRes;
       try {
         const body = await request.json() as Record<string, string>;
         const { name, email, subject, message } = body;
@@ -1749,7 +1751,7 @@ export default {
     function getAuthPassword(req: Request, u: URL): string | null {
       const authHeader = req.headers.get('Authorization');
       if (authHeader?.startsWith('Bearer ')) return authHeader.slice(7);
-      return u.searchParams.get('pwd'); // fallback for backwards compat
+      return null; // query param auth removed for security
     }
 
     // ── Rate limiter: max 15 failed auth attempts per IP per 15 minutes ──
