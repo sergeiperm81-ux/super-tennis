@@ -133,6 +133,34 @@ for (const [mapName, entries] of Object.entries(mapsByName)) {
   }
 }
 
+// --- Check 5: news stock pool referenced by the Cloudflare Worker ---
+// The Worker's generateNews() builds URLs of the form
+//   https://super.tennis/images/news/{slug}.{ext}
+// from a hardcoded STOCK_PHOTOS list. Historically a bug wrote `.jpg`
+// while files on disk were `.webp` — 404 for every fallback row.
+// We parse the list + extension out of the worker source and verify
+// each one exists on disk.
+const WORKER_FILE = path.join(ROOT, 'workers/content-cron/src/index.ts');
+if (fs.existsSync(WORKER_FILE)) {
+  const workerSrc = fs.readFileSync(WORKER_FILE, 'utf8');
+  const stockMatch = workerSrc.match(/const STOCK_PHOTOS = \[([\s\S]*?)\];/);
+  const urlMatch = workerSrc.match(/`https:\/\/super\.tennis\/images\/news\/\$\{pick\}\.(\w+)`/);
+  if (stockMatch && urlMatch) {
+    const ext = urlMatch[1];
+    const slugs = [...stockMatch[1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
+    const newsDir = path.join(PUBLIC_DIR, 'images/news');
+    for (const slug of slugs) {
+      const filename = `${slug}.${ext}`;
+      const abs = path.join(newsDir, filename);
+      if (!fs.existsSync(abs)) {
+        errors.push(`[worker.STOCK_PHOTOS] referenced file missing: /images/news/${filename}`);
+      }
+    }
+  } else {
+    warnings.push('Could not parse STOCK_PHOTOS list from worker source (skipped).');
+  }
+}
+
 // --- Check 4: every webp under public/images/ is a valid webp ---
 const allWebps = walkImages(path.join(PUBLIC_DIR, 'images'));
 for (const abs of allWebps) {

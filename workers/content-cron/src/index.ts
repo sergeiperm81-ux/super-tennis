@@ -616,7 +616,9 @@ async function generateNews(env: Env): Promise<string> {
         'equip-11','equip-12','equip-13','equip-14','equip-15',
       ];
       const pick = STOCK_PHOTOS[i % STOCK_PHOTOS.length];
-      imageUrl = `https://super.tennis/images/news/${pick}.jpg`;
+      // Stock pool files on disk are .webp — historical bug: used to write .jpg
+      // which 404'd for every fallback row. Keep in sync with public/images/news/.
+      imageUrl = `https://super.tennis/images/news/${pick}.webp`;
     }
 
     if (imageUrl) usedImages.add(imageUrl);
