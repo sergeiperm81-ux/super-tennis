@@ -89,10 +89,20 @@ const POWER_VERBS = [
   'storms off', 'sparks', 'revealed', 'exit', 'meltdown',
 ];
 
-/** Detect a named player (A or B tier). Used for diversity filter. */
+/**
+ * Detect a named player (A or B tier). Used for diversity filter and scoring.
+ * Uses word-boundary regex to avoid false positives like "Rune" matching
+ * "fortune", "Graf" matching "photograph", "Becker" matching "debecker".
+ */
+function matchesName(title, name) {
+  // \b doesn't play well with apostrophes and non-ASCII — roll our own.
+  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`(^|[^A-Za-z])${escaped}([^A-Za-z]|$)`).test(title);
+}
+
 function extractSubject(title) {
   for (const p of [...A_TIER_STARS, ...B_TIER_STARS]) {
-    if (title.includes(p)) return p;
+    if (matchesName(title, p)) return p;
   }
   return null;
 }
@@ -106,9 +116,9 @@ function scoreHeadline(headline) {
   const reasons = [];
   let score = 0;
 
-  // 1. Named star
-  const firstA = A_TIER_STARS.find((p) => title.includes(p));
-  const firstB = B_TIER_STARS.find((p) => title.includes(p));
+  // 1. Named star (word-boundary match to avoid Rune/fortune collisions)
+  const firstA = A_TIER_STARS.find((p) => matchesName(title, p));
+  const firstB = B_TIER_STARS.find((p) => matchesName(title, p));
   if (firstA) {
     score += 3;
     reasons.push(`+3 A-star (${firstA})`);
@@ -185,19 +195,21 @@ export async function getHeadlinesForToday(count = 3) {
   } else {
     // Analytics-based scoring. Sort desc by score; tie-break by random so
     // the same top-score candidate isn't picked every single run.
-    ordered = [...pool]
+    // Score + sort, but do NOT mutate the original headline objects —
+    // downstream code (markPublished, Supabase inserts) reads them as-is.
+    // Keep the debug info in a side array, indexed by the same position.
+    const scored = pool
       .map((h) => ({ h, ...scoreHeadline(h) }))
-      .sort((a, b) => (b.score - a.score) || (Math.random() - 0.5))
-      .map((x) => {
-        x.h._debugScore = x.score;
-        x.h._debugReasons = x.reasons;
-        return x.h;
-      });
+      .sort((a, b) => (b.score - a.score) || (Math.random() - 0.5));
+    ordered = scored.map((x) => x.h);
+    const debugByHeadline = new WeakMap();
+    for (const x of scored) debugByHeadline.set(x.h, { score: x.score, reasons: x.reasons });
     console.log(`   Strategy: analytics — top candidates:`);
     for (const h of ordered.slice(0, Math.min(count + 2, ordered.length))) {
-      console.log(`     [${h._debugScore}] ${h.title}`);
-      if (h._debugReasons?.length) {
-        console.log(`        ${h._debugReasons.join(' | ')}`);
+      const d = debugByHeadline.get(h);
+      console.log(`     [${d?.score ?? '?'}] ${h.title}`);
+      if (d?.reasons?.length) {
+        console.log(`        ${d.reasons.join(' | ')}`);
       }
     }
   }

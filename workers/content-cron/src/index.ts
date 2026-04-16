@@ -1709,12 +1709,20 @@ async function getLatestTimestamp(
     });
     if (!Array.isArray(rows) || rows.length === 0) return null;
     return rows[0][field] ?? null;
-  } catch {
+  } catch (e: any) {
+    // Surface to logs so a misconfigured table/field doesn't silently
+    // mark every agent as "no-data" on the Ops dashboard.
+    console.error(`[ops] getLatestTimestamp(${table}.${field}) failed:`, e?.message);
     return null;
   }
 }
 
-/** Count rows in `table` with `field` within the last N hours. */
+/**
+ * Count rows in `table` where `field >= (now - hours)`. Reads the exact
+ * count from the PostgREST `Content-Range` header (via `Prefer: count=exact`)
+ * rather than relying on array.length which is capped by the default
+ * page size (1000). Returns -1 on error (caller renders "—").
+ */
 async function countRecentRows(
   env: Env,
   table: string,
@@ -1722,18 +1730,31 @@ async function countRecentRows(
   hours: number
 ): Promise<number> {
   try {
-    const since = new Date(Date.now() - hours * 3600_000).toISOString();
-    const rows = await supabaseQuery(
-      env,
-      table,
-      'GET',
-      { select: field, [`${field}`]: `gte.${since}` },
-      undefined,
-      { Prefer: 'count=exact' }
-    );
-    return Array.isArray(rows) ? rows.length : 0;
-  } catch {
-    return 0;
+    const since = new Date(Date.now() - hours * 3_600_000).toISOString();
+    const url = new URL(`${env.SUPABASE_URL}/rest/v1/${table}`);
+    url.searchParams.set('select', field);
+    url.searchParams.set(field, `gte.${since}`);
+    // We only need the count — limit=0 returns no rows but still a Content-Range.
+    url.searchParams.set('limit', '0');
+    const res = await fetch(url.toString(), {
+      method: 'GET',
+      headers: {
+        apikey: env.SUPABASE_SERVICE_KEY,
+        Authorization: `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+        Prefer: 'count=exact',
+      },
+    });
+    if (!res.ok) {
+      console.error(`[ops] countRecentRows(${table}) HTTP ${res.status}`);
+      return -1;
+    }
+    // Content-Range looks like "0-0/1234" or "*/1234" — the number after "/" is total.
+    const range = res.headers.get('Content-Range') || '';
+    const m = range.match(/\/(\d+)\s*$/);
+    return m ? parseInt(m[1], 10) : 0;
+  } catch (e: any) {
+    console.error(`[ops] countRecentRows(${table}.${field}) failed:`, e?.message);
+    return -1;
   }
 }
 
@@ -2057,12 +2078,28 @@ export default {
       await e.RATE_LIMIT.delete(`rl:${ip}`);
     }
 
+    /**
+     * Constant-time string comparison. Prevents timing attacks where an
+     * attacker measures response time to deduce the password character by
+     * character. Length is still observable (acceptable for a fixed-size
+     * password).
+     */
+    function timingSafeEqual(a: string, b: string): boolean {
+      if (a.length !== b.length) return false;
+      let diff = 0;
+      for (let i = 0; i < a.length; i++) {
+        diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+      }
+      return diff === 0;
+    }
+
     async function requireAuthWithRateLimit(req: Request, u: URL, e: Env): Promise<Response | null> {
       const rateLimitErr = await checkRateLimit(req, e);
       if (rateLimitErr) return rateLimitErr;
 
       const pwd = getAuthPassword(req, u);
-      if (!e.ANALYTICS_PASSWORD || !pwd || pwd !== e.ANALYTICS_PASSWORD) {
+      const expected = e.ANALYTICS_PASSWORD;
+      if (!expected || !pwd || !timingSafeEqual(pwd, expected)) {
         await recordFailedAttempt(req, e);
         return new Response(JSON.stringify({ error: 'Unauthorized' }), {
           status: 401,
@@ -2070,17 +2107,6 @@ export default {
         });
       }
       await clearRateLimit(req, e); // reset on successful auth
-      return null; // auth OK
-    }
-
-    function requireAuth(req: Request, u: URL, e: Env): Response | null {
-      const pwd = getAuthPassword(req, u);
-      if (!e.ANALYTICS_PASSWORD || !pwd || pwd !== e.ANALYTICS_PASSWORD) {
-        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-          status: 401,
-          headers: { 'Content-Type': 'application/json', ...corsHeaders(req) },
-        });
-      }
       return null; // auth OK
     }
 
@@ -2157,7 +2183,8 @@ export default {
         return jsonResponse(data, 60, request); // cache 60s
       } catch (e: any) {
         console.error('API /api/ops error:', e.message);
-        return jsonResponse({ error: 'Internal error', detail: e.message }, 0, request);
+        // Log full error server-side; do not leak details to client.
+        return jsonResponse({ error: 'Internal error' }, 0, request);
       }
     }
 
