@@ -76,6 +76,15 @@ function pickBackground() {
     state.used = [];
   }
 
+  // Purge any banned backgrounds that may have been cached in the queue
+  // before they were added to BANNED_BACKGROUNDS (the root cause of bg-13 crash).
+  if (state.queue) {
+    state.queue = state.queue.filter(f => !BANNED_BACKGROUNDS.has(f));
+  }
+  if (state.used) {
+    state.used = state.used.filter(f => !BANNED_BACKGROUNDS.has(f));
+  }
+
   // Rebuild queue if empty or if new backgrounds were added
   if (!state.queue || state.queue.length === 0) {
     const unused = allBgs.filter(f => !state.used?.includes(f));
