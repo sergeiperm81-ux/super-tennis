@@ -1758,13 +1758,32 @@ async function countRecentRows(
   }
 }
 
+interface OpsAgentStatus extends OpsAgent {
+  last_run_at: string | null;
+  age_hours: number | null;
+  status: 'ok' | 'warn' | 'stale' | 'unknown' | 'no-data';
+}
+
+interface OpsHealthCheck {
+  check: string;
+  status: 'ok' | 'warn' | 'fail';
+  detail?: string;
+}
+
+interface OpsSnapshot {
+  generated_at: string;
+  agents: OpsAgentStatus[];
+  content_24h: { news: number; articles: number; videos: number };
+  health: OpsHealthCheck[];
+}
+
 /** Main snapshot builder for the /api/ops endpoint. */
-async function buildOpsSnapshot(env: Env): Promise<any> {
+async function buildOpsSnapshot(env: Env): Promise<OpsSnapshot> {
   const now = Date.now();
 
   // 1. Per-agent freshness (parallel for speed)
-  const agents = await Promise.all(
-    OPS_REGISTRY.map(async (a) => {
+  const agents: OpsAgentStatus[] = await Promise.all(
+    OPS_REGISTRY.map(async (a): Promise<OpsAgentStatus> => {
       if (!a.table || !a.timestampField) {
         return { ...a, last_run_at: null, age_hours: null, status: 'unknown' };
       }
@@ -1774,7 +1793,7 @@ async function buildOpsSnapshot(env: Env): Promise<any> {
       }
       const ageHours = (now - Date.parse(ts)) / 3600_000;
       const limit = a.freshWithinHours ?? 24 * 30;
-      const status =
+      const status: OpsAgentStatus['status'] =
         ageHours <= limit * 0.5 ? 'ok' : ageHours <= limit ? 'warn' : 'stale';
       return {
         ...a,
@@ -1793,7 +1812,7 @@ async function buildOpsSnapshot(env: Env): Promise<any> {
   ]);
 
   // 3. Simple health checks
-  const health: { check: string; status: 'ok' | 'warn' | 'fail'; detail?: string }[] = [];
+  const health: OpsHealthCheck[] = [];
   try {
     const res = await fetch('https://super.tennis/sitemap-index.xml', { method: 'HEAD' });
     health.push({

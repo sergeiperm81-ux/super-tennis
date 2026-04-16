@@ -876,7 +876,14 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       btn.disabled = false;
     }
   }
-  window.opsTrigger = opsTrigger;
+  // Delegated handler — any button with data-ops-trigger attribute runs opsTrigger
+  // (safer than inline onclick strings built from API data).
+  document.addEventListener('click', function(ev) {
+    var btn = ev.target && ev.target.closest && ev.target.closest('[data-ops-trigger]');
+    if (!btn) return;
+    ev.preventDefault();
+    opsTrigger(btn.getAttribute('data-ops-trigger'), btn);
+  });
 
   function loadOps() {
     var sp = sessionStorage.getItem('stats_pwd') || '';
@@ -931,8 +938,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
     // Agents table
     var rows = (data.agents || []).map(function(a) {
+      // Use data-attribute (escaped) + delegated listener; avoid inline onclick
+      // with API-supplied strings so triggerPath can never break out.
       var btn = a.triggerPath
-        ? '<button class="stats-period" style="padding:.25rem .55rem;font-size:.75rem;" onclick="opsTrigger(\'' + a.triggerPath + '\', this)">Run</button>'
+        ? '<button class="stats-period" style="padding:.25rem .55rem;font-size:.75rem;" data-ops-trigger="' + opsEscapeHtml(a.triggerPath) + '">Run</button>'
         : '';
       return '<tr>' +
         '<td><strong>' + opsEscapeHtml(a.name) + '</strong><br><small style="opacity:.55">' + opsEscapeHtml(a.id) + '</small></td>' +

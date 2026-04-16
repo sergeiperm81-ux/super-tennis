@@ -68,12 +68,12 @@ function pickBackground() {
   const allBgs = fs.readdirSync(BG_DIR)
     .filter(f => f.endsWith('.mp4') && !BANNED_BACKGROUNDS.has(f))
     .sort();
-  const state = getRotationState();
-
-  // Migrate from old array format
+  // Migrate from old array format — replace the whole state reference with a
+  // plain object. Previous code set .queue/.used properties on the array,
+  // which saveRotationState would serialise as `[]` and lose the migration.
+  let state = getRotationState();
   if (Array.isArray(state)) {
-    state.queue = [];
-    state.used = [];
+    state = { queue: [], used: [] };
   }
 
   // Purge any banned backgrounds that may have been cached in the queue

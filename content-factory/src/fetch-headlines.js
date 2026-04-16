@@ -21,7 +21,6 @@
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
-const SCORING_STRATEGY = process.env.SCORING_STRATEGY || 'analytics';
 
 /**
  * Fetch active news from Supabase. We now also pull `published_at` so we can
@@ -60,14 +59,16 @@ export function markPublished(slugs) {
 
 // ── A-tier stars: players whose videos consistently cleared 1000+ views ──
 // Derived from the Jan–Apr 2026 dataset (top decile of Shorts).
-const A_TIER_STARS = [
+// Exported so test-scoring.mjs can import the SAME constants — prevents
+// silent drift between the scorer and its offline validation.
+export const A_TIER_STARS = [
   'Djokovic', 'Nadal', 'Alcaraz', 'Sinner', 'Federer',
   'Serena', 'Williams', 'Swiatek', 'Sabalenka',
   'Medvedev', 'Raducanu', 'Garcia', 'Rybakina',
 ];
 
 // B-tier: named but historically underperforms, still scores 1 (not 3).
-const B_TIER_STARS = [
+export const B_TIER_STARS = [
   'Zverev', 'Tsitsipas', 'Rune', 'Fritz', 'Shelton', 'Draper',
   'Gauff', 'Pegula', 'Osaka', 'Murray',
   'Navratilova', 'Graf', 'Sharapova', 'Wozniacki',
@@ -76,14 +77,14 @@ const B_TIER_STARS = [
 ];
 
 // Placeholder phrases that correlated with <500 views. Avoiding names = flop.
-const GENERIC_PLACEHOLDERS = [
+export const GENERIC_PLACEHOLDERS = [
   'Tennis Star', 'Tennis Player', 'Tennis Icon',
   'World No. 1', 'World No. 2', 'Former Star',
   'Forgotten Star', 'Local Tennis', 'Rising Star',
 ];
 
 // Verbs that signalled drama / specificity in high-view titles.
-const POWER_VERBS = [
+export const POWER_VERBS = [
   'slams', 'smashes', 'smashing', 'withdraws', 'announces',
   'admits', 'spotted', 'withdrawal', 'apologizes',
   'storms off', 'sparks', 'revealed', 'exit', 'meltdown',
@@ -109,9 +110,11 @@ function extractSubject(title) {
 
 /**
  * Score a headline against the 5 analytics-backed patterns.
- * Returns { score, reasons } for logging.
+ * Returns { score, reasons } for logging. Exported so test-scoring.mjs
+ * can re-verify the scorer against historical YouTube data without
+ * re-implementing the logic (the previous copy drifted silently).
  */
-function scoreHeadline(headline) {
+export function scoreHeadline(headline) {
   const title = headline.title || '';
   const reasons = [];
   let score = 0;
@@ -177,6 +180,9 @@ function scoreHeadline(headline) {
  * Uses analytics-based scoring unless SCORING_STRATEGY=random is set.
  */
 export async function getHeadlinesForToday(count = 3) {
+  // Read strategy at call time so SCORING_STRATEGY=random can be toggled
+  // via Actions secret / env without a process restart.
+  const strategy = process.env.SCORING_STRATEGY || 'analytics';
   const published = new Set(getPublishedSlugs());
   const all = await fetchHeadlines(50);
   const fresh = all.filter((h) => !published.has(h.slug));
@@ -188,7 +194,7 @@ export async function getHeadlinesForToday(count = 3) {
 
   // Order the pool by strategy
   let ordered;
-  if (SCORING_STRATEGY === 'random') {
+  if (strategy === 'random') {
     // Legacy behavior — useful as a safety escape hatch.
     ordered = [...pool].sort(() => Math.random() - 0.5);
     console.log('   Strategy: random (legacy rollback mode)');
