@@ -63,3 +63,14 @@
 /players/:slug/partner/        /players/:slug/   301
 /players/:slug/age             /players/:slug/   301
 /players/:slug/age/            /players/:slug/   301
+
+# --- Common-guess URL aliases (fix 404s from human typing / external backlinks) ---
+# Nav label says "H2H" but real section lives at /vs/
+/h2h                            /vs/              301
+/h2h/                           /vs/              301
+/h2h/*                          /vs/:splat        301
+
+# Section is /video/ (singular); people type /videos/ by reflex
+/videos                         /video/           301
+/videos/                        /video/           301
+/videos/*                       /video/:splat     301

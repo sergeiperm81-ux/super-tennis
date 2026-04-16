@@ -151,7 +151,10 @@ const sbCatLabels: Record<string, string> = {
               ssgNews.map((n: any) => {
                 const cat = n.category || 'buzz';
                 const catColor = newsCatColors[cat] || '#16a34a';
-                const slug = (n.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').substring(0, 80);
+                // Use the actual DB slug (format: YYYY-MM-DD-title-slug) — NOT a title-derived slug.
+                // Previously we built the slug from title only, causing /news/andy-murray-s-goodbye/
+                // while [slug].astro generated /news/2026-03-10-andy-murray-s-goodbye/ → 100% 404s.
+                const slug = n.slug || (n.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').substring(0, 80);
                 const timeAgo = n.published_at ? new Date(n.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
                 const summary = n.excerpt || (n.body ? stripHtml(n.body).substring(0, 160) + '...' : '');
                 return (
