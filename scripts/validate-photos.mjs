@@ -19,6 +19,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -158,6 +159,40 @@ if (fs.existsSync(WORKER_FILE)) {
     }
   } else {
     warnings.push('Could not parse STOCK_PHOTOS list from worker source (skipped).');
+  }
+}
+
+// --- Check 6: content-hash collisions between DIFFERENT map entries ---
+// The regex-level duplicate check (Check 2) only catches identical paths.
+// Many slugs map to DIFFERENT filenames that are BYTE-IDENTICAL copies of
+// the same image (22% of all webps were found to be duplicates in a
+// 2026-04-16 audit). This check hashes every referenced local file and
+// warns when two map entries point to the same content.
+const hashToUses = new Map(); // contentHash -> [ "[map] slug → path", ... ]
+for (const [mapName, entries] of Object.entries(mapsByName)) {
+  for (const { slug, type, value } of entries) {
+    if (type !== 'local') continue;
+    if (value.startsWith('http://') || value.startsWith('https://')) continue;
+    const abs = path.join(PUBLIC_DIR, value.replace(/^\//, ''));
+    if (!fs.existsSync(abs)) continue; // Check 1 already flagged this
+    try {
+      const hash = crypto.createHash('md5').update(fs.readFileSync(abs)).digest('hex');
+      const label = `[${mapName}] "${slug}" → ${value}`;
+      const arr = hashToUses.get(hash) || [];
+      arr.push(label);
+      hashToUses.set(hash, arr);
+    } catch {
+      // readFileSync rarely fails here; ignore — Check 1/3 would catch real issues.
+    }
+  }
+}
+for (const [hash, uses] of hashToUses) {
+  if (uses.length > 1) {
+    // Warn, don't error — historical dataset has ~12 content-duplicates
+    // and breaking the build over them would be too noisy. Fix incrementally.
+    warnings.push(
+      `content-hash collision (${hash.slice(0, 8)}): ${uses.length} mappings share the same image bytes → ${uses.join(' | ')}`
+    );
   }
 }
 

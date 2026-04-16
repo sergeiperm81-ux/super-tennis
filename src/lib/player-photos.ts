@@ -193,7 +193,7 @@ export const gearArticlePhotos: Record<string, ArticlePhoto> = {
   // Dampeners
   'best-tennis-dampeners': { type: 'local', value: '/images/gear/_test_equip07.webp' },
   'best-tennis-dampeners-guide': { type: 'local', value: '/images/gear/tennis-dampener.webp' },
-  'tennis-vibration-dampener-types': { type: 'local', value: '/images/gear/tennis-elbow.webp' },
+  'tennis-vibration-dampener-types': { type: 'local', value: '/images/gear/_test_equip06.webp' },
   // Accessories & Apparel
   'tennis-accessories-essentials': { type: 'local', value: '/images/gear/tennis-accessories.webp' },
   'best-tennis-headbands-wristbands': { type: 'local', value: '/images/gear/tennis-headbands.webp' },
@@ -223,9 +223,9 @@ export const gearArticlePhotos: Record<string, ArticlePhoto> = {
 export const lifestyleArticlePhotos: Record<string, ArticlePhoto> = {
   // Money & Business
   'richest-tennis-players-2026': { type: 'local', value: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&q=80' },
-  'richest-tennis-players-homes': { type: 'local', value: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80' },
+  'richest-tennis-players-homes': { type: 'local', value: '/images/lifestyle/tennis-player-homes.webp' },
   'tennis-trophies-prizes': { type: 'local', value: '/images/lifestyle/tennis-trophy.webp' },
-  'tennis-prize-money-explained': { type: 'local', value: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=800&q=80' },
+  'tennis-prize-money-explained': { type: 'local', value: '/images/lifestyle/tennis-prize-money.webp' },
   'tennis-betting-guide': { type: 'local', value: 'https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=800&q=80' },
   'tennis-player-business-ventures': { type: 'local', value: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80' },
   'tennis-most-expensive-things-players-own': { type: 'local', value: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80' },
@@ -234,10 +234,10 @@ export const lifestyleArticlePhotos: Record<string, ArticlePhoto> = {
   'tennis-player-cars-collection': { type: 'local', value: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&q=80' },
   // Culture & Entertainment
   'best-tennis-movies-documentaries': { type: 'local', value: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800&q=80' },
-  'best-tennis-video-games': { type: 'local', value: 'https://images.unsplash.com/photo-1592840496694-26d035b52b48?w=800&q=80' },
+  'best-tennis-video-games': { type: 'local', value: '/images/lifestyle/tennis-video-games.webp' },
   'best-tennis-video-games-ever': { type: 'local', value: 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=800&q=80' },
   'best-tennis-books-all-time': { type: 'local', value: 'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=800&q=80' },
-  'best-tennis-podcasts-2026': { type: 'local', value: 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=800&q=80' },
+  'best-tennis-podcasts-2026': { type: 'local', value: '/images/lifestyle/tennis-podcasts.webp' },
   'best-tennis-instagram-accounts': { type: 'local', value: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&q=80' },
   'tennis-in-movies-tv-shows': { type: 'local', value: 'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=800&q=80' },
   'tennis-and-music-players-dj-sing': { type: 'local', value: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&q=80' },
@@ -250,7 +250,7 @@ export const lifestyleArticlePhotos: Record<string, ArticlePhoto> = {
   'tennis-player-fashion-brands-endorsements': { type: 'local', value: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&q=80' },
   'tennis-player-tattoos-stories': { type: 'local', value: 'https://images.unsplash.com/photo-1611605698335-8b1569810432?w=800&q=80' },
   // Health & Wellness
-  'tennis-mental-health': { type: 'local', value: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=80' },
+  'tennis-mental-health': { type: 'local', value: '/images/lifestyle/tennis-mental-health.webp' },
   'tennis-mental-game-tips': { type: 'local', value: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=800&q=80' },
   'tennis-best-sport-mental-health': { type: 'local', value: 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=800&q=80' },
   'tennis-stress-relief-mindfulness': { type: 'local', value: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80' },
@@ -297,7 +297,7 @@ export const lifestyleArticlePhotos: Record<string, ArticlePhoto> = {
   'tennis-fan-culture-loudest-crowds': { type: 'local', value: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&q=80' },
   // Learning & Getting Started
   'tennis-rules-explained': { type: 'local', value: 'https://images.unsplash.com/photo-1456406644174-8ddd4cd52a06?w=800&q=80' },
-  'tennis-scoring-explained': { type: 'local', value: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800&q=80' },
+  'tennis-scoring-explained': { type: 'local', value: '/images/lifestyle/tennis-scoring.webp' },
   'tennis-scoring-love-deuce-explained': { type: 'local', value: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80' },
   'how-to-start-playing-tennis': { type: 'local', value: 'https://images.unsplash.com/photo-1542144582-1ba00456b5e3?w=800&q=80' },
   'how-to-watch-tennis': { type: 'local', value: 'https://images.unsplash.com/photo-1593784991095-a205069470b6?w=800&q=80' },
@@ -430,17 +430,25 @@ export async function getArticlePhotosForCategory(
     ? await getPlayerPhotosBatch([...playerSlugs])
     : new Map<string, string | null>();
 
-  // Resolve all
+  // Resolve all. Log `[photo-miss]` for any null resolution so CI build
+  // logs can be grepped for articles that fall through every fallback.
   for (const art of articles) {
     const mapping = catMap[art.slug];
+    let resolved: string | null;
     if (!mapping) {
-      // Fallback to article's own image_url from database
-      result.set(art.slug, (art as any).image_url || null);
+      resolved = (art as any).image_url || null;
+      if (!resolved) {
+        console.warn(`[photo-miss] ${category}/${art.slug} — no map entry and no DB image_url`);
+      }
     } else if (mapping.type === 'local') {
-      result.set(art.slug, mapping.value);
+      resolved = mapping.value;
     } else {
-      result.set(art.slug, playerPhotos.get(mapping.value) || null);
+      resolved = playerPhotos.get(mapping.value) || null;
+      if (!resolved) {
+        console.warn(`[photo-miss] ${category}/${art.slug} — player "${mapping.value}" has no photo`);
+      }
     }
+    result.set(art.slug, resolved);
   }
 
   return result;
