@@ -100,6 +100,12 @@ agents:
     schedule: "on push to main"
     owner: ".github/workflows/lighthouse-ci.yml"
 
+  - id: photo-health
+    name: Photo health monitor
+    what: "HEADs every image_url stored in Supabase; Telegram alert on ≥5 dead URLs"
+    schedule: "weekly Mon 06:00 UTC / 09:00 Sofia"
+    owner: ".github/workflows/photo-health.yml"
+
 # How to add a new agent:
 # 1. Add a block here (documentation).
 # 2. Add the same entry to OPS_REGISTRY in workers/content-cron/src/index.ts

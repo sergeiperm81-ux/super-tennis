@@ -1,0 +1,45 @@
+name: Photo Health Monitor
+
+# Weekly sweep of every image_url stored in Supabase — fires a Telegram
+# alert on any 404/timeout. Catches DB-level drift that the build-time
+# validator (scripts/validate-photos.mjs) cannot see.
+#
+# Also runnable on demand from the Actions tab.
+
+on:
+  schedule:
+    # Mondays 06:00 UTC = 09:00 Sofia. Low-traffic window.
+    - cron: '0 6 * * 1'
+  workflow_dispatch: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Probe all image URLs
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          # Alert only when ≥ 5 dead URLs — absorbs transient Wikimedia flakes
+          FAIL_THRESHOLD: '5'
+          CONCURRENCY: '20'
+        run: node scripts/check-photo-health.mjs 2>&1 | tee /tmp/photo-health.log
+
+      - name: Telegram alert on failure
+        if: failure()
+        run: |
+          TAIL=$(tail -c 3500 /tmp/photo-health.log | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\",
+              \"text\": \"📷 *Photo Health Check FAILED*\\n\\nRun: [#${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\\n\\n\`\`\`\\n${TAIL}\\n\`\`\`\",
+              \"parse_mode\": \"Markdown\",
+              \"disable_web_page_preview\": true
+            }" || true

@@ -1693,6 +1693,13 @@ const OPS_REGISTRY: OpsAgent[] = [
     schedule: 'on push to main',
     owner: '.github/workflows/lighthouse-ci.yml',
   },
+  {
+    id: 'photo-health',
+    name: 'Photo health monitor',
+    what: 'HEADs every image_url in Supabase; Telegram alert on ≥5 dead URLs',
+    schedule: 'weekly (Mon 06:00 UTC / 09:00 Sofia)',
+    owner: '.github/workflows/photo-health.yml',
+  },
 ];
 
 /** Ask Supabase for the newest row in a table and return its timestamp. */
