@@ -1615,7 +1615,7 @@ const OPS_REGISTRY: OpsAgent[] = [
     schedule: 'weekly (GitHub Actions)',
     owner: '.github/workflows/weekly-rankings.yml',
     table: 'rankings',
-    timestampField: 'updated_at',
+    timestampField: 'ranking_date',
     freshWithinHours: 24 * 8,
     triggerPath: '/trigger/rankings',
   },
