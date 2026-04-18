@@ -5,4 +5,27 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Link: </llms.txt>; rel="describedby"; type="text/plain", </sitemap-index.xml>; rel="sitemap"; type="application/xml", </rss.xml>; rel="alternate"; type="application/rss+xml"; title="SUPER.TENNIS News"
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.youtube.com https://www.youtube-nocookie.com https://static.cloudflareinsights.com https://pagead2.googlesyndication.com https://www.googletagmanager.com https://www.google-analytics.com https://www.clarity.ms https://s.skimresources.com https://cdn.skimresources.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://flagcdn.com https://i.ytimg.com https://img.youtube.com https://*.supabase.co https://super.tennis https://www.gstatic.com https://pagead2.googlesyndication.com https://www.google.com https://cm.g.doubleclick.net https://upload.wikimedia.org https://image-cdn.essentiallysports.com https://*.wikimedia.org https://images.unsplash.com https://live.staticflickr.com https://farm1.staticflickr.com https://farm2.staticflickr.com https://farm3.staticflickr.com https://farm4.staticflickr.com https://farm5.staticflickr.com https://farm6.staticflickr.com https://farm7.staticflickr.com https://farm8.staticflickr.com https://farm9.staticflickr.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com https://googleads.g.doubleclick.net; connect-src 'self' https://supertennis-cron.sfedoroff.workers.dev https://cloudflareinsights.com https://www.google-analytics.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://skimlinks.com https://go.skimresources.com; frame-ancestors 'none'
+
+# --- Edge caching (added 2026-04-16 after audit: cf-cache-status was DYNAMIC for all static HTML/images) ---
+# Content assets — long-lived, safe to cache a year. Images only change via
+# new filenames (filename collision protection via validate-photos.mjs),
+# so we can treat them as effectively immutable.
+/images/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Fonts
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Open-Graph social preview images
+/og/*
+  Cache-Control: public, max-age=604800
+
+# HTML: use shared (CDN) cache for 1h with stale-while-revalidate for 24h.
+# The site is SSG and deploy triggers a full rebuild, which invalidates
+# Cloudflare Pages cache on push, so users on old HTML see new content
+# within 1h even without manual purge. Browser cache stays weak.
+/*.html
+  Cache-Control: public, max-age=0, s-maxage=3600, stale-while-revalidate=86400
