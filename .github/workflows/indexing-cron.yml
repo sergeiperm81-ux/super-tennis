@@ -1,9 +1,15 @@
 name: Google Indexing API — Daily Bulk Submit
 
 on:
-  # Run daily at 05:30 UTC (08:30 Sofia) — after deploy at 07:30 Sofia
+  # Run daily at 11:00 UTC (14:00 Sofia). Google's Indexing API quota
+  # is a ROLLING 24-hour window, not calendar-based — so the cron must
+  # fire enough after yesterday's submission window for all 200 slots
+  # to expire. We previously ran at 05:30 UTC, but Actions scheduler
+  # drift routinely pushed execution to 06:43–07:10 UTC, which fell
+  # INSIDE the previous day's rolling window (2026-04-18 ran only 3/200
+  # before quota error). 11:00 UTC gives 4+ hours margin over any drift.
   schedule:
-    - cron: '30 5 * * *'
+    - cron: '0 11 * * *'
   # Manual trigger with optional offset override
   workflow_dispatch:
     inputs:
