@@ -119,6 +119,7 @@ const hero2 = {
   image: 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Boris_Becker_-_240422_174721_%28cropped%29.jpg',
   href: "/lifestyle/boris-becker-sells-1989-us-open-trophy/",
   desc: "A six-time Grand Slam champion parted with the one piece of silverware a tennis player is supposed to keep forever. The story behind the sale — and what it says about life after the tour.",
+  imagePosition: 'center 25%',
 };
 const hero3 = {
   title: "Tennis in Movies & TV Shows — The Greatest Tennis Scenes in Cinema",
@@ -391,7 +392,7 @@ const playerProfile = profilePlayer ? {
 
           <!-- 3. FULL-WIDTH HERO -->
           <a href={hero2.href} class="card-hero">
-            <img src={hero2.image} alt={hero2.title} loading="lazy" decoding="async" width="800" height="400" />
+            <img src={hero2.image} alt={hero2.title} loading="lazy" decoding="async" width="800" height="400" style={hero2.imagePosition ? `object-position: ${hero2.imagePosition}` : undefined} />
             <div class="card-hero__overlay"></div>
             <div class="card-hero__content">
               <span class="badge" style={`background: ${badgeColors[hero2.badge]}; color: #000;`}>{hero2.badge}</span>
