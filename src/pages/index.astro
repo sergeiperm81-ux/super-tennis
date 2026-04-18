@@ -127,6 +127,7 @@ const hero3 = {
   image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Novak_Djokovic_2024_Paris_Olympics.jpg/500px-Novak_Djokovic_2024_Paris_Olympics.jpg',
   href: "/lifestyle/djokovic-interview-family-sacrifice-olympic-dream/",
   desc: "In a rare three-hour conversation, Djokovic speaks about his childhood on Kopaonik, his father's loans from criminals, five Olympic campaigns — and why LA 2028 is his final great dream.",
+  imagePosition: 'center 40%',
 };
 const hero5 = {
   title: "Your Complete Guide to Wimbledon",
@@ -403,7 +404,7 @@ const playerProfile = profilePlayer ? {
 
           <!-- 4. FULL-WIDTH HERO -->
           <a href={hero3.href} class="card-hero">
-            <img src={hero3.image} alt={hero3.title} loading="lazy" decoding="async" width="800" height="400" />
+            <img src={hero3.image} alt={hero3.title} loading="lazy" decoding="async" width="800" height="400" style={hero3.imagePosition ? `object-position: ${hero3.imagePosition}` : undefined} />
             <div class="card-hero__overlay"></div>
             <div class="card-hero__content">
               <span class="badge" style={`background: ${badgeColors[hero3.badge]}; color: #000;`}>{hero3.badge}</span>
