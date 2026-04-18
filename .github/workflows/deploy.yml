@@ -15,6 +15,7 @@ on:
     paths:
       - 'src/**'
       - 'public/**'
+      - 'functions/**'
       - 'astro.config.*'
       - 'package.json'
       - 'package-lock.json'
@@ -41,7 +42,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules/.astro
-          key: astro-build-${{ hashFiles('src/**', 'public/**', 'astro.config.*') }}
+          key: astro-build-${{ hashFiles('src/**', 'public/**', 'functions/**', 'astro.config.*') }}
           restore-keys: astro-build-
 
       - name: Install dependencies
