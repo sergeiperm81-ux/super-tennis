@@ -86,12 +86,52 @@ if (pair) {
   }
 }
 
+// Wikipedia sameAs for VS page player mentions
+const vsWikipediaUrls: Record<string, string[]> = {
+  'novak-djokovic': ['https://en.wikipedia.org/wiki/Novak_Djokovic', 'https://www.wikidata.org/wiki/Q588'],
+  'rafael-nadal': ['https://en.wikipedia.org/wiki/Rafael_Nadal', 'https://www.wikidata.org/wiki/Q10132'],
+  'roger-federer': ['https://en.wikipedia.org/wiki/Roger_Federer', 'https://www.wikidata.org/wiki/Q1426'],
+  'carlos-alcaraz': ['https://en.wikipedia.org/wiki/Carlos_Alcaraz', 'https://www.wikidata.org/wiki/Q78610099'],
+  'jannik-sinner': ['https://en.wikipedia.org/wiki/Jannik_Sinner', 'https://www.wikidata.org/wiki/Q55745013'],
+  'andy-murray': ['https://en.wikipedia.org/wiki/Andy_Murray', 'https://www.wikidata.org/wiki/Q17081'],
+  'alexander-zverev': ['https://en.wikipedia.org/wiki/Alexander_Zverev', 'https://www.wikidata.org/wiki/Q18221705'],
+  'daniil-medvedev': ['https://en.wikipedia.org/wiki/Daniil_Medvedev', 'https://www.wikidata.org/wiki/Q37225413'],
+  'stefanos-tsitsipas': ['https://en.wikipedia.org/wiki/Stefanos_Tsitsipas', 'https://www.wikidata.org/wiki/Q37754014'],
+  'iga-swiatek': ['https://en.wikipedia.org/wiki/Iga_%C5%9Bwi%C4%85tek', 'https://www.wikidata.org/wiki/Q55745015'],
+  'aryna-sabalenka': ['https://en.wikipedia.org/wiki/Aryna_Sabalenka', 'https://www.wikidata.org/wiki/Q37751726'],
+  'coco-gauff': ['https://en.wikipedia.org/wiki/Coco_Gauff', 'https://www.wikidata.org/wiki/Q56061488'],
+  'serena-williams': ['https://en.wikipedia.org/wiki/Serena_Williams', 'https://www.wikidata.org/wiki/Q11459'],
+  'venus-williams': ['https://en.wikipedia.org/wiki/Venus_Williams', 'https://www.wikidata.org/wiki/Q11459'],
+  'pete-sampras': ['https://en.wikipedia.org/wiki/Pete_Sampras', 'https://www.wikidata.org/wiki/Q18140'],
+  'andre-agassi': ['https://en.wikipedia.org/wiki/Andre_Agassi', 'https://www.wikidata.org/wiki/Q2212'],
+};
+
+// Build mentions array for the two players in this matchup
+const vsMentions = pair ? [pair[0], pair[1]].flatMap((playerSlug) => {
+  const wikiUrls = vsWikipediaUrls[playerSlug];
+  const playerName = slugToName(playerSlug);
+  if (!playerName) return [];
+  return [{
+    '@type': 'Person',
+    name: playerName,
+    url: `https://super.tennis/players/${playerSlug}/`,
+    ...(wikiUrls && { sameAs: wikiUrls }),
+  }];
+}) : [];
+
+// Ensure photo URL is absolute
+const absolutePhoto = photo1 ? (photo1.startsWith('http') ? photo1 : `https://super.tennis${photo1}`) : undefined;
+
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Article',
   headline: article.title,
   description: article.meta_description || article.excerpt,
   url: `https://super.tennis/vs/${slug}/`,
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': `https://super.tennis/vs/${slug}/`,
+  },
   ...(article.created_at && { datePublished: article.created_at }),
   ...(article.updated_at && { dateModified: article.updated_at }),
   author: {
@@ -99,19 +139,28 @@ const jsonLd = {
     name: 'Alex Morgan',
     jobTitle: 'Senior Tennis Editor',
     url: 'https://super.tennis/authors/alex-morgan/',
-    worksFor: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+    worksFor: {
+      '@type': 'Organization',
+      '@id': 'https://super.tennis/#organization',
+      name: 'SUPER.TENNIS',
+      url: 'https://super.tennis',
+    },
   },
   publisher: {
     '@type': 'Organization',
+    '@id': 'https://super.tennis/#organization',
     name: 'SUPER.TENNIS',
     url: 'https://super.tennis',
     logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
   },
-  ...(photo1 && { image: photo1 }),
+  ...(absolutePhoto && {
+    image: { '@type': 'ImageObject', url: absolutePhoto },
+  }),
   about: {
     '@type': 'SportsEvent',
     name: 'Tennis Head to Head',
   },
+  ...(vsMentions.length > 0 && { mentions: vsMentions }),
 };
 
 const faqJsonLd = article.faqs && Array.isArray(article.faqs) && article.faqs.length > 0 ? {

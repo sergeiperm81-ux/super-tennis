@@ -10,6 +10,7 @@ interface Props {
   jsonLd?: Record<string, any>;
   publishedTime?: string;
   dynamicContent?: boolean;
+  ogType?: string;
 }
 
 const {
@@ -19,21 +20,58 @@ const {
   jsonLd,
   publishedTime,
   dynamicContent = false,
+  ogType = 'website',
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 // Avoid duplicate SUPER.TENNIS in title tag
 const cleanTitle = title.replace(/\s*[—|]\s*SUPER\.TENNIS\s*/gi, '').trim();
 const fullTitle = cleanTitle === 'Home' ? 'SUPER.TENNIS — Tennis for Everyone' : `${cleanTitle} | SUPER.TENNIS`;
+
+// Organization schema — on every page for AI entity recognition
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': 'https://super.tennis/#organization',
+  name: 'SUPER.TENNIS',
+  url: 'https://super.tennis',
+  logo: {
+    '@type': 'ImageObject',
+    url: 'https://super.tennis/og/default.png',
+    width: 1200,
+    height: 630,
+  },
+  sameAs: [
+    'https://www.youtube.com/@SuperTennisNews',
+    'https://bsky.app/profile/supertennisnews.bsky.social',
+  ],
+  description: 'Tennis for everyone. Players, records, gear, lifestyle — the world of tennis beyond the court.',
+};
+
+// WebSite schema with SearchAction
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': 'https://super.tennis/#website',
+  url: 'https://super.tennis',
+  name: 'SUPER.TENNIS',
+  description: 'Tennis for everyone. Players, records, gear, lifestyle — the world of tennis beyond the court.',
+  publisher: { '@id': 'https://super.tennis/#organization' },
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: 'https://super.tennis/search/?q={search_term_string}',
+    },
+    'query-input': 'required name=search_term_string',
+  },
+};
 ---
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8691721344110584" crossorigin="anonymous"></script>
-
-  <!-- Google Analytics -->
+  <!-- Google Analytics (async — non-blocking) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z6JY7X381V"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -56,7 +94,7 @@ const fullTitle = cleanTitle === 'Home' ? 'SUPER.TENNIS — Tennis for Everyone'
   <meta name="impact-site-verification" value="b478032f-5051-418d-83ab-9475918a70a8" />
 
   <!-- Open Graph -->
-  <meta property="og:type" content="website" />
+  <meta property="og:type" content={ogType} />
   <meta property="og:url" content={canonicalURL} />
   <meta property="og:title" content={fullTitle} />
   <meta property="og:description" content={description} />
@@ -84,14 +122,18 @@ const fullTitle = cleanTitle === 'Home' ? 'SUPER.TENNIS — Tennis for Everyone'
   <!-- Preload dynamic content CSS only on pages that need it -->
   {dynamicContent && <link rel="preload" href="/css/dynamic-content.css?v=2" as="style" />}
 
-  <!-- Fonts (Latin subset only, display=swap for better LCP) -->
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap&subset=latin" as="style" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap&subset=latin" rel="stylesheet" />
+  <!-- Fonts: async load to avoid render-blocking (display=swap keeps text visible) -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap&subset=latin" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap&subset=latin" rel="stylesheet" /></noscript>
 
   <!-- Dynamic content styles (client-side rendered news/videos) -->
   {dynamicContent && <link rel="stylesheet" href="/css/dynamic-content.css?v=2" />}
   <!-- Magazine article layout styles -->
   <link rel="stylesheet" href="/css/magazine.css?v=1" />
+
+  <!-- Organization + WebSite schema on every page (AI entity recognition) -->
+  <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
 
   {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
@@ -99,9 +141,6 @@ const fullTitle = cleanTitle === 'Home' ? 'SUPER.TENNIS — Tennis for Everyone'
   <script is:inline>
     (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script","w1th9vjy1k");
   </script>
-
-  <!-- Skimlinks affiliate monetization -->
-  <script type="text/javascript" src="https://s.skimresources.com/js/300805X1788676.skimlinks.js" is:inline></script>
 
   <!-- Cloudflare Web Analytics -->
   <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "58c55eb389e74cd9a957df82216424eb"}' is:inline></script>
@@ -163,5 +202,11 @@ const fullTitle = cleanTitle === 'Home' ? 'SUPER.TENNIS — Tennis for Everyone'
       });
     })();
   </script>
+
+  <!-- Skimlinks affiliate monetization (async — after page render) -->
+  <script async src="https://s.skimresources.com/js/300805X1788676.skimlinks.js"></script>
+
+  <!-- Google AdSense (deferred — after page render) -->
+  <script async defer src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8691721344110584" crossorigin="anonymous"></script>
 </body>
 </html>

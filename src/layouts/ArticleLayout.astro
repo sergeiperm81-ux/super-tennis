@@ -16,6 +16,11 @@ interface Props {
 
 const { title, description, breadcrumbs, image, publishedDate, updatedDate, category, categoryLabel, categoryHref } = Astro.props;
 
+// Ensure image URL is absolute for schema validity
+const absoluteImage = image
+  ? (image.startsWith('http') ? image : `https://super.tennis${image}`)
+  : undefined;
+
 // Assign author persona by category
 const authorByCategory: Record<string, { name: string; id: string; title: string }> = {
   gear: { name: 'Sara Kellner', id: 'sara-kellner', title: 'Gear & Equipment Editor' },
@@ -54,18 +59,33 @@ const articleJsonLd = {
   '@type': 'Article',
   headline: title,
   description,
-  ...(image && { image }),
+  ...(absoluteImage && {
+    image: {
+      '@type': 'ImageObject',
+      url: absoluteImage,
+    },
+  }),
   ...(publishedDate && { datePublished: publishedDate }),
   ...(updatedDate && { dateModified: updatedDate }),
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': `https://super.tennis${Astro.url.pathname}`,
+  },
   author: {
     '@type': 'Person',
     name: articleAuthor.name,
     jobTitle: articleAuthor.title,
     url: `https://super.tennis/authors/${articleAuthor.id}/`,
-    worksFor: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+    worksFor: {
+      '@type': 'Organization',
+      '@id': 'https://super.tennis/#organization',
+      name: 'SUPER.TENNIS',
+      url: 'https://super.tennis',
+    },
   },
   publisher: {
     '@type': 'Organization',
+    '@id': 'https://super.tennis/#organization',
     name: 'SUPER.TENNIS',
     url: 'https://super.tennis',
     logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
@@ -95,7 +115,7 @@ const categoryOgImages: Record<string, string> = {
 const ogImage = categoryOgImages[category || ''] || '/og/default.png';
 ---
 
-<BaseLayout title={title} description={description} ogImage={ogImage} publishedTime={publishedDate}>
+<BaseLayout title={title} description={description} ogImage={absoluteImage || ogImage} ogType="article" publishedTime={publishedDate}>
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
 
@@ -124,7 +144,7 @@ const ogImage = categoryOgImages[category || ''] || '/og/default.png';
     <header class="article-hero" style={`--accent: ${accentColor}`}>
       {image && (
         <div class="hero-image">
-          <img src={image} alt={title} loading="eager" decoding="async" width="800" height="440" onerror="this.parentElement.style.display='none'" />
+          <img src={image} alt={title} loading="eager" fetchpriority="high" decoding="async" width="800" height="440" onerror="this.parentElement.style.display='none'" />
           <div class="hero-image-overlay"></div>
         </div>
       )}

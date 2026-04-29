@@ -60,6 +60,48 @@ const country = countryNames[player.country_code || ''] || player.country_code |
 const tourLabel = player.tour === 'atp' ? 'ATP' : 'WTA';
 const tourColor = player.tour === 'atp' ? '#003580' : '#7b2d8e';
 
+// Wikipedia sameAs links for top players (boosts AI entity recognition)
+const playerWikipediaUrls: Record<string, string[]> = {
+  'novak-djokovic': ['https://en.wikipedia.org/wiki/Novak_Djokovic', 'https://www.wikidata.org/wiki/Q588'],
+  'rafael-nadal': ['https://en.wikipedia.org/wiki/Rafael_Nadal', 'https://www.wikidata.org/wiki/Q10132'],
+  'roger-federer': ['https://en.wikipedia.org/wiki/Roger_Federer', 'https://www.wikidata.org/wiki/Q1426'],
+  'carlos-alcaraz': ['https://en.wikipedia.org/wiki/Carlos_Alcaraz', 'https://www.wikidata.org/wiki/Q78610099'],
+  'jannik-sinner': ['https://en.wikipedia.org/wiki/Jannik_Sinner', 'https://www.wikidata.org/wiki/Q55745013'],
+  'andy-murray': ['https://en.wikipedia.org/wiki/Andy_Murray', 'https://www.wikidata.org/wiki/Q17081'],
+  'stan-wawrinka': ['https://en.wikipedia.org/wiki/Stan_Wawrinka', 'https://www.wikidata.org/wiki/Q182071'],
+  'alexander-zverev': ['https://en.wikipedia.org/wiki/Alexander_Zverev', 'https://www.wikidata.org/wiki/Q18221705'],
+  'daniil-medvedev': ['https://en.wikipedia.org/wiki/Daniil_Medvedev', 'https://www.wikidata.org/wiki/Q37225413'],
+  'stefanos-tsitsipas': ['https://en.wikipedia.org/wiki/Stefanos_Tsitsipas', 'https://www.wikidata.org/wiki/Q37754014'],
+  'casper-ruud': ['https://en.wikipedia.org/wiki/Casper_Ruud', 'https://www.wikidata.org/wiki/Q30659302'],
+  'holger-rune': ['https://en.wikipedia.org/wiki/Holger_Rune', 'https://www.wikidata.org/wiki/Q95285614'],
+  'andrey-rublev': ['https://en.wikipedia.org/wiki/Andrey_Rublev_(tennis)', 'https://www.wikidata.org/wiki/Q21191819'],
+  'taylor-fritz': ['https://en.wikipedia.org/wiki/Taylor_Fritz', 'https://www.wikidata.org/wiki/Q20034209'],
+  'ben-shelton': ['https://en.wikipedia.org/wiki/Ben_Shelton', 'https://www.wikidata.org/wiki/Q117673831'],
+  'alex-de-minaur': ['https://en.wikipedia.org/wiki/Alex_de_Minaur', 'https://www.wikidata.org/wiki/Q37754070'],
+  'grigor-dimitrov': ['https://en.wikipedia.org/wiki/Grigor_Dimitrov', 'https://www.wikidata.org/wiki/Q1003498'],
+  'tommy-paul': ['https://en.wikipedia.org/wiki/Tommy_Paul', 'https://www.wikidata.org/wiki/Q17306697'],
+  'frances-tiafoe': ['https://en.wikipedia.org/wiki/Frances_Tiafoe', 'https://www.wikidata.org/wiki/Q17452023'],
+  'ugo-humbert': ['https://en.wikipedia.org/wiki/Ugo_Humbert', 'https://www.wikidata.org/wiki/Q30659322'],
+  'iga-swiatek': ['https://en.wikipedia.org/wiki/Iga_%C5%9Bwi%C4%85tek', 'https://www.wikidata.org/wiki/Q55745015'],
+  'aryna-sabalenka': ['https://en.wikipedia.org/wiki/Aryna_Sabalenka', 'https://www.wikidata.org/wiki/Q37751726'],
+  'coco-gauff': ['https://en.wikipedia.org/wiki/Coco_Gauff', 'https://www.wikidata.org/wiki/Q56061488'],
+  'elena-rybakina': ['https://en.wikipedia.org/wiki/Elena_Rybakina', 'https://www.wikidata.org/wiki/Q56062246'],
+  'jessica-pegula': ['https://en.wikipedia.org/wiki/Jessica_Pegula', 'https://www.wikidata.org/wiki/Q30659343'],
+  'mirra-andreeva': ['https://en.wikipedia.org/wiki/Mirra_Andreeva', 'https://www.wikidata.org/wiki/Q117906090'],
+  'barbora-krejcikova': ['https://en.wikipedia.org/wiki/Barbora_Krej%C4%8D%C3%ADkov%C3%A1', 'https://www.wikidata.org/wiki/Q21024671'],
+  'jasmine-paolini': ['https://en.wikipedia.org/wiki/Jasmine_Paolini', 'https://www.wikidata.org/wiki/Q30659360'],
+  'qinwen-zheng': ['https://en.wikipedia.org/wiki/Zheng_Qinwen', 'https://www.wikidata.org/wiki/Q92390791'],
+  'madison-keys': ['https://en.wikipedia.org/wiki/Madison_Keys', 'https://www.wikidata.org/wiki/Q476066'],
+  'serena-williams': ['https://en.wikipedia.org/wiki/Serena_Williams', 'https://www.wikidata.org/wiki/Q11459'],
+  'venus-williams': ['https://en.wikipedia.org/wiki/Venus_Williams', 'https://www.wikidata.org/wiki/Q11459'],
+  'maria-sharapova': ['https://en.wikipedia.org/wiki/Maria_Sharapova', 'https://www.wikidata.org/wiki/Q5862'],
+  'pete-sampras': ['https://en.wikipedia.org/wiki/Pete_Sampras', 'https://www.wikidata.org/wiki/Q18140'],
+  'andre-agassi': ['https://en.wikipedia.org/wiki/Andre_Agassi', 'https://www.wikidata.org/wiki/Q2212'],
+  'lleyton-hewitt': ['https://en.wikipedia.org/wiki/Lleyton_Hewitt', 'https://www.wikidata.org/wiki/Q25940'],
+  'marat-safin': ['https://en.wikipedia.org/wiki/Marat_Safin', 'https://www.wikidata.org/wiki/Q189965'],
+};
+const playerSameAs = playerWikipediaUrls[player.slug as string] || [];
+
 // JSON-LD structured data
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -72,6 +114,7 @@ const jsonLd = {
   height: player.height_cm ? { '@type': 'QuantitativeValue', value: player.height_cm, unitCode: 'CMT' } : undefined,
   description: player.bio_short || `Professional tennis player from ${country}`,
   sport: 'Tennis',
+  ...(playerSameAs.length > 0 && { sameAs: playerSameAs }),
 };
 
 // Format prize money

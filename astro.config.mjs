@@ -11,6 +11,8 @@ export default defineConfig({
       serialize(item) {
         const url = item.url;
         const today = new Date().toISOString().split('T')[0];
+        // Static pages that truly change daily get today's date
+        // Article/player pages: lastmod reflects recent build date
         item.lastmod = today;
 
         // Priority tiers:
