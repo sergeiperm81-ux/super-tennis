@@ -93,7 +93,7 @@ const badgeColors: Record<string, string> = {
 // 2. Row of 3 vertical cards
 const row3a = [
   {
-    title: "Iga Swiatek Returns to World No. 1 After Miami Open Victory",
+    title: "Iga Swiatek: Five-Time Roland Garros Champion Chasing a Comeback Season",
     badge: "PLAYERS",
     image: swiatekPhoto,
     href: "/players/iga-swiatek/",
@@ -208,6 +208,14 @@ const row3b = [
     href: "/records/tennis-goat-debate/",
   },
 ];
+
+// Fetch 2 latest lifestyle articles for the homepage hero slot (right after Follow Us)
+let latestLifestyle: any[] = [];
+try {
+  latestLifestyle = await getArticles({ category: 'lifestyle', limit: 2, status: ['published'] });
+} catch (e) {
+  console.warn('Homepage: Failed to fetch latest lifestyle articles');
+}
 
 // Fetch articles from each category to ensure representation in More Stories
 let latestArticles: any[] = [];
@@ -367,6 +375,36 @@ const playerProfile = profilePlayer ? {
             </a>
           </div>
 
+          <!-- LATEST FROM LIFESTYLE — 2 newest articles, updates daily with each new publish -->
+          {latestLifestyle.length > 0 && (
+            <section class="latest-lifestyle-section">
+              <div class="latest-lifestyle-header">
+                <h2 class="latest-lifestyle-title">Latest</h2>
+                <a href="/lifestyle/" class="latest-lifestyle-all">All articles &rarr;</a>
+              </div>
+              {latestLifestyle.map((art: any, i: number) => (
+                <a href={`/lifestyle/${art.slug}/`} class="card-hero">
+                  <img
+                    src={art.image_url || '/og/lifestyle.png'}
+                    alt={art.title}
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
+                    width="800"
+                    height="400"
+                  />
+                  <div class="card-hero__overlay"></div>
+                  <div class="card-hero__content">
+                    <span class="badge" style="background: #E91E63; color: #fff;">LIFESTYLE</span>
+                    <h3 class="card-hero__title">{art.title}</h3>
+                    {art.excerpt && (
+                      <p class="card-hero__desc">{art.excerpt.slice(0, 140)}{art.excerpt.length > 140 ? '...' : ''}</p>
+                    )}
+                  </div>
+                </a>
+              ))}
+            </section>
+          )}
+
           <!-- WATCH TENNIS — Video Pair 1 (loaded client-side) -->
           <section class="videos-section">
             <div class="videos-header">
@@ -378,10 +416,10 @@ const playerProfile = profilePlayer ? {
 
           <!-- 2. THREE COMPACT CARDS -->
           <div class="row-3-compact">
-            {row3a.map(card => (
+            {row3a.map((card, i) => (
               <a href={card.href} class="compact-card">
                 <div class="compact-card__img">
-                  <img src={card.image} alt={card.title} loading="lazy" decoding="async" width="400" height="267" />
+                  <img src={card.image} alt={card.title} loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : 'auto'} decoding="async" width="400" height="267" />
                 </div>
                 <div class="compact-card__body">
                   <span class="badge" style={`background: ${badgeColors[card.badge]}; color: #000;`}>{card.badge}</span>
@@ -783,6 +821,35 @@ const playerProfile = profilePlayer ? {
     line-height: 1.5;
     max-width: 550px;
   }
+
+  /* ===== LATEST LIFESTYLE SECTION ===== */
+  .latest-lifestyle-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .latest-lifestyle-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .latest-lifestyle-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin: 0;
+  }
+  .latest-lifestyle-all {
+    font-size: 0.85rem;
+    color: #E91E63;
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity 0.2s;
+  }
+  .latest-lifestyle-all:hover { opacity: 0.75; }
 
   /* ===== VERTICAL CARD — photo top, title below ===== */
   .vcard {
