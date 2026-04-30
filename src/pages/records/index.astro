@@ -268,14 +268,15 @@ const faqJsonLd = {
 };
 
 // ========== ARTICLE SUBCATEGORY FILTERING ==========
-// Auto-classify articles into 5 subgroups based on title/slug keywords
+// Auto-classify articles into 5 subgroups based on title/slug keywords.
+// Uses word boundaries (\b) to avoid false positives like "ace" matching "surface".
 function classifyArticle(art: { title: string; slug: string }): string {
   const text = (art.title + ' ' + art.slug).toLowerCase();
-  if (/grand-slam|slam|wimbledon|roland|french-open|australian-open|us-open/.test(text)) return 'slams';
-  if (/ranking|no-1|number-one|year-end|weeks-at|world-no/.test(text)) return 'rankings';
-  if (/serve|ace|fastest|longest-match|tiebreak/.test(text)) return 'serves';
-  if (/streak|consecutive|winning|undefeated|surface/.test(text)) return 'streaks';
-  return 'career'; // default: career titles, prize money, longevity, etc.
+  if (/\b(grand-slam|grand-slams|slam|slams|wimbledon|roland|french-open|australian-open|us-open|hat-trick|hat-tricks|olympic|davis-cup)\b/.test(text)) return 'slams';
+  if (/\b(ranking|rankings|ranked|no-1|number-one|year-end|weeks|world-number-one|world-no)\b/.test(text)) return 'rankings';
+  if (/\b(serve|serves|ace|aces|fastest|tiebreak|tiebreaks|double-fault|double-faults|longest-match|longest-matches)\b/.test(text)) return 'serves';
+  if (/\b(streak|streaks|consecutive|undefeated|surface|surfaces|comeback|comebacks|winning-streak|winning-streaks)\b/.test(text)) return 'streaks';
+  return 'career'; // default: career titles, prize money, longevity, GOAT debate, etc.
 }
 
 const articleFilterTabs = [
@@ -297,43 +298,49 @@ function findRecordArticle(record: { articleSlug?: string }): string | null {
 }
 
 // ========== IMAGE DIVERSIFIER ==========
-// Most articles in DB use one of two generic images (court-aerial 27x, trophy-gold 17x).
-// We override those with deterministic slug-hashed picks from a per-subcategory pool
-// so the grid doesn't show 30+ identical thumbnails.
+// 27 articles in DB use tennis-court-aerial.webp; 17 use tennis-trophy-gold.webp.
+// We override those generics with images from per-subcategory pools.
+//
+// Pools deliberately exclude visual TWINS:
+//   - bagels-dominant.webp / bagels-record.webp (same blue-jacket girl)
+//   - prize-money-check.webp / prize-money-record.webp (both dollar bills)
+//   - fastest-serve.webp / fastest-serves.webp (both motion-blur ball)
+//   - longest-match.webp / longest-matches.webp (similar)
+// We pick ONE of each pair so the diversifier never collides with an article
+// that already has the twin in its DB image_url.
 const RECORD_IMAGE_POOL: Record<string, string[]> = {
   slams: [
     '/images/records/tennis-trophy-gold.webp',
     '/images/records/tennis-court-aerial.webp',
     '/images/records/titles-single-year.webp',
-    '/images/records/bagels-dominant.webp',
+    '/images/records/most-aces.webp',
   ],
   rankings: [
     '/images/records/tennis-court-aerial.webp',
     '/images/records/tennis-trophy-gold.webp',
     '/images/records/titles-single-year.webp',
+    '/images/records/double-faults.webp',
   ],
   serves: [
-    '/images/records/fastest-serve.webp',
     '/images/records/fastest-serves.webp',
     '/images/records/most-aces.webp',
     '/images/records/tennis-aces.webp',
     '/images/records/double-faults.webp',
-    '/images/records/longest-match.webp',
     '/images/records/longest-matches.webp',
   ],
   streaks: [
     '/images/records/tennis-court-aerial.webp',
     '/images/records/tennis-trophy-gold.webp',
     '/images/records/titles-single-year.webp',
-    '/images/records/bagels-record.webp',
+    '/images/records/most-aces.webp',
   ],
   career: [
     '/images/records/tennis-trophy-gold.webp',
-    '/images/records/prize-money-record.webp',
     '/images/records/prize-money-check.webp',
     '/images/records/titles-single-year.webp',
-    '/images/records/bagels-record.webp',
     '/images/records/tennis-court-aerial.webp',
+    '/images/records/double-faults.webp',
+    '/images/records/most-aces.webp',
   ],
 };
 
@@ -342,22 +349,44 @@ const GENERIC_IMAGES = new Set([
   '/images/records/tennis-trophy-gold.webp',
 ]);
 
-function hashSlug(slug: string): number {
-  let h = 0;
-  for (let i = 0; i < slug.length; i++) {
-    h = ((h << 5) - h + slug.charCodeAt(i)) | 0;
-  }
-  return Math.abs(h);
+// Group visually-similar images under one key so the counter treats them as one.
+// E.g., bagels-record and bagels-dominant both feature the same blue-jacket girl —
+// both should count as "bagels" so we don't pick bagels-dominant from the pool
+// when an article already uses bagels-record from the DB.
+function visualKey(img: string): string {
+  if (img.includes('bagels')) return 'bagels';
+  if (img.includes('prize-money')) return 'prize-money';
+  if (img.includes('fastest-serve')) return 'fastest-serve';
+  if (img.includes('longest-match')) return 'longest-match';
+  return img;
 }
 
+// Least-used picker: tracks all images used on the page (including DB-specific
+// ones) and picks the image with the lowest usage count from the subcategory pool.
+// This handles overlapping pools (trophy-gold and court-aerial appear in multiple
+// pools) and guarantees minimum visible duplication.
+const usedImageCounts = new Map<string, number>();
+
 function pickRecordImage(article: { slug: string; image_url?: string }, subcategory: string): string {
-  // If DB has a specific (non-generic) image, keep it
+  // If DB has a specific (non-generic) image, keep it but still bump its counter
   if (article.image_url && !GENERIC_IMAGES.has(article.image_url)) {
+    const key = visualKey(article.image_url);
+    usedImageCounts.set(key, (usedImageCounts.get(key) || 0) + 1);
     return article.image_url;
   }
-  // Otherwise diversify using hash-based pick from the subcategory pool
+  // Otherwise pick the least-used image from the subcategory pool
   const pool = RECORD_IMAGE_POOL[subcategory] || RECORD_IMAGE_POOL.career;
-  return pool[hashSlug(article.slug) % pool.length];
+  let bestImg = pool[0];
+  let bestCount = usedImageCounts.get(visualKey(bestImg)) ?? 0;
+  for (const img of pool) {
+    const c = usedImageCounts.get(visualKey(img)) ?? 0;
+    if (c < bestCount) {
+      bestImg = img;
+      bestCount = c;
+    }
+  }
+  usedImageCounts.set(visualKey(bestImg), bestCount + 1);
+  return bestImg;
 }
 ---
 
@@ -1892,12 +1921,13 @@ function pickRecordImage(article: { slug: string; image_url?: string }, subcateg
 
   // ----- Filter Tabs (client-side) -----
   // Classify article based on data-category, hide cards that don't match
+  // Word boundaries (\b) prevent false matches like "ace" inside "surface".
   function classifyText(text) {
     const t = text.toLowerCase();
-    if (/grand-slam|slam|wimbledon|roland|french-open|australian-open|us-open/.test(t)) return 'slams';
-    if (/ranking|no-1|number-one|year-end|weeks-at|world-no/.test(t)) return 'rankings';
-    if (/serve|ace|fastest|longest-match|tiebreak/.test(t)) return 'serves';
-    if (/streak|consecutive|winning|undefeated|surface/.test(t)) return 'streaks';
+    if (/\b(grand-slam|grand-slams|slam|slams|wimbledon|roland|french-open|australian-open|us-open|hat-trick|hat-tricks|olympic|davis-cup)\b/.test(t)) return 'slams';
+    if (/\b(ranking|rankings|ranked|no-1|number-one|year-end|weeks|world-number-one|world-no)\b/.test(t)) return 'rankings';
+    if (/\b(serve|serves|ace|aces|fastest|tiebreak|tiebreaks|double-fault|double-faults|longest-match|longest-matches)\b/.test(t)) return 'serves';
+    if (/\b(streak|streaks|consecutive|undefeated|surface|surfaces|comeback|comebacks|winning-streak|winning-streaks)\b/.test(t)) return 'streaks';
     return 'career';
   }
 
@@ -1968,24 +1998,44 @@ function pickRecordImage(article: { slug: string; image_url?: string }, subcateg
             streaks: { icon: '🔥', label: 'Streaks' },
             career: { icon: '👑', label: 'Career' },
           };
-          // Same image diversifier as server-side: avoid 27x tennis-court-aerial duplicates
+          // Same image diversifier as server-side. No visual twins, sequential rotation.
           const IMG_POOL = {
-            slams: ['/images/records/tennis-trophy-gold.webp', '/images/records/tennis-court-aerial.webp', '/images/records/titles-single-year.webp', '/images/records/bagels-dominant.webp'],
-            rankings: ['/images/records/tennis-court-aerial.webp', '/images/records/tennis-trophy-gold.webp', '/images/records/titles-single-year.webp'],
-            serves: ['/images/records/fastest-serve.webp', '/images/records/fastest-serves.webp', '/images/records/most-aces.webp', '/images/records/tennis-aces.webp', '/images/records/double-faults.webp', '/images/records/longest-match.webp', '/images/records/longest-matches.webp'],
-            streaks: ['/images/records/tennis-court-aerial.webp', '/images/records/tennis-trophy-gold.webp', '/images/records/titles-single-year.webp', '/images/records/bagels-record.webp'],
-            career: ['/images/records/tennis-trophy-gold.webp', '/images/records/prize-money-record.webp', '/images/records/prize-money-check.webp', '/images/records/titles-single-year.webp', '/images/records/bagels-record.webp', '/images/records/tennis-court-aerial.webp'],
+            slams: ['/images/records/tennis-trophy-gold.webp', '/images/records/tennis-court-aerial.webp', '/images/records/titles-single-year.webp', '/images/records/most-aces.webp'],
+            rankings: ['/images/records/tennis-court-aerial.webp', '/images/records/tennis-trophy-gold.webp', '/images/records/titles-single-year.webp', '/images/records/double-faults.webp'],
+            serves: ['/images/records/fastest-serves.webp', '/images/records/most-aces.webp', '/images/records/tennis-aces.webp', '/images/records/double-faults.webp', '/images/records/longest-matches.webp'],
+            streaks: ['/images/records/tennis-court-aerial.webp', '/images/records/tennis-trophy-gold.webp', '/images/records/titles-single-year.webp', '/images/records/most-aces.webp'],
+            career: ['/images/records/tennis-trophy-gold.webp', '/images/records/prize-money-check.webp', '/images/records/titles-single-year.webp', '/images/records/tennis-court-aerial.webp', '/images/records/double-faults.webp', '/images/records/most-aces.webp'],
           };
           const GENERIC_IMGS = new Set(['/images/records/tennis-court-aerial.webp', '/images/records/tennis-trophy-gold.webp']);
-          function hashStr(s) {
-            let h = 0;
-            for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
-            return Math.abs(h);
+          function visualKeyJs(img) {
+            if (img.includes('bagels')) return 'bagels';
+            if (img.includes('prize-money')) return 'prize-money';
+            if (img.includes('fastest-serve')) return 'fastest-serve';
+            if (img.includes('longest-match')) return 'longest-match';
+            return img;
           }
+          // Seed counter from images already on the page (count visualKey occurrences)
+          const usedCounts = new Map();
+          articlesGrid.querySelectorAll('.article-card img').forEach(img => {
+            const src = img.getAttribute('src') || '';
+            const k = visualKeyJs(src);
+            usedCounts.set(k, (usedCounts.get(k) || 0) + 1);
+          });
           function diversifyImage(art, subcat) {
-            if (art.image_url && !GENERIC_IMGS.has(art.image_url)) return art.image_url;
+            if (art.image_url && !GENERIC_IMGS.has(art.image_url)) {
+              const k = visualKeyJs(art.image_url);
+              usedCounts.set(k, (usedCounts.get(k) || 0) + 1);
+              return art.image_url;
+            }
             const pool = IMG_POOL[subcat] || IMG_POOL.career;
-            return pool[hashStr(art.slug) % pool.length];
+            let best = pool[0];
+            let bestN = usedCounts.get(visualKeyJs(best)) || 0;
+            for (const p of pool) {
+              const n = usedCounts.get(visualKeyJs(p)) || 0;
+              if (n < bestN) { best = p; bestN = n; }
+            }
+            usedCounts.set(visualKeyJs(best), bestN + 1);
+            return best;
           }
 
           articles.forEach(article => {
