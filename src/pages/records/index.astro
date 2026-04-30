@@ -295,6 +295,70 @@ function findRecordArticle(record: { articleSlug?: string }): string | null {
   }
   return null;
 }
+
+// ========== IMAGE DIVERSIFIER ==========
+// Most articles in DB use one of two generic images (court-aerial 27x, trophy-gold 17x).
+// We override those with deterministic slug-hashed picks from a per-subcategory pool
+// so the grid doesn't show 30+ identical thumbnails.
+const RECORD_IMAGE_POOL: Record<string, string[]> = {
+  slams: [
+    '/images/records/tennis-trophy-gold.webp',
+    '/images/records/tennis-court-aerial.webp',
+    '/images/records/titles-single-year.webp',
+    '/images/records/bagels-dominant.webp',
+  ],
+  rankings: [
+    '/images/records/tennis-court-aerial.webp',
+    '/images/records/tennis-trophy-gold.webp',
+    '/images/records/titles-single-year.webp',
+  ],
+  serves: [
+    '/images/records/fastest-serve.webp',
+    '/images/records/fastest-serves.webp',
+    '/images/records/most-aces.webp',
+    '/images/records/tennis-aces.webp',
+    '/images/records/double-faults.webp',
+    '/images/records/longest-match.webp',
+    '/images/records/longest-matches.webp',
+  ],
+  streaks: [
+    '/images/records/tennis-court-aerial.webp',
+    '/images/records/tennis-trophy-gold.webp',
+    '/images/records/titles-single-year.webp',
+    '/images/records/bagels-record.webp',
+  ],
+  career: [
+    '/images/records/tennis-trophy-gold.webp',
+    '/images/records/prize-money-record.webp',
+    '/images/records/prize-money-check.webp',
+    '/images/records/titles-single-year.webp',
+    '/images/records/bagels-record.webp',
+    '/images/records/tennis-court-aerial.webp',
+  ],
+};
+
+const GENERIC_IMAGES = new Set([
+  '/images/records/tennis-court-aerial.webp',
+  '/images/records/tennis-trophy-gold.webp',
+]);
+
+function hashSlug(slug: string): number {
+  let h = 0;
+  for (let i = 0; i < slug.length; i++) {
+    h = ((h << 5) - h + slug.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h);
+}
+
+function pickRecordImage(article: { slug: string; image_url?: string }, subcategory: string): string {
+  // If DB has a specific (non-generic) image, keep it
+  if (article.image_url && !GENERIC_IMAGES.has(article.image_url)) {
+    return article.image_url;
+  }
+  // Otherwise diversify using hash-based pick from the subcategory pool
+  const pool = RECORD_IMAGE_POOL[subcategory] || RECORD_IMAGE_POOL.career;
+  return pool[hashSlug(article.slug) % pool.length];
+}
 ---
 
 <BaseLayout
@@ -404,6 +468,83 @@ function findRecordArticle(record: { articleSlug?: string }): string | null {
               </section>
             </>
           ))}
+
+          <!-- Deep Dive Articles — moved above leaderboards for visibility -->
+          {recordArticles.length > 0 && (
+            <section class="records-section" id="deep-dive">
+              <div class="articles-header">
+                <h2>
+                  <span class="section-icon">📖</span>
+                  Deep Dive Articles
+                  <span class="articles-count">({filteredRecordArticles.length})</span>
+                </h2>
+                <div class="search-box">
+                  <input
+                    type="text"
+                    id="recordSearch"
+                    placeholder="Search articles..."
+                    value={searchQuery}
+                    class="search-input"
+                  />
+                </div>
+              </div>
+
+              <!-- Filter Tabs -->
+              <div class="article-filters" role="tablist" aria-label="Filter articles by topic">
+                {articleFilterTabs.map(tab => (
+                  <button
+                    type="button"
+                    class={`filter-tab ${tab.id === 'all' ? 'active' : ''}`}
+                    data-filter={tab.id}
+                    role="tab"
+                    aria-selected={tab.id === 'all' ? 'true' : 'false'}
+                  >
+                    <span class="filter-icon">{tab.icon}</span>
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              <!-- Article Grid -->
+              <div class="articles-grid" id="articlesGrid">
+                {displayedRecordArticles.map((art: any) => {
+                  const subcategory = classifyArticle(art);
+                  const img = pickRecordImage(art, subcategory);
+                  return (
+                    <a
+                      href={`/records/${art.slug}/`}
+                      class="article-card"
+                      data-category={subcategory}
+                    >
+                      <div class="article-card__img">
+                        <img src={img} alt={art.title} loading="lazy" decoding="async" width="400" height="225" onerror="this.src='/images/records/tennis-trophy-gold.webp'" />
+                        <span class="article-card__badge">
+                          {articleFilterTabs.find(t => t.id === subcategory)?.icon}
+                          {articleFilterTabs.find(t => t.id === subcategory)?.label}
+                        </span>
+                      </div>
+                      <div class="article-card__body">
+                        <h3>{art.title}</h3>
+                        <p>{stripMarkdown(art.excerpt || '')}</p>
+                        <span class="article-card__cta">Read more &rarr;</span>
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+
+              {remainingCount > 0 && (
+                <button
+                  class="load-more-btn"
+                  id="recordsLoadMoreBtn"
+                  data-offset="12"
+                  data-total={filteredRecordArticles.length}
+                >
+                  Load more articles ({remainingCount} remaining)
+                </button>
+              )}
+            </section>
+          )}
 
           <!-- Dynamic Leaderboards from Real Data -->
           {mostTitlesATP.length > 0 && (
@@ -562,83 +703,6 @@ function findRecordArticle(record: { articleSlug?: string }): string | null {
                   </tbody>
                 </table>
               </div>
-            </section>
-          )}
-
-          <!-- Deep Dive Articles -->
-          {recordArticles.length > 0 && (
-            <section class="records-section" id="deep-dive">
-              <div class="articles-header">
-                <h2>
-                  <span class="section-icon">📖</span>
-                  Deep Dive Articles
-                  <span class="articles-count">({filteredRecordArticles.length})</span>
-                </h2>
-                <div class="search-box">
-                  <input
-                    type="text"
-                    id="recordSearch"
-                    placeholder="Search articles..."
-                    value={searchQuery}
-                    class="search-input"
-                  />
-                </div>
-              </div>
-
-              <!-- Filter Tabs -->
-              <div class="article-filters" role="tablist" aria-label="Filter articles by topic">
-                {articleFilterTabs.map(tab => (
-                  <button
-                    type="button"
-                    class={`filter-tab ${tab.id === 'all' ? 'active' : ''}`}
-                    data-filter={tab.id}
-                    role="tab"
-                    aria-selected={tab.id === 'all' ? 'true' : 'false'}
-                  >
-                    <span class="filter-icon">{tab.icon}</span>
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-
-              <!-- Article Grid -->
-              <div class="articles-grid" id="articlesGrid">
-                {displayedRecordArticles.map((art: any) => {
-                  const subcategory = classifyArticle(art);
-                  const img = art.image_url || '/images/records/tennis-trophy-gold.webp';
-                  return (
-                    <a
-                      href={`/records/${art.slug}/`}
-                      class="article-card"
-                      data-category={subcategory}
-                    >
-                      <div class="article-card__img">
-                        <img src={img} alt={art.title} loading="lazy" decoding="async" width="400" height="225" onerror="this.src='/images/records/tennis-trophy-gold.webp'" />
-                        <span class="article-card__badge">
-                          {articleFilterTabs.find(t => t.id === subcategory)?.icon}
-                          {articleFilterTabs.find(t => t.id === subcategory)?.label}
-                        </span>
-                      </div>
-                      <div class="article-card__body">
-                        <h3>{art.title}</h3>
-                        <p>{stripMarkdown(art.excerpt || '')}</p>
-                        <span class="article-card__cta">Read more &rarr;</span>
-                      </div>
-                    </a>
-                  );
-                })}
-              </div>
-
-              {remainingCount > 0 && (
-                <button
-                  class="load-more-btn"
-                  id="recordsLoadMoreBtn"
-                  data-offset="12"
-                  data-total={filteredRecordArticles.length}
-                >
-                  Load more articles ({remainingCount} remaining)
-                </button>
-              )}
             </section>
           )}
 
@@ -1904,10 +1968,30 @@ function findRecordArticle(record: { articleSlug?: string }): string | null {
             streaks: { icon: '🔥', label: 'Streaks' },
             career: { icon: '👑', label: 'Career' },
           };
+          // Same image diversifier as server-side: avoid 27x tennis-court-aerial duplicates
+          const IMG_POOL = {
+            slams: ['/images/records/tennis-trophy-gold.webp', '/images/records/tennis-court-aerial.webp', '/images/records/titles-single-year.webp', '/images/records/bagels-dominant.webp'],
+            rankings: ['/images/records/tennis-court-aerial.webp', '/images/records/tennis-trophy-gold.webp', '/images/records/titles-single-year.webp'],
+            serves: ['/images/records/fastest-serve.webp', '/images/records/fastest-serves.webp', '/images/records/most-aces.webp', '/images/records/tennis-aces.webp', '/images/records/double-faults.webp', '/images/records/longest-match.webp', '/images/records/longest-matches.webp'],
+            streaks: ['/images/records/tennis-court-aerial.webp', '/images/records/tennis-trophy-gold.webp', '/images/records/titles-single-year.webp', '/images/records/bagels-record.webp'],
+            career: ['/images/records/tennis-trophy-gold.webp', '/images/records/prize-money-record.webp', '/images/records/prize-money-check.webp', '/images/records/titles-single-year.webp', '/images/records/bagels-record.webp', '/images/records/tennis-court-aerial.webp'],
+          };
+          const GENERIC_IMGS = new Set(['/images/records/tennis-court-aerial.webp', '/images/records/tennis-trophy-gold.webp']);
+          function hashStr(s) {
+            let h = 0;
+            for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+            return Math.abs(h);
+          }
+          function diversifyImage(art, subcat) {
+            if (art.image_url && !GENERIC_IMGS.has(art.image_url)) return art.image_url;
+            const pool = IMG_POOL[subcat] || IMG_POOL.career;
+            return pool[hashStr(art.slug) % pool.length];
+          }
+
           articles.forEach(article => {
             const subcategory = classifyText(article.title + ' ' + article.slug);
             const meta = subcatLabels[subcategory] || subcatLabels.career;
-            const img = article.image_url || '/images/records/tennis-trophy-gold.webp';
+            const img = diversifyImage(article, subcategory);
             const link = document.createElement('a');
             link.href = `/records/${article.slug}/`;
             link.className = 'article-card';
