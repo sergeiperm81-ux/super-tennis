@@ -627,11 +627,15 @@ const eventsJsonLd = allTournaments.map(t => {
     color: var(--gray-900);
   }
   .tourney-name-link {
-    color: var(--gray-900);
-    transition: color 0.2s;
+    color: var(--court-green);
+    text-decoration: underline;
+    text-decoration-color: rgba(22, 163, 74, 0.35);
+    text-underline-offset: 2px;
+    transition: color 0.2s, text-decoration-color 0.2s;
   }
   .tourney-name-link:hover {
-    color: var(--court-green);
+    color: #15803d;
+    text-decoration-color: #15803d;
   }
   .tourney-meta {
     display: flex;
