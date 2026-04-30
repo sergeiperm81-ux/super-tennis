@@ -21,6 +21,8 @@ export interface Env {
   ANALYTICS_PASSWORD?: string; // Password for /stats/ dashboard
   CF_API_TOKEN?: string; // Cloudflare API token with Analytics:Read
   CF_ZONE_ID?: string; // Cloudflare zone ID for super.tennis
+  GA_SERVICE_ACCOUNT_JSON?: string; // Google service account JSON (stringified) for GA4 Data API
+  GA_PROPERTY_ID?: string; // GA4 property ID, e.g. "530033178"
   RATE_LIMIT?: KVNamespace; // KV for brute-force protection on auth endpoints
   TELEGRAM_BOT_TOKEN?: string; // Telegram bot token for cron failure alerts
   TELEGRAM_CHAT_ID?: string; // Telegram chat ID for cron failure alerts
@@ -607,17 +609,23 @@ async function generateNews(env: Env): Promise<string> {
       }
     }
 
-    // Priority 4: curated stock tennis photos from our site (never leave blank)
+    // Priority 4: curated stock tennis photos from our site (never leave blank).
+    // Pool expanded 2026-04-16: was court/equip only (30 slugs) — added
+    // atmo/detail/venue folders already on disk (25 more slugs), now 55 total.
+    // More variety → less visual repetition on the /news/ listing.
+    // Keep in sync with public/images/news/*.webp — validate-photos.mjs
+    // cross-checks this list against disk on every build.
     if (!imageUrl) {
       const STOCK_PHOTOS = [
+        'atmo-01','atmo-02','atmo-03','atmo-04','atmo-05','atmo-06','atmo-07','atmo-08','atmo-09','atmo-10',
         'court-01','court-02','court-03','court-04','court-05','court-06','court-07','court-08','court-09','court-10',
         'court-11','court-12','court-13','court-14','court-15',
+        'detail-01','detail-02','detail-03','detail-04','detail-05','detail-06','detail-07','detail-08','detail-09','detail-10',
         'equip-01','equip-02','equip-03','equip-04','equip-05','equip-06','equip-07','equip-08','equip-09','equip-10',
         'equip-11','equip-12','equip-13','equip-14','equip-15',
+        'venue-01','venue-02','venue-03','venue-04','venue-05','venue-06','venue-07','venue-08','venue-09','venue-10',
       ];
       const pick = STOCK_PHOTOS[i % STOCK_PHOTOS.length];
-      // Stock pool files on disk are .webp — historical bug: used to write .jpg
-      // which 404'd for every fallback row. Keep in sync with public/images/news/.
       imageUrl = `https://super.tennis/images/news/${pick}.webp`;
     }
 
@@ -1488,6 +1496,183 @@ async function fetchCloudflareAnalytics(env: Env, dateStart: string, dateEnd: st
 }
 
 // ============================================================
+// GOOGLE ANALYTICS 4 — Data API via service account JWT
+// ============================================================
+
+// Country full-name → ISO-2 map (GA4 returns full names)
+const GA4_COUNTRY_ISO: Record<string, string> = {
+  'Afghanistan':'AF','Albania':'AL','Algeria':'DZ','Argentina':'AR','Australia':'AU',
+  'Austria':'AT','Azerbaijan':'AZ','Bangladesh':'BD','Belarus':'BY','Belgium':'BE',
+  'Bolivia':'BO','Bosnia & Herzegovina':'BA','Brazil':'BR','Bulgaria':'BG','Canada':'CA',
+  'Chile':'CL','China':'CN','Colombia':'CO','Croatia':'HR','Cyprus':'CY',
+  'Czechia':'CZ','Denmark':'DK','Ecuador':'EC','Egypt':'EG','Estonia':'EE',
+  'Finland':'FI','France':'FR','Georgia':'GE','Germany':'DE','Ghana':'GH',
+  'Greece':'GR','Hong Kong':'HK','Hungary':'HU','Iceland':'IS','India':'IN',
+  'Indonesia':'ID','Iran':'IR','Iraq':'IQ','Ireland':'IE','Israel':'IL',
+  'Italy':'IT','Japan':'JP','Jordan':'JO','Kazakhstan':'KZ','Kenya':'KE',
+  'Kosovo':'XK','Latvia':'LV','Lithuania':'LT','Luxembourg':'LU','Malaysia':'MY',
+  'Malta':'MT','Mexico':'MX','Moldova':'MD','Montenegro':'ME','Morocco':'MA',
+  'Netherlands':'NL','New Zealand':'NZ','Nigeria':'NG','North Macedonia':'MK',
+  'Norway':'NO','Pakistan':'PK','Peru':'PE','Philippines':'PH','Poland':'PL',
+  'Portugal':'PT','Romania':'RO','Russia':'RU','Saudi Arabia':'SA','Serbia':'RS',
+  'Singapore':'SG','Slovakia':'SK','Slovenia':'SI','South Africa':'ZA',
+  'South Korea':'KR','Spain':'ES','Sri Lanka':'LK','Sweden':'SE','Switzerland':'CH',
+  'Taiwan':'TW','Thailand':'TH','Tunisia':'TN','Turkey':'TR','Ukraine':'UA',
+  'United Arab Emirates':'AE','United Kingdom':'GB','United States':'US',
+  'Uruguay':'UY','Uzbekistan':'UZ','Venezuela':'VE','Vietnam':'VN',
+};
+
+async function signRS256JWT(header: object, payload: object, pemKey: string): Promise<string> {
+  const b64url = (s: string) => btoa(s).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+  const enc = new TextEncoder();
+  const h = b64url(JSON.stringify(header));
+  const p = b64url(JSON.stringify(payload));
+  const sigInput = `${h}.${p}`;
+
+  // Strip PEM headers and decode
+  const pem = pemKey.replace(/-----[A-Z ]+-----/g, '').replace(/\s/g, '');
+  const keyBytes = Uint8Array.from(atob(pem), c => c.charCodeAt(0));
+
+  const key = await crypto.subtle.importKey(
+    'pkcs8', keyBytes.buffer,
+    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+    false, ['sign']
+  );
+
+  const sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', key, enc.encode(sigInput));
+  const sigB64 = b64url(String.fromCharCode(...new Uint8Array(sig)));
+  return `${sigInput}.${sigB64}`;
+}
+
+async function getGA4AccessToken(sa: { client_email: string; private_key: string }): Promise<string> {
+  const now = Math.floor(Date.now() / 1000);
+  const jwt = await signRS256JWT(
+    { alg: 'RS256', typ: 'JWT' },
+    {
+      iss: sa.client_email,
+      scope: 'https://www.googleapis.com/auth/analytics.readonly',
+      aud: 'https://oauth2.googleapis.com/token',
+      iat: now,
+      exp: now + 3600,
+    },
+    sa.private_key
+  );
+
+  const res = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      assertion: jwt,
+    }),
+  });
+  if (!res.ok) throw new Error(`GA4 token error: ${res.status}`);
+  const data = await res.json() as any;
+  if (!data.access_token) throw new Error('GA4: no access_token in response');
+  return data.access_token;
+}
+
+async function ga4Report(propertyId: string, token: string, body: object): Promise<any> {
+  const res = await fetch(
+    `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
+    {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }
+  );
+  if (!res.ok) throw new Error(`GA4 API: ${res.status} ${await res.text()}`);
+  return res.json();
+}
+
+function ga4Rows(report: any): Array<{ dims: string[]; metrics: string[] }> {
+  return (report.rows || []).map((r: any) => ({
+    dims: (r.dimensionValues || []).map((d: any) => d.value || ''),
+    metrics: (r.metricValues || []).map((m: any) => m.value || '0'),
+  }));
+}
+
+async function fetchGA4Analytics(env: Env, days: number): Promise<any> {
+  const sa = JSON.parse(env.GA_SERVICE_ACCOUNT_JSON!);
+  const propertyId = env.GA_PROPERTY_ID!;
+  const token = await getGA4AccessToken(sa);
+
+  const dateEnd = 'today';
+  const dateStart = `${days}daysAgo`;
+
+  // Run all 3 reports in parallel
+  const [dailyReport, countriesReport, devicesReport] = await Promise.all([
+    ga4Report(propertyId, token, {
+      dateRanges: [{ startDate: dateStart, endDate: dateEnd }],
+      dimensions: [{ name: 'date' }],
+      metrics: [
+        { name: 'sessions' },
+        { name: 'screenPageViews' },
+        { name: 'activeUsers' },
+      ],
+      orderBys: [{ dimension: { dimensionName: 'date' } }],
+      limit: 100,
+    }),
+    ga4Report(propertyId, token, {
+      dateRanges: [{ startDate: dateStart, endDate: dateEnd }],
+      dimensions: [{ name: 'country' }],
+      metrics: [{ name: 'activeUsers' }],
+      orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
+      limit: 35,
+    }),
+    ga4Report(propertyId, token, {
+      dateRanges: [{ startDate: dateStart, endDate: dateEnd }],
+      dimensions: [{ name: 'deviceCategory' }],
+      metrics: [{ name: 'sessions' }],
+      orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
+    }),
+  ]);
+
+  // Totals + chartData from daily report
+  const totals = { requests: 0, pageViews: 0, uniques: 0, bytes: 0 };
+  const chartData: { date: string; requests: number; pageViews: number; uniques: number; bytes: number }[] = [];
+
+  for (const row of ga4Rows(dailyReport)) {
+    const sessions = parseInt(row.metrics[0]) || 0;
+    const pageViews = parseInt(row.metrics[1]) || 0;
+    const users = parseInt(row.metrics[2]) || 0;
+    // date from GA4: "20260423" → "2026-04-23"
+    const d = row.dims[0];
+    const date = `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`;
+    totals.requests += sessions;
+    totals.pageViews += pageViews;
+    totals.uniques += users;
+    chartData.push({ date, requests: sessions, pageViews, uniques: users, bytes: 0 });
+  }
+
+  // Countries: map full name → ISO2
+  const countries = ga4Rows(countriesReport).map(row => ({
+    country: GA4_COUNTRY_ISO[row.dims[0]] || row.dims[0].slice(0, 2).toUpperCase(),
+    count: parseInt(row.metrics[0]) || 0,
+  })).filter(c => c.count > 0);
+
+  // Devices
+  const devices = ga4Rows(devicesReport).map(row => ({
+    type: row.dims[0],
+    count: parseInt(row.metrics[0]) || 0,
+  })).filter(d => d.count > 0);
+
+  const startLabel = new Date(Date.now() - days * 86400000).toISOString().split('T')[0];
+  const endLabel = new Date().toISOString().split('T')[0];
+
+  return {
+    period: { start: startLabel, end: endLabel },
+    source: 'ga4',
+    totals,
+    chartData,
+    countries,
+    devices,
+    topPages: [],
+    statusCodes: [],
+  };
+}
+
+// ============================================================
 // CONTENT REFRESH — update "Last Updated" + add fresh paragraph
 // ============================================================
 async function refreshTopArticles(env: Env): Promise<string> {
@@ -2159,20 +2344,32 @@ export default {
     if (url.pathname === '/api/analytics') {
       const authErr = await requireAuthWithRateLimit(request, url, env);
       if (authErr) return authErr;
-      if (!env.CF_API_TOKEN || !env.CF_ZONE_ID) {
-        return jsonResponse({ error: 'Analytics not configured (missing CF_API_TOKEN or CF_ZONE_ID)' }, 0, request);
-      }
 
       const period = url.searchParams.get('period') || '7d';
       const days = period === '90d' ? 90 : period === '30d' ? 30 : 7;
+
+      // Prefer GA4 (real users, no bots) — fall back to Cloudflare if not configured
+      if (env.GA_SERVICE_ACCOUNT_JSON && env.GA_PROPERTY_ID) {
+        try {
+          const data = await fetchGA4Analytics(env, days);
+          return jsonResponse(data, 3600, request); // cache 1 hour
+        } catch (e: any) {
+          console.error('GA4 analytics error:', e.message);
+          return jsonResponse({ error: 'GA4 error: ' + e.message }, 0, request);
+        }
+      }
+
+      // Fallback: Cloudflare Analytics
+      if (!env.CF_API_TOKEN || !env.CF_ZONE_ID) {
+        return jsonResponse({ error: 'Analytics not configured (missing GA4 or Cloudflare credentials)' }, 0, request);
+      }
       const dateEnd = new Date().toISOString().split('T')[0];
       const dateStart = new Date(Date.now() - days * 86400000).toISOString().split('T')[0];
-
       try {
         const analyticsData = await fetchCloudflareAnalytics(env, dateStart, dateEnd);
-        return jsonResponse(analyticsData, 3600, request); // cache 1 hour
+        return jsonResponse(analyticsData, 3600, request);
       } catch (e: any) {
-        console.error('API error:', e.message);
+        console.error('CF analytics error:', e.message);
         return jsonResponse({ error: 'Internal error' }, 0, request);
       }
     }
