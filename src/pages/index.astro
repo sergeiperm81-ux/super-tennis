@@ -429,28 +429,6 @@ const playerProfile = profilePlayer ? {
             ))}
           </div>
 
-          <!-- 3. FULL-WIDTH HERO -->
-          <a href={hero2.href} class="card-hero">
-            <img src={hero2.image} alt={hero2.title} loading="lazy" decoding="async" width="800" height="400" style={hero2.imagePosition ? `object-position: ${hero2.imagePosition}` : undefined} />
-            <div class="card-hero__overlay"></div>
-            <div class="card-hero__content">
-              <span class="badge" style={`background: ${badgeColors[hero2.badge]}; color: #000;`}>{hero2.badge}</span>
-              <h3 class="card-hero__title">{hero2.title}</h3>
-              <p class="card-hero__desc">{hero2.desc}</p>
-            </div>
-          </a>
-
-          <!-- 4. FULL-WIDTH HERO -->
-          <a href={hero3.href} class="card-hero">
-            <img src={hero3.image} alt={hero3.title} loading="lazy" decoding="async" width="800" height="400" style={hero3.imagePosition ? `object-position: ${hero3.imagePosition}` : undefined} />
-            <div class="card-hero__overlay"></div>
-            <div class="card-hero__content">
-              <span class="badge" style={`background: ${badgeColors[hero3.badge]}; color: #000;`}>{hero3.badge}</span>
-              <h3 class="card-hero__title">{hero3.title}</h3>
-              <p class="card-hero__desc">{hero3.desc}</p>
-            </div>
-          </a>
-
           <!-- VIDEO PAIR 2 (loaded client-side) -->
           <div class="video-pair" data-dynamic="videos" data-slots="2,3"></div>
 
