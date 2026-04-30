@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import LiteYouTube from '../../components/LiteYouTube.astro';
 import { videoCategories, getChannelFeaturedVideos } from '../../data/youtube-channels';
 
-const jsonLd = {
+const collectionJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
   name: 'Tennis Videos — Best YouTube Channels to Watch',
@@ -15,13 +15,48 @@ const jsonLd = {
     url: 'https://super.tennis',
   },
 };
+
+// Build VideoObject JSON-LD for every featured video currently on the page
+const videoJsonLd: object[] = [];
+const seenVideoIds = new Set<string>();
+for (const cat of videoCategories) {
+  for (const channel of cat.channels) {
+    const featured = getChannelFeaturedVideos(channel.videos);
+    for (const video of featured) {
+      if (seenVideoIds.has(video.id)) continue;
+      seenVideoIds.add(video.id);
+      videoJsonLd.push({
+        '@context': 'https://schema.org',
+        '@type': 'VideoObject',
+        name: video.title,
+        description: video.description
+          ? video.description
+          : `${video.title} — tennis video from ${video.channelName}.`,
+        thumbnailUrl: `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`,
+        embedUrl: `https://www.youtube.com/embed/${video.id}`,
+        url: `https://www.youtube.com/watch?v=${video.id}`,
+        potentialAction: {
+          '@type': 'WatchAction',
+          target: `https://www.youtube.com/watch?v=${video.id}`,
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: video.channelName,
+        },
+      });
+    }
+  }
+}
 ---
 
 <BaseLayout
   title="Tennis Videos — Best YouTube Channels to Watch"
   description="Curated collection of the best tennis YouTube channels. Official tour highlights, coaching tips, player vlogs, analysis, and entertainment."
 >
-  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(collectionJsonLd)} />
+  {videoJsonLd.map((schema, i) => (
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  ))}
 
   <div class="video-page container">
     <!-- Breadcrumbs -->
@@ -72,6 +107,7 @@ const jsonLd = {
                     {featured.map(video => (
                       <div class="channel-video">
                         <LiteYouTube videoId={video.id} title={video.title} />
+                        {video.description && <p class="video-desc">{video.description}</p>}
                       </div>
                     ))}
                   </div>
@@ -229,6 +265,14 @@ const jsonLd = {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
+  }
+
+  /* Video description */
+  .video-desc {
+    font-size: 0.78rem;
+    color: var(--gray-500);
+    margin: 6px 0 0;
+    line-height: 1.4;
   }
 
   @media (max-width: 1024px) {
