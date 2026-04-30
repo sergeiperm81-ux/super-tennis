@@ -8,16 +8,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   <div class="container">
     <h1 class="stats-page__title">Dashboard</h1>
 
-    <!-- Tab navigation -->
-    <div class="stats-tabs">
-      <button class="stats-tab active" data-tab="analytics">📊 Analytics</button>
-      <button class="stats-tab" data-tab="publications">🎬 Video Publications</button>
-      <button class="stats-tab" data-tab="brief">📋 Weekly Brief</button>
-      <button class="stats-tab" data-tab="ops">⚙️ Ops</button>
-    </div>
-
-    <!-- ===== TAB: ANALYTICS ===== -->
-    <div id="tab-analytics" class="stats-tab-panel">
+    <!-- ===== ANALYTICS ===== -->
+    <div id="tab-analytics">
 
     <!-- Login form -->
     <div id="login-form" class="stats-login">
@@ -92,180 +84,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
     </div>
 
-    </div><!-- end tab-analytics -->
-
-    <!-- ===== TAB: VIDEO PUBLICATIONS ===== -->
-    <div id="tab-publications" class="stats-tab-panel" hidden>
-
-      <div id="pub-login-form" class="stats-login">
-        <p class="stats-login__text">Enter password to view publications</p>
-        <form id="pub-auth-form" class="stats-login__form">
-          <input type="password" id="pub-pwd-input" class="stats-login__input" placeholder="Password" autocomplete="off" />
-          <button type="submit" class="stats-login__btn">View</button>
-        </form>
-        <p id="pub-login-error" class="stats-login__error" hidden>Invalid password</p>
-      </div>
-
-      <div id="pub-dashboard" hidden>
-
-        <!-- Summary cards -->
-        <div class="stats-kpi" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 24px;">
-          <div class="stats-kpi__card">
-            <span class="stats-kpi__label">Published</span>
-            <span class="stats-kpi__value" id="pub-published">—</span>
-          </div>
-          <div class="stats-kpi__card">
-            <span class="stats-kpi__label" id="pub-errors-label">Errors</span>
-            <span class="stats-kpi__value" id="pub-errors">—</span>
-          </div>
-        </div>
-
-        <!-- Toolbar -->
-        <div class="stats-dash__toolbar">
-          <div class="stats-dash__periods"></div>
-          <button id="pub-refresh" class="stats-login__btn" style="padding:6px 14px;font-size:0.82rem;">↻ Refresh</button>
-        </div>
-
-        <!-- Publications table -->
-        <div id="pub-list" class="stats-section" style="padding:0;overflow:hidden;"></div>
-
-        <div id="pub-empty" class="stats-loading" hidden>
-          No publications yet. Videos will appear here once the Content Factory runs.
-        </div>
-      </div>
-
-    </div><!-- end tab-publications -->
-
-    <!-- ===== TAB: WEEKLY BRIEF ===== -->
-    <div id="tab-brief" class="stats-tab-panel" hidden>
-
-      <div id="brief-login-form" class="stats-login">
-        <p class="stats-login__text">Enter password to view weekly brief</p>
-        <form id="brief-auth-form" class="stats-login__form">
-          <input type="password" id="brief-pwd-input" class="stats-login__input" placeholder="Password" autocomplete="off" />
-          <button type="submit" class="stats-login__btn">View</button>
-        </form>
-        <p id="brief-login-error" class="stats-login__error" hidden>Invalid password</p>
-      </div>
-
-      <div id="brief-dashboard" hidden>
-
-        <!-- Brief header with date + copy button -->
-        <div class="stats-dash__toolbar">
-          <span id="brief-week-label" class="stats-dash__range" style="font-size:1rem;font-weight:600;color:#1a1a2e;"></span>
-          <button id="brief-copy" class="stats-login__btn" style="padding:6px 14px;font-size:0.82rem;">📋 Copy Brief</button>
-        </div>
-
-        <!-- AI Summary -->
-        <div id="brief-summary" class="stats-section" hidden>
-          <h2 class="stats-section__title">Executive Summary</h2>
-          <p id="brief-summary-text" style="color:#374151;line-height:1.7;white-space:pre-wrap;"></p>
-        </div>
-
-        <!-- Top Pages -->
-        <div id="brief-pages-section" class="stats-section" hidden>
-          <h2 class="stats-section__title">Top Pages</h2>
-          <table class="stats-table">
-            <thead><tr><th>Title</th><th>Path</th><th>Views</th><th>Change</th></tr></thead>
-            <tbody id="brief-pages-body"></tbody>
-          </table>
-        </div>
-
-        <!-- Search Queries -->
-        <div id="brief-queries-section" class="stats-section" hidden>
-          <h2 class="stats-section__title">Search Queries</h2>
-          <table class="stats-table">
-            <thead><tr><th>Query</th><th>Clicks</th><th>Impressions</th><th>Position</th></tr></thead>
-            <tbody id="brief-queries-body"></tbody>
-          </table>
-        </div>
-
-        <!-- Two column: Upcoming Events + Recommendations -->
-        <div class="stats-columns">
-          <div id="brief-events-section" class="stats-section" hidden>
-            <h2 class="stats-section__title">Upcoming Events</h2>
-            <div id="brief-events-list"></div>
-          </div>
-
-          <div id="brief-recs-section" class="stats-section" hidden>
-            <h2 class="stats-section__title">Recommendations</h2>
-            <div id="brief-recs-list"></div>
-          </div>
-        </div>
-
-        <!-- Empty state -->
-        <div id="brief-empty" class="stats-loading" hidden>
-          No weekly briefs yet. Briefs will appear here once generated.
-        </div>
-
-        <div id="brief-loading" class="stats-loading">Loading brief...</div>
-
-      </div>
-
-    </div><!-- end tab-brief -->
-
-    <!-- ===== TAB: OPS ===== -->
-    <div id="tab-ops" class="stats-tab-panel" hidden>
-      <p class="stats-dash__range" style="margin-bottom:1rem;">
-        Live view of every automated agent, content pipeline, and health check.
-        <span id="ops-generated" style="margin-left:.5rem;opacity:.6;"></span>
-      </p>
-
-      <div id="ops-loading" class="stats-loading">Loading ops status…</div>
-      <div id="ops-error" class="stats-loading" hidden style="color:#f87171;"></div>
-
-      <div id="ops-content" hidden>
-        <!-- Summary counters -->
-        <div class="stats-kpi" style="margin-bottom:1.25rem;">
-          <div class="stats-kpi__card">
-            <span class="stats-kpi__label">News · last 24h</span>
-            <span class="stats-kpi__value" id="ops-kpi-news">—</span>
-          </div>
-          <div class="stats-kpi__card">
-            <span class="stats-kpi__label">Articles · last 24h</span>
-            <span class="stats-kpi__value" id="ops-kpi-articles">—</span>
-          </div>
-          <div class="stats-kpi__card">
-            <span class="stats-kpi__label">Videos · last 24h</span>
-            <span class="stats-kpi__value" id="ops-kpi-videos">—</span>
-          </div>
-          <div class="stats-kpi__card">
-            <span class="stats-kpi__label">Agents OK</span>
-            <span class="stats-kpi__value" id="ops-kpi-health">—</span>
-          </div>
-        </div>
-
-        <!-- Agents table -->
-        <div class="stats-section">
-          <h2 class="stats-section__title">Agents</h2>
-          <table class="stats-table">
-            <thead>
-              <tr>
-                <th>Agent</th>
-                <th>What</th>
-                <th>Schedule</th>
-                <th>Last data</th>
-                <th>Status</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="ops-agents-body"></tbody>
-          </table>
-        </div>
-
-        <!-- Health checks -->
-        <div class="stats-section">
-          <h2 class="stats-section__title">Health</h2>
-          <table class="stats-table">
-            <thead><tr><th>Check</th><th>Status</th><th>Detail</th></tr></thead>
-            <tbody id="ops-health-body"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Trigger result toast -->
-      <div id="ops-toast" class="stats-loading" hidden style="margin-top:1rem;white-space:pre-wrap;font-family:monospace;font-size:.85rem;"></div>
-    </div><!-- end tab-ops -->
+    </div><!-- end analytics -->
 
   </div>
 </section>
@@ -434,7 +253,9 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     document.getElementById('devices-bars').innerHTML = devicesHtml;
     document.getElementById('devices-section').hidden = false;
   }
-  // ===== TAB SWITCHING with URL hash persistence =====
+  // ===== END =====
+  // (Video Publications, Weekly Brief, Ops tabs removed)
+  /*
   function switchTab(tabName) {
     document.querySelectorAll('.stats-tab').forEach(function(t) { t.classList.remove('active'); });
     document.querySelectorAll('.stats-tab-panel').forEach(function(p) { p.hidden = true; });
@@ -967,6 +788,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     }).join('');
     document.getElementById('ops-health-body').innerHTML = hRows || '<tr><td colspan="3" style="opacity:.6">No checks</td></tr>';
   }
+  */
 
 })();
 </script>
@@ -1096,134 +918,9 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   }
   .stats-bar__pct { width: 50px; text-align: right; font-size: 0.82rem; color: #6b7280; }
 
-  /* Tabs */
-  .stats-tabs {
-    display: flex; gap: 4px; background: #1a1a2e;
-    border-radius: 10px; padding: 4px; margin-bottom: 28px;
-    max-width: 560px;
-  }
-  .stats-tab {
-    flex: 1; padding: 10px 20px; border: none; border-radius: 8px;
-    background: transparent; color: #9ca3af; cursor: pointer;
-    font-size: 0.9rem; font-weight: 600; transition: all 0.15s;
-    white-space: nowrap;
-  }
-  .stats-tab.active { background: #2563eb; color: #fff; }
-  .stats-tab:hover:not(.active) { color: #fff; background: rgba(255,255,255,0.08); }
-
-  /* Publications — all :global() because JS injects HTML at runtime */
-  :global(.pub-table) {
-    width: 100%; border-collapse: collapse; font-size: 0.88rem;
-  }
-  :global(.pub-table thead th) {
-    text-align: left; color: #9ca3af; font-size: 0.7rem;
-    text-transform: uppercase; letter-spacing: 1px;
-    padding: 8px 10px; border-bottom: 2px solid #e5e7eb;
-    white-space: nowrap;
-  }
-  :global(.pub-table td) {
-    padding: 10px 10px; border-bottom: 1px solid #f3f4f6;
-    color: #374151; vertical-align: middle;
-  }
-  :global(.pub-table tr:hover) { background: #f9fafb; }
-
-  /* Column widths */
-  :global(.pub-td-thumb) { width: 76px; }
-  :global(.pub-td-cat) { width: 76px; }
-  :global(.pub-td-date) { width: 120px; white-space: nowrap; font-size: 0.78rem; color: #6b7280; }
-  :global(.pub-td-platform) { width: 48px; text-align: center; }
-
-  :global(.pub-thumb) {
-    width: 64px; height: 44px; object-fit: cover; border-radius: 6px;
-    display: block; background: #e5e7eb;
-  }
-  :global(.pub-thumb--empty) {
-    width: 64px; height: 44px; border-radius: 6px; background: #e5e7eb;
-  }
-  :global(.pub-cat-badge) {
-    display: inline-block;
-    color: #fff; font-size: 0.62rem; font-weight: 700;
-    padding: 2px 7px; border-radius: 4px; letter-spacing: 0.5px;
-    white-space: nowrap; text-transform: uppercase;
-  }
-  :global(.pub-row-title) {
-    font-size: 0.82rem; color: #1a1a2e; line-height: 1.3;
-    font-weight: 600;
-    overflow: hidden; text-overflow: ellipsis;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-  }
-
-  /* Platform cells */
-  :global(.pub-platform-link) {
-    display: inline-block; font-size: 0.72rem; font-weight: 700;
-    text-decoration: none; padding: 3px 8px; border-radius: 5px;
-    white-space: nowrap; transition: opacity 0.15s;
-  }
-  :global(.pub-platform-link:hover) { opacity: 0.8; }
-  :global(.pub-platform--ok) { background: #dcfce7; color: #166534; }
-  :global(.pub-platform-badge) { font-size: 0.9rem; cursor: default; }
-  :global(.pub-platform--err) { cursor: help; }
-  :global(.pub-platform--wait) { opacity: 0.5; }
-
-  .pub-filter {
-    padding: 6px 16px; border: none; border-radius: 6px;
-    background: transparent; color: #6b7280; cursor: pointer;
-    font-size: 0.88rem; font-weight: 500; transition: all 0.15s;
-  }
-  .pub-filter.active { background: #2563eb; color: #fff; }
-
-  /* Weekly Brief — :global() for JS-injected HTML */
-  :global(.brief-change--up) { color: #059669; font-weight: 600; }
-  :global(.brief-change--down) { color: #ef4444; font-weight: 600; }
-
-  :global(.brief-event) {
-    padding: 12px 0; border-bottom: 1px solid #f3f4f6;
-  }
-  :global(.brief-event:last-child) { border-bottom: none; }
-  :global(.brief-event__header) {
-    display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
-  }
-  :global(.brief-event__name) { font-weight: 600; color: #1a1a2e; font-size: 0.88rem; }
-  :global(.brief-event__badge) {
-    display: inline-block; font-size: 0.62rem; font-weight: 700;
-    padding: 2px 7px; border-radius: 4px; background: #2563eb; color: #fff;
-    text-transform: uppercase; letter-spacing: 0.5px;
-  }
-  :global(.brief-event__date) { font-size: 0.78rem; color: #6b7280; }
-  :global(.brief-event__articles) { font-size: 0.78rem; color: #9ca3af; margin-top: 4px; }
-
-  :global(.brief-rec) {
-    padding: 12px 0; border-bottom: 1px solid #f3f4f6;
-  }
-  :global(.brief-rec:last-child) { border-bottom: none; }
-  :global(.brief-rec__header) {
-    display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
-  }
-  :global(.brief-rec__prio) {
-    display: inline-block; font-size: 0.6rem; font-weight: 700;
-    padding: 2px 7px; border-radius: 4px; color: #fff;
-    text-transform: uppercase; letter-spacing: 0.5px;
-  }
-  :global(.brief-rec__status) {
-    font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  :global(.brief-rec__status--pending) { color: #f59e0b; }
-  :global(.brief-rec__status--approved) { color: #2563eb; }
-  :global(.brief-rec__status--done) { color: #059669; }
-  :global(.brief-rec__title) { font-weight: 600; color: #1a1a2e; font-size: 0.88rem; margin-bottom: 2px; }
-  :global(.brief-rec__meta) { font-size: 0.72rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
-  :global(.brief-rec__reason) { font-size: 0.82rem; color: #6b7280; margin-top: 4px; line-height: 1.4; }
-
   @media (max-width: 768px) {
     .stats-kpi { grid-template-columns: repeat(2, 1fr); }
     .stats-columns { grid-template-columns: 1fr; }
     .stats-login__form { flex-direction: column; }
-    .stats-tabs { max-width: 100%; overflow-x: auto; }
-    :global(.pub-table) { font-size: 0.75rem; }
-    :global(.pub-td-thumb) { display: none; }
-    :global(.pub-td-cat) { width: 56px; }
-    :global(.pub-td-date) { width: 90px; font-size: 0.7rem; }
-    :global(.pub-td-platform) { width: 36px; }
   }
 </style>
