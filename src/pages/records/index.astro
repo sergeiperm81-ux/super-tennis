@@ -298,28 +298,36 @@ function findRecordArticle(record: { articleSlug?: string }): string | null {
 }
 
 // ========== IMAGE DIVERSIFIER ==========
-// 27 articles in DB use tennis-court-aerial.webp; 17 use tennis-trophy-gold.webp.
-// We override those generics with images from per-subcategory pools.
+// We pull from /records/, /tournaments/ and /lifestyle/ folders to get enough
+// visually-distinct images. Each subcategory has 8-12 unique candidates.
 //
-// Pools deliberately exclude visual TWINS:
-//   - bagels-dominant.webp / bagels-record.webp (same blue-jacket girl)
-//   - prize-money-check.webp / prize-money-record.webp (both dollar bills)
-//   - fastest-serve.webp / fastest-serves.webp (both motion-blur ball)
-//   - longest-match.webp / longest-matches.webp (similar)
-// We pick ONE of each pair so the diversifier never collides with an article
-// that already has the twin in its DB image_url.
+// Visual TWINS excluded from pools (kept only as DB-attached images):
+//   - bagels-dominant ↔ bagels-record (same blue-jacket girl)
+//   - prize-money-check ↔ prize-money-record (dollar bills)
+//   - fastest-serve ↔ fastest-serves (motion-blur ball)
+//   - longest-match ↔ longest-matches
 const RECORD_IMAGE_POOL: Record<string, string[]> = {
   slams: [
+    '/images/tournaments/melbourne-park.webp',
+    '/images/tournaments/roland-garros.webp',
+    '/images/tournaments/wimbledon.webp',
+    '/images/tournaments/us-open.webp',
     '/images/records/tennis-trophy-gold.webp',
-    '/images/records/tennis-court-aerial.webp',
     '/images/records/titles-single-year.webp',
-    '/images/records/most-aces.webp',
+    '/images/lifestyle/tennis-trophy.webp',
+    '/images/lifestyle/tennis-fans-crowd.webp',
+    '/images/lifestyle/tennis-court-sunset.webp',
   ],
   rankings: [
     '/images/records/tennis-court-aerial.webp',
-    '/images/records/tennis-trophy-gold.webp',
     '/images/records/titles-single-year.webp',
-    '/images/records/double-faults.webp',
+    '/images/lifestyle/tennis-fans-crowd.webp',
+    '/images/lifestyle/tennis-fan-culture.webp',
+    '/images/lifestyle/tennis-court-sunset.webp',
+    '/images/lifestyle/tennis-watching-guide.webp',
+    '/images/lifestyle/tennis-podcasts.webp',
+    '/images/tournaments/atp-finals.webp',
+    '/images/tournaments/wta-finals.webp',
   ],
   serves: [
     '/images/records/fastest-serves.webp',
@@ -327,20 +335,33 @@ const RECORD_IMAGE_POOL: Record<string, string[]> = {
     '/images/records/tennis-aces.webp',
     '/images/records/double-faults.webp',
     '/images/records/longest-matches.webp',
+    '/images/lifestyle/tennis-training.webp',
+    '/images/lifestyle/tennis-coaching.webp',
+    '/images/lifestyle/tennis-rituals.webp',
   ],
   streaks: [
-    '/images/records/tennis-court-aerial.webp',
-    '/images/records/tennis-trophy-gold.webp',
+    '/images/lifestyle/tennis-court-sunset.webp',
+    '/images/lifestyle/tennis-academy.webp',
+    '/images/lifestyle/tennis-training.webp',
+    '/images/lifestyle/tennis-superstitions.webp',
     '/images/records/titles-single-year.webp',
-    '/images/records/most-aces.webp',
+    '/images/records/tennis-trophy-gold.webp',
+    '/images/tournaments/monte-carlo.webp',
+    '/images/tournaments/indian-wells.webp',
   ],
   career: [
-    '/images/records/tennis-trophy-gold.webp',
-    '/images/records/prize-money-check.webp',
+    '/images/lifestyle/tennis-prize-money.webp',
+    '/images/lifestyle/tennis-trophy.webp',
+    '/images/lifestyle/tennis-after-50.webp',
+    '/images/lifestyle/tennis-retirement-tour.webp',
+    '/images/lifestyle/tennis-academy.webp',
+    '/images/lifestyle/tennis-become-pro.webp',
+    '/images/lifestyle/tennis-fashion.webp',
+    '/images/lifestyle/tennis-tattoos.webp',
     '/images/records/titles-single-year.webp',
-    '/images/records/tennis-court-aerial.webp',
-    '/images/records/double-faults.webp',
-    '/images/records/most-aces.webp',
+    '/images/records/prize-money-check.webp',
+    '/images/tournaments/laver-cup.webp',
+    '/images/tournaments/davis-cup.webp',
   ],
 };
 
@@ -1998,13 +2019,13 @@ function pickRecordImage(article: { slug: string; image_url?: string }, subcateg
             streaks: { icon: '🔥', label: 'Streaks' },
             career: { icon: '👑', label: 'Career' },
           };
-          // Same image diversifier as server-side. No visual twins, sequential rotation.
+          // Same image diversifier as server-side. Pulls from /records, /tournaments, /lifestyle.
           const IMG_POOL = {
-            slams: ['/images/records/tennis-trophy-gold.webp', '/images/records/tennis-court-aerial.webp', '/images/records/titles-single-year.webp', '/images/records/most-aces.webp'],
-            rankings: ['/images/records/tennis-court-aerial.webp', '/images/records/tennis-trophy-gold.webp', '/images/records/titles-single-year.webp', '/images/records/double-faults.webp'],
-            serves: ['/images/records/fastest-serves.webp', '/images/records/most-aces.webp', '/images/records/tennis-aces.webp', '/images/records/double-faults.webp', '/images/records/longest-matches.webp'],
-            streaks: ['/images/records/tennis-court-aerial.webp', '/images/records/tennis-trophy-gold.webp', '/images/records/titles-single-year.webp', '/images/records/most-aces.webp'],
-            career: ['/images/records/tennis-trophy-gold.webp', '/images/records/prize-money-check.webp', '/images/records/titles-single-year.webp', '/images/records/tennis-court-aerial.webp', '/images/records/double-faults.webp', '/images/records/most-aces.webp'],
+            slams: ['/images/tournaments/melbourne-park.webp', '/images/tournaments/roland-garros.webp', '/images/tournaments/wimbledon.webp', '/images/tournaments/us-open.webp', '/images/records/tennis-trophy-gold.webp', '/images/records/titles-single-year.webp', '/images/lifestyle/tennis-trophy.webp', '/images/lifestyle/tennis-fans-crowd.webp', '/images/lifestyle/tennis-court-sunset.webp'],
+            rankings: ['/images/records/tennis-court-aerial.webp', '/images/records/titles-single-year.webp', '/images/lifestyle/tennis-fans-crowd.webp', '/images/lifestyle/tennis-fan-culture.webp', '/images/lifestyle/tennis-court-sunset.webp', '/images/lifestyle/tennis-watching-guide.webp', '/images/lifestyle/tennis-podcasts.webp', '/images/tournaments/atp-finals.webp', '/images/tournaments/wta-finals.webp'],
+            serves: ['/images/records/fastest-serves.webp', '/images/records/most-aces.webp', '/images/records/tennis-aces.webp', '/images/records/double-faults.webp', '/images/records/longest-matches.webp', '/images/lifestyle/tennis-training.webp', '/images/lifestyle/tennis-coaching.webp', '/images/lifestyle/tennis-rituals.webp'],
+            streaks: ['/images/lifestyle/tennis-court-sunset.webp', '/images/lifestyle/tennis-academy.webp', '/images/lifestyle/tennis-training.webp', '/images/lifestyle/tennis-superstitions.webp', '/images/records/titles-single-year.webp', '/images/records/tennis-trophy-gold.webp', '/images/tournaments/monte-carlo.webp', '/images/tournaments/indian-wells.webp'],
+            career: ['/images/lifestyle/tennis-prize-money.webp', '/images/lifestyle/tennis-trophy.webp', '/images/lifestyle/tennis-after-50.webp', '/images/lifestyle/tennis-retirement-tour.webp', '/images/lifestyle/tennis-academy.webp', '/images/lifestyle/tennis-become-pro.webp', '/images/lifestyle/tennis-fashion.webp', '/images/lifestyle/tennis-tattoos.webp', '/images/records/titles-single-year.webp', '/images/records/prize-money-check.webp', '/images/tournaments/laver-cup.webp', '/images/tournaments/davis-cup.webp'],
           };
           const GENERIC_IMGS = new Set(['/images/records/tennis-court-aerial.webp', '/images/records/tennis-trophy-gold.webp']);
           function visualKeyJs(img) {
