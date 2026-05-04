@@ -29,7 +29,7 @@ jobs:
           node-version: '22'
 
       - name: Install minimal deps
-        run: npm install --no-save --no-audit --no-fund @supabase/supabase-js
+        run: npm install --no-save --no-audit --no-fund @supabase/supabase-js googleapis
 
       - name: Run content watchdog
         env:
@@ -41,8 +41,6 @@ jobs:
 
       - name: Cleanup orphaned Bluesky posts
         # Delete Bluesky posts whose linked news got soft-deleted in the previous step.
-        # Safe to always run — script is idempotent and only acts on is_active=false items
-        # that still have bluesky_posted_at set.
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
@@ -51,6 +49,19 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: node scripts/cleanup-bluesky-posts.mjs --limit 100
+
+      - name: Cleanup orphaned YouTube Shorts
+        # Delete YouTube Shorts whose linked news got soft-deleted.
+        # Quota: 50 units per delete, 10000/day = plenty of headroom.
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/cleanup-youtube-shorts.mjs --limit 50
 
       - name: Trigger SSG rebuild
         env:
