@@ -22,8 +22,11 @@
 
 import 'dotenv/config';
 import { GoogleAuth } from 'google-auth-library';
+import { createClient } from '@supabase/supabase-js';
 
 const GOOGLE_SA_JSON = process.env.GOOGLE_SA_JSON;
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const SITEMAP_URL = 'https://super.tennis/sitemap-index.xml';
 const DAILY_LIMIT = 200;
 
@@ -72,18 +75,55 @@ async function getAuthToken() {
   return token.token;
 }
 
-async function requestIndexing(url, token) {
+async function requestIndexing(url, token, type = 'URL_UPDATED') {
   const res = await fetch('https://indexing.googleapis.com/v3/urlNotifications:publish', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
     },
-    body: JSON.stringify({ url, type: 'URL_UPDATED' }),
+    body: JSON.stringify({ url, type }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
   return data;
+}
+
+// Pull pending soft-deleted news URLs that haven't been de-indexed yet.
+// Priority over fresh sitemap submission — 404'd content hurts SEO more
+// than fresh content not yet indexed.
+async function fetchPendingDeindex(maxCount) {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) return [];
+  const sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+  try {
+    const { data, error } = await sb.from('news')
+      .select('slug, deindex_submitted_at')
+      .eq('is_active', false)
+      .is('deindex_submitted_at', null)
+      .limit(maxCount);
+    if (error) {
+      // Column missing → skip de-index pass (older deployments)
+      if (error.message?.includes('deindex_submitted_at')) return [];
+      console.warn('   ⚠️ Could not fetch de-index queue:', error.message);
+      return [];
+    }
+    return (data || []).map(r => ({
+      url: `https://super.tennis/news/${r.slug}/`,
+      slug: r.slug,
+      type: 'URL_DELETED',
+    }));
+  } catch (err) {
+    console.warn('   ⚠️ De-index queue unavailable:', err.message);
+    return [];
+  }
+}
+
+async function markDeindexSubmitted(slug) {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) return;
+  try {
+    const sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+    await sb.from('news').update({ deindex_submitted_at: new Date().toISOString() }).eq('slug', slug);
+  } catch { /* best-effort */ }
 }
 
 async function run() {
@@ -142,41 +182,62 @@ async function run() {
   console.log(`\n📋 Batch: URLs ${effectiveOffset + 1}–${effectiveOffset + batch.length} of ${sorted.length}`);
   console.log(`   Cycle: ~${Math.ceil(sorted.length / LIMIT)} days to index all pages\n`);
 
+  // ── De-index queue takes priority — 404'd pages hurt SEO more than
+  //    new pages not yet indexed. Up to half the daily quota goes here.
+  const deindexQuota = Math.min(LIMIT, 100);
+  const deindexQueue = await fetchPendingDeindex(deindexQuota);
+  if (deindexQueue.length > 0) {
+    console.log(`🗑  De-index queue: ${deindexQueue.length} pending soft-deleted URLs (will use up to ${deindexQuota} of today's quota)`);
+  }
+
+  // Combine: de-index FIRST, then fresh URLs from sitemap. Total ≤ LIMIT.
+  const indexBatch = batch.slice(0, Math.max(0, LIMIT - deindexQueue.length))
+    .map(u => ({ url: u, slug: null, type: 'URL_UPDATED' }));
+  const allBatch = [...deindexQueue, ...indexBatch];
+
+  console.log(`\n📋 Total batch: ${allBatch.length} URLs (${deindexQueue.length} de-index + ${indexBatch.length} index)\n`);
+
   if (DRY_RUN) {
     console.log('🏜️  Dry run — URLs that would be submitted:');
-    batch.forEach((u, i) => console.log(`  ${String(i + 1).padStart(3)}. ${u}`));
+    allBatch.forEach((u, i) => console.log(`  ${String(i + 1).padStart(3)}. [${u.type}] ${u.url}`));
     console.log('\n✅ Dry run complete — no requests sent');
     return;
   }
 
   const token = await getAuthToken();
-  let success = 0;
+  let successIndex = 0, successDeindex = 0;
   let failed = 0;
   let quotaExceeded = false;
 
-  for (let i = 0; i < batch.length; i++) {
-    const url = batch[i];
+  for (let i = 0; i < allBatch.length; i++) {
+    const item = allBatch[i];
     try {
-      await requestIndexing(url, token);
-      process.stdout.write(`  ✅ [${i + 1}/${batch.length}] ${url}\n`);
-      success++;
+      await requestIndexing(item.url, token, item.type);
+      process.stdout.write(`  ✅ [${i + 1}/${allBatch.length}] [${item.type}] ${item.url}\n`);
+      if (item.type === 'URL_DELETED') {
+        successDeindex++;
+        if (item.slug) await markDeindexSubmitted(item.slug);
+      } else {
+        successIndex++;
+      }
     } catch (err) {
       if (err.message.includes('Quota exceeded') || err.message.includes('429')) {
-        console.log(`\n  ⚠️ Quota exceeded at ${i + 1}/${batch.length} — stopping`);
+        console.log(`\n  ⚠️ Quota exceeded at ${i + 1}/${allBatch.length} — stopping`);
         quotaExceeded = true;
         break;
       }
-      process.stdout.write(`  ❌ [${i + 1}/${batch.length}] ${url}: ${err.message}\n`);
+      process.stdout.write(`  ❌ [${i + 1}/${allBatch.length}] ${item.url}: ${err.message}\n`);
       failed++;
     }
-    if (i < batch.length - 1 && !quotaExceeded) await sleep(350);
+    if (i < allBatch.length - 1 && !quotaExceeded) await sleep(350);
   }
 
   console.log('\n═══════════════════════════════════════════════');
-  console.log(`  ✅ Submitted: ${success}`);
+  console.log(`  ✅ Indexed: ${successIndex}`);
+  console.log(`  🗑  De-indexed: ${successDeindex}`);
   console.log(`  ❌ Failed: ${failed}`);
   if (quotaExceeded) console.log('  ⚠️ Quota exceeded — remainder scheduled for tomorrow');
-  console.log(`  📅 Next batch: offset ${effectiveOffset + batch.length}`);
+  console.log(`  📅 Next batch: offset ${effectiveOffset + indexBatch.length}`);
   console.log('═══════════════════════════════════════════════');
 }
 

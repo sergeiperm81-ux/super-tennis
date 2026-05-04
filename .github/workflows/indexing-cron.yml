@@ -45,6 +45,10 @@ jobs:
       - name: Submit URLs to Google Indexing API
         env:
           GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
+          # Supabase used by de-index queue (script prioritizes URL_DELETED for
+          # soft-deleted news before fresh sitemap submission)
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: |
           LIMIT="${{ github.event.inputs.limit || '200' }}"
           DRY="${{ github.event.inputs.dry_run || 'false' }}"
