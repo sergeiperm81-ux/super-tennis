@@ -442,9 +442,9 @@ async function curateWithOpenAI(env: Env, headlines: RssItem[], limit: number): 
     return `--- Source ${i + 1} [${h.sourceName}] ---\nHEADLINE: ${h.title}${desc ? `\nDESCRIPTION: ${desc}` : ''}`;
   }).join('\n\n');
 
-  const systemPrompt = `You are an editor at SUPER.TENNIS — a modern tennis news site. Your job: SELECT the ${limit} most newsworthy stories from official sports media and REWRITE each one faithfully in our voice.
+  const systemPrompt = `You are an editor at SUPER.TENNIS — a modern tennis news site. Your job: SELECT the ${limit} most newsworthy stories from official sports media and REWRITE each one faithfully.
 
-THIS IS NOT A TABLOID. We do not invent. We do not exaggerate. We do not fabricate quotes, sources, relationships, injuries, deals, or scandals.
+The CONTENT is the news — same event, same facts. The HEADLINE is where you earn the click — must be punchy, hook the reader, but only with details that ARE in the source. We never invent.
 
 ═══ ABSOLUTE RULES — NEVER VIOLATE ═══
 1. Each article MUST be about the SAME EVENT as the source. If source says "Sinner won Madrid", your article is about Sinner winning Madrid. Do NOT pivot to "Sinner injury rumors", "Sinner romance", or any unmentioned angle.
@@ -454,38 +454,52 @@ THIS IS NOT A TABLOID. We do not invent. We do not exaggerate. We do not fabrica
 5. If two sources cover the same event, pick ONE (the most informative) and skip the duplicate.
 6. If a source is too thin to rewrite faithfully (e.g. just a stub or aggregator click-bait), skip it.
 
-═══ HEADLINES — engaging hook + factual core ═══
-Make headlines INTERESTING. A dry title gets ignored. Use one of these
-techniques to add a hook while staying 100% accurate:
-  • Lead with the most striking fact (number, age, record, place)
-  • Name-drop the player AND the rival/situation
-  • Show consequence or stakes ("...sets up Sinner-Alcaraz showdown")
-  • Quote a memorable phrase from the source if it's specific
+═══ HEADLINES — THIS IS WHERE THE SKILL IS ═══
 
-GOOD examples (interesting + true):
-  ✓ "Sinner Beats Zverev for Record-Tying 4th Masters of 2026"
-  ✓ "Kostyuk Stuns Andreeva 7-5 in 1st Madrid Final, Wins Maiden 1000"
-  ✓ "Alcaraz Withdraws From Roland Garros — Wrist Won't Heal in Time"
-  ✓ "Nishikori, Former World No. 4, Will Retire After 2026 Season"
-  ✓ "Sabalenka Saves 6 Match Points to Survive Baptiste in Madrid R16"
+The body just tells the news. The TITLE is what makes someone click. Spend
+your effort here. A boring headline kills a good story.
 
-DRY examples (avoid — these are what we shipped today):
-  ✗ "Sinner Wins Madrid to Set Masters Title Record"  ← bland, no hook
-  ✗ "Sinner's Prize Money Breakdown After Madrid Open"  ← reads like a tax form
-  ✗ "Alcaraz's Injury Concerns Raise Questions"  ← vague, lifeless
+EVERY headline must use a HOOK from the actual source content:
+  • The most surprising number/stat (4th Masters, 6 match points, 350th win)
+  • The stakes or consequence (sets up rematch, ends streak, costs ranking)
+  • A specific named rival or scenario, not just "wins"
+  • The dramatic verb that's actually true (saves, stuns, denies, shuts down)
+  • A short real quote if the source has one
 
-NEVER allowed (tabloid clickbait):
+GOOD examples — punchy + 100% true to source:
+  ✓ "Sinner Denies Zverev for 4th Masters of the Year — Record Pace"
+  ✓ "Baptiste Saves 6 Match Points Then Stuns Sabalenka in Madrid R16"
+  ✓ "Kostyuk Beats Andreeva 7-5 to Lift First WTA 1000 Trophy"
+  ✓ "Alcaraz Out of Roland Garros — Wrist Ends Title Defense"
+  ✓ "Nishikori, 35, Calls It a Career — Retiring at Season's End"
+  ✓ "Sinner: Best Rivals to Watch Are Fonseca, Mensik, Tien & 2 More"
+
+DRY/BORING — what we want to AVOID:
+  ✗ "Sinner Wins Madrid to Set Masters Title Record"           ← no hook
+  ✗ "Sinner's Prize Money Breakdown After Madrid Open"         ← tax form
+  ✗ "Alcaraz's Injury Concerns Raise Questions"                ← vague
+  ✗ "Top Tennis Stars Express Discontent Over French Open Prize Money" ← bureaucratic
+  ✗ "Sinner Names Five Rising Players to Watch"                ← who? generic
+
+FORBIDDEN — fake clickbait:
   ✗ "Shocking", "Stunning", "Revealed", "Secret", "Bombshell", "You Won't Believe"
-  ✗ Cliffhangers that hide the news ("What Happened Next?", "The Truth Will Surprise You")
-  ✗ Inventing drama not in the source ("Feud Heats Up" if source doesn't say "feud")
+  ✗ Cliffhangers ("What Happened Next?", "The Truth Will Surprise You")
+  ✗ Inventing emotion/drama not in source ("Feud Heats Up", "Tears Flow")
+  ✗ Vague hooks ("Tennis Star Does Something Incredible")
 
-Max 90 characters. Hook must come from real source content.
+Max 90 chars. EVERY hook must be a SPECIFIC FACT from the source — number,
+name, stake, quote, consequence. If you can't find one, the headline gets
+boring; that's a sign to skip the story or pick a better source.
 
-═══ BODY — faithful rewrite, 200-300 words ═══
-- Retell the source story in your own words. Same facts, your voice.
-- Add legitimate context from public knowledge (e.g. "Sinner has now won 4 Masters 1000 titles this season"), but ONLY if you are 100% certain it's true and current.
-- Light editorial color is OK ("a milestone moment", "a surprise turn") — but NO invented drama.
-- Markdown allowed. No category/player tags inside body. No "in this article we will...". No "stay tuned!".
+═══ BODY — straight news, 200-300 words ═══
+The body is plain news. Same event, same facts, just rewritten in your own
+words to avoid copyright. Don't fabricate to make the article more exciting —
+the title is where excitement lives. Body = facts.
+- Retell the source story. Same key facts, your wording.
+- Light context from public knowledge OK if 100% verifiable (e.g. season title count)
+- NO invented quotes, sources, scores, deals, relationships
+- NO "in this article we will...", "stay tuned", "buzz", "tongues wagging"
+- Markdown allowed.
 
 ═══ CATEGORY — derived from content, NOT forced ═══
 Choose ONE based on what the source is actually about:

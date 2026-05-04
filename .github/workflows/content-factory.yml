@@ -1,12 +1,15 @@
 name: Content Factory — YouTube Shorts
 
 on:
-  # Channel created 2026-03-17 — 7 weeks old as of 2026-05-04, Advanced
-  # Features unlocked. Bumping to 3 videos/day in a single morning batch.
-  # Quota: 1600 units × 3 = 4800 of 10K daily quota — safe headroom.
-  # Single batch run is simpler than spreading via cron (no contention).
+  # 3 videos/day spread across global tennis-fan time zones:
+  #   09:00 Sofia (06:00 UTC) — EU morning, peak Asian users
+  #   14:00 Sofia (11:00 UTC) — US east-coast morning, EU lunch
+  #   19:00 Sofia (16:00 UTC) — EU evening, US east-coast lunch
+  # Each run uploads 1 video. Quota: 3 × 1600 = 4800 of 10K daily — safe.
   schedule:
-    - cron: '0 5 * * *'   # 08:00 Sofia
+    - cron: '0 6 * * *'    # 09:00 Sofia
+    - cron: '0 11 * * *'   # 14:00 Sofia
+    - cron: '0 16 * * *'   # 19:00 Sofia
   workflow_dispatch: {}    # Manual trigger
 
 jobs:
@@ -70,7 +73,7 @@ jobs:
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          VIDEOS_PER_RUN: '3'
+          VIDEOS_PER_RUN: '1'
         run: node src/daily-run.js
 
       - name: Save bg-history (background rotation state)
