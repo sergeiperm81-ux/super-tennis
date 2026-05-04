@@ -50,6 +50,38 @@ function shuffleArray(arr) {
   return a;
 }
 
+// Backgrounds that explicitly feature a MAN — must not be used for women's player news.
+// Investor flagged 2026-05-01: Sabalenka news short showed a man → gender mismatch.
+// Curated from INDEX.txt descriptions. Add more as we identify them.
+const MEN_ONLY_BACKGROUNDS = new Set([
+  'bg-07.mp4', // Mixkit 877 — Man playing tennis
+  'bg-08.mp4', // Mixkit 878 — Man serving tennis ball
+  'bg-21.mp4', // Mixkit 23946 — Man takes tennis ball from basket
+  'bg-22.mp4', // Mixkit 23025 — Man doing tennis serve
+  'bg-28.mp4', // Pexels 10390967 — Men playing tennis with audience
+  'bg-33.mp4', // Pexels 7648844 — Man playing tennis
+  'bg-34.mp4', // Pexels 992695 — Men playing tennis at daylight
+]);
+
+// Slugs of women players — used to detect when we should exclude men-only backgrounds.
+const WOMEN_PLAYER_SLUGS = new Set([
+  'aryna-sabalenka', 'iga-swiatek', 'coco-gauff', 'jessica-pegula', 'madison-keys',
+  'emma-raducanu', 'elena-rybakina', 'naomi-osaka', 'serena-williams', 'venus-williams',
+  'mirra-andreeva', 'marta-kostyuk', 'maria-sakkari', 'paula-badosa', 'jasmine-paolini',
+  'karolina-muchova', 'jelena-ostapenko', 'katerina-siniakova', 'elina-svitolina',
+  'caroline-garcia', 'leylah-fernandez', 'alexandra-eala', 'amanda-anisimova',
+  'simona-halep', 'martina-navratilova', 'steffi-graf', 'maria-sharapova',
+  'martina-hingis', 'monica-seles', 'billie-jean-king', 'chris-evert', 'margaret-court',
+  'ash-barty', 'angelique-kerber', 'caroline-wozniacki', 'petra-kvitova', 'ons-jabeur',
+  'belinda-bencic', 'linda-noskova', 'ashlyn-krueger', 'anna-kalinskaya', 'sara-errani',
+  'sonay-kartal', 'hailey-baptiste', 'anastasia-potapova', 'karolina-pliskova',
+]);
+
+function isWomensNews(playerSlugs) {
+  if (!playerSlugs || !Array.isArray(playerSlugs) || playerSlugs.length === 0) return false;
+  return playerSlugs.some(s => WOMEN_PLAYER_SLUGS.has(String(s).toLowerCase()));
+}
+
 // Permanently banned backgrounds — ball-only / equipment-only / grass clips (user: "never again")
 const BANNED_BACKGROUNDS = new Set([
   'bg-05.mp4', // Pexels 5738572 — racket and ball on clay, no player
@@ -64,20 +96,18 @@ const BANNED_BACKGROUNDS = new Set([
   'bg-22.mp4', // Pexels 992696 — grass court practice (no close action)
 ]);
 
-function pickBackground() {
+function pickBackground({ excludeMenOnly = false } = {}) {
   const allBgs = fs.readdirSync(BG_DIR)
     .filter(f => f.endsWith('.mp4') && !BANNED_BACKGROUNDS.has(f))
+    .filter(f => !excludeMenOnly || !MEN_ONLY_BACKGROUNDS.has(f))
     .sort();
-  // Migrate from old array format — replace the whole state reference with a
-  // plain object. Previous code set .queue/.used properties on the array,
-  // which saveRotationState would serialise as `[]` and lose the migration.
+
   let state = getRotationState();
   if (Array.isArray(state)) {
     state = { queue: [], used: [] };
   }
 
   // Purge any banned backgrounds that may have been cached in the queue
-  // before they were added to BANNED_BACKGROUNDS (the root cause of bg-13 crash).
   if (state.queue) {
     state.queue = state.queue.filter(f => !BANNED_BACKGROUNDS.has(f));
   }
@@ -89,16 +119,35 @@ function pickBackground() {
   if (!state.queue || state.queue.length === 0) {
     const unused = allBgs.filter(f => !state.used?.includes(f));
     if (unused.length === 0) {
-      // Full cycle complete — reset and reshuffle everything
+      // Full cycle complete — reset and reshuffle
       state.queue = shuffleArray(allBgs);
       state.used = [];
     } else {
-      // Shuffle only the remaining unused backgrounds
       state.queue = shuffleArray(unused);
     }
   }
 
-  const picked = state.queue.shift();
+  // Find first item in queue that's allowed by current filter
+  let picked = null;
+  let pickedIdx = -1;
+  for (let i = 0; i < state.queue.length; i++) {
+    const candidate = state.queue[i];
+    if (excludeMenOnly && MEN_ONLY_BACKGROUNDS.has(candidate)) continue;
+    picked = candidate;
+    pickedIdx = i;
+    break;
+  }
+
+  // If queue had only filtered-out items, rebuild from allBgs (already filtered)
+  if (!picked) {
+    const unused = allBgs.filter(f => !state.used?.includes(f));
+    state.queue = shuffleArray(unused.length > 0 ? unused : allBgs);
+    if (unused.length === 0) state.used = [];
+    picked = state.queue.shift();
+  } else {
+    state.queue.splice(pickedIdx, 1);
+  }
+
   state.used.push(picked);
   saveRotationState(state);
   return picked;
@@ -146,10 +195,14 @@ function getMusicPath() {
   return path.join(musicDir, picked);
 }
 
-export async function generateVideo({ title, summary = '', category = 'buzz', index = 0 }) {
+export async function generateVideo({ title, summary = '', category = 'buzz', index = 0, playerSlugs = [] }) {
   if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true });
 
-  const bgFile = pickBackground();
+  // Gender-aware background filter — for women's player news, exclude clips
+  // that explicitly feature men (Mixkit/Pexels descriptions saying "Man playing").
+  // Investor flagged 2026-05-01: Sabalenka short showed a man.
+  const excludeMenOnly = isWomensNews(playerSlugs);
+  const bgFile = pickBackground({ excludeMenOnly });
   const bgPath = path.join(BG_DIR, bgFile);
   const outPath = path.join(OUT_DIR, `video-${index}.mp4`);
 

@@ -31,33 +31,26 @@ export interface Env {
 // ============================================================
 // RSS FEEDS
 // ============================================================
-// --- Tennis-specific sources ---
+// --- Quality tennis-only sources (curated) ---
+// Removed 2026-05-01: search-based Google News queries (Drama/Lifestyle/Money/
+// Fashion/Social) that pulled in unrelated content and forced GPT to fabricate.
+// Investor flagged generated articles as "AI graphomania" with invented affairs,
+// fake injury rumors, and articles about pros derived from college/junior sources.
 const TENNIS_FEEDS = [
   { name: 'Essentially Sports', url: 'https://www.essentiallysports.com/category/tennis/feed/' },
   { name: 'ESPN Tennis', url: 'https://www.espn.com/espn/rss/tennis/news' },
   { name: 'BBC Sport Tennis', url: 'https://feeds.bbci.co.uk/sport/tennis/rss.xml' },
   { name: 'Google News Tennis', url: 'https://news.google.com/rss/search?q=tennis+player+when:2d&hl=en-US&gl=US&ceid=US:en' },
+  { name: 'Tennis World USA', url: 'https://www.tennisworldusa.org/rss/news.xml' },
 ];
 
-// --- Lifestyle / celebrity / business sources (need tennis keyword filtering) ---
+// --- Lifestyle sources — strict tennis-keyword filtering applied ---
 const LIFESTYLE_FEEDS = [
-  { name: 'TMZ', url: 'https://www.tmz.com/rss.xml' },
   { name: 'Daily Mail Sport', url: 'https://www.dailymail.co.uk/sport/tennis/index.rss' },
-  { name: 'People Magazine', url: 'https://feeds.people.com/people/rss' },
-  { name: 'GQ', url: 'https://www.gq.com/feed/rss' },
   { name: 'Bleacher Report', url: 'https://bleacherreport.com/tennis.rss' },
 ];
 
-// --- Google News lifestyle queries (pre-filtered for tennis + drama/lifestyle) ---
-const GOOGLE_NEWS_LIFESTYLE_FEEDS = [
-  { name: 'GN Tennis Drama', url: 'https://news.google.com/rss/search?q=tennis+(scandal+OR+controversy+OR+drama+OR+cheating+OR+doping+OR+banned+OR+fine+OR+argument)&hl=en-US&gl=US&ceid=US:en' },
-  { name: 'GN Tennis Lifestyle', url: 'https://news.google.com/rss/search?q=tennis+player+(dating+OR+wedding+OR+divorce+OR+girlfriend+OR+boyfriend+OR+wife+OR+husband+OR+baby+OR+engaged)&hl=en-US&gl=US&ceid=US:en' },
-  { name: 'GN Tennis Money', url: 'https://news.google.com/rss/search?q=tennis+(endorsement+OR+sponsorship+OR+net+worth+OR+salary+OR+prize+money+OR+contract+OR+million+OR+billion+OR+richest)&hl=en-US&gl=US&ceid=US:en' },
-  { name: 'GN Tennis Fashion', url: 'https://news.google.com/rss/search?q=tennis+(fashion+OR+outfit+OR+style+OR+Nike+OR+Adidas+OR+Gucci+OR+Vogue+OR+photoshoot+OR+red+carpet)&hl=en-US&gl=US&ceid=US:en' },
-  { name: 'GN Tennis Social', url: 'https://news.google.com/rss/search?q=tennis+player+(instagram+OR+tiktok+OR+viral+OR+meme+OR+funny+OR+video+OR+reaction+OR+celebrity)&hl=en-US&gl=US&ceid=US:en' },
-];
-
-const RSS_FEEDS = [...TENNIS_FEEDS, ...LIFESTYLE_FEEDS, ...GOOGLE_NEWS_LIFESTYLE_FEEDS];
+const RSS_FEEDS = [...TENNIS_FEEDS, ...LIFESTYLE_FEEDS];
 
 // ============================================================
 // PLAYER KEYWORDS → SLUGS
@@ -291,16 +284,33 @@ async function fetchFeed(feed: { name: string; url: string }): Promise<RssItem[]
 const MATCH_SCORE_RE = /\d{1,2}-\d{1,2}[,\s]+\d{1,2}-\d{1,2}/;
 const BORING_RE = /\b(draw|bracket|seeds|qualifying|prediction|preview|odds|betting|pick|tip)\b/i;
 
-// Tennis keywords for filtering lifestyle sources — must mention tennis or a known player
-const TENNIS_KEYWORDS_RE = new RegExp(
+// Amateur/non-pro filter — flags content NOT about ATP/WTA pros.
+// Added 2026-05-01 after fabrication audit: GPT was inventing pro-tennis stories
+// from college/junior/local sources (e.g. "Idaho Capital Classic" → fake Alcaraz injury).
+const AMATEUR_RE = /\b(college|colleg(e|iate)|ncaa|junior|juniors|high school|prep school|amateur|university|ivy league|state championship|big east|atlantic 10|sec tennis|capital classic|division [1-3i]|d-?[1-3]|u-?1[2-8]|class of)\b/i;
+
+// Pro-tennis context check — at least ONE of these must be in title or description
+// for a story to qualify (in addition to known player names).
+const PRO_TENNIS_RE = new RegExp(
   '\\b(' +
-  'tennis|' +
-  Object.keys(PLAYER_KEYWORDS).filter(k => k.length > 3).join('|') + // skip short names like 'iga', 'rafa'
+  'atp|wta|grand\\s?slam|wimbledon|roland\\s?garros|french\\s?open|australian\\s?open|us\\s?open|' +
+  'masters\\s?1000|atp\\s?finals|wta\\s?finals|davis\\s?cup|laver\\s?cup|billie\\s?jean\\s?king\\s?cup|' +
+  'world\\s?no\\.?\\s?\\d|world\\s?number\\s?\\d|ranking|tour\\s?(level|stop|debut|win|title)|' +
+  // Known players (filter short names to avoid noise)
+  Object.keys(PLAYER_KEYWORDS).filter(k => k.length > 4).join('|') +
   ')\\b',
   'i',
 );
 
-// Names of lifestyle feeds that need tennis keyword filtering
+// Tennis keywords (legacy — kept for lifestyle filter)
+const TENNIS_KEYWORDS_RE = new RegExp(
+  '\\b(' +
+  'tennis|' +
+  Object.keys(PLAYER_KEYWORDS).filter(k => k.length > 3).join('|') +
+  ')\\b',
+  'i',
+);
+
 const LIFESTYLE_FEED_NAMES = new Set(LIFESTYLE_FEEDS.map(f => f.name));
 
 function isGoodHeadline(item: RssItem, hoursAgo: number): boolean {
@@ -308,10 +318,16 @@ function isGoodHeadline(item: RssItem, hoursAgo: number): boolean {
   if (MATCH_SCORE_RE.test(item.title)) return false;
   if (BORING_RE.test(item.title)) return false;
 
-  // Lifestyle sources must mention tennis or a known player in title/description
+  const text = `${item.title} ${item.description || ''}`;
+
+  // Reject amateur/junior/college tennis from ALL sources — never our beat
+  if (AMATEUR_RE.test(text)) return false;
+
+  // Lifestyle sources (Daily Mail, Bleacher Report) and search-based feeds
+  // need pro-tennis context to avoid catching unrelated articles.
+  // Tennis-only feeds (ESPN Tennis, BBC Sport Tennis, etc.) trust their own filter.
   if (LIFESTYLE_FEED_NAMES.has(item.sourceName)) {
-    const text = `${item.title} ${item.description}`;
-    if (!TENNIS_KEYWORDS_RE.test(text)) return false;
+    if (!PRO_TENNIS_RE.test(text)) return false;
   }
 
   if (item.pubDate) {
@@ -418,39 +434,64 @@ function findPlayerSlugs(text: string): string[] {
 // OPENAI CURATION
 // ============================================================
 async function curateWithOpenAI(env: Env, headlines: RssItem[], limit: number): Promise<any[]> {
-  const headlineList = headlines.map((h, i) => `${i + 1}. [${h.sourceName}] ${h.title}`).join('\n');
+  // Pass the FULL description (up to ~600 chars) so GPT has actual facts to work with.
+  // Previous version sent only headlines → GPT had to fabricate a 300-500 word article
+  // from a 60-char headline, leading to invented quotes, fake injuries, and unrelated angles.
+  const headlineList = headlines.map((h, i) => {
+    const desc = (h.description || '').replace(/\s+/g, ' ').trim().slice(0, 600);
+    return `--- Source ${i + 1} [${h.sourceName}] ---\nHEADLINE: ${h.title}${desc ? `\nDESCRIPTION: ${desc}` : ''}`;
+  }).join('\n\n');
 
-  const systemPrompt = `You are the editor-in-chief of SUPER.TENNIS — the glossiest tennis lifestyle magazine on the internet. Think Vanity Fair meets TMZ meets Vogue, but entirely about the world of tennis. Our readers are NOT tennis nerds — they're people who love celebrity culture, fashion, money, drama, and glamour, and tennis happens to be their lens into that world.
+  const systemPrompt = `You are an editor at SUPER.TENNIS — a modern tennis news site. Your job: SELECT the ${limit} most newsworthy stories from official sports media and REWRITE each one faithfully in our voice.
 
-Select the ${limit} most entertaining stories, then write an original article for each.
+THIS IS NOT A TABLOID. We do not invent. We do not exaggerate. We do not fabricate quotes, sources, relationships, injuries, deals, or scandals.
 
-CATEGORY TARGETS — aim for this MIX in every batch:
-- "scandal" (3-4 stories): controversies, feuds, arguments, fines, doping, cheating, meltdowns, heated rivalries
-- "love" (2-3 stories): dating, engagements, weddings, breakups, divorces, WAGs, couples spotted together, player romances
-- "money" (2-3 stories): net worth, endorsement deals, prize money milestones, luxury purchases, mansions, cars, investments, sponsorships
-- "fashion" (1-2 stories): outfits, brand deals, Nike/Adidas/Gucci collabs, red carpet, photoshoots, style evolution
-- "viral" (1-2 stories): social media moments, Instagram/TikTok, memes, funny incidents, celebrity crossovers, viral clips
-- "buzz" (remaining): major upsets with drama, comebacks, injuries, retirements, record-breaking — but ONLY if genuinely exciting
+═══ ABSOLUTE RULES — NEVER VIOLATE ═══
+1. Each article MUST be about the SAME EVENT as the source. If source says "Sinner won Madrid", your article is about Sinner winning Madrid. Do NOT pivot to "Sinner injury rumors", "Sinner romance", or any unmentioned angle.
+2. NEVER invent quotes ("an insider said...", "sources close to the player revealed...").
+3. NEVER invent specific facts — no scores, dates, money amounts, relationships, contracts, or injuries that aren't in the source.
+4. NEVER write articles about non-pro tennis (college, junior, local club). Skip those sources.
+5. If two sources cover the same event, pick ONE (the most informative) and skip the duplicate.
+6. If a source is too thin to rewrite faithfully (e.g. just a stub or aggregator click-bait), skip it.
 
-PRIORITY ORDER: scandal > love > money > fashion > viral > buzz
-If multiple headlines cover the same event, pick the most dramatic angle and SKIP the rest.
+═══ HEADLINES — slightly punchier, never sensational ═══
+ALLOWED: descriptive + sharp + name-drops the player.
+  ✓ "Sinner Wins Madrid for Record-Breaking Masters Title"
+  ✓ "Nishikori Announces Retirement at Season's End"
+  ✓ "Andreeva Pulls Off Stunning Comeback in Madrid Quarterfinal"
+NOT ALLOWED: Tabloid power-words.
+  ✗ "Shocking", "Stunning", "Revealed", "Secret", "Bombshell", "You Won't Believe"
+  ✗ Cliffhanger questions ("What Happened Next?")
+  ✗ Headlines that hide the actual news ("This Player Just Made History...")
+Max 80 characters. Always factual.
 
-DON'T WANT: Regular match results, tournament draws, predictions, betting odds, routine press conferences, technical analysis, coaching tips. A match is ONLY interesting if there's drama (meltdown, upset, controversy, rivalry beef).
+═══ BODY — faithful rewrite, 200-300 words ═══
+- Retell the source story in your own words. Same facts, your voice.
+- Add legitimate context from public knowledge (e.g. "Sinner has now won 4 Masters 1000 titles this season"), but ONLY if you are 100% certain it's true and current.
+- Light editorial color is OK ("a milestone moment", "a surprise turn") — but NO invented drama.
+- Markdown allowed. No category/player tags inside body. No "in this article we will...". No "stay tuned!".
 
-TONE: Glossy magazine meets tabloid. Engaging, bold, slightly gossipy but not mean-spirited. Use vivid, punchy language. Think headlines that make people STOP scrolling. Our brand is "tennis for people who don't play tennis."
+═══ CATEGORY — derived from content, NOT forced ═══
+Choose ONE based on what the source is actually about:
+- "buzz" — match results, tournament news, tour-level events, retirements, returns, injuries (only when CONFIRMED by source)
+- "money" — sponsorship deals, prize money milestones, business announcements (only with specific names/amounts in source)
+- "scandal" — fines, bans, doping cases, public arguments (only when source explicitly reports it)
+- "fashion" — outfit reveals, brand collabs, photoshoots (only when source is specifically about fashion)
+- "viral" — confirmed viral moments, memes, celebrity crossovers (only when source describes the moment)
+- "love" — engagements, weddings, breakups, baby news (ONLY when source EXPLICITLY confirms; never speculate)
 
-HEADLINE RULES:
-- Max 75 chars, must provoke curiosity or emotion
-- Use power words: "Shocking", "Revealed", "Secret", "Stunning", "Exclusive"
-- Name-drop the player in the headline when possible
-- NO generic headlines like "A New Era in Tennis" or "Rising Star"
+DO NOT force a category mix. If today's news is mostly "buzz" — that's fine.
 
-For each story provide:
-1. A catchy, click-worthy headline (max 75 chars)
-2. A short summary (2-3 punchy sentences, ~50 words)
-3. A full article body (300-500 words) in markdown. Write in magazine style — vivid descriptions, quotes where relevant, personality. Do NOT include "Category:" or "Main Player:" tags in the body.
-4. Category: one of "scandal", "love", "money", "fashion", "viral", "buzz"
-5. The FULL NAME of the main player (or null if no specific player)`;
+═══ OUTPUT ═══
+For each story you select, output:
+- original_index (number, 1-based)
+- title (max 80 chars, faithful + punchy)
+- summary (40-60 words, just the facts)
+- body (200-300 words markdown)
+- category ("buzz" | "money" | "scandal" | "fashion" | "viral" | "love")
+- main_player (full name like "Carlos Alcaraz" or null if no specific pro)
+
+If you cannot find ${limit} stories worth publishing, return FEWER. Better to publish 5 honest stories than 8 with one fabrication. We would rather have less news than fake news.`;
 
   const res = await withRetry(async () => {
     const r = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -465,11 +506,11 @@ For each story provide:
           { role: 'system', content: systemPrompt },
           {
             role: 'user',
-            content: `Select ${limit} most entertaining headlines and write articles:\n\n${headlineList}\n\nRespond with JSON array (no markdown fences):\n[{"original_index":1,"title":"...","summary":"...","body":"...","category":"scandal|love|money|fashion|viral|buzz","main_player":"Full Name"}]`,
+            content: `Sources to consider (each has a HEADLINE and DESCRIPTION from official media):\n\n${headlineList}\n\nReturn up to ${limit} faithful rewrites. JSON array only, no markdown fences:\n[{"original_index":1,"title":"...","summary":"...","body":"...","category":"buzz","main_player":"Full Name"}]`,
           },
         ],
-        temperature: 0.7,
-        max_tokens: 16384,
+        temperature: 0.4,
+        max_tokens: 8000,
       }),
     });
     if (!r.ok) throw new Error(`OpenAI error ${r.status}: ${await r.text()}`);
@@ -487,30 +528,72 @@ For each story provide:
 }
 
 // ============================================================
+// POST-GENERATION SAFETY FILTERS
+// ============================================================
+// Cheap regex-based checks that catch obvious fabrications without an LLM call.
+// Anything that fails → silently dropped from the published batch.
+const FABRICATION_RE = /(insider|source close to|sources close to|reportedly|allegedly|rumor|rumour)/i;
+const TABLOID_HEADLINE_RE = /\b(shocking|stunning|bombshell|jaw-?dropping|you\s+won['’]t\s+believe|revealed|secret|exclusive|leaked|exposed)\b/i;
+
+function passesQualityChecks(article: any, source: RssItem | undefined): { ok: boolean; reason?: string } {
+  if (!article || typeof article !== 'object') return { ok: false, reason: 'invalid object' };
+  const title: string = article.title || '';
+  const body: string = article.body || article.summary || '';
+
+  if (title.length < 15 || title.length > 110) return { ok: false, reason: `title length ${title.length}` };
+  if (TABLOID_HEADLINE_RE.test(title)) return { ok: false, reason: 'tabloid headline word' };
+  if (body.length < 150) return { ok: false, reason: 'body too short' };
+  if (FABRICATION_RE.test(body)) return { ok: false, reason: 'fabrication keyword in body' };
+
+  // Source faithfulness — at least one significant word from source title should appear in our title or body
+  if (source?.title) {
+    const sourceWords = source.title
+      .toLowerCase()
+      .replace(/[^a-z\s]/g, ' ')
+      .split(/\s+/)
+      .filter(w => w.length > 3 && !['this','that','with','from','what','they','their','have','about','will','were','been','tennis','player'].includes(w));
+    const ourText = (title + ' ' + body).toLowerCase();
+    const overlap = sourceWords.filter(w => ourText.includes(w)).length;
+    if (sourceWords.length > 0 && overlap === 0) {
+      return { ok: false, reason: 'no word overlap with source title' };
+    }
+  }
+
+  return { ok: true };
+}
+
+// ============================================================
 // NEWS GENERATION
 // ============================================================
 async function generateNews(env: Env): Promise<string> {
-  const LIMIT = 25;
+  // Reduced 2026-05-01 from 25/day to 8/day (investor feedback: quality > volume).
+  // GPT was fabricating to fill the 25-article quota when source pool was thin.
+  // Min target: 6/day. If we can't hit 6 with quality, we publish what we have
+  // and send a Telegram alert — never fabricate to fill the count.
+  const LIMIT = 8;
+  const MIN_TARGET = 6;
   const HOURS = 48;
   const logs: string[] = [];
   const log = (msg: string) => { logs.push(msg); console.log(msg); };
 
-  log('🎾 Starting news generation...');
+  log('🎾 Starting news generation (faithful-rewrite mode)...');
 
-  // 1. (moved) Deactivation happens AFTER successful upsert to avoid blank news window
-
-  // 2. Fetch RSS feeds
+  // 1. Fetch RSS feeds
   log('📡 Fetching RSS feeds...');
   const feedResults = await Promise.all(RSS_FEEDS.map(f => fetchFeed(f)));
   const allItems = feedResults.flat();
   log(`   Found ${allItems.length} total items`);
 
-  // 3. Filter
+  // 2. Filter (now also rejects amateur/college/junior content + requires pro context)
   const filtered = allItems.filter(item => isGoodHeadline(item, HOURS));
   log(`   After filtering: ${filtered.length} items`);
-  if (filtered.length === 0) { log('⚠️ No suitable items'); return logs.join('\n'); }
+  if (filtered.length === 0) {
+    log('⚠️ No suitable items');
+    await sendTelegramAlert(env, '⚠️ *News generation*: 0 items after filtering. RSS feeds may be down.');
+    return logs.join('\n');
+  }
 
-  // 4. Deduplicate against existing
+  // 3. Deduplicate against existing
   const urls = filtered.map(i => i.link).filter(Boolean);
   let existingUrls = new Set<string>();
   try {
@@ -524,42 +607,60 @@ async function generateNews(env: Env): Promise<string> {
   log(`   After dedup: ${newItems.length} new items`);
   if (newItems.length === 0) { log('✅ All news already in DB'); return logs.join('\n'); }
 
-  // 5. OpenAI curation (split into two batches — gpt-4o-mini max 16384 tokens)
-  const allCandidates = newItems.slice(0, 50);
-  const batchA = allCandidates.slice(0, 25);
-  const batchB = allCandidates.slice(25, 50);
-  const limitA = Math.ceil(LIMIT / 2);  // 13
-  const limitB = LIMIT - limitA;         // 12
-
-  log(`🤖 Calling OpenAI (batch A: ${batchA.length} candidates → ${limitA} articles)...`);
+  // 4. OpenAI curation — single batch (LIMIT=8 fits in 8K output tokens)
+  // Pass up to 30 candidates so GPT has enough to choose from but doesn't
+  // need to fabricate when sources are thin. We ask for "up to LIMIT" — GPT
+  // can return fewer, which is the desired behavior on slow news days.
+  const allCandidates = newItems.slice(0, 30);
+  log(`🤖 Calling OpenAI (${allCandidates.length} candidates → up to ${LIMIT} articles)...`);
   let curated: any[] = [];
   try {
-    const curatedA = await curateWithOpenAI(env, batchA, limitA);
-    curated.push(...curatedA);
-    log(`   Batch A: ${curatedA.length} stories`);
+    curated = await curateWithOpenAI(env, allCandidates, LIMIT);
+    log(`   GPT returned ${curated.length} candidate stories`);
   } catch (e: any) {
-        console.error('API error:', e.message);
-    log(`❌ OpenAI batch A failed: ${e.message}`);
+    console.error('API error:', e.message);
+    log(`❌ OpenAI failed: ${e.message}`);
   }
 
-  if (batchB.length > 0) {
-    log(`🤖 Calling OpenAI (batch B: ${batchB.length} candidates → ${limitB} articles)...`);
-    try {
-      const curatedB = await curateWithOpenAI(env, batchB, limitB);
-      // Adjust original_index to account for batch B offset
-      for (const item of curatedB) {
-        if (item.original_index) item.original_index += 25;
-      }
-      curated.push(...curatedB);
-      log(`   Batch B: ${curatedB.length} stories`);
-    } catch (e: any) {
-        console.error('API error:', e.message);
-      log(`❌ OpenAI batch B failed: ${e.message}`);
+  if (curated.length === 0) {
+    log('❌ No stories from OpenAI');
+    await sendTelegramAlert(env, '❌ *News generation*: OpenAI returned 0 stories.');
+    return logs.join('\n');
+  }
+
+  // 5. Post-generation quality filter — reject fabrications and tabloid headlines
+  const qualityFiltered: any[] = [];
+  let rejectedCount = 0;
+  for (const c of curated) {
+    const origIdx = (c.original_index || 0) - 1;
+    const source = allCandidates[origIdx];
+    const check = passesQualityChecks(c, source);
+    if (check.ok) {
+      qualityFiltered.push(c);
+    } else {
+      rejectedCount++;
+      log(`  🚫 REJECT: ${(c.title || '?').slice(0, 60)}... [${check.reason}]`);
     }
   }
+  log(`   Quality filter: ${qualityFiltered.length} pass, ${rejectedCount} reject`);
 
-  if (curated.length === 0) { log('❌ No stories from OpenAI'); return logs.join('\n'); }
-  log(`   Total: ${curated.length} stories`);
+  if (qualityFiltered.length === 0) {
+    log('❌ All stories failed quality checks');
+    await sendTelegramAlert(env, `❌ *News generation*: all ${curated.length} stories rejected by quality filter.`);
+    return logs.join('\n');
+  }
+
+  // Telegram alert if we couldn't hit the minimum target
+  if (qualityFiltered.length < MIN_TARGET) {
+    await sendTelegramAlert(
+      env,
+      `⚠️ *News generation*: only ${qualityFiltered.length}/${MIN_TARGET} stories passed quality.\n` +
+      `RSS items: ${allItems.length}, filtered: ${filtered.length}, GPT: ${curated.length}, rejected: ${rejectedCount}.`
+    );
+  }
+
+  curated = qualityFiltered;
+  log(`   Final: ${curated.length} stories`);
   const candidates = allCandidates; // for image lookup below
 
   // 6. Build news rows

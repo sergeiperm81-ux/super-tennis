@@ -109,6 +109,7 @@ async function main() {
       summary: h.summary || '',
       category: h.category || 'buzz',
       index: i,
+      playerSlugs: Array.isArray(h.player_slugs) ? h.player_slugs : [],
     });
     if (videoPath) {
       videos.push({ headline: h, path: videoPath, index: i, pubId: pubRow?.id });

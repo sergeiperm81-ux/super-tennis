@@ -27,7 +27,9 @@ const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
  * age-score each headline.
  */
 export async function fetchHeadlines(limit = 10) {
-  const url = `${SUPABASE_URL}/rest/v1/news?is_active=eq.true&order=published_at.desc&limit=${limit}&select=title,slug,category,summary,published_at`;
+  // Added 2026-05-01: pull player_slugs so generateVideo() can pick
+  // gender-appropriate backgrounds (skip men-only clips for women's news).
+  const url = `${SUPABASE_URL}/rest/v1/news?is_active=eq.true&order=published_at.desc&limit=${limit}&select=title,slug,category,summary,published_at,player_slugs,image_url`;
   const res = await fetch(url, {
     headers: {
       'apikey': SUPABASE_KEY,
