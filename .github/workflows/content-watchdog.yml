@@ -39,8 +39,20 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: node scripts/content-watchdog.mjs
 
-      - name: Trigger SSG rebuild if items deleted
-        # Always trigger — cheap, ensures deleted news pages drop from prod
+      - name: Cleanup orphaned Bluesky posts
+        # Delete Bluesky posts whose linked news got soft-deleted in the previous step.
+        # Safe to always run — script is idempotent and only acts on is_active=false items
+        # that still have bluesky_posted_at set.
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/cleanup-bluesky-posts.mjs --limit 100
+
+      - name: Trigger SSG rebuild
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
