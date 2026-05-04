@@ -318,15 +318,15 @@ function isGoodHeadline(item: RssItem, hoursAgo: number): boolean {
   if (MATCH_SCORE_RE.test(item.title)) return false;
   if (BORING_RE.test(item.title)) return false;
 
-  const text = `${item.title} ${item.description || ''}`;
+  // AMATEUR_RE: check ONLY title, not description. Description can contain
+  // 'college'/'university' as background context (e.g. 'former NCAA player
+  // turned pro Cilic...') — that shouldn't reject the item.
+  if (AMATEUR_RE.test(item.title)) return false;
 
-  // Reject amateur/junior/college tennis from ALL sources — never our beat
-  if (AMATEUR_RE.test(text)) return false;
-
-  // Lifestyle sources (Daily Mail, Bleacher Report) and search-based feeds
-  // need pro-tennis context to avoid catching unrelated articles.
-  // Tennis-only feeds (ESPN Tennis, BBC Sport Tennis, etc.) trust their own filter.
+  // Lifestyle/search-based feeds need pro-tennis context (player or tournament).
+  // Tennis-only feeds (ESPN, BBC, Tennis World USA) trust their own filter.
   if (LIFESTYLE_FEED_NAMES.has(item.sourceName)) {
+    const text = `${item.title} ${item.description || ''}`;
     if (!PRO_TENNIS_RE.test(text)) return false;
   }
 
@@ -491,7 +491,16 @@ For each story you select, output:
 - category ("buzz" | "money" | "scandal" | "fashion" | "viral" | "love")
 - main_player (full name like "Carlos Alcaraz" or null if no specific pro)
 
-If you cannot find ${limit} stories worth publishing, return FEWER. Better to publish 5 honest stories than 8 with one fabrication. We would rather have less news than fake news.`;
+═══ AIM FOR ${limit} STORIES ═══
+Tennis is a busy sport — there are usually many newsworthy stories per day:
+match results, retirements, injuries, coaching changes, prize-money news,
+ranking shifts, return announcements, etc. With ${headlines.length} sources
+passed to you below, you should easily find ${limit} distinct stories
+WITHOUT ever fabricating. Skip duplicates — if 4 sources cover the same
+Madrid final, pick the most informative one and move on to other topics.
+
+ONLY return fewer than ${limit} if there are genuinely fewer than ${limit}
+distinct, faithfully-rewritable topics in the source list.`;
 
   const res = await withRetry(async () => {
     const r = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -566,11 +575,12 @@ function passesQualityChecks(article: any, source: RssItem | undefined): { ok: b
 // NEWS GENERATION
 // ============================================================
 async function generateNews(env: Env): Promise<string> {
-  // Reduced 2026-05-01 from 25/day to 8/day (investor feedback: quality > volume).
-  // GPT was fabricating to fill the 25-article quota when source pool was thin.
-  // Min target: 6/day. If we can't hit 6 with quality, we publish what we have
-  // and send a Telegram alert — never fabricate to fill the count.
-  const LIMIT = 8;
+  // Tuning history:
+  //   2026-05-01: 25/day → 8/day after investor flagged AI graphomania
+  //   2026-05-04: 8/day → 10/day after we proved we have plenty of real
+  //                stories per day (152 candidates passed filter on May 4).
+  // Min target 6 stays — if we ever drop below it, that's a Telegram alert.
+  const LIMIT = 10;
   const MIN_TARGET = 6;
   const HOURS = 48;
   const logs: string[] = [];
@@ -611,11 +621,11 @@ async function generateNews(env: Env): Promise<string> {
   log(`   After dedup: ${newItems.length} new items`);
   if (newItems.length === 0) { log('✅ All news already in DB'); return logs.join('\n'); }
 
-  // 4. OpenAI curation — single batch (LIMIT=8 fits in 8K output tokens)
-  // Pass up to 30 candidates so GPT has enough to choose from but doesn't
-  // need to fabricate when sources are thin. We ask for "up to LIMIT" — GPT
-  // can return fewer, which is the desired behavior on slow news days.
-  const allCandidates = newItems.slice(0, 30);
+  // 4. OpenAI curation — pass up to 60 candidates so GPT has plenty of
+  // diverse stories to choose from. Many feeds carry near-duplicate items
+  // (3-4 sources covering the same Madrid final), so a wide pool helps GPT
+  // pick distinct topics and reach LIMIT without ever fabricating.
+  const allCandidates = newItems.slice(0, 60);
   log(`🤖 Calling OpenAI (${allCandidates.length} candidates → up to ${LIMIT} articles)...`);
   let curated: any[] = [];
   try {
