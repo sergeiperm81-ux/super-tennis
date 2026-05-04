@@ -1,0 +1,47 @@
+name: Content Watchdog — Weekly Quality Scan
+
+# Runs every Monday at 09:00 Sofia (06:00 UTC) — after the daily news worker run.
+# Scans all active news for fabrications, tabloid clickbait, and source mismatches.
+# Soft-deletes failures, rewrites tabloid-only titles. Reports via Telegram.
+#
+# Why this exists: investor flagged 2026-05-01 that ~30% of generated news were
+# AI fabrications (e.g. "Coco Gauff: Shocking Racism" derived from a college
+# tennis Player-of-the-Year story). The worker has new safeguards now, but this
+# watchdog catches anything that slips through and acts as a regression alarm.
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'    # Mondays 09:00 Sofia / 06:00 UTC
+  workflow_dispatch: {}     # Manual trigger from GitHub UI
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install minimal deps
+        run: npm install --no-save --no-audit --no-fund @supabase/supabase-js
+
+      - name: Run content watchdog
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/content-watchdog.mjs
+
+      - name: Trigger SSG rebuild if items deleted
+        # Always trigger — cheap, ensures deleted news pages drop from prod
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run deploy.yml || echo "rebuild trigger failed (non-fatal)"
