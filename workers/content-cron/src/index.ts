@@ -454,16 +454,32 @@ THIS IS NOT A TABLOID. We do not invent. We do not exaggerate. We do not fabrica
 5. If two sources cover the same event, pick ONE (the most informative) and skip the duplicate.
 6. If a source is too thin to rewrite faithfully (e.g. just a stub or aggregator click-bait), skip it.
 
-═══ HEADLINES — slightly punchier, never sensational ═══
-ALLOWED: descriptive + sharp + name-drops the player.
-  ✓ "Sinner Wins Madrid for Record-Breaking Masters Title"
-  ✓ "Nishikori Announces Retirement at Season's End"
-  ✓ "Andreeva Pulls Off Stunning Comeback in Madrid Quarterfinal"
-NOT ALLOWED: Tabloid power-words.
+═══ HEADLINES — engaging hook + factual core ═══
+Make headlines INTERESTING. A dry title gets ignored. Use one of these
+techniques to add a hook while staying 100% accurate:
+  • Lead with the most striking fact (number, age, record, place)
+  • Name-drop the player AND the rival/situation
+  • Show consequence or stakes ("...sets up Sinner-Alcaraz showdown")
+  • Quote a memorable phrase from the source if it's specific
+
+GOOD examples (interesting + true):
+  ✓ "Sinner Beats Zverev for Record-Tying 4th Masters of 2026"
+  ✓ "Kostyuk Stuns Andreeva 7-5 in 1st Madrid Final, Wins Maiden 1000"
+  ✓ "Alcaraz Withdraws From Roland Garros — Wrist Won't Heal in Time"
+  ✓ "Nishikori, Former World No. 4, Will Retire After 2026 Season"
+  ✓ "Sabalenka Saves 6 Match Points to Survive Baptiste in Madrid R16"
+
+DRY examples (avoid — these are what we shipped today):
+  ✗ "Sinner Wins Madrid to Set Masters Title Record"  ← bland, no hook
+  ✗ "Sinner's Prize Money Breakdown After Madrid Open"  ← reads like a tax form
+  ✗ "Alcaraz's Injury Concerns Raise Questions"  ← vague, lifeless
+
+NEVER allowed (tabloid clickbait):
   ✗ "Shocking", "Stunning", "Revealed", "Secret", "Bombshell", "You Won't Believe"
-  ✗ Cliffhanger questions ("What Happened Next?")
-  ✗ Headlines that hide the actual news ("This Player Just Made History...")
-Max 80 characters. Always factual.
+  ✗ Cliffhangers that hide the news ("What Happened Next?", "The Truth Will Surprise You")
+  ✗ Inventing drama not in the source ("Feud Heats Up" if source doesn't say "feud")
+
+Max 90 characters. Hook must come from real source content.
 
 ═══ BODY — faithful rewrite, 200-300 words ═══
 - Retell the source story in your own words. Same facts, your voice.

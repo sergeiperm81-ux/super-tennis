@@ -1,10 +1,12 @@
 name: Content Factory — YouTube Shorts
 
 on:
-  # 1x/day until YouTube Advanced Features unlocks (~mid April)
-  # Then switch back to 3x/day: 05:00, 11:00, 17:00 UTC
+  # Channel created 2026-03-17 — 7 weeks old as of 2026-05-04, Advanced
+  # Features unlocked. Bumping to 3 videos/day in a single morning batch.
+  # Quota: 1600 units × 3 = 4800 of 10K daily quota — safe headroom.
+  # Single batch run is simpler than spreading via cron (no contention).
   schedule:
-    - cron: '0 5 * * *'   # 08:00 Sofia (1 video/day limit)
+    - cron: '0 5 * * *'   # 08:00 Sofia
   workflow_dispatch: {}    # Manual trigger
 
 jobs:
@@ -68,7 +70,7 @@ jobs:
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          VIDEOS_PER_RUN: '1'
+          VIDEOS_PER_RUN: '3'
         run: node src/daily-run.js
 
       - name: Save bg-history (background rotation state)
