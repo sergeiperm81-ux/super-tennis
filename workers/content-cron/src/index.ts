@@ -593,13 +593,17 @@ async function generateNews(env: Env): Promise<string> {
     return logs.join('\n');
   }
 
-  // 3. Deduplicate against existing
+  // 3. Deduplicate against existing ACTIVE news only.
+  // Soft-deleted items (is_active=false) keep their source_url — but we want
+  // to allow re-generation in case the original was bad. Otherwise the
+  // post-purge worker has nothing to publish, since "still in DB" blocks it.
   const urls = filtered.map(i => i.link).filter(Boolean);
   let existingUrls = new Set<string>();
   try {
     const existing = await supabaseQuery(env, 'news', 'GET', {
       'select': 'source_url',
       'source_url': `in.(${urls.map(u => `"${u}"`).join(',')})`,
+      'is_active': 'eq.true',
     });
     existingUrls = new Set((existing || []).map((r: any) => r.source_url));
   } catch { /* ignore dedup errors */ }
