@@ -456,40 +456,67 @@ The CONTENT is the news — same event, same facts. The HEADLINE is where you ea
 
 ═══ HEADLINES — THIS IS WHERE THE SKILL IS ═══
 
-The body just tells the news. The TITLE is what makes someone click. Spend
-your effort here. A boring headline kills a good story.
+Body = facts. Title = the click. Your headline either has a hook based on
+a SPECIFIC FACT from the source, or you skip the story. We'd rather miss
+a story than ship a bureaucratic title.
 
-EVERY headline must use a HOOK from the actual source content:
-  • The most surprising number/stat (4th Masters, 6 match points, 350th win)
-  • The stakes or consequence (sets up rematch, ends streak, costs ranking)
-  • A specific named rival or scenario, not just "wins"
-  • The dramatic verb that's actually true (saves, stuns, denies, shuts down)
-  • A short real quote if the source has one
+╔══ HOOK CHECKLIST — your title MUST contain at least ONE ══╗
+  □ A SPECIFIC NUMBER from the source
+      ("4th Masters of 2026", "350th career win", "6 match points saved",
+       "drops 42 places", "$1.13M prize", "73-match streak ended")
+  □ A NAMED RIVAL or matchup
+      ("vs Zverev", "denies Alcaraz", "Sinner-Zverev rematch")
+  □ A DIRECT QUOTE from the source (in 'single quotes')
+      ("'Awful tennis match' — Zverev", "'Bit disappointing' on Alcaraz")
+  □ A CONCRETE STAKE/CONSEQUENCE
+      ("ends title defense", "out of French Open", "sets up final with X")
+  □ A DRAMATIC ACCURATE VERB
+      (saves, stuns, denies, dominates, claims, shuts down, retires)
 
-GOOD examples — punchy + 100% true to source:
-  ✓ "Sinner Denies Zverev for 4th Masters of the Year — Record Pace"
-  ✓ "Baptiste Saves 6 Match Points Then Stuns Sabalenka in Madrid R16"
-  ✓ "Kostyuk Beats Andreeva 7-5 to Lift First WTA 1000 Trophy"
+If NONE of these can be drawn from the source, SKIP the story.
+
+╔══ TYPE-SPECIFIC HOOK PATTERNS ══╗
+
+For PRIZE MONEY / COMPLAINT stories: include a NUMBER or specific demand.
+  ✗ "Top Stars Unite in Criticism of French Open Prize Money Decline"
+  ✗ "Frustration Grows Among Top Players Over Prize Money Issues"
+  ✗ "Djokovic and Sabalenka Lead Player Discontent Over Prize Money"
+  ✓ "Djokovic, Sabalenka Demand 50% Prize-Money Hike at French Open"
+  ✓ "Top Players Slam French Open: Champion's Cut Below US Open's $3M"
+  ✓ "Sinner, Alcaraz Among 20 Players Signing Prize-Money Letter"
+
+For MATCH RESULTS: lead with the score or the streak/record number.
+  ✗ "Sinner Wins Madrid to Set Masters Title Record"
+  ✓ "Sinner Denies Zverev 6-3 for 4th Masters of 2026"
+  ✓ "Kostyuk Edges Andreeva 7-5, 4-6, 6-3 to Win First Madrid Title"
+
+For RETIREMENTS: include age or career stat.
+  ✗ "Nishikori Announces Retirement at Season's End"
+  ✓ "Nishikori, 35 and Former World No. 4, Will Retire After 2026"
+
+For INJURIES: include the body part + tournament impact.
+  ✗ "Alcaraz's Injury Concerns Raise Questions"
   ✓ "Alcaraz Out of Roland Garros — Wrist Ends Title Defense"
-  ✓ "Nishikori, 35, Calls It a Career — Retiring at Season's End"
-  ✓ "Sinner: Best Rivals to Watch Are Fonseca, Mensik, Tien & 2 More"
 
-DRY/BORING — what we want to AVOID:
-  ✗ "Sinner Wins Madrid to Set Masters Title Record"           ← no hook
-  ✗ "Sinner's Prize Money Breakdown After Madrid Open"         ← tax form
-  ✗ "Alcaraz's Injury Concerns Raise Questions"                ← vague
-  ✗ "Top Tennis Stars Express Discontent Over French Open Prize Money" ← bureaucratic
-  ✗ "Sinner Names Five Rising Players to Watch"                ← who? generic
+For LISTS/RANKINGS: name at least 2 of the items.
+  ✗ "Sinner Names Five Rising Players to Watch"
+  ✓ "Sinner: Fonseca, Mensik, Tien Will Push Us Soon"
 
-FORBIDDEN — fake clickbait:
-  ✗ "Shocking", "Stunning", "Revealed", "Secret", "Bombshell", "You Won't Believe"
-  ✗ Cliffhangers ("What Happened Next?", "The Truth Will Surprise You")
-  ✗ Inventing emotion/drama not in source ("Feud Heats Up", "Tears Flow")
-  ✗ Vague hooks ("Tennis Star Does Something Incredible")
+For QUOTES: lead with the quote when it's punchy.
+  ✗ "Zverev Frustrated After Another Loss to Sinner"
+  ✓ "'Awful Tennis Match' — Zverev Vents After Madrid Final Loss"
 
-Max 90 chars. EVERY hook must be a SPECIFIC FACT from the source — number,
-name, stake, quote, consequence. If you can't find one, the headline gets
-boring; that's a sign to skip the story or pick a better source.
+╔══ ABSOLUTELY FORBIDDEN ══╗
+  ✗ Tabloid power-words: "Shocking", "Stunning", "Revealed", "Secret",
+    "Bombshell", "Exclusive", "You Won't Believe", "Mind-Blowing"
+  ✗ Cliffhangers: "What Happened Next?", "The Truth Will Surprise You"
+  ✗ Invented emotion/drama: "Feud Heats Up", "Tears Flow", if NOT in source
+  ✗ Vague hooks: "Tennis Star Does Something Incredible"
+  ✗ Inventing specific numbers not in source ("5th straight" if not stated)
+
+Max 90 chars. EVERY number, name, quote, stake in the title MUST appear
+in the source description. If your draft headline has NO checklist hook,
+either rewrite it with a real hook or SKIP the story entirely.
 
 ═══ BODY — straight news, 200-300 words ═══
 The body is plain news. Same event, same facts, just rewritten in your own
