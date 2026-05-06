@@ -1,15 +1,11 @@
 name: Build & Deploy
 
 on:
-  # Daily rebuild at 04:30 UTC (07:30 Sofia) — after Worker generates news at 04:00 UTC (07:00 Sofia)
   schedule:
     - cron: '30 4 * * *'
-  # Trigger from Cloudflare Worker after content generation
   repository_dispatch:
     types: [content-updated]
-  # Manual trigger
   workflow_dispatch:
-  # Code changes — skip docs, configs, and non-site files
   push:
     branches: [main]
     paths:
@@ -48,6 +44,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Publish scheduled lifestyle article
+        if: ${{ hashFiles('scripts/publish-lifestyle-osaka-met-gala-2026.mjs') != '' }}
+        run: node scripts/publish-lifestyle-osaka-met-gala-2026.mjs
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+
       - name: Build Astro site
         run: npx astro build
         env:
@@ -67,8 +70,6 @@ jobs:
         if: success()
         run: |
           INOW_KEY="91c5dc98807613af2ffb83361ebbd154"
-
-          # IndexNow — batch submit top pages (Bing, Yandex, Seznam, Naver)
           echo "Submitting top pages via IndexNow..."
           curl -s -X POST "https://api.indexnow.org/indexnow" \
             -H "Content-Type: application/json" \
@@ -85,11 +86,8 @@ jobs:
                 \"https://super.tennis/sitemap-index.xml\"
               ]
             }" || true
-
-          # Google — sitemap ping
           echo "Pinging Google sitemap..."
           curl -s "https://www.google.com/ping?sitemap=https://super.tennis/sitemap-index.xml" || true
-
           echo "Search engines notified"
 
       - name: Submit new pages to Google Indexing API
@@ -99,8 +97,6 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
         run: |
-          # Submit top 100 pages (200/day quota — Mon/Wed/Fri splits)
-          # Skips gracefully if GOOGLE_SA_JSON not configured
           node scripts/request-indexing.mjs --limit=100 --type=all || true
 
       - name: Telegram alert on failure
