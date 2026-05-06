@@ -1,0 +1,151 @@
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+const slug = 'naomi-osaka-met-gala-2026-fashion-art';
+const todayStart = new Date('2026-05-06T00:00:00+03:00').toISOString();
+const fourteenStart = new Date('2026-04-22T00:00:00+03:00').toISOString();
+const now = new Date().toISOString();
+
+const body = `Naomi Osaka did not need a match court to make tennis part of the conversation this week. On Monday, May 4, 2026, she returned to the Met Gala steps in a two-part Robert Wun look that turned a red-carpet appearance into one of tennis's clearest fashion-culture moments of the year.
+
+The hook is not just that a Grand Slam champion wore couture. Tennis has had plenty of that. The sharper point is that Osaka used one of fashion's largest media stages to extend the same idea she has been building on court: clothes are not decoration around her tennis identity. They are part of how she tells the story.
+
+That matters now because the 2026 Met Gala theme, "Costume Art," gave athlete style a rare test. Could tennis figures do more than appear famous in expensive clothes? Osaka's answer was unusually literal. According to Vogue and Vanity Fair, the Robert Wun design began with a sculpted ivory coat and then opened into a red crystallized gown meant to evoke human anatomy. Vogue reported more than 659,000 stitches, over 3,280 hours of handiwork, and thousands of Swarovski crystals in four red tones. For a sport that sells endurance, visibility and controlled self-presentation, it was a surprisingly exact metaphor.
+
+## Why Naomi Osaka Met Gala 2026 searches are really about tennis fashion
+
+The primary search interest around **Naomi Osaka Met Gala 2026** is fashion, but the tennis connection is direct. Osaka is a four-time Grand Slam champion, a former world No. 1, and one of the few active tennis players whose off-court image can travel across sport, luxury, streetwear and celebrity media without needing a tournament result as the entry point.
+
+That is why this look is different from a routine red-carpet recap. It lands in the same lane as our broader coverage of [tennis fashion on court](/lifestyle/tennis-fashion-on-court/) and [player fashion brands and endorsements](/lifestyle/tennis-player-fashion-brands-endorsements/): tennis is becoming a style platform, not just a sport with sponsored kits.
+
+Osaka has been pushing that idea for a while. Her recent on-court outfits have leaned into theatrical design rather than quiet performance wear, and Vogue connected this Met Gala appearance to her custom Nike x Robert Wun Australian Open look earlier in 2026. That continuity is the point. She is not stepping out of tennis to do fashion. She is carrying a fashion language back and forth between the tour and the carpet.
+
+## The Robert Wun look was built as a reveal
+
+The confirmed details are unusually concrete. Vogue described a two-part custom Robert Wun ensemble: a sculpted ivory coat with open seams, red crystals, feathered accents and a dramatic hat, followed by a crimson gown underneath. Vanity Fair framed the look around bodily transformation, with the outer layer giving way to the exposed red beading beneath.
+
+The numbers help explain why it travelled so fast across style coverage. More than 659,000 stitches and more than 3,280 hours of work are not throwaway embellishments; they make the look easy to understand as craft, not just spectacle. Tennis fans may not care about every Met Gala look, but they understand repetition, precision and hours hidden behind a public performance.
+
+There is also a useful restraint here: the reporting supports the design, the designer, the theme and the craft. It does not require gossip about Osaka's private life, unsupported claims about her priorities, or the tired argument that fashion somehow proves an athlete is less serious. The credible angle is narrower and stronger: Osaka is one of tennis's most effective translators between elite sport and high fashion.
+
+## Venus, Serena and Osaka made tennis visible at the Met Gala
+
+Osaka was not alone. Tennis.com covered the night as a tennis-fashion moment because Venus Williams, Serena Williams and Osaka all attended. Venus, an honorary co-chair, wore a Swarovski look with a Wimbledon-linked tribute; Serena appeared in silver; Osaka delivered the most theatrical reveal of the group.
+
+That cluster matters. Tennis has always had style icons, but the 2026 Met Gala made the sport visible as a group rather than a single celebrity cameo. Venus brought legacy. Serena brought cultural scale. Osaka brought the active-player bridge between competition, fashion experimentation and Gen Z-facing image-making.
+
+For readers who follow tennis beyond forehands and rankings, this is the off-court story: the sport's biggest names are increasingly legible to audiences who may first meet them through fashion coverage, streaming clips, Instagram portraits or red-carpet analysis. That does not replace tennis. It widens the doorway into it.
+
+## The business signal behind the style
+
+There is a commercial layer too, but it should not be overstated. No credible source has reported that this Met Gala look itself was a new endorsement deal, and there is no need to pretend otherwise. The money story is broader: athletes with strong personal style become more valuable to brands because they create moments outside the tournament calendar.
+
+Osaka has long sat in that category. The Met Gala gives sponsors, apparel partners and fashion houses something match highlights cannot: a global image cycle detached from wins and losses. In a sport where most players disappear from mainstream attention between majors, that kind of presence is rare.
+
+This is where the article connects naturally to our guide to [tennis player earnings and salary](/lifestyle/tennis-player-earnings-salary/). The highest-value tennis careers are no longer built only on prize money. They are built on recognisable identity, audience trust, cultural range and the ability to make people look twice when no match is being played.
+
+## Why this moment fits Osaka specifically
+
+Osaka's fashion work resonates because it does not feel like an accessory pasted onto her career. It fits her public image: precise, visual, sometimes vulnerable, and willing to be misunderstood. Vanity Fair's coverage leaned into the language of exposure and transformation. Vogue emphasized collaboration and craft. Tennis.com placed her alongside Venus and Serena in a broader tennis-at-the-Met frame.
+
+Those are three compatible readings, not contradictions. Together, they show an athlete using fashion to do what tennis players rarely get to do during competition: control the frame completely. There is no scoreboard, no opponent, no umpire, no ranking math. There is just the image and the story behind it.
+
+That freedom is part of why the look works. Osaka's tennis career gives the appearance weight; the fashion gives it reach.
+
+## What is confirmed, and what is not
+
+Confirmed: Osaka attended the 2026 Met Gala on May 4, 2026, in a Robert Wun look; Vogue reported the gown involved more than 659,000 stitches and more than 3,280 hours of handiwork; Tennis.com reported Venus Williams, Serena Williams and Osaka were all part of the tennis presence at the event.
+
+Not confirmed: that the look signals a new fashion contract, a tennis comeback statement, or a change in Osaka's competitive plans. Those claims would be speculation. The stronger reading is cultural, not predictive.
+
+## The bottom line
+
+Naomi Osaka's Met Gala 2026 look matters because it shows where tennis lifestyle coverage is heading. The sport's off-court stories are no longer limited to homes, cars and endorsement lists. They are about how players carry tennis into other cultural rooms, and how those rooms reshape the way casual fans understand the players.
+
+Osaka did that better than anyone at this year's Met Gala. The look was dramatic, searchable, heavily documented and clearly tied to a tennis figure with real sporting credibility. That combination is exactly why it belongs in the tennis lifestyle conversation, not just the fashion recap cycle.
+
+### Sources
+
+- [Vogue: Naomi Osaka served up high style and more than 3,200 hours of handiwork at the 2026 Met Gala](https://www.vogue.com/article/naomi-osaka-served-up-high-style-and-more-than-3200-hours-of-handiwork-at-the-2026-met-gala)
+- [Vanity Fair: Naomi Osaka explains her daring Met Gala 2026 look](https://www.vanityfair.com/style/story/exclusive-naomi-osaka-met-gala-2026)
+- [Tennis.com: Venus, Serena and Osaka at the Met Gala](https://www.tennis.com/news/articles/met-gala-venus-makes-wimbledon-tribute-serena-stuns-in-silver-and-osaka-is-lady-in-red)
+- [Wikimedia Commons image source: Naomi Osaka 2018 US Open](https://commons.wikimedia.org/wiki/File:Naomi_Osaka_2018_US_Open.jpg)`;
+
+function norm(value = '') {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function isDuplicateCluster(article) {
+  const text = norm([article.slug, article.title, article.excerpt, article.body].filter(Boolean).join(' '));
+  return (text.includes('naomi osaka') || text.includes('osaka')) && (text.includes('met gala') || text.includes('costume art') || text.includes('robert wun'));
+}
+
+const { data: today, error: todayError } = await supabase
+  .from('articles')
+  .select('slug,title,subcategory,published_at,status')
+  .eq('category', 'lifestyle')
+  .eq('status', 'published')
+  .gte('published_at', todayStart)
+  .order('published_at', { ascending: false });
+if (todayError) throw todayError;
+
+if (today?.length) {
+  console.log(JSON.stringify({ action: 'skipped_today_exists', slug: today[0].slug, title: today[0].title, todayCount: today.length }, null, 2));
+  process.exit(0);
+}
+
+const { data: recent, error: recentError } = await supabase
+  .from('articles')
+  .select('slug,title,subcategory,excerpt,body,image_url,published_at,status')
+  .eq('category', 'lifestyle')
+  .gte('published_at', fourteenStart)
+  .order('published_at', { ascending: false });
+if (recentError) throw recentError;
+
+const duplicate = recent?.find(isDuplicateCluster);
+if (duplicate) {
+  console.log(JSON.stringify({ action: 'skipped_duplicate_cluster', duplicateSlug: duplicate.slug, duplicateTitle: duplicate.title }, null, 2));
+  process.exit(0);
+}
+
+const { data: existingSlug, error: slugError } = await supabase
+  .from('articles')
+  .select('slug,title')
+  .eq('slug', slug)
+  .limit(1);
+if (slugError) throw slugError;
+if (existingSlug?.length) {
+  console.log(JSON.stringify({ action: 'skipped_slug_exists', slug, title: existingSlug[0].title }, null, 2));
+  process.exit(0);
+}
+
+const article = {
+  slug,
+  title: "Naomi Osaka's Met Gala 2026 Look Turns Tennis Fashion Into Art",
+  category: 'lifestyle',
+  subcategory: 'style',
+  excerpt: "Naomi Osaka's Met Gala 2026 Robert Wun look gives tennis its sharpest fashion-culture moment of the week: a body-themed couture reveal built from 659,000 stitches and more than 3,280 hours of work.",
+  body,
+  meta_title: 'Naomi Osaka Met Gala 2026 Look: Tennis Fashion Turns Art',
+  meta_description: "Naomi Osaka's Met Gala 2026 Robert Wun look put tennis fashion into the art conversation with 659,000 stitches, a red-carpet reveal, and real cultural reach.",
+  image_url: 'https://upload.wikimedia.org/wikipedia/commons/9/91/Naomi_Osaka_2018_US_Open.jpg',
+  image_alt: 'Naomi Osaka holding the US Open trophy in 2018, used to illustrate her tennis profile and fashion influence',
+  status: 'published',
+  published_at: now,
+  ai_model: 'codex-gpt-5',
+  ai_generated_at: now
+};
+
+const { error: insertError } = await supabase.from('articles').insert(article);
+if (insertError) throw insertError;
+
+console.log(JSON.stringify({
+  action: 'published',
+  slug,
+  title: article.title,
+  subcategory: article.subcategory,
+  imageUrl: article.image_url,
+  primaryKeyword: 'Naomi Osaka Met Gala 2026',
+  recentLifestyleCount: recent?.length || 0,
+  sourceMix: 'Vogue and Vanity Fair direct fashion reporting, Tennis.com tennis-specific coverage, Wikimedia licensing page'
+}, null, 2));
