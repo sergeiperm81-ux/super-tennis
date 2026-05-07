@@ -468,7 +468,10 @@ export async function getArticles(options: {
   status?: string[];
 } = {}) {
   const allArticles = await ensureArticlesCache();
-  const validStatuses = options.status || ['published', 'draft'];
+  // 2026-05-07: default to 'published' only. Was ['published','draft'] which
+  // caused draft articles (including pre-redirect old slugs) to appear in
+  // listing pages and trigger "Alternate page with proper canonical" in GSC.
+  const validStatuses = options.status || ['published'];
 
   let filtered = allArticles.filter(a => validStatuses.includes(a.status));
 
@@ -543,11 +546,16 @@ export async function getAllNewsSlugs(): Promise<string[]> {
   } catch { return []; }
 }
 
-// Helper: get all article slugs for static path generation
+// Helper: get all article slugs for static path generation.
+// 2026-05-07: Restricted to 'published' only. Drafts were being built as
+// public pages with old (pre-redirect) slugs, which Google Search Console
+// flagged as "Alternate page with proper canonical tag" because the
+// generated draft pages and their _redirects rules co-existed (Cloudflare
+// serves the static file BEFORE consulting _redirects).
 export async function getArticleSlugs(category?: string): Promise<string[]> {
   try {
     const allArticles = await ensureArticlesCache();
-    let filtered = allArticles.filter(a => ['published', 'draft'].includes(a.status));
+    let filtered = allArticles.filter(a => a.status === 'published');
     if (category) filtered = filtered.filter(a => a.category === category);
     return filtered.map(a => a.slug).filter(Boolean);
   } catch (e) {
