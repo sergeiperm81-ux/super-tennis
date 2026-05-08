@@ -33,28 +33,53 @@ async function query(body) {
   return data;
 }
 
-console.log('=== Top SINGAPORE landing pages May 4-5 ===');
-const pages = await query({
-  startDate: '2026-05-03', endDate: '2026-05-06',
+async function dump(label, body) {
+  try {
+    const data = await query(body);
+    console.log(`\n=== ${label} (${(data.rows||[]).length} rows) ===`);
+    (data.rows || []).forEach(r => {
+      const k = r.keys.join(' | ');
+      console.log(`  ${String(r.clicks).padStart(4)}c ${String(r.impressions).padStart(5)}i ${(r.ctr*100).toFixed(1)}% pos ${r.position?.toFixed(1)||'-'} | ${k}`);
+    });
+  } catch (e) { console.error(`  ERROR: ${e.message}`); }
+}
+
+await dump('TOP COUNTRIES May 1-7 (entire site)', {
+  startDate: '2026-05-01', endDate: '2026-05-07',
+  dimensions: ['country'], rowLimit: 15,
+});
+
+await dump('SINGAPORE pages May 1-7', {
+  startDate: '2026-05-01', endDate: '2026-05-07',
   dimensions: ['page'],
   dimensionFilterGroups: [{ filters: [{ dimension: 'country', operator: 'equals', expression: 'sgp' }] }],
   rowLimit: 20,
 });
-(pages.rows || []).forEach(r => console.log(`  ${String(r.clicks).padStart(4)} clicks | ${String(r.impressions).padStart(5)} impr | ${(r.ctr*100).toFixed(1)}% | pos ${r.position.toFixed(1)} | ${r.keys[0]}`));
 
-console.log('\n=== Top SINGAPORE search queries May 4-5 ===');
-const queries = await query({
-  startDate: '2026-05-03', endDate: '2026-05-06',
+await dump('SINGAPORE queries May 1-7', {
+  startDate: '2026-05-01', endDate: '2026-05-07',
   dimensions: ['query'],
   dimensionFilterGroups: [{ filters: [{ dimension: 'country', operator: 'equals', expression: 'sgp' }] }],
   rowLimit: 20,
 });
-(queries.rows || []).forEach(r => console.log(`  ${String(r.clicks).padStart(4)} clicks | ${String(r.impressions).padStart(5)} impr | ${(r.ctr*100).toFixed(1)}% | "${r.keys[0]}"`));
 
-console.log('\n=== TOP COUNTRIES May 4-5 (for context) ===');
-const countries = await query({
-  startDate: '2026-05-03', endDate: '2026-05-06',
-  dimensions: ['country'],
-  rowLimit: 10,
+await dump('TOP PAGES May 4 (any country)', {
+  startDate: '2026-05-04', endDate: '2026-05-04',
+  dimensions: ['page'], rowLimit: 15,
 });
-(countries.rows || []).forEach(r => console.log(`  ${String(r.clicks).padStart(5)} clicks | ${String(r.impressions).padStart(6)} impr | ${r.keys[0].toUpperCase()}`));
+
+await dump('TOP PAGES May 5 (any country)', {
+  startDate: '2026-05-05', endDate: '2026-05-05',
+  dimensions: ['page'], rowLimit: 15,
+});
+
+await dump('TOP QUERIES May 4 (any country)', {
+  startDate: '2026-05-04', endDate: '2026-05-04',
+  dimensions: ['query'], rowLimit: 15,
+});
+
+await dump('Last 28 days - top countries', {
+  startDate: new Date(Date.now() - 28 * 86400000).toISOString().split('T')[0],
+  endDate: new Date().toISOString().split('T')[0],
+  dimensions: ['country'], rowLimit: 15,
+});
