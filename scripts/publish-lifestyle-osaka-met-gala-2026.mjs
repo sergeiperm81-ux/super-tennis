@@ -1,75 +1,86 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
-const slug = 'naomi-osaka-met-gala-2026-fashion-art';
-const todayStart = new Date('2026-05-06T00:00:00+03:00').toISOString();
-const fourteenStart = new Date('2026-04-22T00:00:00+03:00').toISOString();
+const slug = 'tennis-grand-slam-prize-money-boycott-2026';
+const todayStart = new Date('2026-05-09T00:00:00+03:00').toISOString();
+const fourteenStart = new Date('2026-04-25T00:00:00+03:00').toISOString();
 const now = new Date().toISOString();
 
-const body = `Naomi Osaka did not need a match court to make tennis part of the conversation this week. On Monday, May 4, 2026, she returned to the Met Gala steps in a two-part Robert Wun look that turned a red-carpet appearance into one of tennis's clearest fashion-culture moments of the year.
+const body = `On a normal day in Rome, tennis money is background noise: a figure in a media guide, a trophy-photo caption, a number most fans scroll past while checking the order of play. This week it moved into the foreground. Aryna Sabalenka said the quiet part out loud. Jannik Sinner refused to dismiss it. Novak Djokovic, who has spent years pushing for player representation, backed the point. Suddenly the richest rooms in tennis had to answer a question the sport usually keeps behind the curtains: who gets paid when the show sells out?
 
-The hook is not just that a Grand Slam champion wore couture. Tennis has had plenty of that. The sharper point is that Osaka used one of fashion's largest media stages to extend the same idea she has been building on court: clothes are not decoration around her tennis identity. They are part of how she tells the story.
+That is why the **tennis Grand Slam prize money boycott** story has traveled beyond a routine earnings dispute. It has the shape of a lifestyle story because it is about power, fame, labor, risk and the strange public bargain athletes make with the people who watch them. Tennis sells elegance: white lines, old lawns, Paris clay, celebrity boxes, champagne hospitality. The players are saying the business underneath that elegance does not feel as refined.
 
-That matters now because the 2026 Met Gala theme, "Costume Art," gave athlete style a rare test. Could tennis figures do more than appear famous in expensive clothes? Osaka's answer was unusually literal. According to Vogue and Vanity Fair, the Robert Wun design began with a sculpted ivory coat and then opened into a red crystallized gown meant to evoke human anatomy. Vogue reported more than 659,000 stitches, over 3,280 hours of handiwork, and thousands of Swarovski crystals in four red tones. For a sport that sells endurance, visibility and controlled self-presentation, it was a surprisingly exact metaphor.
+The timing gives the argument its edge. Roland-Garros announced that its 2026 prize-money pool will rise to 61.723 million euros, up 9.53 percent from last year. The singles champions will receive 2.8 million euros each. Those are huge sums in ordinary life, and that is exactly why the debate gets so emotionally messy. Fans hear millions. Players see a share of a much larger machine.
 
-## Why Naomi Osaka Met Gala 2026 searches are really about tennis fashion
+## Why the 2026 Grand Slam money fight is not only about millionaires
 
-The primary search interest around **Naomi Osaka Met Gala 2026** is fashion, but the tennis connection is direct. Osaka is a four-time Grand Slam champion, a former world No. 1, and one of the few active tennis players whose off-court image can travel across sport, luxury, streetwear and celebrity media without needing a tournament result as the entry point.
+The easiest reaction is to roll your eyes. A top player arguing about prize money can sound, from the couch, like someone complaining about the temperature in a private lounge. But tennis is not a salaried league. Players are contractors who pay teams, travel, physios, coaches, equipment costs, tax advisers and the invisible expense of staying healthy enough to work.
 
-That is why this look is different from a routine red-carpet recap. It lands in the same lane as our broader coverage of [tennis fashion on court](/lifestyle/tennis-fashion-on-court/) and [player fashion brands and endorsements](/lifestyle/tennis-player-fashion-brands-endorsements/): tennis is becoming a style platform, not just a sport with sponsored kits.
+That is why the current dispute is less about whether Sabalenka, Sinner or Djokovic can afford dinner. It is about whether tennis treats players as the product or as invited performers at someone else's festival.
 
-Osaka has been pushing that idea for a while. Her recent on-court outfits have leaned into theatrical design rather than quiet performance wear, and Vogue connected this Met Gala appearance to her custom Nike x Robert Wun Australian Open look earlier in 2026. That continuity is the point. She is not stepping out of tennis to do fashion. She is carrying a fashion language back and forth between the tour and the carpet.
+The Guardian reported this week that top players have been pressing the four Grand Slam tournaments for a larger share of revenue and better welfare structures, with player prize money commonly framed around the low-to-mid teens as a percentage of Slam revenue. The player demand, according to recent reporting, is closer to 22 percent, in line with combined ATP and WTA 1000 event benchmarks. That gap is where the argument lives.
 
-## The Robert Wun look was built as a reveal
+It also connects directly to the way fans already think about [tennis prize money explained](/lifestyle/tennis-prize-money-explained/), [tennis player earnings and salary](/lifestyle/tennis-player-earnings-salary/) and the long history of [tennis prize money records](/records/tennis-prize-money-history/). The check handed out on finals day is only the visible part. The fight is over the structure around it.
 
-The confirmed details are unusually concrete. Vogue described a two-part custom Robert Wun ensemble: a sculpted ivory coat with open seams, red crystals, feathered accents and a dramatic hat, followed by a crimson gown underneath. Vanity Fair framed the look around bodily transformation, with the outer layer giving way to the exposed red beading beneath.
+## Sabalenka made the word boycott feel real
 
-The numbers help explain why it travelled so fast across style coverage. More than 659,000 stitches and more than 3,280 hours of work are not throwaway embellishments; they make the look easy to understand as craft, not just spectacle. Tennis fans may not care about every Met Gala look, but they understand repetition, precision and hours hidden behind a public performance.
+Sabalenka did not invent player frustration, but she gave it a sentence people could repeat. At the Italian Open, she said players may need to boycott Grand Slams if negotiations do not move. The Associated Press, carried by NBC Sports, quoted her arguing that without players there is no tournament and no entertainment. That language landed because it stripped away the old politeness.
 
-There is also a useful restraint here: the reporting supports the design, the designer, the theme and the craft. It does not require gossip about Osaka's private life, unsupported claims about her priorities, or the tired argument that fashion somehow proves an athlete is less serious. The credible angle is narrower and stronger: Osaka is one of tennis's most effective translators between elite sport and high fashion.
+There is a reason the word "boycott" hits differently in tennis. The majors are not just events; they are the sport's calendar monuments. Careers are measured by them. Sponsors build campaigns around them. Broadcasters sell certainty around them. A credible threat to skip a Slam is not a small labor tactic. It is a threat to disturb the mythology.
 
-## Venus, Serena and Osaka made tennis visible at the Met Gala
+That does not mean a boycott is likely tomorrow. Iga Swiatek has been more cautious, according to the same reporting cycle, preferring dialogue over the most dramatic route. Sinner has not turned the idea into a personal promise. Djokovic's support matters, but he is also skilled at keeping the broader principle separate from any one tactical move.
 
-Osaka was not alone. Tennis.com covered the night as a tennis-fashion moment because Venus Williams, Serena Williams and Osaka all attended. Venus, an honorary co-chair, wore a Swarovski look with a Wimbledon-linked tribute; Serena appeared in silver; Osaka delivered the most theatrical reveal of the group.
+Still, the phrase is now in circulation. In tennis, that alone is a change.
 
-That cluster matters. Tennis has always had style icons, but the 2026 Met Gala made the sport visible as a group rather than a single celebrity cameo. Venus brought legacy. Serena brought cultural scale. Osaka brought the active-player bridge between competition, fashion experimentation and Gen Z-facing image-making.
+## Roland-Garros has numbers, but players want a different yardstick
 
-For readers who follow tennis beyond forehands and rankings, this is the off-court story: the sport's biggest names are increasingly legible to audiences who may first meet them through fashion coverage, streaming clips, Instagram portraits or red-carpet analysis. That does not replace tennis. It widens the doorway into it.
+Roland-Garros can fairly say it has increased prize money. The tournament's own announcement lists a total pool of 61.723 million euros for 2026, a 9.53 percent rise, with extra attention to qualifying rounds, early singles rounds, doubles, wheelchair and quad events. The LTA's public breakdown shows the singles champion at 2.8 million euros, the runner-up at 1.4 million euros, semifinalists at 750,000 euros and first-round singles players at 87,000 euros.
 
-## The business signal behind the style
+Those details matter because they prevent the story from becoming cartoonish. The French Open is not freezing payouts. It is raising them. Lower-ranked players and qualifiers do benefit from increases at the front end of the tournament.
 
-There is a commercial layer too, but it should not be overstated. No credible source has reported that this Met Gala look itself was a new endorsement deal, and there is no need to pretend otherwise. The money story is broader: athletes with strong personal style become more valuable to brands because they create moments outside the tournament calendar.
+The players' counterargument is about the denominator. If tournament revenue is rising faster than the money returned to players, a larger prize pot can still feel like a shrinking share. That is a harder idea to sell publicly than a single check amount, but it is the core of the dispute.
 
-Osaka has long sat in that category. The Met Gala gives sponsors, apparel partners and fashion houses something match highlights cannot: a global image cycle detached from wins and losses. In a sport where most players disappear from mainstream attention between majors, that kind of presence is rare.
+This is where tennis differs from many team sports. There is no locker-room payroll sheet that makes the split easy to understand. The majors are part sporting competition, part hospitality empire, part media product, part civic brand. Players are asking to be treated as central partners in that business rather than as brilliant temporary contractors who arrive, perform and leave.
 
-This is where the article connects naturally to our guide to [tennis player earnings and salary](/lifestyle/tennis-player-earnings-salary/). The highest-value tennis careers are no longer built only on prize money. They are built on recognisable identity, audience trust, cultural range and the ability to make people look twice when no match is being played.
+## Djokovic and Sinner changed the temperature
 
-## Why this moment fits Osaka specifically
+Djokovic's support gives the argument institutional memory. He has long pushed for stronger player representation and has often been criticized for it. When he backs Sabalenka's stance, he is not merely joining a news cycle. He is placing this week's dispute inside a longer battle over who speaks for tennis players when the tours, Slams and governing bodies have different incentives.
 
-Osaka's fashion work resonates because it does not feel like an accessory pasted onto her career. It fits her public image: precise, visual, sometimes vulnerable, and willing to be misunderstood. Vanity Fair's coverage leaned into the language of exposure and transformation. Vogue emphasized collaboration and craft. Tennis.com placed her alongside Venus and Serena in a broader tennis-at-the-Met frame.
+Sinner's voice matters for another reason. He is the current center of men's tennis, a player with the clean commercial image sponsors love and the on-court authority tournament organizers need. The Guardian quoted him saying the issue is about respect and that players give more than they receive. Coming from Sinner, that does not sound like theater. It sounds like the sport's polite new face has run out of polite evasions.
 
-Those are three compatible readings, not contradictions. Together, they show an athlete using fashion to do what tennis players rarely get to do during competition: control the frame completely. There is no scoreboard, no opponent, no umpire, no ranking math. There is just the image and the story behind it.
+The public alignment is the story: Sabalenka with the blunt line, Sinner with the generational legitimacy, Djokovic with the activist history, Coco Gauff and others adding weight around union-style thinking and player welfare. Tennis is an individual sport, but this dispute briefly makes it look collective.
 
-That freedom is part of why the look works. Osaka's tennis career gives the appearance weight; the fashion gives it reach.
+## The lifestyle cost behind the money
+
+The word welfare can sound dry until you picture the actual life. A tennis player is a small traveling company with a body at the center of it. Flights, hotels, stringing, coaching, recovery, injury prevention, family logistics, visas and tax planning all orbit the person who has to stand alone on court at noon or midnight and look composed.
+
+That is why the debate belongs in tennis lifestyle coverage. Money is not just a scoreboard. It shapes who can afford to keep a coach after a bad month, who can bring a physio on the road, who can recover properly, who can say no to extra tournaments, and who can survive the climb before the first big check arrives.
+
+The top names make the headlines because they have the microphone. The best version of their argument is not "pay the stars more because they are stars." It is "if the Slams are growing as entertainment businesses, the people who create the entertainment should have a clearer share and better protection across the ranking ladder."
+
+That is a more compelling case, and it is why the issue has lasted longer than a single press-conference quote.
 
 ## What is confirmed, and what is not
 
-Confirmed: Osaka attended the 2026 Met Gala on May 4, 2026, in a Robert Wun look; Vogue reported the gown involved more than 659,000 stitches and more than 3,280 hours of handiwork; Tennis.com reported Venus Williams, Serena Williams and Osaka were all part of the tennis presence at the event.
+Confirmed: Roland-Garros says its 2026 prize-money pool is 61.723 million euros, up 9.53 percent. Public breakdowns list 2.8 million euros for each singles champion and 87,000 euros for first-round singles players. Multiple major outlets have reported Sabalenka's boycott comments and Sinner's support for the broader player position.
 
-Not confirmed: that the look signals a new fashion contract, a tennis comeback statement, or a change in Osaka's competitive plans. Those claims would be speculation. The stronger reading is cultural, not predictive.
+Not confirmed: that players will actually boycott Roland-Garros, Wimbledon, the US Open or the Australian Open. The word is powerful, but a real boycott would require coordination across tours, rankings, sponsors and personal career goals. For now, it is pressure, not a scheduled absence.
 
 ## The bottom line
 
-Naomi Osaka's Met Gala 2026 look matters because it shows where tennis lifestyle coverage is heading. The sport's off-court stories are no longer limited to homes, cars and endorsement lists. They are about how players carry tennis into other cultural rooms, and how those rooms reshape the way casual fans understand the players.
+Tennis has spent years making itself look more luxurious, more social, more cinematic and more available to people who may never join a club. That strategy works because players give the sport faces, nerves, style and stories. The current Grand Slam prize money fight asks whether the business has caught up with that truth.
 
-Osaka did that better than anyone at this year's Met Gala. The look was dramatic, searchable, heavily documented and clearly tied to a tennis figure with real sporting credibility. That combination is exactly why it belongs in the tennis lifestyle conversation, not just the fashion recap cycle.
+The argument is uncomfortable because both things are true. The checks are enormous. The share may still be too small. The stars are rich. The system below them is expensive and brittle. The majors are tradition. They are also businesses with gates, suites, broadcast deals and merchandise lines.
+
+If the players keep speaking together, this week in Rome may be remembered as the moment tennis money stopped being a polite appendix and became part of the main story.
 
 ### Sources
 
-- [Vogue: Naomi Osaka served up high style and more than 3,200 hours of handiwork at the 2026 Met Gala](https://www.vogue.com/article/naomi-osaka-served-up-high-style-and-more-than-3200-hours-of-handiwork-at-the-2026-met-gala)
-- [Vanity Fair: Naomi Osaka explains her daring Met Gala 2026 look](https://www.vanityfair.com/style/story/exclusive-naomi-osaka-met-gala-2026)
-- [Tennis.com: Venus, Serena and Osaka at the Met Gala](https://www.tennis.com/news/articles/met-gala-venus-makes-wimbledon-tribute-serena-stuns-in-silver-and-osaka-is-lady-in-red)
-- [Wikimedia Commons image source: Naomi Osaka 2018 US Open](https://commons.wikimedia.org/wiki/File:Naomi_Osaka_2018_US_Open.jpg)`;
+- [Roland-Garros official 2026 tournament update and prize-money announcement](https://www.rolandgarros.com/en-us/article/edition-2026-presentation-nouveautes-conference-de-presse-amelie-mauresmo-hommages-gael-monfils-performance-prize-money)
+- [LTA: Roland Garros prize money 2026 breakdown](https://www.lta.org.uk/fan-zone/grand-slam/roland-garros/prize-money/)
+- [The Guardian: Tennis slams' refusal to discuss money is slap in face for players](https://www.theguardian.com/sport/2026/may/09/tennis-slams-refusal-discuss-money-slap-in-face-for-players-threaten-boycott)
+- [The Guardian: Jannik Sinner not ruling out Grand Slam boycott in prize money dispute](https://www.theguardian.com/sport/2026/may/07/jannik-sinner-not-ruling-out-grand-slam-boycott-in-prize-money-dispute)
+- [NBC Sports/AP: Aryna Sabalenka calls for boycott if players do not get bigger Grand Slam revenue cut](https://www.nbcsports.com/tennis/news/no-1-aryna-sabalenka-calls-for-boycott-if-players-dont-get-bigger-cut-of-grand-slam-revenues)`;
 
 function norm(value = '') {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
@@ -77,7 +88,15 @@ function norm(value = '') {
 
 function isDuplicateCluster(article) {
   const text = norm([article.slug, article.title, article.excerpt, article.body].filter(Boolean).join(' '));
-  return (text.includes('naomi osaka') || text.includes('osaka')) && (text.includes('met gala') || text.includes('costume art') || text.includes('robert wun'));
+  const hasMoneyFight = text.includes('grand slam') && (
+    text.includes('boycott') ||
+    text.includes('revenue share') ||
+    text.includes('prize money dispute') ||
+    text.includes('player welfare') ||
+    text.includes('sabalenka')
+  );
+  const hasSamePeople = text.includes('sabalenka') && (text.includes('sinner') || text.includes('djokovic')) && text.includes('prize money');
+  return hasMoneyFight || hasSamePeople;
 }
 
 const { data: today, error: todayError } = await supabase
@@ -90,7 +109,13 @@ const { data: today, error: todayError } = await supabase
 if (todayError) throw todayError;
 
 if (today?.length) {
-  console.log(JSON.stringify({ action: 'skipped_today_exists', slug: today[0].slug, title: today[0].title, todayCount: today.length }, null, 2));
+  console.log(JSON.stringify({
+    action: 'skipped_today_exists',
+    slug: today[0].slug,
+    title: today[0].title,
+    todayCount: today.length,
+    liveUrl: `https://super.tennis/lifestyle/${today[0].slug}/`
+  }, null, 2));
   process.exit(0);
 }
 
@@ -104,7 +129,12 @@ if (recentError) throw recentError;
 
 const duplicate = recent?.find(isDuplicateCluster);
 if (duplicate) {
-  console.log(JSON.stringify({ action: 'skipped_duplicate_cluster', duplicateSlug: duplicate.slug, duplicateTitle: duplicate.title }, null, 2));
+  console.log(JSON.stringify({
+    action: 'skipped_duplicate_cluster',
+    duplicateSlug: duplicate.slug,
+    duplicateTitle: duplicate.title,
+    liveUrl: `https://super.tennis/lifestyle/${duplicate.slug}/`
+  }, null, 2));
   process.exit(0);
 }
 
@@ -115,21 +145,26 @@ const { data: existingSlug, error: slugError } = await supabase
   .limit(1);
 if (slugError) throw slugError;
 if (existingSlug?.length) {
-  console.log(JSON.stringify({ action: 'skipped_slug_exists', slug, title: existingSlug[0].title }, null, 2));
+  console.log(JSON.stringify({
+    action: 'skipped_slug_exists',
+    slug,
+    title: existingSlug[0].title,
+    liveUrl: `https://super.tennis/lifestyle/${slug}/`
+  }, null, 2));
   process.exit(0);
 }
 
 const article = {
   slug,
-  title: "Naomi Osaka's Met Gala 2026 Look Turns Tennis Fashion Into Art",
+  title: 'The Grand Slam Money Fight Has Become Tennis Most Awkward Lifestyle Story',
   category: 'lifestyle',
-  subcategory: 'style',
-  excerpt: "Naomi Osaka's Met Gala 2026 Robert Wun look gives tennis its sharpest fashion-culture moment of the week: a body-themed couture reveal built from 659,000 stitches and more than 3,280 hours of work.",
+  subcategory: 'money',
+  excerpt: 'Sabalenka said boycott, Sinner talked respect, Djokovic backed the push, and Roland-Garros put 61.723 million euros on the table. The 2026 tennis prize-money fight is now about power as much as pay.',
   body,
-  meta_title: 'Naomi Osaka Met Gala 2026 Look: Tennis Fashion Turns Art',
-  meta_description: "Naomi Osaka's Met Gala 2026 Robert Wun look put tennis fashion into the art conversation with 659,000 stitches, a red-carpet reveal, and real cultural reach.",
-  image_url: 'https://upload.wikimedia.org/wikipedia/commons/9/91/Naomi_Osaka_2018_US_Open.jpg',
-  image_alt: 'Naomi Osaka holding the US Open trophy in 2018, used to illustrate her tennis profile and fashion influence',
+  meta_title: 'Tennis Grand Slam Prize Money Boycott: Why 2026 Fight Matters',
+  meta_description: 'Why the 2026 tennis Grand Slam prize money boycott talk around Sabalenka, Sinner, Djokovic and Roland-Garros is really a fight over power, welfare and revenue share.',
+  image_url: 'https://upload.wikimedia.org/wikipedia/commons/2/27/Court_Philippe_Chatrier_%2852101367922%29.jpg',
+  image_alt: 'Court Philippe-Chatrier at Roland-Garros, where the 2026 prize-money dispute has sharpened before the French Open',
   status: 'published',
   published_at: now,
   ai_model: 'codex-gpt-5',
@@ -145,7 +180,15 @@ console.log(JSON.stringify({
   title: article.title,
   subcategory: article.subcategory,
   imageUrl: article.image_url,
-  primaryKeyword: 'Naomi Osaka Met Gala 2026',
+  primaryKeyword: 'tennis Grand Slam prize money boycott',
+  secondaryKeywords: [
+    'Grand Slam revenue share tennis',
+    'Aryna Sabalenka boycott',
+    'Jannik Sinner prize money',
+    'Roland Garros 2026 prize money',
+    'tennis player welfare',
+    'tennis prize money dispute'
+  ],
   recentLifestyleCount: recent?.length || 0,
-  sourceMix: 'Vogue and Vanity Fair direct fashion reporting, Tennis.com tennis-specific coverage, Wikimedia licensing page'
+  sourceMix: 'Roland-Garros official announcement, LTA prize-money breakdown, Guardian Rome reporting, AP/NBC Sabalenka quote coverage'
 }, null, 2));
