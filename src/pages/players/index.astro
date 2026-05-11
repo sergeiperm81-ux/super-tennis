@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
 import { getLatestRankings, getPlayerBySlug } from '../../lib/supabase';
 import { fallbackPlayers, countryFlags, getFlagUrl } from '../../lib/fallback-data';
 
@@ -82,6 +83,36 @@ if (wtaRankings.length > 0) {
     .filter((p: any) => p.tour === 'wta')
     .map((p: any, i: number) => mapFallback(p, i + 1));
 }
+
+// FAQ schema — targets People Also Ask boxes for high-volume player queries.
+// Answers must be factual; updated as rankings/records change.
+const playerFaqs = [
+  {
+    q: 'Who is the number 1 tennis player in the world right now?',
+    a: 'On the men\'s tour, Jannik Sinner holds the ATP world No. 1 ranking in 2026. On the women\'s tour, Aryna Sabalenka leads the WTA rankings. Rankings are updated weekly based on a rolling 52-week points system run by the ATP and WTA.',
+  },
+  {
+    q: 'Who has won the most Grand Slam titles in tennis history?',
+    a: 'Novak Djokovic holds the all-time men\'s record with 24 Grand Slam singles titles. Margaret Court holds the all-time women\'s record with 24 (including pre-Open Era titles); Serena Williams leads the Open Era women\'s list with 23 Grand Slams.',
+  },
+  {
+    q: 'Who is the GOAT of tennis?',
+    a: 'There is no official answer — the "Greatest of All Time" debate typically centres on Novak Djokovic (24 Grand Slams), Rafael Nadal (22 Grand Slams, dominant on clay), and Roger Federer (20 Grand Slams, 310 weeks at No. 1). Most current statistical metrics favour Djokovic, but the debate continues based on era, surface dominance, and head-to-head records.',
+  },
+  {
+    q: 'Who are the highest-paid tennis players?',
+    a: 'Novak Djokovic leads career prize money at over $185 million. Rafael Nadal and Roger Federer follow on the men\'s side. On the women\'s tour, Serena Williams leads career earnings at over $94 million, with Iga Swiatek and Aryna Sabalenka rising fast among active players.',
+  },
+  {
+    q: 'How old is Carlos Alcaraz?',
+    a: 'Carlos Alcaraz was born on May 5, 2003, in El Palmar, Murcia, Spain. He turned professional in 2018 and became the youngest world No. 1 in ATP history at age 19 years and 4 months on September 12, 2022.',
+  },
+  {
+    q: 'Who is the youngest world No. 1 in tennis history?',
+    a: 'Carlos Alcaraz became the youngest men\'s world No. 1 ever at 19 years and 4 months in September 2022. Martina Hingis is the youngest women\'s world No. 1, reaching the top at 16 years and 6 months on March 31, 1997.',
+  },
+];
+
 ---
 
 <BaseLayout
@@ -281,6 +312,8 @@ if (wtaRankings.length > 0) {
           </a>
         </div>
       </section>
+
+      <FaqBlock faqs={playerFaqs} />
     </div>
   </div>
 </BaseLayout>

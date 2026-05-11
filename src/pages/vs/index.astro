@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
 import { getArticles } from '../../lib/supabase';
 import { stripMarkdown } from '../../lib/fallback-data';
 import { vsPlayerSlugs, getAllVsPlayerSlugs, getPlayerPhotosBatch, slugToName } from '../../lib/player-photos';
@@ -84,6 +85,33 @@ const featuredPhotos = featured ? getVsPlayerPhotos(featured.slug) : null;
 const restArticles = sortedArticles.slice(1, 13);
 const totalRivalries = sortedArticles.length - 1;
 const hasMore = totalRivalries > 12;
+
+const vsFaqs = [
+  {
+    q: 'Who has won more Grand Slams — Federer or Nadal?',
+    a: 'Rafael Nadal won 22 Grand Slam titles; Roger Federer won 20. Their head-to-head record was 24-16 in Nadal\'s favour, though Federer led on grass (Wimbledon) while Nadal dominated on clay (Roland Garros, 14 titles). Both finished their careers with Novak Djokovic eventually surpassing them with 24 Grand Slams.',
+  },
+  {
+    q: 'What is the Sinner vs Alcaraz head-to-head record?',
+    a: 'As of 2026, the Sinner-Alcaraz head-to-head is closely contested, with Carlos Alcaraz holding a slight edge. Their most prominent meetings include the 2025 Roland Garros final (Alcaraz won), the 2025 ATP Finals (Sinner won), and multiple Masters 1000 finals. The rivalry is considered the defining matchup of the post-Big Three era.',
+  },
+  {
+    q: 'Is the Federer-Nadal rivalry the greatest in tennis?',
+    a: 'Statistically and culturally, Federer-Nadal is widely considered the greatest rivalry in tennis history — 40 meetings across 16 years, contrasting playing styles (grass-court artistry vs clay-court grind), and mutual respect off the court. Djokovic-Nadal and Djokovic-Federer rivalries are statistically significant but generated less narrative tension.',
+  },
+  {
+    q: 'Who has the best Grand Slam record on clay?',
+    a: 'Rafael Nadal owns the most dominant clay Grand Slam record in history with 14 Roland Garros titles (2005-2022). He lost only 4 matches at the tournament across his entire career. Björn Borg won 6 Roland Garros titles in the 1970s-80s and Chris Evert leads the women\'s list with 7 RG titles.',
+  },
+  {
+    q: 'Who is the greatest rival of Novak Djokovic?',
+    a: 'Djokovic\'s rivalry with Rafael Nadal is statistically the most prolific — 60 meetings (Djokovic leads 31-29). Djokovic-Federer ended 27-23 in Djokovic\'s favour. In the new generation, his rivalry with Carlos Alcaraz has produced 3 Grand Slam finals already and is shaping his late-career narrative.',
+  },
+  {
+    q: 'What is a head-to-head record in tennis?',
+    a: 'A head-to-head (H2H) record tracks all official ATP/WTA Tour matches between two players, sorted by surface, tournament tier, and round. For example "Sinner 5-3 vs Alcaraz" means Sinner has won 5 of their 8 meetings on tour. H2H records exclude exhibition matches, Davis Cup, and Olympics in some statistics.',
+  },
+];
 ---
 
 <BaseLayout
@@ -203,6 +231,8 @@ const hasMore = totalRivalries > 12;
           <a href="/tournaments/">Tournament Guides</a>
         </div>
       </section>
+
+      <FaqBlock faqs={vsFaqs} />
     </div>
   </div>
 </BaseLayout>

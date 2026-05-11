@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
 import { getArticles } from '../../lib/supabase';
 import { stripMarkdown } from '../../lib/fallback-data';
 
@@ -183,6 +184,34 @@ const upcomingEvents = [
   { name: 'Shanghai Masters', location: 'Shanghai', dates: 'Sep 28 – Oct 11', surface: 'hard', slug: 'shanghai-masters-complete-guide' },
   { name: 'ATP Finals', location: 'Turin', dates: 'Nov 8–15', surface: 'hard', slug: 'atp-finals-complete-guide' },
 ];
+
+// FAQ — targets People Also Ask boxes for tournament queries
+const tournamentFaqs = [
+  {
+    q: 'What are the 4 Grand Slam tennis tournaments?',
+    a: 'The four Grand Slam tournaments are the Australian Open (January, hard court, Melbourne), Roland Garros / French Open (May-June, clay, Paris), Wimbledon (June-July, grass, London), and the US Open (August-September, hard court, New York). They are the four most prestigious tournaments in professional tennis.',
+  },
+  {
+    q: 'When is Wimbledon 2026?',
+    a: 'Wimbledon 2026 runs from June 29 to July 12 at the All England Lawn Tennis Club in London. The men\'s final is traditionally held on the second Sunday; the ladies\' final on the second Saturday.',
+  },
+  {
+    q: 'When is Roland Garros (French Open) 2026?',
+    a: 'Roland Garros 2026 runs from May 24 to June 7 at Stade Roland Garros in Paris. It is the only Grand Slam played on red clay courts and follows the Madrid Open and Italian Open in the European clay swing.',
+  },
+  {
+    q: 'What is the difference between ATP Masters 1000 and Grand Slam?',
+    a: 'Grand Slams (Australian Open, Roland Garros, Wimbledon, US Open) are the four highest-tier tournaments — best-of-five sets for men, 2-week format, 2000 ranking points to the winner. Masters 1000 are the second tier — 9 events per year (Indian Wells, Miami, Monte Carlo, Madrid, Rome, Canada, Cincinnati, Shanghai, Paris), 1-week format, 1000 ranking points to the winner.',
+  },
+  {
+    q: 'How much prize money do Grand Slam tournaments pay?',
+    a: 'Each Grand Slam in 2026 pays approximately $3.5–$3.8 million to the singles champion. Total prize pool per Slam is roughly $60–$70 million, distributed across singles, doubles, mixed doubles, wheelchair, and qualifying. The US Open historically has the largest prize pool.',
+  },
+  {
+    q: 'What is the ATP Finals?',
+    a: 'The ATP Finals is the season-ending championship for the top 8 players on the ATP Tour. Held in Turin, Italy in 2026 (Nov 8-15), it uses a round-robin format with the top 4 from each group advancing to single-elimination semifinals. The WTA Finals is the equivalent event on the women\'s tour.',
+  },
+];
 ---
 
 <BaseLayout
@@ -340,6 +369,8 @@ const upcomingEvents = [
           </a>
         </div>
       </section>
+
+      <FaqBlock faqs={tournamentFaqs} />
     </div>
   </div>
 </BaseLayout>

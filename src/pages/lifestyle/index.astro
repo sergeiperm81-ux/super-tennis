@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
 import { getArticles } from '../../lib/supabase';
 import { stripMarkdown } from '../../lib/fallback-data';
 import { getArticlePhotosForCategory } from '../../lib/player-photos';
@@ -57,6 +58,33 @@ const itemListJsonLd = filteredArticles.length > 0 ? {
     url: `https://super.tennis/lifestyle/${article.slug}/`,
   })),
 } : null;
+
+const lifestyleFaqs = [
+  {
+    q: 'How can an adult learn to play tennis from scratch?',
+    a: 'Start with 4-6 weeks of group lessons at a local club (typically $20-$40 per session) to learn fundamentals: grip, forehand, backhand, serve, and basic footwork. Practice 2-3 times per week for at least 30 minutes. Most adults reach a recreational rally level (USTA 2.5-3.0) within 3-6 months. Equipment-wise, a $80-$120 beginner racket and tennis-specific court shoes are enough to start.',
+  },
+  {
+    q: 'Is tennis a good workout for losing weight?',
+    a: 'Yes — an hour of singles tennis burns approximately 400-600 calories for a 70 kg adult, comparable to running or cycling. Tennis combines cardiovascular intensity (interval-based bursts) with strength work (rotational movements) and balance training. Studies link regular tennis play to reduced cardiovascular mortality risk and improved bone density.',
+  },
+  {
+    q: 'What do professional tennis players eat?',
+    a: 'Pros typically follow a high-carbohydrate, moderate-protein diet to fuel 3-5 hour matches. Common pre-match foods include oatmeal, pasta, rice, and bananas. During matches: bananas, energy gels, and electrolyte drinks. Sinner is known for a high-pasta Italian diet; Djokovic follows a strict gluten-free, mostly plant-based regimen; Nadal eats Mediterranean (fish, olive oil, pasta).',
+  },
+  {
+    q: 'How much do tennis players make from sponsorships?',
+    a: 'Top players earn $20M-$50M+ annually from endorsements alone — far more than prize money. Federer earned ~$90M/year at peak from Uniqlo, Rolex, Mercedes, Wilson, and others. Sinner signed with Nike, Head, and Rolex deals worth a combined ~$30M annually. Mid-tier ATP/WTA players (top 50) typically earn $200K-$2M from sponsors depending on profile.',
+  },
+  {
+    q: 'What\'s the difference between tennis and padel?',
+    a: 'Padel is played on a smaller (20×10m) walled court with solid stringless paddles and a depressurized ball; points often involve playing the ball off the walls (like squash). Tennis uses a larger court (23.77×8.23m for singles), strung rackets, and standard balls. Padel is easier to pick up, more social (always doubles), and faster-growing globally, especially in Spain, Italy, and Sweden.',
+  },
+  {
+    q: 'How do you watch tennis tournaments online?',
+    a: 'Tennis broadcast rights vary by region. In the US, Tennis Channel, ESPN, and ESPN+ cover most events. In the UK, Sky Sports and BBC iPlayer (Wimbledon free). Tennis TV (atptour.com subscription) streams every ATP match globally for ~$120/year. WTA matches are on WTA TV (~$100/year). Grand Slams are typically free on national broadcasters in the host country.',
+  },
+];
 ---
 
 <BaseLayout
@@ -169,6 +197,8 @@ const itemListJsonLd = filteredArticles.length > 0 ? {
           <a href="/rankings/">Rankings</a>
         </div>
       </section>
+
+      <FaqBlock faqs={lifestyleFaqs} />
     </div>
   </div>
 
