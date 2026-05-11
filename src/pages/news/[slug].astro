@@ -16,21 +16,56 @@ export async function getStaticPaths() {
   }
 
   const seen = new Set<string>();
-  return allNews.filter((n: any) => {
+  const uniqueNews = allNews.filter((n: any) => {
     if (seen.has(n.slug)) return false;
     seen.add(n.slug);
     return true;
-  }).map((n: any) => ({
-    params: { slug: n.slug },
-    props: { article: n },
-  }));
+  });
+
+  // Pre-compute related news for each article based on overlapping player_slugs.
+  // This adds ~2700 internal links across 890 news pages without N+1 DB queries.
+  return uniqueNews.map((n: any, idx: number) => {
+    const myPlayers = new Set<string>(n.player_slugs || []);
+    let related: any[] = [];
+    if (myPlayers.size > 0) {
+      // Score other news by overlap; pick top 3 with shared players
+      related = uniqueNews
+        .filter((other: any) => other.slug !== n.slug)
+        .map((other: any) => {
+          const otherPlayers: string[] = other.player_slugs || [];
+          const overlap = otherPlayers.filter(p => myPlayers.has(p)).length;
+          return { news: other, overlap };
+        })
+        .filter(r => r.overlap > 0)
+        .sort((a, b) => b.overlap - a.overlap || (
+          new Date(b.news.published_at || 0).getTime() - new Date(a.news.published_at || 0).getTime()
+        ))
+        .slice(0, 3)
+        .map(r => r.news);
+    }
+    // Fallback: 3 most recent news from same category
+    if (related.length < 3) {
+      const need = 3 - related.length;
+      const existing = new Set(related.map(r => r.slug));
+      existing.add(n.slug);
+      const sameCat = uniqueNews
+        .filter((other: any) => other.slug !== n.slug && other.category === n.category && !existing.has(other.slug))
+        .sort((a, b) => new Date(b.published_at || 0).getTime() - new Date(a.published_at || 0).getTime())
+        .slice(0, need);
+      related = [...related, ...sameCat];
+    }
+    return {
+      params: { slug: n.slug },
+      props: { article: n, relatedNews: related },
+    };
+  });
 }
 
 function makeSlug(title: string): string {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').substring(0, 80);
 }
 
-const { article } = Astro.props;
+const { article, relatedNews = [] } = Astro.props;
 
 if (!article) {
   return Astro.redirect('/news/');
@@ -91,6 +126,38 @@ const newsJsonLd = {
   {/* Article body */}
   <div class="news-body" set:html={bodyHtml} />
 
+  {/* Player profile links — adds 1-3 internal links per news to player pages */}
+  {Array.isArray(article.player_slugs) && article.player_slugs.length > 0 && (
+    <aside class="player-cta">
+      <strong>Players in this story:</strong>
+      {article.player_slugs.slice(0, 4).map((s: string) => (
+        <a href={`/players/${s}/`} class="player-chip">
+          {s.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ')}
+        </a>
+      ))}
+    </aside>
+  )}
+
+  {/* Related news — same players or same category */}
+  {relatedNews.length > 0 && (
+    <section class="related-news">
+      <h2>Related Stories</h2>
+      <div class="related-grid">
+        {relatedNews.map((r: any) => (
+          <a href={`/news/${r.slug}/`} class="related-card">
+            {r.image_url && (
+              <img src={r.image_url} alt={r.title} width="320" height="180" loading="lazy" decoding="async" />
+            )}
+            <div class="related-card-body">
+              <span class="related-card-cat">{(r.category || 'news').toUpperCase()}</span>
+              <h3>{r.title}</h3>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
   <ArticleFooter
     backLabel="All News"
     backHref="/news/"
@@ -116,6 +183,104 @@ const newsJsonLd = {
     color: var(--gray-500);
     margin-right: 6px;
   }
+  /* Player links chip row */
+  .player-cta {
+    margin: 32px 0;
+    padding: 16px 20px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  .player-cta strong {
+    margin-right: 4px;
+    color: var(--gray-700);
+  }
+  .player-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    background: var(--white);
+    border: 1px solid var(--court-green);
+    color: var(--court-green);
+    border-radius: 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition);
+  }
+  .player-chip:hover {
+    background: var(--court-green);
+    color: var(--white);
+  }
+
+  /* Related news grid */
+  .related-news {
+    margin: 48px 0 32px;
+    padding-top: 32px;
+    border-top: 2px solid var(--gray-200);
+  }
+  .related-news h2 {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0 0 20px;
+    color: var(--gray-900);
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .related-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition);
+  }
+  .related-card:hover {
+    border-color: var(--court-green);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+  .related-card img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+  }
+  .related-card-body {
+    padding: 12px 14px 16px;
+  }
+  .related-card-cat {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--court-green);
+    letter-spacing: 0.04em;
+  }
+  .related-card h3 {
+    font-size: 0.92rem;
+    line-height: 1.35;
+    margin: 6px 0 0;
+    color: var(--gray-900);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  @media (max-width: 768px) {
+    .related-grid { grid-template-columns: 1fr; }
+  }
+
   .news-source a {
     color: var(--court-green);
     text-decoration: none;
