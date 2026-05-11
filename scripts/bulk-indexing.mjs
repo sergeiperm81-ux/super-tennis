@@ -96,8 +96,11 @@ async function fetchPendingDeindex(maxCount) {
   if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) return [];
   const sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
   try {
+    // 2026-05-11: also select source_url so synthetic redirect-source rows
+    // (slugs prefixed 'redirect-source-') can submit their actual URL instead
+    // of the synthetic /news/{slug}/ path which doesn't exist.
     const { data, error } = await sb.from('news')
-      .select('slug, deindex_submitted_at')
+      .select('slug, source_url, deindex_submitted_at')
       .eq('is_active', false)
       .is('deindex_submitted_at', null)
       .limit(maxCount);
@@ -107,11 +110,15 @@ async function fetchPendingDeindex(maxCount) {
       console.warn('   ⚠️ Could not fetch de-index queue:', error.message);
       return [];
     }
-    return (data || []).map(r => ({
-      url: `https://super.tennis/news/${r.slug}/`,
-      slug: r.slug,
-      type: 'URL_DELETED',
-    }));
+    return (data || []).map(r => {
+      // Synthetic redirect-source rows: use source_url directly.
+      // Real news rows: construct /news/{slug}/ URL.
+      const isSynthetic = r.slug?.startsWith('redirect-source-');
+      const url = isSynthetic && r.source_url
+        ? r.source_url
+        : `https://super.tennis/news/${r.slug}/`;
+      return { url, slug: r.slug, type: 'URL_DELETED' };
+    });
   } catch (err) {
     console.warn('   ⚠️ De-index queue unavailable:', err.message);
     return [];
