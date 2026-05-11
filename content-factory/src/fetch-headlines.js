@@ -27,9 +27,14 @@ const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
  * age-score each headline.
  */
 export async function fetchHeadlines(limit = 10) {
-  // Added 2026-05-01: pull player_slugs so generateVideo() can pick
-  // gender-appropriate backgrounds (skip men-only clips for women's news).
-  const url = `${SUPABASE_URL}/rest/v1/news?is_active=eq.true&order=published_at.desc&limit=${limit}&select=title,slug,category,summary,published_at,player_slugs,image_url`;
+  // 2026-05-01: pull player_slugs for gender-aware background picking
+  // 2026-05-09: filter youtube_video_id=is.null so we never re-upload the same
+  //   news. The local published-log.json doesn't persist across GH Actions
+  //   runs (only bg-history.json is cached), so 3 cron slots/day were
+  //   independently picking the same top-scored headline and uploading
+  //   duplicate Shorts (e.g. "Sinner Dominates Madrid" published 3 times).
+  //   Now the database is the source of truth.
+  const url = `${SUPABASE_URL}/rest/v1/news?is_active=eq.true&youtube_video_id=is.null&order=published_at.desc&limit=${limit}&select=title,slug,category,summary,published_at,player_slugs,image_url`;
   const res = await fetch(url, {
     headers: {
       'apikey': SUPABASE_KEY,
