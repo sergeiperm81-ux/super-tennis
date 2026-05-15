@@ -8,10 +8,15 @@ on:
     - cron: '0 13 * * *'
   workflow_dispatch: {}
 
+# Allow this workflow to dispatch other workflows (used by Bluesky auto-recovery).
+permissions:
+  actions: write
+  contents: read
+
 jobs:
   health-check:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 5
 
     steps:
       - name: Full health check
@@ -69,8 +74,14 @@ jobs:
           if [ "$BSKY" = "0" ]; then
             ISSUES="${ISSUES}🟡 No Bluesky posts today\n"
             echo "⚠️ Bluesky: 0 posts today"
+            # Signal next step to auto-recover by triggering the social-poster workflow.
+            # 2026-05-15: GitHub Actions scheduled cron occasionally skips runs entirely;
+            # rather than waiting for the next scheduled fire, we kick off
+            # workflow_dispatch right now so the day doesn't pass without posts.
+            echo "bluesky_recovery=true" >> $GITHUB_OUTPUT
           else
             echo "✅ Bluesky: $BSKY posts today"
+            echo "bluesky_recovery=false" >> $GITHUB_OUTPUT
           fi
 
           # 5. Articles count (should be 600+)
@@ -114,3 +125,29 @@ jobs:
             -d chat_id="${TELEGRAM_CHAT_ID}" \
             -d text="${MESSAGE}" \
             -d parse_mode="HTML" || echo "Telegram send failed"
+
+      # Auto-recover Bluesky — when watchdog detects 0 posts today, kick off
+      # the social-poster workflow_dispatch up to 6 times to catch up to the
+      # ~12 posts we'd expect by midday. Each manual fire is reliable; only
+      # the schedule cron is flaky on GH Actions.
+      - name: Auto-recover Bluesky (fire 6 catch-up runs)
+        if: steps.check.outputs.bluesky_recovery == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for i in 1 2 3 4 5 6; do
+            echo "Bluesky recovery run $i/6..."
+            gh workflow run social-poster.yml -R ${{ github.repository }} || echo "  trigger failed"
+            sleep 30
+          done
+
+      - name: Notify Telegram about Bluesky recovery
+        if: steps.check.outputs.bluesky_recovery == 'true'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_ID}" \
+            -d text="🔧 Auto-recovery: fired 6 manual Bluesky workflow runs to catch up today's queue." \
+            -d parse_mode="HTML" || true
