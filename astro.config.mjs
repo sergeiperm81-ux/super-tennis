@@ -2,6 +2,32 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
+
+// Load per-URL freshness map (generated pre-build by
+// scripts/generate-freshness-map.mjs from Supabase article.updated_at,
+// news.updated_at, players.stats_updated_at). Empty object if missing
+// (e.g. local dev without Supabase creds).
+const __dirname = dirname(fileURLToPath(import.meta.url));
+let freshnessMap = {};
+try {
+  const raw = readFileSync(resolve(__dirname, 'src/data/freshness-map.json'), 'utf8');
+  freshnessMap = JSON.parse(raw);
+} catch (e) {
+  console.warn('[astro.config] freshness-map.json missing — falling back to stable dates');
+}
+
+const BASE = 'https://super.tennis';
+
+/**
+ * Extract URL path from full URL (e.g. https://super.tennis/lifestyle/x/ → /lifestyle/x/).
+ */
+function urlPath(fullUrl) {
+  if (!fullUrl.startsWith(BASE)) return null;
+  return fullUrl.slice(BASE.length) || '/';
+}
 
 export default defineConfig({
   site: 'https://super.tennis',
@@ -22,8 +48,17 @@ export default defineConfig({
                             url === 'https://super.tennis/calendar/';
         const stable_2026 = '2026-05-01'; // global evergreen anchor
         const stable_2025 = '2025-09-01'; // older static pages
+
+        // Look up real updated_at from the freshness map first — when the
+        // content-refresh Worker bumps Supabase.updated_at, the next build
+        // emits a fresh lastmod for that URL. Falls back to stable dates.
+        const path = urlPath(url);
+        const realFreshness = path ? freshnessMap[path] : null;
+
         if (truly_daily) {
           item.lastmod = today;
+        } else if (realFreshness) {
+          item.lastmod = realFreshness;
         } else if (url.includes('/news/') || /\/\d{4}-\d{2}-\d{2}-/.test(url)) {
           // Individual news items keep recent lastmod since they ARE recent
           item.lastmod = today;

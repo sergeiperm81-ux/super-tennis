@@ -4,11 +4,12 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "node scripts/validate-photos.mjs && astro build && node scripts/generate-image-sitemap.mjs",
+    "build": "node scripts/validate-photos.mjs && node scripts/generate-freshness-map.mjs && astro build && node scripts/generate-image-sitemap.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "validate:photos": "node scripts/validate-photos.mjs",
-    "sitemap:images": "node scripts/generate-image-sitemap.mjs"
+    "sitemap:images": "node scripts/generate-image-sitemap.mjs",
+    "freshness-map": "node scripts/generate-freshness-map.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",

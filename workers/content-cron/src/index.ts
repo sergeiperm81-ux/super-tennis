@@ -1845,21 +1845,45 @@ async function fetchGA4Analytics(env: Env, days: number): Promise<any> {
 }
 
 // ============================================================
-// CONTENT REFRESH — update "Last Updated" + add fresh paragraph
+// CONTENT REFRESH — daily smart refresh of stale articles
 // ============================================================
+// Codex SEO audit Round 3: previously ran only on the 15th and only
+// refreshed 15 articles per month. Now runs daily, picks 8 articles
+// per day, and prioritizes evergreen high-value categories. Over a
+// month this cycles ~240 articles; with ~470 evergreen articles total,
+// every page touched every ~58 days (close to the 45-day target).
+//
+// "Refresh" means:
+//   - Bump articles.updated_at to NOW (drives sitemap.xml lastmod via
+//     freshness-map.json generated pre-build)
+//   - Replace/insert a "Last updated: [Month Year]" footnote in the body
+//   - Skip articles where the body already contains this month's stamp
+//     (idempotent — re-running same day is a no-op)
+//
+// Priority order:
+//   1. records  — all-time stats, most cited by AI
+//   2. lifestyle — money/style/culture, highest commercial value
+//   3. gear     — affiliate revenue articles
+//   4. tournaments — Slam guides
+//   5. vs       — head-to-head matchups
+//   6. players  — profile sub-articles (lower priority — these are
+//                 embedded into player pages so updated_at matters
+//                 less for SEO than the player profile itself)
 async function refreshTopArticles(env: Env): Promise<string> {
   const logs: string[] = [];
   const log = (msg: string) => { logs.push(msg); console.log(msg); };
 
-  log('🔄 Starting content refresh for top articles...');
+  log('🔄 Starting daily content refresh...');
 
-  // Get articles older than 45 days, prioritize by category importance
+  // Get articles older than 45 days. We pull more than we'll refresh so
+  // we can sort by category priority in JS.
   const cutoff = new Date(Date.now() - 45 * 86400000).toISOString();
   const articles = await supabaseQuery(env, 'articles', 'GET', {
-    'select': 'slug,title,category,body',
+    'select': 'slug,title,category,body,updated_at',
+    'status': 'eq.published',
     'updated_at': `lt.${cutoff}`,
-    'order': 'category.asc',
-    'limit': '30',
+    'order': 'updated_at.asc',
+    'limit': '100',
   });
 
   if (!articles || articles.length === 0) {
@@ -1867,34 +1891,58 @@ async function refreshTopArticles(env: Env): Promise<string> {
     return logs.join('\n');
   }
 
-  log(`📝 Found ${articles.length} articles to refresh`);
+  log(`📝 ${articles.length} candidates older than 45 days`);
 
+  // Category priority weights
+  const PRIORITY: Record<string, number> = {
+    records: 1, lifestyle: 2, gear: 3, tournaments: 4, vs: 5, players: 6,
+  };
+  const ranked = [...articles].sort((a: any, b: any) => {
+    const pa = PRIORITY[a.category] ?? 99;
+    const pb = PRIORITY[b.category] ?? 99;
+    if (pa !== pb) return pa - pb;
+    // Within same category, oldest first
+    return (a.updated_at || '').localeCompare(b.updated_at || '');
+  });
+
+  // Refresh 8 articles per day (was 15/month; now ~240/month = ~58-day cycle)
+  const BATCH = 8;
+  const toRefresh = ranked.slice(0, BATCH);
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const stamp = `*Last updated: ${dateStr}*`;
   let refreshed = 0;
-  for (const article of articles.slice(0, 15)) {
-    try {
-      // Add/update "Last Updated" line at the end
-      const now = new Date();
-      const dateStr = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      const updatedNote = `\n\n*Last updated: ${dateStr}*`;
+  let skipped = 0;
 
-      // Remove old "Last updated" if exists and add new one
-      let body = article.body.replace(/\n\n\*Last updated:.*?\*/g, '');
-      body = body + updatedNote;
+  for (const article of toRefresh) {
+    try {
+      const oldBody: string = article.body || '';
+
+      // Idempotent: skip if body already has this month's stamp
+      if (oldBody.includes(stamp)) {
+        skipped++;
+        continue;
+      }
+
+      // Strip any prior "Last updated: ..." stamps and append the new one
+      const cleanBody = oldBody.replace(/\n\n\*Last updated:[^*]*\*\s*$/g, '').trimEnd();
+      const newBody = `${cleanBody}\n\n${stamp}`;
 
       await supabaseQuery(env, 'articles', 'PATCH', {
         'slug': `eq.${article.slug}`,
-      }, { body, updated_at: now.toISOString() }, {
+      }, { body: newBody, updated_at: now.toISOString() }, {
         'Prefer': 'return=minimal',
       });
 
-      log(`   ✅ ${article.slug}`);
+      log(`   ✅ [${article.category}] ${article.slug}`);
       refreshed++;
     } catch (e: any) {
       log(`   ⚠️ ${article.slug}: ${e.message}`);
     }
   }
 
-  log(`🔄 Refreshed ${refreshed} articles`);
+  log(`🔄 Refreshed ${refreshed} / skipped ${skipped} (had current stamp)`);
   return logs.join('\n');
 }
 
@@ -2281,27 +2329,26 @@ export default {
       return;
     }
 
-    // MID-MONTH (15th): Refresh old articles with "Last Updated" → REBUILD
-    if (now.getUTCDate() === 15) {
-      console.log('🔄 Mid-month content refresh (15th)');
+    // DAILY: Smart content refresh of stale articles → drives daily rebuild
+    // Codex audit Round 3: was monthly (15th only), now daily so the
+    // 45-day refresh target is actually reachable across ~470 articles.
+    // Skips Sunday to keep the build pipeline quiet on the weekend
+    // (Monday handles weekly article + brief generation already).
+    if (dayOfWeek !== 0) {
+      console.log('🔄 Daily content refresh');
       try {
         await refreshTopArticles(env);
       } catch (e: any) {
         console.error(`⚠️ Content refresh failed: ${e.message}`);
         failures.push(`🔄 Content refresh: ${e.message}`);
       }
-      if (failures.length > 0) {
-        ctx.waitUntil(sendTelegramAlert(env, `❌ *Cron Worker — Mid-month failures*\n\n${failures.join('\n')}`));
-      }
-      ctx.waitUntil(triggerRebuild(env));
-      return;
     }
 
-    // Regular day — send alert if news generation failed
+    // Regular day — send alert if news generation failed, otherwise pass
     if (failures.length > 0) {
       ctx.waitUntil(sendTelegramAlert(env, `❌ *Cron Worker — Daily failures*\n\n${failures.join('\n')}`));
     } else {
-      console.log('✅ Daily update done — no rebuild needed');
+      console.log('✅ Daily update done');
     }
   },
 

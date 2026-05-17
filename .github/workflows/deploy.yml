@@ -51,8 +51,12 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
 
-      - name: Build Astro site
-        run: npx astro build
+      - name: Build Astro site (with freshness map + image sitemap)
+        # 2026-05-17: switched from `npx astro build` to `npm run build` so the
+        # prebuild step (validate-photos + generate-freshness-map) and the
+        # postbuild step (generate-image-sitemap) actually run in CI. They
+        # were running locally but silently skipped on the CI deploy.
+        run: npm run build
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}

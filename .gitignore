@@ -23,3 +23,6 @@ _docs/
 # Astro
 .astro/
 ultra-ridge-*.json
+
+# Generated at build time from Supabase — regenerated each deploy
+src/data/freshness-map.json
