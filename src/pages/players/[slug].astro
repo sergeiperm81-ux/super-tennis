@@ -3,6 +3,12 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getPlayerBySlug, getTopPlayerSlugs, getRelatedPlayers, getArticleBySlug } from '../../lib/supabase';
 import { fallbackPlayers, countryFlags, countryNames, handLabels, getFlagUrl } from '../../lib/fallback-data';
 import { addInterlinks } from '../../lib/interlinks';
+import {
+  getLatestNewsForPlayer,
+  getArticlesAboutPlayer,
+  getEvergreenPlayerLinks,
+  type RelatedLink,
+} from '../../lib/related-content';
 import { marked } from 'marked';
 
 // SSG: generate paths for all top players from Supabase + fallback
@@ -185,6 +191,28 @@ const h2hMap: Record<string, { slug: string; vs: string }[]> = {
   'nick-kyrgios': [{ slug: 'kyrgios-vs-djokovic', vs: 'vs Djokovic' }],
 };
 const playerH2h = h2hMap[slug as string] || [];
+
+// ── Smart internal linking (Codex audit Round 2 #8) ──
+// Build a "Player Universe" cluster of related content for this player.
+// Combines: latest news mentioning the player, articles featuring them,
+// curated evergreen links. Pure cache reads — no extra Supabase calls.
+const [latestNews, playerArticles] = await Promise.all([
+  getLatestNewsForPlayer(player.slug, 3),
+  getArticlesAboutPlayer(
+    { slug: player.slug, player_id: player.player_id, last_name: player.last_name },
+    6,
+  ),
+]);
+const evergreenLinks = getEvergreenPlayerLinks({ tour: player.tour });
+
+// Deduplicate by href so the same URL doesn't appear twice
+const seenHrefs = new Set<string>();
+const universeLinks: RelatedLink[] = [];
+for (const l of [...latestNews, ...playerArticles, ...evergreenLinks]) {
+  if (seenHrefs.has(l.href)) continue;
+  seenHrefs.add(l.href);
+  universeLinks.push(l);
+}
 
 // Load all article sections (profile, stats, grand-slams, career-timeline, net-worth, racket, partner, age)
 const articleSlugs = ['profile', 'stats', 'grand-slams', 'career-timeline', 'net-worth', 'racket', 'partner', 'age'];
@@ -723,6 +751,23 @@ const profileArticleHtml = articles['profile'].html;
           </div>
         )}
 
+        {/* Smart Player Universe — data-driven internal links (Codex #8) */}
+        {universeLinks.length > 0 && (
+          <div class="sidebar-widget universe-widget">
+            <h3>🌐 {player.first_name}'s Universe</h3>
+            <ul class="universe-links">
+              {universeLinks.slice(0, 8).map(link => (
+                <li class="universe-link">
+                  <a href={link.href}>
+                    {link.contextLabel && <span class="universe-context">{link.contextLabel}</span>}
+                    <span class="universe-title">{link.title}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div class="sidebar-widget">
           <h3>🔗 Quick Links</h3>
           <ul class="quick-links">
@@ -736,6 +781,22 @@ const profileArticleHtml = articles['profile'].html;
         </div>
       </aside>
     </div>
+
+    {/* In-flow "Inside [Player]'s World" section — wider visibility than sidebar */}
+    {universeLinks.length >= 3 && (
+      <section class="player-universe-inflow">
+        <h2 class="universe-h2">Inside {player.first_name} {player.last_name}'s World</h2>
+        <p class="universe-intro">Latest news, records, gear, and stories featuring {player.first_name}.</p>
+        <div class="universe-grid">
+          {universeLinks.slice(0, 9).map(link => (
+            <a href={link.href} class="universe-card">
+              {link.contextLabel && <span class="universe-card-label">{link.contextLabel}</span>}
+              <span class="universe-card-title">{link.title}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
   </article>
 </BaseLayout>
 
@@ -1364,6 +1425,98 @@ const profileArticleHtml = articles['profile'].html;
   }
   .quick-links a:hover { background: white; }
 
+  /* Player Universe sidebar widget — smart internal linking (Codex #8) */
+  .universe-widget { background: linear-gradient(135deg, #f0fdf4 0%, #fff 100%); }
+  .universe-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .universe-link a {
+    display: block;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: background 0.2s;
+  }
+  .universe-link a:hover { background: white; color: var(--court-green); }
+  .universe-context {
+    display: inline-block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .universe-title {
+    display: block;
+    font-size: 0.88rem;
+    line-height: 1.35;
+    font-weight: 500;
+  }
+
+  /* In-flow Player Universe section — full-width grid */
+  .player-universe-inflow {
+    margin: 56px 0 0;
+    padding: 32px 0 0;
+    border-top: 1px solid var(--gray-200);
+  }
+  .universe-h2 {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--gray-900);
+    margin: 0 0 8px;
+  }
+  .universe-intro {
+    color: var(--gray-600);
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+  }
+  .universe-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .universe-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+    min-height: 76px;
+  }
+  .universe-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  .universe-card-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .universe-card-title {
+    font-size: 0.92rem;
+    line-height: 1.4;
+    font-weight: 600;
+    color: var(--gray-900);
+  }
+
   /* Responsive */
   @media (max-width: 1024px) {
     .content-grid {
@@ -1374,6 +1527,9 @@ const profileArticleHtml = articles['profile'].html;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
+    }
+    .universe-grid {
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 
@@ -1402,6 +1558,12 @@ const profileArticleHtml = articles['profile'].html;
     }
     .toc-widget {
       grid-column: 1 / -1;
+    }
+    .universe-grid {
+      grid-template-columns: 1fr;
+    }
+    .player-universe-inflow {
+      margin-top: 40px;
     }
   }
 

@@ -7,6 +7,12 @@ import { getArticleBySlug, getArticleSlugs } from '../../lib/supabase';
 import { addInterlinks } from '../../lib/interlinks';
 import { getArticlePhotoUrl } from '../../lib/player-photos';
 import { buildHowToSchema } from '../../lib/howto-schema';
+import {
+  getLatestNewsForTournament,
+  getArticlesAboutTournament,
+  getEvergreenTournamentLinks,
+  type RelatedLink,
+} from '../../lib/related-content';
 import { tournamentVideos } from '../../data/youtube-channels';
 import { marked } from 'marked';
 
@@ -93,6 +99,21 @@ const howToJsonLd = buildHowToSchema(
   bodyHtml,
   'tournaments',
 );
+
+// ── Smart internal linking (Codex audit Round 2 #8) ──
+// Build "Tournament Universe" cluster of related content.
+const [tournamentNews, tournamentArticles] = await Promise.all([
+  getLatestNewsForTournament(slug as string, 3),
+  getArticlesAboutTournament(slug as string, 6),
+]);
+const evergreenTournamentLinks = getEvergreenTournamentLinks();
+const seenTUrls = new Set<string>();
+const tournamentUniverseLinks: RelatedLink[] = [];
+for (const l of [...tournamentNews, ...tournamentArticles, ...evergreenTournamentLinks]) {
+  if (seenTUrls.has(l.href)) continue;
+  seenTUrls.add(l.href);
+  tournamentUniverseLinks.push(l);
+}
 ---
 
 <ArticleLayout
@@ -113,6 +134,22 @@ const howToJsonLd = buildHowToSchema(
   {howToJsonLd && <script type="application/ld+json" set:html={JSON.stringify(howToJsonLd)} />}
 
   <div set:html={bodyHtml} />
+
+  {/* Smart Tournament Universe — past champions, news, prize money links (Codex #8) */}
+  {tournamentUniverseLinks.length >= 3 && (
+    <section class="tournament-universe">
+      <h2 class="tu-h2">Inside this Tournament</h2>
+      <p class="tu-intro">Latest news, related guides, and the data behind {article.title}.</p>
+      <div class="tu-grid">
+        {tournamentUniverseLinks.slice(0, 9).map(link => (
+          <a href={link.href} class="tu-card">
+            {link.contextLabel && <span class="tu-card-label">{link.contextLabel}</span>}
+            <span class="tu-card-title">{link.title}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
 
   {videos.length > 0 && (
     <section class="tournament-videos">
@@ -166,7 +203,69 @@ const howToJsonLd = buildHowToSchema(
     color: var(--gray-500);
     margin: 8px 0 0;
   }
+
+  /* Tournament Universe — smart internal linking (Codex audit #8) */
+  .tournament-universe {
+    margin-top: 56px;
+    padding-top: 32px;
+    border-top: 1px solid var(--gray-200);
+  }
+  .tu-h2 {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--gray-900);
+    margin: 0 0 8px;
+  }
+  .tu-intro {
+    color: var(--gray-600);
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+  }
+  .tu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .tu-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+    min-height: 76px;
+  }
+  .tu-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  .tu-card-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .tu-card-title {
+    font-size: 0.92rem;
+    line-height: 1.4;
+    font-weight: 600;
+    color: var(--gray-900);
+  }
+
+  @media (max-width: 1024px) {
+    .tu-grid { grid-template-columns: repeat(2, 1fr); }
+  }
   @media (max-width: 768px) {
     .tournament-videos__grid { grid-template-columns: 1fr; }
+    .tu-grid { grid-template-columns: 1fr; }
   }
 </style>
