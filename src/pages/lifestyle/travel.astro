@@ -1,0 +1,37 @@
+---
+import LifestyleSubhub from '../../components/LifestyleSubhub.astro';
+
+const faqs = [
+  {
+    q: 'Which Grand Slam should I attend as a first-time tennis tourist?',
+    a: 'For first-time tennis tourists, the Australian Open (January, Melbourne) offers the most accessible experience: easier ticket availability than other Slams, relatively affordable, summer weather, and a relaxed atmosphere. Roland Garros (May-June, Paris) combines tennis with Paris itself. Wimbledon (June-July) is the most prestigious but hardest to get tickets — the famous Queue is iconic but requires camping overnight. US Open (August-September, NYC) is loud, late, and uniquely American.',
+  },
+  {
+    q: 'How much does it cost to attend Wimbledon?',
+    a: 'Wimbledon tickets via the public ballot are remarkably affordable (Centre Court £75-255 depending on day), but odds are roughly 1-in-20. Resale tickets via Debenture Holders go for £500-5,000+. Hospitality packages start at £900/day. Total Wimbledon trip from US: ~$4,000-8,000 including flights, hotel (London hotels jump 200%+ during the fortnight), and tickets.',
+  },
+  {
+    q: 'What is the best tennis destination to play recreationally?',
+    a: 'Top tennis-friendly travel destinations include Mallorca (Rafa Nadal Academy with hotel + clinics), Croatia\'s Adriatic coast (clay-court resort culture), Monte Carlo (epicenter of pro-tour training), Bradenton Florida (IMG Academy), and Indian Wells California (Grand Slam-quality facilities, year-round playable). Most offer 3-5 day adult tennis camps for $1,500-4,000.',
+  },
+  {
+    q: 'Can I visit tennis players\' practice sessions at Grand Slams?',
+    a: 'Yes — all Grand Slams have public practice courts where pros warm up before matches. At Roland Garros, public access to practice courts ends as the tournament reaches the semifinals. At Wimbledon, Aorangi Park practice courts are accessible with grounds passes. Practice sessions are the best chance for photos, autographs, and watching elite tennis up close — they typically happen 9am-2pm on match days.',
+  },
+];
+
+const intro = 'Tennis travel guides for Grand Slam tournaments, recreational tennis vacations, ATP/WTA tour stops worth visiting, and tennis-themed travel experiences. From Wimbledon\'s Queue to Rafa Nadal\'s Mallorca academy, every story about going where the tennis is.';
+
+const quickAnswer = 'Tennis travel in 2026 ranges from Grand Slam pilgrimages (Australian Open is most accessible for first-timers; Wimbledon costs $4,000-8,000 per trip; Roland Garros and US Open offer iconic city-plus-tennis combinations) to recreational tennis destinations (Mallorca\'s Rafa Nadal Academy, Indian Wells, Monte Carlo, Croatia, Bradenton FL). Most pro-academy tennis camps run $1,500-4,000 for 3-5 days.';
+---
+
+<LifestyleSubhub
+  subcategory="travel"
+  title="Tennis Travel — Grand Slam Tickets, Tennis Camps & Destinations | SUPER.TENNIS"
+  h1="Tennis Travel"
+  metaDescription="Tennis travel: Grand Slam ticket guides, best destinations for tennis vacations, pro tennis academies open to amateurs, and what it really costs to attend Wimbledon, Roland Garros, US Open and Australian Open."
+  intro={intro}
+  quickAnswer={quickAnswer}
+  faqs={faqs}
+  accentEmoji="✈️"
+/>

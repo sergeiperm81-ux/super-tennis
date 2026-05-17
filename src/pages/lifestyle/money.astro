@@ -1,0 +1,41 @@
+---
+import LifestyleSubhub from '../../components/LifestyleSubhub.astro';
+
+const faqs = [
+  {
+    q: 'Who are the highest-paid tennis players in 2026?',
+    a: 'Novak Djokovic leads career prize money with over $185 million. Carlos Alcaraz and Jannik Sinner have already crossed $40 million in career earnings before age 25. On the women\'s tour, Serena Williams remains the all-time career money leader at $94 million; among active players, Iga Swiatek and Aryna Sabalenka lead at around $35 million each.',
+  },
+  {
+    q: 'How much do tennis players earn from sponsorships?',
+    a: 'Top players earn $20-50M+ annually from endorsements, often more than prize money. Federer earned ~$90M/year at peak from Uniqlo, Rolex, Mercedes, Wilson. Sinner has Nike, Head and Rolex deals worth a combined ~$30M/year. Mid-tier ATP/WTA players (top 50) typically earn $200K-$2M from sponsors.',
+  },
+  {
+    q: 'How much does the Roland Garros 2026 champion win?',
+    a: 'The 2026 Roland Garros singles champion receives approximately €2.4 million. Total prize pool is around €58 million, distributed across singles, doubles, mixed doubles, wheelchair, and qualifying. Equal prize money for men and women has been standard at all four Grand Slams since 2007.',
+  },
+  {
+    q: 'What is tennis player net worth made up of?',
+    a: 'A typical top-50 tennis player\'s net worth combines: 30-40% career prize money, 40-55% endorsements + brand deals, 10-15% appearance fees and exhibition matches, 5-10% business ventures (clothing lines, restaurants, equity stakes). For top-10 players, endorsements usually outweigh prize money 2-3 to 1.',
+  },
+  {
+    q: 'Which tennis players have invested in tech companies?',
+    a: 'Several pros have made notable tech investments: Serena Williams (Serena Ventures fund, MasterClass, Bumble), Naomi Osaka (BodyArmor, KodakOne), Maria Sharapova (Supergoop!, UFC), Novak Djokovic (QuantumBioTech, plant-based food brands). Most top players now hold equity in 5-15 startups.',
+  },
+];
+
+const intro = 'Career prize money, endorsement deals, net worth rankings, and the business side of professional tennis. Every story about who earns what, why, and how the modern tennis economy works — covering everyone from world No. 1 Sinner to retired legends like Federer and Serena Williams.';
+
+const quickAnswer = 'Tennis is a multi-million-dollar sport at the top: career prize money leaders include Djokovic ($185M+), Federer ($130M+), and Serena Williams ($94M+). Active 2026 top earners include Alcaraz, Sinner, Sabalenka, Swiatek, and Gauff. For top-10 players, endorsements typically generate 2-3× more income than prize money. Roland Garros 2026 pays a €2.4 million champion\'s cheque; total Slam prize money pool is approximately €58 million.';
+---
+
+<LifestyleSubhub
+  subcategory="money"
+  title="Tennis Money — Prize Money, Net Worth & Endorsements | SUPER.TENNIS"
+  h1="Tennis Money"
+  metaDescription="Tennis player prize money, net worth rankings, endorsement deals, Grand Slam payouts, and the business of professional tennis."
+  intro={intro}
+  quickAnswer={quickAnswer}
+  faqs={faqs}
+  accentEmoji="💰"
+/>

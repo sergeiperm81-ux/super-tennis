@@ -1,0 +1,37 @@
+---
+import LifestyleSubhub from '../../components/LifestyleSubhub.astro';
+
+const faqs = [
+  {
+    q: 'What is the typical fitness routine of a top tennis player?',
+    a: 'Top tennis pros train 4-6 hours daily: 2-3 hours on-court drills, 1-2 hours strength and conditioning (focus on rotational power, glutes, shoulder stability), 30-45 minutes mobility/recovery. Off-season weeks include heavy gym blocks (squats, deadlifts, plyometrics), while in-season focuses on maintenance and match-specific endurance.',
+  },
+  {
+    q: 'How do tennis players prevent injuries?',
+    a: 'Modern injury prevention combines pre-hab routines (shoulder/rotator-cuff isolation, hip-mobility drills), regular physiotherapy, strict warm-ups (dynamic, never static stretching cold), proper footwear, and load management (resting non-essential weeks). Sinner credits his durability to Italian-style strength foundation; Alcaraz works extensively on lower-body explosiveness to absorb hard-court impact.',
+  },
+  {
+    q: 'What do tennis players eat during a match?',
+    a: 'During matches, players consume bananas (potassium for cramps), energy gels, sports drinks with electrolytes, and small carb-loaded snacks (oats, energy bars). Djokovic famously follows a gluten-free, plant-heavy diet; Nadal favors traditional Spanish meals with fish, rice, and olive oil. Average match-day intake: 3,000-5,000 calories on long-match days.',
+  },
+  {
+    q: 'How important is mental health in pro tennis?',
+    a: 'Mental health has become a mainstream topic in tennis since Naomi Osaka\'s 2021 Roland Garros withdrawal and Iga Swiatek\'s public conversations about her sports psychologist Daria Abramowicz. The ATP and WTA both now provide on-site mental performance specialists at all events. Players increasingly publicly discuss anxiety, burnout, and the pressure of constant travel.',
+  },
+];
+
+const intro = 'Tennis fitness, training, injury prevention, nutrition, and mental health. Every story about how pro players build, maintain, and protect the bodies and minds that win Grand Slams — and how everyday players can apply those lessons.';
+
+const quickAnswer = 'Tennis health and fitness covers the training routines (4-6 hours daily for pros), injury-prevention drills, match-day nutrition (3,000-5,000 calories on long days), and increasingly the mental-health conversation that Naomi Osaka and Iga Swiatek brought into the mainstream. Modern pros work with sports psychologists, physiotherapists, and S&C coaches as standard team members.';
+---
+
+<LifestyleSubhub
+  subcategory="health"
+  title="Tennis Health & Fitness — Training, Nutrition & Injury Prevention | SUPER.TENNIS"
+  h1="Tennis Health & Fitness"
+  metaDescription="Tennis player fitness routines, injury prevention, match-day nutrition, mental health, and the science of building a Grand Slam body and mind."
+  intro={intro}
+  quickAnswer={quickAnswer}
+  faqs={faqs}
+  accentEmoji="💪"
+/>

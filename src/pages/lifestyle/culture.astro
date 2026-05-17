@@ -1,0 +1,37 @@
+---
+import LifestyleSubhub from '../../components/LifestyleSubhub.astro';
+
+const faqs = [
+  {
+    q: 'Why is tennis suddenly so popular with non-players?',
+    a: 'Tennis culture has gained massive non-player following since 2023 due to social media virality (Sinner-Alcaraz rivalry, Sabalenka personality content), celebrity crossovers (Met Gala appearances, fashion-brand partnerships), the Drive to Survive-style ATP/WTA documentaries, and the "tennis core" aesthetic on TikTok. Tournament attendance has grown 15-20% in 2024-2026 with younger non-playing audiences.',
+  },
+  {
+    q: 'What is the Tennis Channel documentary about Sinner?',
+    a: 'The 2025 Tennis Channel documentary "Becoming Jannik" follows Sinner from his Italian Alps junior days through his 2024 Grand Slam breakthrough. It includes rare access to his training with Vagnozzi and Cahill, his quiet family life in San Candido, and behind-the-scenes during the Australian Open final.',
+  },
+  {
+    q: 'Which tennis player has the most Instagram followers?',
+    a: 'Serena Williams leads tennis with over 17 million Instagram followers. Among active players: Naomi Osaka (~2.8M), Maria Sharapova retains 4M+ despite retirement, Coco Gauff (~1.5M), Sabalenka (~1.5M), and Alcaraz (~3M, fastest-growing).',
+  },
+  {
+    q: 'What is the tennis fan culture like at Roland Garros vs Wimbledon?',
+    a: 'Roland Garros has the loudest, most boisterous fan culture — Parisian crowds chant, sing, and react vocally to points. Wimbledon is famously reserved with strict etiquette: no chanting, polite applause, queue-camping tradition. US Open is the most American — loud, late-night sessions, NYC celebrity-spotting. Australian Open is the most party-like, with picnic culture and beach-week atmosphere.',
+  },
+];
+
+const intro = 'Tennis culture, fan communities, viral moments, social media stories, celebrity crossovers, and the people who make tennis bigger than the sport itself. From Met Gala appearances to TikTok virality, the social side of tennis in 2026.';
+
+const quickAnswer = 'Tennis culture in 2026 spans player social media (Alcaraz growing fastest at 3M+ Instagram followers, Serena leading at 17M+), tournament fan rituals (Roland Garros loud, Wimbledon reserved, US Open celebrity-heavy), and crossover media moments (Met Gala appearances, ATP/WTA documentaries, "tennis core" TikTok aesthetic). The sport now attracts younger non-playing audiences than at any point since the 1990s.';
+---
+
+<LifestyleSubhub
+  subcategory="culture"
+  title="Tennis Culture — Fan Stories, Viral Moments & Celebrity Crossovers | SUPER.TENNIS"
+  h1="Tennis Culture"
+  metaDescription="Tennis culture: fan communities, viral moments, social media stories, celebrity crossovers, and tournament fan rituals at Roland Garros, Wimbledon, US Open, and Australian Open."
+  intro={intro}
+  quickAnswer={quickAnswer}
+  faqs={faqs}
+  accentEmoji="🎭"
+/>

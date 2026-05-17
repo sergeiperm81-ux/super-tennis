@@ -1,0 +1,37 @@
+---
+import LifestyleSubhub from '../../components/LifestyleSubhub.astro';
+
+const faqs = [
+  {
+    q: 'How does a junior tennis player turn professional?',
+    a: 'The traditional pathway: ITF Junior Circuit (ages 14-18, target top-50 junior ranking), then ITF World Tennis Tour (Futures, $15K-25K prize money events), then ATP/WTA Challengers, then main tour. Most successful pros break into the top 100 between ages 19-22. Cost to develop a junior to age 18: $200,000-500,000 in private coaching, travel, equipment, and academy fees.',
+  },
+  {
+    q: 'Which are the top tennis academies in the world?',
+    a: 'Leading 2026 tennis academies: Rafa Nadal Academy (Mallorca, Spain — full boarding, 14M+ EUR campus), IMG Academy (Bradenton, Florida — produced Sharapova, Agassi), Mouratoglou Academy (Nice, France — Serena\'s training base), Sanchez-Casal (Naples, Florida and Barcelona — Murray\'s junior years), and JTCC (College Park, Maryland — top US college funnel). Annual tuition typically $50,000-90,000.',
+  },
+  {
+    q: 'How much does a tennis coach earn in 2026?',
+    a: 'Tennis coaching salaries vary widely: club coaches earn $25,000-60,000/year; top USTA/LTA national-team coaches $80,000-150,000; private touring coaches for top-50 pros earn $150,000-500,000/year plus bonuses; coaches of top-10 players (e.g., Vagnozzi/Cahill with Sinner, Ferrero with Alcaraz) earn $500,000-2M annually including prize-money percentages.',
+  },
+  {
+    q: 'What do tennis players do after retiring?',
+    a: 'Most pros pursue coaching (Andre Agassi, Carlos Moya, Andy Murray\'s post-career), broadcast/commentary (John McEnroe, Mary Carillo, Pam Shriver), tournament directing (Tommy Haas at Indian Wells), business ventures (Federer with On Holding equity stake), academies (Nadal, Mouratoglou), or content creation. A growing number transition into sports investment (Andre Agassi\'s Square Panda, Maria Sharapova\'s Supergoop! stake).',
+  },
+];
+
+const intro = 'How to go pro in tennis, the world\'s best academies, coaching careers, college tennis, and what tennis players do after retiring from the tour. Every story about building, sustaining, and transitioning a tennis career.';
+
+const quickAnswer = 'A pro tennis career typically starts on the ITF Junior Circuit (ages 14-18), moves through Futures and Challengers events, and breaks into the top 100 between ages 19-22 for successful pros. Junior development costs $200,000-500,000. Top academies (Nadal in Mallorca, IMG in Florida, Mouratoglou in France) charge $50,000-90,000 per year. Post-career paths include coaching, commentary, tournament directing, academies, and sports investment.';
+---
+
+<LifestyleSubhub
+  subcategory="career"
+  title="Tennis Career — Going Pro, Academies, Coaching & Post-Career | SUPER.TENNIS"
+  h1="Tennis Career"
+  metaDescription="How to go pro in tennis: junior development pathway, top tennis academies (Nadal, IMG, Mouratoglou), coaching salaries, and what tennis players do after retiring."
+  intro={intro}
+  quickAnswer={quickAnswer}
+  faqs={faqs}
+  accentEmoji="📊"
+/>

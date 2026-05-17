@@ -12626,14 +12626,6 @@
     </image:image>
   </url>
   <url>
-    <loc>https://super.tennis/news/2026-05-17-sinner-extends-masters-1000-wins-record-to-33-with-medvedev-victory/</loc>
-    <image:image>
-      <image:loc>https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/ffbb/live/488d5580-5133-11f1-9de5-7db2d58e8db5.jpg</image:loc>
-      <image:title>Sinner Extends Masters 1000 Wins Record to 33 with Medvedev Victory</image:title>
-      <image:caption>Jannik Sinner&apos;s win over Daniil Medvedev in the Italian Open semifinals extends his record of ATP Masters 1000 victories to 33.</image:caption>
-    </image:image>
-  </url>
-  <url>
     <loc>https://super.tennis/news/2026-04-17-emotional-jasmine-paolini-breaks-down-before-shocking-exit/</loc>
     <image:image>
       <image:loc>https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Jasmine_Paolini_%282023_US_Open%29_01_%28cropped%29.jpg/500px-Jasmine_Paolini_%282023_US_Open%29_01_%28cropped%29.jpg</image:loc>
@@ -13231,6 +13223,14 @@
       <image:loc>https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/2015_Australian_Open_-_Andy_Murray_12_%28cropped%29.jpg/500px-2015_Australian_Open_-_Andy_Murray_12_%28cropped%29.jpg</image:loc>
       <image:title>Andy Murray&apos;s Brother Jamie Calls Time on 36-Year Tennis Journey!</image:title>
       <image:caption>Jamie Murray, the British doubles legend, announces his retirement after 36 years in tennis, leaving a legacy of unforgettable moments. What’s next for the Murray brothers?</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://super.tennis/news/2026-05-17-sinner-extends-masters-1000-wins-record-to-33-with-medvedev-victory/</loc>
+    <image:image>
+      <image:loc>https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/ffbb/live/488d5580-5133-11f1-9de5-7db2d58e8db5.jpg</image:loc>
+      <image:title>Sinner Extends Masters 1000 Wins Record to 33 with Medvedev Victory</image:title>
+      <image:caption>Jannik Sinner&apos;s win over Daniil Medvedev in the Italian Open semifinals extends his record of ATP Masters 1000 victories to 33.</image:caption>
     </image:image>
   </url>
   <url>

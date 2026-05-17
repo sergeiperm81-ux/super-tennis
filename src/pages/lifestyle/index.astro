@@ -112,16 +112,16 @@ const lifestyleFaqs = [
         />
       </div>
 
-      {/* Category filters */}
+      {/* Category filters — link to indexable subhub URLs (Codex audit 2026-05-17) */}
       <div class="cat-filters" id="cat-filters">
-        <a href="?cat=all" class={`cat-btn ${filterSubcat === 'all' ? 'active' : ''}`} data-subcat="all">All</a>
-        <a href="?cat=culture" class={`cat-btn ${filterSubcat === 'culture' ? 'active' : ''}`} data-subcat="culture" style="--cat-color: #2563eb">Culture</a>
-        <a href="?cat=health" class={`cat-btn ${filterSubcat === 'health' ? 'active' : ''}`} data-subcat="health" style="--cat-color: #059669">Health</a>
-        <a href="?cat=style" class={`cat-btn ${filterSubcat === 'style' ? 'active' : ''}`} data-subcat="style" style="--cat-color: #9333ea">Style</a>
-        <a href="?cat=media" class={`cat-btn ${filterSubcat === 'media' ? 'active' : ''}`} data-subcat="media" style="--cat-color: #f97316">Media</a>
-        <a href="?cat=career" class={`cat-btn ${filterSubcat === 'career' ? 'active' : ''}`} data-subcat="career" style="--cat-color: #dc2626">Career</a>
-        <a href="?cat=money" class={`cat-btn ${filterSubcat === 'money' ? 'active' : ''}`} data-subcat="money" style="--cat-color: #d4a017">Money</a>
-        <a href="?cat=travel" class={`cat-btn ${filterSubcat === 'travel' ? 'active' : ''}`} data-subcat="travel" style="--cat-color: #0891b2">Travel</a>
+        <a href="/lifestyle/" class={`cat-btn ${filterSubcat === 'all' ? 'active' : ''}`} data-subcat="all">All</a>
+        <a href="/lifestyle/culture/" class={`cat-btn ${filterSubcat === 'culture' ? 'active' : ''}`} data-subcat="culture" style="--cat-color: #2563eb">Culture</a>
+        <a href="/lifestyle/health/" class={`cat-btn ${filterSubcat === 'health' ? 'active' : ''}`} data-subcat="health" style="--cat-color: #059669">Health</a>
+        <a href="/lifestyle/style/" class={`cat-btn ${filterSubcat === 'style' ? 'active' : ''}`} data-subcat="style" style="--cat-color: #9333ea">Style</a>
+        <a href="/lifestyle/media/" class={`cat-btn ${filterSubcat === 'media' ? 'active' : ''}`} data-subcat="media" style="--cat-color: #f97316">Media</a>
+        <a href="/lifestyle/career/" class={`cat-btn ${filterSubcat === 'career' ? 'active' : ''}`} data-subcat="career" style="--cat-color: #dc2626">Career</a>
+        <a href="/lifestyle/money/" class={`cat-btn ${filterSubcat === 'money' ? 'active' : ''}`} data-subcat="money" style="--cat-color: #d4a017">Money</a>
+        <a href="/lifestyle/travel/" class={`cat-btn ${filterSubcat === 'travel' ? 'active' : ''}`} data-subcat="travel" style="--cat-color: #0891b2">Travel</a>
       </div>
 
       {filteredArticles.length === 0 ? (

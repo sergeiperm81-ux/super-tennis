@@ -1,0 +1,324 @@
+---
+/**
+ * LifestyleSubhub — shared template for /lifestyle/{money,style,culture,health,
+ * media,travel,career}/ landing pages.
+ *
+ * Each subhub is its own SEO landing page (Codex audit 2026-05-17):
+ *   - distinct title + meta description targeting that intent cluster
+ *   - intro paragraph with semantic keywords
+ *   - FAQ block (FAQPage schema for People Also Ask)
+ *   - filtered article grid for that subcategory
+ *   - Quick Answer block at top for AI citation
+ *
+ * Previously these intents lived as ?cat= filters on /lifestyle/ — invisible
+ * to Google. Now they are real indexable URLs.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FaqBlock from './FaqBlock.astro';
+import { getArticles } from '../lib/supabase';
+import { stripMarkdown } from '../lib/fallback-data';
+import { getArticlePhotosForCategory } from '../lib/player-photos';
+
+interface FaqItem { q: string; a: string }
+interface Props {
+  subcategory: string;        // 'money' | 'style' | 'culture' | 'health' | 'media' | 'travel' | 'career'
+  title: string;              // <title> meta
+  h1: string;                 // visible H1
+  metaDescription: string;
+  intro: string;              // 2-3 sentence intro paragraph below H1
+  quickAnswer: string;        // 1-paragraph AI-citable summary
+  faqs: FaqItem[];
+  accentEmoji: string;
+}
+
+const { subcategory, title, h1, metaDescription, intro, quickAnswer, faqs, accentEmoji } = Astro.props;
+
+// Fetch ALL lifestyle articles, filter by subcategory in JS
+let articles: any[] = [];
+try {
+  const all = await getArticles({ category: 'lifestyle', limit: 200 });
+  articles = (all || []).filter((a: any) => a.subcategory === subcategory);
+} catch (e) { /* fallback to empty */ }
+
+const photos = getArticlePhotosForCategory('lifestyle');
+
+// Schema.org CollectionPage for AI/search
+const collectionJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: title,
+  description: metaDescription,
+  url: `https://super.tennis/lifestyle/${subcategory}/`,
+  isPartOf: {
+    '@type': 'WebSite',
+    '@id': 'https://super.tennis/#website',
+    name: 'SUPER.TENNIS',
+  },
+  about: {
+    '@type': 'Thing',
+    name: h1,
+    description: intro,
+  },
+  mainEntity: articles.slice(0, 12).map((a, i) => ({
+    '@type': 'Article',
+    headline: a.title,
+    url: `https://super.tennis/lifestyle/${a.slug}/`,
+    position: i + 1,
+  })),
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Lifestyle', item: 'https://super.tennis/lifestyle/' },
+    { '@type': 'ListItem', position: 3, name: h1 },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="website">
+  <script type="application/ld+json" set:html={JSON.stringify(collectionJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <div class="subhub-page">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/lifestyle/">Lifestyle</a> <span class="sep">/</span>
+      <span class="current">{h1}</span>
+    </nav>
+
+    <header class="subhub-hero">
+      <div class="hero-emoji">{accentEmoji}</div>
+      <h1>{h1}</h1>
+      <p class="hero-intro">{intro}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    {articles.length === 0 ? (
+      <div class="empty">
+        <p>No articles yet in this category — content coming soon.</p>
+        <a href="/lifestyle/" class="back-link">← Browse all Lifestyle articles</a>
+      </div>
+    ) : (
+      <section class="article-grid">
+        <h2 class="section-title">{articles.length} Articles in {h1}</h2>
+        <div class="grid">
+          {articles.map(a => {
+            const img = a.image_url || photos[a.slug] || '/og/lifestyle.png';
+            return (
+              <a href={`/lifestyle/${a.slug}/`} class="article-card">
+                <div class="card-img">
+                  <img src={img} alt={a.title} loading="lazy" decoding="async" width="400" height="225" onerror="this.parentElement.style.background='var(--gray-100)'" />
+                </div>
+                <div class="card-body">
+                  <h3>{a.title}</h3>
+                  <p>{stripMarkdown(a.excerpt || '').slice(0, 140)}{(a.excerpt || '').length > 140 ? '...' : ''}</p>
+                  <span class="card-cta">Read more →</span>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    )}
+
+    <FaqBlock faqs={faqs} title="Frequently Asked Questions" />
+
+    <section class="related-cats">
+      <h2>Explore other Lifestyle topics</h2>
+      <div class="cat-pills">
+        <a href="/lifestyle/money/" class="pill">💰 Money</a>
+        <a href="/lifestyle/style/" class="pill">👗 Style & Fashion</a>
+        <a href="/lifestyle/culture/" class="pill">🎭 Culture</a>
+        <a href="/lifestyle/health/" class="pill">💪 Health & Fitness</a>
+        <a href="/lifestyle/media/" class="pill">📺 Media</a>
+        <a href="/lifestyle/travel/" class="pill">✈️ Travel</a>
+        <a href="/lifestyle/career/" class="pill">📊 Career</a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .subhub-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+  .breadcrumbs {
+    padding: 20px 0;
+    font-size: 0.82rem;
+    color: var(--gray-500);
+  }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .subhub-hero {
+    text-align: center;
+    padding: 32px 0 24px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 32px;
+  }
+  .hero-emoji { font-size: 3rem; margin-bottom: 12px; }
+  .subhub-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.4rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 12px;
+    color: var(--gray-900);
+  }
+  .hero-intro {
+    max-width: 720px;
+    margin: 0 auto;
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: var(--gray-600);
+  }
+
+  .quick-answer {
+    margin: 0 0 32px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--gray-800);
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 0 0 20px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 48px;
+  }
+  .article-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+  }
+  .article-card:hover {
+    border-color: var(--court-green);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  }
+  .card-img { aspect-ratio: 16/9; overflow: hidden; background: var(--gray-100); }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+  .article-card:hover .card-img img { transform: scale(1.04); }
+  .card-body { padding: 14px 16px 18px; display: flex; flex-direction: column; flex: 1; }
+  .card-body h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+    line-height: 1.35;
+    color: var(--gray-900);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card-body p {
+    font-size: 0.86rem;
+    color: var(--gray-500);
+    line-height: 1.5;
+    margin: 0 0 10px;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card-cta {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--court-green);
+  }
+
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    margin-bottom: 32px;
+  }
+  .empty p { color: var(--gray-600); margin: 0 0 16px; }
+  .back-link { color: var(--court-green); font-weight: 600; }
+
+  .related-cats {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--gray-200);
+  }
+  .related-cats h2 {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0 0 16px;
+    color: var(--gray-800);
+  }
+  .cat-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .pill {
+    display: inline-block;
+    padding: 8px 16px;
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 20px;
+    color: var(--gray-700);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: var(--transition);
+  }
+  .pill:hover {
+    border-color: var(--court-green);
+    color: var(--court-green);
+    background: white;
+  }
+
+  @media (max-width: 1024px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .grid { grid-template-columns: 1fr; }
+    .subhub-hero h1 { font-size: 1.8rem; }
+  }
+</style>
