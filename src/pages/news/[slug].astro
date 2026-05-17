@@ -85,6 +85,34 @@ const catLabels: Record<string, string> = {
 // Add interlinks to body
 const bodyHtml = article.body ? await addInterlinks(article.body, `/news/${slug}/`) : '';
 
+// Determine author from category — gives meaningful E-E-A-T signals to Google.
+// 2026-05-17: replaced static Organization with Person, with per-category split.
+//   Alex Morgan handles stats/records/H2H/players (BUZZ + analytical content)
+//   Sara Kellner handles fashion/love/lifestyle/scandal/viral
+function pickAuthor(cat: string) {
+  const fashionAndLifestyle = new Set(['fashion', 'love', 'viral', 'scandal']);
+  if (fashionAndLifestyle.has(cat)) {
+    return {
+      '@type': 'Person',
+      name: 'Sara Kellner',
+      jobTitle: 'Tennis Lifestyle Editor',
+      url: 'https://super.tennis/authors/sara-kellner/',
+      worksFor: { '@type': 'Organization', '@id': 'https://super.tennis/#organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+    };
+  }
+  return {
+    '@type': 'Person',
+    name: 'Alex Morgan',
+    jobTitle: 'Senior Tennis Editor',
+    url: 'https://super.tennis/authors/alex-morgan/',
+    worksFor: { '@type': 'Organization', '@id': 'https://super.tennis/#organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+  };
+}
+const author = pickAuthor(cat);
+const authorName = author.name;
+const authorUrl = author.url;
+const authorTitle = author.jobTitle;
+
 // NewsArticle JSON-LD
 const newsJsonLd = {
   '@context': 'https://schema.org',
@@ -92,9 +120,16 @@ const newsJsonLd = {
   headline: article.title,
   description: summary,
   datePublished: publishedDate,
-  author: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
-  publisher: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
-  ...(article.image_url && { image: article.image_url }),
+  dateModified: publishedDate,
+  author,
+  publisher: {
+    '@type': 'Organization',
+    '@id': 'https://super.tennis/#organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png', width: 1200, height: 630 },
+  },
+  ...(article.image_url && { image: { '@type': 'ImageObject', url: article.image_url } }),
   mainEntityOfPage: `https://super.tennis/news/${slug}/`,
 };
 ---
@@ -114,6 +149,16 @@ const newsJsonLd = {
   categoryHref="/news/"
 >
   <script type="application/ld+json" set:html={JSON.stringify(newsJsonLd)} />
+
+  {/* Author byline — E-E-A-T signal for Google */}
+  <div class="article-byline">
+    <span class="byline-label">By</span>
+    <a href={authorUrl} rel="author" class="byline-name">{authorName}</a>
+    <span class="byline-title">— {authorTitle}</span>
+    <time class="byline-date" datetime={publishedDate}>
+      {new Date(publishedDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+    </time>
+  </div>
 
   {/* Source attribution */}
   {article.source_url?.startsWith('https://') && (
@@ -171,6 +216,35 @@ const newsJsonLd = {
 </ArticleLayout>
 
 <style>
+  /* Author byline — E-E-A-T signal + visible attribution */
+  .article-byline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 24px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--gray-200);
+    font-size: 0.88rem;
+    color: var(--gray-600);
+  }
+  .byline-label { color: var(--gray-500); }
+  .byline-name {
+    font-weight: 600;
+    color: var(--court-green);
+    text-decoration: none;
+  }
+  .byline-name:hover { text-decoration: underline; }
+  .byline-title { color: var(--gray-500); }
+  .byline-date {
+    margin-left: auto;
+    color: var(--gray-500);
+    font-size: 0.82rem;
+  }
+  @media (max-width: 600px) {
+    .byline-date { margin-left: 0; width: 100%; }
+  }
+
   .news-source {
     background: var(--gray-50);
     border: 1px solid var(--gray-200);

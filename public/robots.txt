@@ -3,6 +3,7 @@ Allow: /
 Disallow: /stats/
 
 Sitemap: https://super.tennis/sitemap-index.xml
+Sitemap: https://super.tennis/sitemap-images.xml
 
 # Explicitly allow AI crawlers for citation/discovery
 User-agent: GPTBot
