@@ -1,0 +1,364 @@
+---
+/**
+ * /rules/how-many-sets-in-tennis/ — Best of 3 vs Best of 5.
+ * Companion of /rules/ hub. Codex Round 3 evergreen cluster #1.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+
+const title = 'How Many Sets in a Tennis Match? Best of 3 vs Best of 5 | SUPER.TENNIS';
+const h1 = 'How Many Sets in a Tennis Match?';
+const metaDescription = 'How many sets are played in a tennis match: best of 3 sets for women, ATP tour, qualifying, and Olympic finals; best of 5 only for men\'s Grand Slam singles. Doubles, Davis Cup, college tennis, and team events explained.';
+const publishedDate = '2026-05-17';
+
+const quickAnswer = "Most tennis matches are best of 3 sets — first to 2 sets wins. This includes every WTA match, every ATP tour event, all qualifying rounds, all doubles, all Olympic singles since Tokyo 2020, and the ATP Finals. The only matches that use best of 5 sets (first to 3 sets wins) are men's singles at the four Grand Slams (Australian Open, Roland Garros, Wimbledon, US Open). Davis Cup also used best of 5 historically but switched to best of 3 in 2019.";
+
+const faqs = [
+  {
+    q: 'Why do men play best of 5 sets at Grand Slams?',
+    a: 'Tradition. The five-set format dates to the 1880s when the Wimbledon Championships chose it as the test of tennis endurance. Today, only Grand Slam men\'s singles retains best of 5; the ATP Tour, ATP Finals, ATP Cup, and Davis Cup all use best of 3. There are periodic debates about reducing Grand Slam men\'s singles to best of 3 for player welfare reasons, but no rule change has been approved as of 2026.',
+  },
+  {
+    q: 'Do women ever play best of 5 sets?',
+    a: 'Not in modern professional tennis. Women\'s Grand Slam finals at the US Open were best of 5 sets from 1887 to 1901, but the format reverted to best of 3 and stayed there. WTA tour matches, Grand Slam women\'s singles, women\'s doubles, and mixed doubles are all best of 3.',
+  },
+  {
+    q: 'What is the format for tennis at the Olympics?',
+    a: 'All Olympic tennis matches are best of 3 sets, including the men\'s and women\'s gold-medal matches. The men\'s final was best of 5 from 1988 to Rio 2016, but Tokyo 2020 switched it to best of 3 — and Paris 2024 kept the shorter format. Doubles and mixed doubles have always been best of 3 at the Olympics.',
+  },
+  {
+    q: 'How long does a tennis match last?',
+    a: 'A typical ATP/WTA tour match (best of 3) lasts 90 minutes to 2.5 hours. Grand Slam men\'s singles matches (best of 5) average 3 hours, and 4-5 hours when both players are evenly matched. The longest match in history was Isner vs. Mahut at Wimbledon 2010 — 11 hours 5 minutes across 3 days.',
+  },
+  {
+    q: 'How long does a doubles match last?',
+    a: 'Pro doubles is faster than singles because of two rule shortcuts: no-ad scoring (no deuce — a single deciding point at 40-40) and a 10-point match tiebreak in place of a third set. A typical doubles match runs 60-90 minutes. Grand Slam doubles uses traditional ad-scoring but still uses the 10-point tiebreak in the deciding set.',
+  },
+  {
+    q: 'Why was Davis Cup changed from best of 5 to best of 3?',
+    a: 'The 2019 Davis Cup reform — designed by Gerard Piqué\'s Kosmos investment group — switched all matches from best-of-5 to best-of-3 sets and condensed the event into a one-week finals format in November. The change was controversial; many players and traditionalists criticized the loss of the home-and-away tie structure. The format has been adjusted further since 2022 (group stage in September, knockouts in November).',
+  },
+  {
+    q: 'What is the longest possible tennis match in terms of sets?',
+    a: 'In a best-of-5 match, the maximum is 5 sets — first to 3 wins. So you can win 6-0, 6-0, 6-0 (3 sets, fastest possible at Slams) or lose 0-2 in sets and come back to win 3-2 (longest set count). In any single set, the longest possible game count before tiebreak is 7-5 in standard tiebreak sets, or theoretically unlimited in deciding sets that previously played out (like pre-2022 Roland Garros).',
+  },
+];
+
+const formatRows = [
+  { event: 'Grand Slam — Men\'s Singles', format: 'Best of 5 sets', tiebreak: '10-pt tiebreak at 6-6 (deciding set since 2022)' },
+  { event: 'Grand Slam — Women\'s Singles', format: 'Best of 3 sets', tiebreak: '10-pt tiebreak at 6-6 (deciding set since 2022)' },
+  { event: 'Grand Slam — Doubles', format: 'Best of 3 sets (men: best of 5 at Wimbledon)', tiebreak: '10-pt match tiebreak in place of 3rd set at most events' },
+  { event: 'ATP Tour 250 / 500 / Masters 1000', format: 'Best of 3 sets', tiebreak: '7-pt tiebreak at 6-6 (every set)' },
+  { event: 'WTA Tour 250 / 500 / 1000', format: 'Best of 3 sets', tiebreak: '7-pt tiebreak at 6-6 (every set)' },
+  { event: 'ATP Finals / WTA Finals', format: 'Best of 3 sets', tiebreak: '7-pt tiebreak at 6-6' },
+  { event: 'Davis Cup (since 2019)', format: 'Best of 3 sets', tiebreak: '7-pt tiebreak at 6-6' },
+  { event: 'Billie Jean King Cup', format: 'Best of 3 sets', tiebreak: '7-pt tiebreak at 6-6' },
+  { event: 'Olympic Singles (since Tokyo 2020)', format: 'Best of 3 sets', tiebreak: '10-pt tiebreak at 6-6 in deciding set' },
+  { event: 'Qualifying rounds (all levels)', format: 'Best of 3 sets', tiebreak: '7-pt tiebreak at 6-6' },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/rules/how-many-sets-in-tennis/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: {
+    '@type': 'Person',
+    name: 'Alex Morgan',
+    url: 'https://super.tennis/authors/alex-morgan/',
+    worksFor: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Tennis Rules', item: 'https://super.tennis/rules/' },
+    { '@type': 'ListItem', position: 3, name: 'How Many Sets' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/rules/">Tennis Rules</a> <span class="sep">/</span>
+      <span class="current">How Many Sets</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">🏆</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/authors/alex-morgan/">Alex Morgan</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <div class="article-body">
+      <h2 id="best-of-3">Best of 3 Sets — The Default Format</h2>
+      <p>
+        Best of 3 means the first player to win 2 sets wins the match. It's the default format for almost every match in professional tennis: every WTA event, every ATP tour event below Grand Slam level, every qualifying round at every level, every doubles match (with one Wimbledon exception), and every Olympic match since Tokyo 2020.
+      </p>
+      <p>
+        A best-of-3 match typically takes <strong>90 minutes to 2.5 hours</strong>. The minimum is two quick sets (about 50 minutes); a tight three-setter with tiebreaks can run nearly 3 hours.
+      </p>
+
+      <h2 id="best-of-5">Best of 5 Sets — Grand Slam Men's Singles Only</h2>
+      <p>
+        Best of 5 means the first player to win 3 sets wins the match. In modern tennis, only one type of match uses this format: <strong>men's singles at the four Grand Slams</strong>. Australian Open, Roland Garros, Wimbledon, and US Open all play men's singles best of 5 from the first round through the final.
+      </p>
+      <p>
+        A best-of-5 match averages <strong>3 hours</strong>. Five-set thrillers with close sets routinely reach <strong>4-5 hours</strong>. The historic outliers — Isner-Mahut (2010 Wimbledon, 11h 5m), Anderson-Isner (2018 Wimbledon SF, 6h 36m), Djokovic-Nadal (2012 Australian Open final, 5h 53m) — directly motivated the deciding-set tiebreak unification in 2022 to prevent matches from running open-ended.
+      </p>
+
+      <h2 id="formats-table">Match Format by Event Type</h2>
+      <p>
+        Here's the full breakdown:
+      </p>
+      <div class="format-table-wrap">
+        <table class="format-table">
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Format</th>
+              <th>Deciding-Set Tiebreak Rule</th>
+            </tr>
+          </thead>
+          <tbody>
+            {formatRows.map(r => (
+              <tr>
+                <td>{r.event}</td>
+                <td><strong>{r.format}</strong></td>
+                <td class="tb-cell">{r.tiebreak}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="why-different">Why Do Men and Women Play Different Formats?</h2>
+      <p>
+        It's a tradition that predates the modern equal-prize-money era at Grand Slams. The original best-of-5 format dates to the 1880s and stayed in place for men's singles even as women's matches were standardized to best of 3 in the early 20th century. All four Grand Slams now pay equal prize money for men's and women's singles (since 2007, when Wimbledon and Roland Garros joined the Australian Open and US Open in equalizing), but the match-length difference remains.
+      </p>
+      <p>
+        The most common arguments to change men's Slam singles to best of 3:
+      </p>
+      <ul>
+        <li><strong>Player welfare</strong> — three Slams a year of five-set matches contribute to chronic injuries, especially at the deep stages.</li>
+        <li><strong>Broadcast scheduling</strong> — best-of-3 produces predictable match lengths, which networks prefer for primetime windows.</li>
+        <li><strong>Fan engagement</strong> — younger viewers reportedly prefer shorter, more intense matches.</li>
+      </ul>
+      <p>
+        The most common arguments against:
+      </p>
+      <ul>
+        <li><strong>Slam differentiation</strong> — the five-set format is part of what makes a Grand Slam title feel more prestigious than a Masters 1000.</li>
+        <li><strong>Historical fairness</strong> — comparing modern champions to historical greats becomes harder if the format changes.</li>
+        <li><strong>Drama</strong> — five-set matches produce the sport's most iconic moments.</li>
+      </ul>
+      <p>
+        As of 2026, no Grand Slam has formally proposed changing men's singles to best of 3.
+      </p>
+
+      <h2 id="doubles">Doubles Match Format</h2>
+      <p>
+        Doubles uses a shortened format almost everywhere to keep matches manageable on packed tournament schedules:
+      </p>
+      <ul>
+        <li><strong>Best of 3 sets</strong> with <strong>no-ad scoring</strong> at every ATP/WTA tour event (no deuce — a single deciding point at 40-40)</li>
+        <li><strong>10-point match tiebreak</strong> instead of a full deciding third set at most events (Grand Slams included since 2022)</li>
+        <li><strong>Wimbledon men's doubles is the exception</strong> — best of 5 sets, with a 10-point tiebreak in the deciding set</li>
+      </ul>
+
+      <h2 id="team-events">Team Events: Davis Cup & Billie Jean King Cup</h2>
+      <p>
+        The biggest team events both use best of 3 sets:
+      </p>
+      <ul>
+        <li><strong>Davis Cup</strong> — switched from best of 5 to best of 3 in 2019 as part of the Kosmos reform. Group stage + knockout finals in November.</li>
+        <li><strong>Billie Jean King Cup</strong> (formerly Fed Cup) — has always been best of 3 sets.</li>
+        <li><strong>United Cup</strong> (mixed-gender, started 2023) — best of 3 sets in singles and doubles.</li>
+      </ul>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/rules/" class="context-card">
+          <span class="context-label">Hub</span>
+          <span class="context-title">All Tennis Rules</span>
+        </a>
+        <a href="/rules/tennis-scoring-explained/" class="context-card">
+          <span class="context-label">Rules</span>
+          <span class="context-title">Tennis Scoring Explained</span>
+        </a>
+        <a href="/rules/tie-break-rules-explained/" class="context-card">
+          <span class="context-label">Rules</span>
+          <span class="context-title">Tiebreak Rules Explained</span>
+        </a>
+        <a href="/tournaments/" class="context-card">
+          <span class="context-label">Tournaments</span>
+          <span class="context-title">Grand Slam Guides</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Match Format — Frequently Asked Questions" />
+  </article>
+</BaseLayout>
+
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 36px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--gray-800);
+  }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p {
+    font-size: 1rem;
+    line-height: 1.75;
+    margin: 0 0 16px;
+  }
+  .article-body ul {
+    margin: 0 0 16px;
+    padding-left: 22px;
+    line-height: 1.75;
+  }
+  .article-body ul li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+
+  .format-table-wrap { overflow-x: auto; margin: 8px 0 20px; }
+  .format-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+  .format-table th, .format-table td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .format-table th {
+    background: var(--gray-50);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-700);
+    font-weight: 700;
+  }
+  .format-table td { line-height: 1.5; }
+  .tb-cell { color: var(--gray-600); font-size: 0.86rem; }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>

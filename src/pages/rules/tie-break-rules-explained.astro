@@ -1,0 +1,305 @@
+---
+/**
+ * /rules/tie-break-rules-explained/ — Tennis tiebreak rules.
+ * Companion of /rules/ hub. Codex Round 3 evergreen cluster #1.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+
+const title = 'Tennis Tiebreak Rules Explained — 2026 Grand Slam Format | SUPER.TENNIS';
+const h1 = 'Tennis Tiebreak Rules Explained (2026)';
+const metaDescription = 'Tennis tiebreak rules: how the 7-point and 10-point tiebreaks work, when each is played, how serves rotate, the unified Grand Slam deciding-set rule (10-point tiebreak at 6-6 at all four Slams since 2022), and the most famous tiebreaks in history.';
+const publishedDate = '2026-05-17';
+
+const quickAnswer = "A tiebreak is played when a set reaches 6-6. The standard tiebreak is first to 7 points with a 2-point margin — the player who served the last regular game serves the first point, then players alternate serves every 2 points. Since 2022, all four Grand Slams use a 10-point tiebreak (first to 10, with a 2-point margin) in the deciding set only, replacing the old advantage-set rules. ATP/WTA Tour matches use the standard 7-point tiebreak in every set including the deciding set.";
+
+const faqs = [
+  {
+    q: 'When is a tiebreak played in tennis?',
+    a: 'A tiebreak is played when a set reaches 6 games all (6-6). It prevents a set from going on indefinitely. Without a tiebreak, the only way to win the set would be by 2 games — so 7-5, 8-6, etc. The tiebreak ensures every set ends within a few extra points of reaching 6-6.',
+  },
+  {
+    q: 'How is the tiebreak score recorded?',
+    a: 'A tiebreak set is recorded as 7-6 (with the tiebreak score in parentheses or a superscript). For example: 7-6(4) means the set was 7-6 with the tiebreak score 7-4. International standard now shows: "7-6(7-4)" or sometimes just "7-6(4)" depending on the broadcaster.',
+  },
+  {
+    q: "Why is the deciding-set tiebreak at Grand Slams a 10-point tiebreak?",
+    a: 'The decision came from the four Grand Slams trying to harmonize their rules. Until 2022, each Slam had a different deciding-set format: US Open used a 7-point tiebreak at 6-6 since 1970; Australian Open switched to a 10-point match tiebreak at 6-6 in 2019; Wimbledon used a 7-point tiebreak only at 12-12 from 2019; Roland Garros still played out advantage sets. The 10-point tiebreak was chosen as a compromise — long enough to feel decisive, short enough to keep matches from running 12 hours like Isner-Mahut.',
+  },
+  {
+    q: 'How do serves rotate during a tiebreak?',
+    a: "The player who would have served the 13th game (i.e., the player whose turn it was) serves the first point of the tiebreak from the deuce (right) side. After that point, the OPPONENT serves the next 2 points (one from the ad side, then one from the deuce side). From there, players alternate serving in pairs of 2 points until the tiebreak ends.",
+  },
+  {
+    q: 'When do players change ends in a tiebreak?',
+    a: "Players change ends every 6 points. So they switch at 1-5, 6-0, 4-3, 6-3, etc. — whenever the total points played is a multiple of 6. In a 10-point tiebreak, they still change ends every 6 points.",
+  },
+  {
+    q: 'What was the longest tiebreak in tennis history?',
+    a: 'In a regular 7-point tiebreak (with a 2-point margin), the longest recorded was 26-24 between Goran Ivanišević and Daniel Nestor in 1993 — the tiebreak ended 50 points in. In the modern Grand Slam-style 10-point tiebreak format, no individual tiebreak has exceeded 20 points yet.',
+  },
+  {
+    q: 'Is there a tiebreak in doubles?',
+    a: 'Yes. All four Grand Slams use 10-point match tiebreaks instead of a deciding third set in doubles. ATP/WTA tour-level doubles uses no-ad scoring throughout plus a 10-point match tiebreak in place of a deciding third set. Wimbledon doubles still plays best-of-five for men\'s doubles (with a 10-point tiebreak in the final set), though this is the exception.',
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/rules/tie-break-rules-explained/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: {
+    '@type': 'Person',
+    name: 'Alex Morgan',
+    url: 'https://super.tennis/authors/alex-morgan/',
+    worksFor: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Tennis Rules', item: 'https://super.tennis/rules/' },
+    { '@type': 'ListItem', position: 3, name: 'Tiebreak Rules' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/rules/">Tennis Rules</a> <span class="sep">/</span>
+      <span class="current">Tiebreak Rules</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">⚡</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/authors/alex-morgan/">Alex Morgan</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <div class="article-body">
+      <h2 id="what-is-a-tiebreak">What Is a Tiebreak?</h2>
+      <p>
+        A tiebreak is a sudden-death points sequence that resolves a set tied at 6 games each. Before its invention by Jimmy Van Alen in 1965, sets could continue indefinitely. With the tiebreak, a set is always decided within a few extra minutes of reaching 6-6 — and the longer-format alternatives (advantage sets, no tiebreak in the deciding set) have now largely been retired.
+      </p>
+
+      <h2 id="standard-7-point">The Standard 7-Point Tiebreak</h2>
+      <p>
+        The standard tiebreak is <strong>first to 7 points with a 2-point margin</strong>. So winning scores look like 7-0, 7-1, 7-2, 7-3, 7-4, 7-5, and from 6-6 onwards the players continue until someone gets a 2-point lead: 8-6, 9-7, 10-8, etc.
+      </p>
+      <p>
+        Used in:
+      </p>
+      <ul>
+        <li>All sets at every ATP and WTA Tour event (except the deciding set at Grand Slams)</li>
+        <li>The first two sets at men's Grand Slam matches</li>
+        <li>All sets in women's Grand Slam matches (except the deciding set, since 2022)</li>
+      </ul>
+
+      <h2 id="ten-point-tiebreak">The 10-Point Tiebreak (Grand Slam Deciding Set)</h2>
+      <p>
+        Since 2022, all four Grand Slams use a <strong>10-point tiebreak in the deciding set</strong>. The rules are the same as the 7-point version — first to 10 with a 2-point margin — just with a higher target score. Once a player reaches 10 points with at least a 2-point lead, they win the tiebreak and the match.
+      </p>
+      <p>
+        Grand Slam deciding-set rules in 2026:
+      </p>
+      <ul>
+        <li><strong>Australian Open</strong> — 10-point tiebreak at 6-6 in the final set</li>
+        <li><strong>Roland Garros</strong> — 10-point tiebreak at 6-6 in the final set</li>
+        <li><strong>Wimbledon</strong> — 10-point tiebreak at 6-6 in the final set</li>
+        <li><strong>US Open</strong> — 10-point tiebreak at 6-6 in the final set</li>
+      </ul>
+      <p>
+        This unified rule replaced previous formats: the US Open had always used a tiebreak in the deciding set since 1970 (7-point); the Australian Open and Roland Garros previously played out advantage sets; Wimbledon used to play out the final set with no tiebreak until 2019, then a 7-point tiebreak at 12-12.
+      </p>
+
+      <h2 id="how-tiebreak-works">How a Tiebreak Plays Out</h2>
+      <p>
+        Here's the step-by-step:
+      </p>
+      <ol>
+        <li>The set is 6-6. The player who was about to serve the next game serves <strong>point 1 of the tiebreak from the deuce (right) side</strong>.</li>
+        <li>The opponent serves the next 2 points — first from the ad (left) side, then from the deuce side.</li>
+        <li>From point 4 onwards, players continue alternating serves in pairs of 2 points (each player serves twice in a row).</li>
+        <li>Players change ends every 6 points: at 6-0, 1-5, 5-1, 4-3, 5-2, etc.</li>
+        <li>The first to 7 points (or 10 in a deciding-set Slam tiebreak) with a 2-point margin wins.</li>
+      </ol>
+
+      <h2 id="famous">Famous Tiebreaks in Tennis History</h2>
+      <p>
+        <strong>Borg vs. McEnroe, 1980 Wimbledon Final</strong> — the fourth-set tiebreak went 18-16 to McEnroe, often called the greatest tiebreak ever played. Borg eventually won the match in 5 sets.
+      </p>
+      <p>
+        <strong>Federer vs. Roddick, 2009 Wimbledon Final</strong> — the second-set tiebreak ended 8-6, but the match's signature drama was the fifth set, won 16-14 by Federer in a pre-tiebreak deciding-set era.
+      </p>
+      <p>
+        <strong>Isner vs. Mahut, 2010 Wimbledon</strong> — first-round match that ran 70-68 in the fifth set, 11 hours 5 minutes total. The match directly motivated Wimbledon's 2019 rule introducing a deciding-set tiebreak.
+      </p>
+      <p>
+        <strong>Djokovic vs. Federer, 2019 Wimbledon Final</strong> — first Wimbledon final to use a deciding-set tiebreak. Djokovic won the 12-12 tiebreak 7-3 (under the rules of the day; the rule unified to a 10-point tiebreak at 6-6 in 2022).
+      </p>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/rules/" class="context-card">
+          <span class="context-label">Hub</span>
+          <span class="context-title">All Tennis Rules</span>
+        </a>
+        <a href="/rules/tennis-scoring-explained/" class="context-card">
+          <span class="context-label">Rules</span>
+          <span class="context-title">Tennis Scoring Explained</span>
+        </a>
+        <a href="/rules/how-many-sets-in-tennis/" class="context-card">
+          <span class="context-label">Rules</span>
+          <span class="context-title">How Many Sets in a Match</span>
+        </a>
+        <a href="/records/longest-tennis-match-in-history/" class="context-card">
+          <span class="context-label">Record</span>
+          <span class="context-title">Longest Match (Isner-Mahut)</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Tennis Tiebreak — Frequently Asked Questions" />
+  </article>
+</BaseLayout>
+
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 36px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--gray-800);
+  }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p {
+    font-size: 1rem;
+    line-height: 1.75;
+    margin: 0 0 16px;
+  }
+  .article-body ul, .article-body ol {
+    margin: 0 0 16px;
+    padding-left: 22px;
+    line-height: 1.75;
+  }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>

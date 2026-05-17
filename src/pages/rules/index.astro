@@ -1,0 +1,349 @@
+---
+/**
+ * /rules/ — Tennis Rules hub page.
+ * Codex Round 3 evergreen cluster #1: tennis-rules hub + 3 child explainers
+ * (scoring, tiebreak, sets). Targets the massive evergreen "how does tennis
+ * work" intent that drives long-tail organic traffic and AI citation.
+ *
+ * Companion pages:
+ *   /rules/tennis-scoring-explained/
+ *   /rules/tie-break-rules-explained/
+ *   /rules/how-many-sets-in-tennis/
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+
+const title = 'Tennis Rules — How the Game Actually Works | SUPER.TENNIS';
+const h1 = 'Tennis Rules';
+const metaDescription = 'Tennis rules explained: scoring (0-15-30-40-game), sets and matches, tiebreaks, the deciding-set rule at every Grand Slam, and the modern rule changes (shot clock, electronic line calling) that shape pro tennis in 2026.';
+
+const intro = "Tennis has one of the most distinctive scoring systems in sport — points called 0, 15, 30, 40, then game, with deuce instead of sudden death. Add the Grand Slam best-of-five format, the 10-point deciding-set tiebreak adopted across all four Slams in 2022, and rule variations like the shot clock and electronic line calling, and tennis can feel impenetrable to a new viewer. This hub explains every rule you actually need to follow a match.";
+
+const quickAnswer = "Tennis is scored in points (0, 15, 30, 40, game), games (first to 6 with a 2-game margin), and sets (best of 3 for women and ATP tour, best of 5 for men's Grand Slams). At 6-6 in a set, players play a 7-point tiebreak — except in the deciding set at all four Grand Slams since 2022, where a 10-point tiebreak is used. Matches are won by being the first to win the required number of sets. The modern game also uses a 25-second shot clock between points and electronic line calling on most pro courts.";
+
+const subpages = [
+  {
+    href: '/rules/tennis-scoring-explained/',
+    title: 'How Does Tennis Scoring Work?',
+    excerpt: 'The 0-15-30-40-game system explained, why deuce exists, where "love" comes from, and how a complete game is played out.',
+    icon: '🎯',
+  },
+  {
+    href: '/rules/tie-break-rules-explained/',
+    title: 'Tennis Tiebreak Rules (2026 Update)',
+    excerpt: 'When a tiebreak is played, how serves rotate, the difference between the 7-point and 10-point tiebreak, and the deciding-set rule at every Grand Slam.',
+    icon: '⚡',
+  },
+  {
+    href: '/rules/how-many-sets-in-tennis/',
+    title: 'How Many Sets in a Tennis Match?',
+    excerpt: "Best of 3 vs best of 5: when each format applies, why men play longer at Grand Slams, and how doubles + Olympic finals are formatted.",
+    icon: '🏆',
+  },
+];
+
+const faqs = [
+  {
+    q: 'Why does tennis use the 0-15-30-40 scoring system?',
+    a: 'The most accepted theory is that medieval French scorers used a clock face, marking quarter-hour positions (15, 30, 45) for each won point. "45" became "40" to leave room for deuce-style adjustments. "Love" likely comes from the French "l\'œuf" (egg), describing the round zero shape. The system has been used in something close to its current form since the 16th century.',
+  },
+  {
+    q: 'Why is it called "love" for zero in tennis?',
+    a: '"Love" almost certainly comes from the French "l\'œuf" — "the egg" — referring to the oval shape of a zero. The term predates modern English tennis vocabulary by centuries. An alternative theory holds it comes from the phrase "playing for love" (meaning, for nothing), but the egg explanation is favored by tennis historians.',
+  },
+  {
+    q: 'What is deuce in tennis?',
+    a: 'Deuce is the score 40-40. To win the game from deuce, a player must win two consecutive points. The first point gives them "advantage." If they win the next point, they win the game. If their opponent wins it, the score returns to deuce. This continues until one player wins two points in a row.',
+  },
+  {
+    q: 'What is the shot clock in tennis?',
+    a: 'The ATP and WTA tours use a 25-second shot clock between points (introduced full-time in 2018). The clock starts when the previous point ends, and the umpire issues a time violation if the server hasn\'t begun service motion when it expires. First violation: warning. Subsequent violations: loss of first serve.',
+  },
+  {
+    q: 'When did Grand Slams unify the deciding-set tiebreak?',
+    a: '2022. Until then, the four Slams had different deciding-set rules: US Open had used a tiebreak at 6-6 in the final set since 1970; Australian Open switched to a 10-point match tiebreak at 6-6 in 2019; Wimbledon used a 7-point tiebreak only at 12-12 from 2019; and Roland Garros still played out advantage sets. In 2022 all four Slams harmonized on a 10-point tiebreak at 6-6 in the deciding set.',
+  },
+  {
+    q: 'Is the racket size regulated in pro tennis?',
+    a: 'Yes. The ITF rulebook limits rackets to a maximum length of 29 inches (73.7 cm) and a maximum width of 12.5 inches (31.7 cm). The strung surface can be no longer than 15.5 inches (39.4 cm) and no wider than 11.5 inches (29.2 cm). The strings must form a uniform pattern and the racket cannot have any built-in vibration or sensor technology that affects play.',
+  },
+  {
+    q: 'What happens if a ball hits the net cord and lands in?',
+    a: "On any rally shot (forehand, backhand, etc.), a ball that clips the net and lands in the correct part of the opponent's court is in play — the rally continues. On a serve, a ball that clips the net and lands in the correct service box is called a 'let' and the serve is replayed. There is no limit on the number of consecutive lets a player can serve.",
+  },
+];
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Tennis Rules' },
+  ],
+};
+
+const collectionJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: title,
+  description: metaDescription,
+  url: 'https://super.tennis/rules/',
+  isPartOf: { '@type': 'WebSite', '@id': 'https://super.tennis/#website', name: 'SUPER.TENNIS' },
+  about: { '@type': 'Thing', name: 'Tennis Rules', description: intro },
+  mainEntity: subpages.map((s, i) => ({
+    '@type': 'Article',
+    headline: s.title,
+    url: `https://super.tennis${s.href}`,
+    position: i + 1,
+  })),
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="website">
+  <script type="application/ld+json" set:html={JSON.stringify(collectionJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <div class="rules-page">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <span class="current">{h1}</span>
+    </nav>
+
+    <header class="rules-hero">
+      <div class="hero-emoji">📏</div>
+      <h1>{h1}</h1>
+      <p class="hero-intro">{intro}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <section class="overview">
+      <h2 class="section-title">The 5 Things You Need to Know</h2>
+      <ol class="overview-list">
+        <li><strong>Scoring goes 0, 15, 30, 40, game</strong> — and at 40-40 ("deuce") a player must win 2 consecutive points to win the game.</li>
+        <li><strong>A set is the first to 6 games</strong>, with a 2-game margin. At 6-6, players play a 7-point tiebreak.</li>
+        <li><strong>Matches are best of 3 sets</strong> on the ATP and WTA tours and at women's Grand Slams. <strong>Men play best of 5 sets at Grand Slams.</strong></li>
+        <li><strong>The deciding set ends in a 10-point tiebreak at 6-6</strong> — this rule applies at all four Grand Slams since 2022.</li>
+        <li><strong>You have 25 seconds between points</strong> (the shot clock), and most pro courts now use electronic line calling instead of human linespersons.</li>
+      </ol>
+    </section>
+
+    <section class="subpages">
+      <h2 class="section-title">Tennis Rules in Detail</h2>
+      <div class="subpages-grid">
+        {subpages.map(p => (
+          <a href={p.href} class="subpage-card">
+            <div class="subpage-icon">{p.icon}</div>
+            <h3>{p.title}</h3>
+            <p>{p.excerpt}</p>
+            <span class="subpage-cta">Read full guide →</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="related-context">
+      <h2 class="section-title">Where the Rules Show Up</h2>
+      <div class="context-grid">
+        <a href="/rankings/" class="context-card">
+          <span class="context-label">Rankings</span>
+          <span class="context-title">How ATP & WTA points work</span>
+        </a>
+        <a href="/tournaments/" class="context-card">
+          <span class="context-label">Tournaments</span>
+          <span class="context-title">Grand Slam vs Masters formats</span>
+        </a>
+        <a href="/records/" class="context-card">
+          <span class="context-label">Records</span>
+          <span class="context-title">Longest match, fastest serve</span>
+        </a>
+        <a href="/faq/" class="context-card">
+          <span class="context-label">FAQ</span>
+          <span class="context-title">Common tennis questions</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Frequently Asked Questions About Tennis Rules" />
+  </div>
+</BaseLayout>
+
+<style>
+  .rules-page {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+  .breadcrumbs {
+    padding: 20px 0;
+    font-size: 0.82rem;
+    color: var(--gray-500);
+  }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .rules-hero {
+    text-align: center;
+    padding: 32px 0 24px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 32px;
+  }
+  .hero-emoji { font-size: 3rem; margin-bottom: 12px; }
+  .rules-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 12px;
+    color: var(--gray-900);
+  }
+  .hero-intro {
+    max-width: 720px;
+    margin: 0 auto;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--gray-600);
+  }
+
+  .quick-answer {
+    margin: 0 0 36px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--gray-800);
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 0 0 20px;
+  }
+
+  .overview {
+    margin: 36px 0;
+    padding: 24px 28px;
+    background: #f0fdf4;
+    border-radius: var(--radius);
+  }
+  .overview-list {
+    margin: 0;
+    padding-left: 24px;
+    line-height: 1.75;
+    color: var(--gray-800);
+  }
+  .overview-list li { margin-bottom: 12px; }
+
+  .subpages {
+    margin: 44px 0;
+  }
+  .subpages-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .subpage-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 24px 22px;
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+  }
+  .subpage-card:hover {
+    border-color: var(--court-green);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  }
+  .subpage-icon { font-size: 1.8rem; margin-bottom: 12px; }
+  .subpage-card h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0 0 10px;
+    line-height: 1.3;
+    color: var(--gray-900);
+  }
+  .subpage-card p {
+    margin: 0 0 16px;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-600);
+    flex: 1;
+  }
+  .subpage-cta {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--court-green);
+  }
+
+  .related-context { margin: 44px 0 32px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title {
+    font-size: 0.88rem;
+    line-height: 1.35;
+    font-weight: 600;
+    color: var(--gray-900);
+  }
+
+  @media (max-width: 1024px) {
+    .subpages-grid { grid-template-columns: repeat(2, 1fr); }
+    .context-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .subpages-grid { grid-template-columns: 1fr; }
+    .context-grid { grid-template-columns: 1fr; }
+    .rules-hero h1 { font-size: 1.9rem; }
+  }
+</style>

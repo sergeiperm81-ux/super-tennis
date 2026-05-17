@@ -1,0 +1,310 @@
+---
+/**
+ * /rules/tennis-scoring-explained/ — How tennis scoring works.
+ * Companion of /rules/ hub. Codex Round 3 evergreen cluster #1.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+
+const title = 'How Tennis Scoring Works — 0-15-30-40-Game Explained | SUPER.TENNIS';
+const h1 = 'How Does Tennis Scoring Work?';
+const metaDescription = 'Tennis scoring explained simply: why points are called 0-15-30-40-game, how deuce and advantage work, why "love" means zero, and a complete walkthrough of how a game and set unfold.';
+const publishedDate = '2026-05-17';
+
+const quickAnswer = "Tennis points are scored 0 (called 'love'), 15, 30, 40, and game. The first player to win 4 points wins the game, but you must win by a margin of 2 — so at 40-40 ('deuce'), the next point gives a player 'advantage', and they must win the point after that to take the game. Six games win a set, with a 2-game margin or a tiebreak at 6-6. Matches are won by being the first to win the required number of sets (2 for women and ATP tour, 3 for men's Grand Slams).";
+
+const faqs = [
+  {
+    q: 'Why are tennis points called 15, 30, 40?',
+    a: 'The most-cited theory is that medieval French scorers used a clock-face marker, advancing 15 minutes per point: 15, 30, 45. "45" was shortened to "40" to leave clock space for the deuce sequence (40, advantage, game). Tennis historians do not have a single definitive primary source, but the clock-face theory has been the dominant explanation since at least the 19th century.',
+  },
+  {
+    q: 'Why is zero called "love" in tennis?',
+    a: '"Love" almost certainly derives from the French "l\'œuf" — "the egg" — describing the oval shape of a zero. Tennis was developed in 13th-century France as "jeu de paume" and inherited a lot of French scoring vocabulary. The alternative theory ("playing for love" = playing for nothing) is folk etymology.',
+  },
+  {
+    q: 'What is "no-ad" scoring in tennis?',
+    a: 'No-ad scoring eliminates deuce. When the game reaches 40-40, a single deciding point is played: the receiver chooses which side to receive on, and whoever wins that point wins the game. No-ad is the standard in ATP/WTA doubles, in college tennis, and in many recreational leagues — but the ATP/WTA singles tour still uses traditional ad-scoring.',
+  },
+  {
+    q: 'How long can a tennis game theoretically last?',
+    a: 'There is no rule limit on game length. The longest recorded tennis game lasted 1 hour 7 minutes — Anthony Fawcett vs. Keith Glass, 1975 — with 37 deuces in a single game. Modern shot-clock and no-ad rules in some formats have shortened games, but a deuce-game can theoretically continue forever until one player wins two consecutive points.',
+  },
+  {
+    q: 'What does "30-all" mean in tennis?',
+    a: '"30-all" means the score is 30-30 — both players have won two points in the current game. "All" is the standard term for a tied score below deuce: "15-all" = 15-15, "30-all" = 30-30. At 40-40 the term changes to "deuce" rather than "40-all".',
+  },
+  {
+    q: 'How is the score announced in tennis?',
+    a: "The server's score is announced first, then the receiver's. So '30-15' means the server has 30 points, the receiver has 15. After deuce, 'advantage' is called with the player's name or 'in' (for the server) / 'out' (for the receiver). The umpire announces the score before each point.",
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/rules/tennis-scoring-explained/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: {
+    '@type': 'Person',
+    name: 'Alex Morgan',
+    url: 'https://super.tennis/authors/alex-morgan/',
+    worksFor: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Tennis Rules', item: 'https://super.tennis/rules/' },
+    { '@type': 'ListItem', position: 3, name: 'Scoring Explained' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/rules/">Tennis Rules</a> <span class="sep">/</span>
+      <span class="current">Scoring Explained</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">🎯</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/authors/alex-morgan/">Alex Morgan</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <div class="article-body">
+      <h2 id="points">The Point Sequence: 0, 15, 30, 40, Game</h2>
+      <p>
+        Tennis is the only major sport that doesn't count points 1, 2, 3, 4. Instead, the four points needed to win a game are called <strong>0, 15, 30, 40, game</strong>. Zero is called "love" — almost certainly from the French <em>l'œuf</em> ("the egg"), describing the shape of a zero. So a score of 30-0 is announced as "thirty-love."
+      </p>
+      <p>
+        Each point is a single rally. The server bounces the ball, serves into the opposite service box, and the rally continues until one player either fails to return the ball into the correct part of the opponent's court, lets the ball bounce twice, or commits a fault. That player loses the point.
+      </p>
+
+      <h2 id="game">Winning a Game</h2>
+      <p>
+        To win a game you have to be the first to win 4 points <strong>with a margin of at least 2</strong>. The simplest winning sequence is 4-0 ("game to love"). A 4-1 or 4-2 game also wins comfortably.
+      </p>
+      <p>
+        The complication is what happens when both players reach 40 — score 40-40. That's called <strong>deuce</strong>. From deuce, a player must win two consecutive points to win the game. Winning the first one gives them <em>advantage</em>; winning the next ends the game. If their opponent wins the next point instead, the score returns to deuce, and the sequence restarts.
+      </p>
+      <p>
+        Deuce can theoretically continue forever. The longest recorded game in pro tennis history featured 37 consecutive deuces (Fawcett vs. Glass, 1975).
+      </p>
+
+      <h2 id="set">Winning a Set</h2>
+      <p>
+        A set is won by the first player to <strong>6 games with at least a 2-game lead</strong>. The simplest set scores are 6-0 ("bagel"), 6-1, 6-2, 6-3, or 6-4. A score of 5-5 means the set is still alive — the players continue, and a winning score becomes 7-5 or 7-6.
+      </p>
+      <p>
+        If the set reaches <strong>6-6</strong>, players don't keep playing games indefinitely. Instead, they play a <a href="/rules/tie-break-rules-explained/">tiebreak</a> — a sudden-death sequence where the first to 7 points (with a 2-point margin) wins the tiebreak and the set, which is recorded as 7-6.
+      </p>
+
+      <h2 id="match">Winning a Match</h2>
+      <p>
+        How many sets you need to win a match depends on the format:
+      </p>
+      <ul>
+        <li><strong>Best of 3 sets</strong> — first to 2 sets wins. Used for all ATP tour matches, all WTA matches (including Grand Slams), all qualifying rounds, all doubles matches, and the Olympic gold-medal match.</li>
+        <li><strong>Best of 5 sets</strong> — first to 3 sets wins. Used only for men's Grand Slam singles matches (Australian Open, Roland Garros, Wimbledon, US Open) and historically some Davis Cup matches.</li>
+      </ul>
+      <p>
+        See our full breakdown at <a href="/rules/how-many-sets-in-tennis/">how many sets in a tennis match</a>.
+      </p>
+
+      <h2 id="example">A Complete Game Example</h2>
+      <p>
+        Imagine Player A is serving to Player B. Here's how a game might unfold:
+      </p>
+      <ul>
+        <li>Player A wins the first point → score: <strong>15-0</strong> (announced "fifteen-love")</li>
+        <li>Player B wins the next → <strong>15-15</strong> ("fifteen all")</li>
+        <li>Player A wins → <strong>30-15</strong></li>
+        <li>Player B wins → <strong>30-30</strong> ("thirty all")</li>
+        <li>Player B wins → <strong>30-40</strong> ("break point" — receiver one point from winning the server's game)</li>
+        <li>Player A wins → <strong>40-40 (deuce)</strong></li>
+        <li>Player A wins → <strong>advantage A</strong></li>
+        <li>Player B wins → back to <strong>deuce</strong></li>
+        <li>Player A wins → <strong>advantage A</strong></li>
+        <li>Player A wins → <strong>game A</strong></li>
+      </ul>
+      <p>
+        This is one game. Player A has now won 1-0 in games. The set continues until someone reaches 6 games with a 2-game lead, or 7-6 via tiebreak.
+      </p>
+
+      <h2 id="variations">Scoring Variations You'll See</h2>
+      <p>
+        Several formats deviate from the traditional ad-scoring system:
+      </p>
+      <ul>
+        <li><strong>No-ad scoring</strong> — at 40-40, a single deciding point is played instead of advantage. Used in all ATP/WTA doubles, in NCAA college tennis, and in many club leagues.</li>
+        <li><strong>FAST4</strong> — first to 4 games with a tiebreak at 3-3, no-ad scoring, no lets on serve. Used in some exhibition events.</li>
+        <li><strong>Match tiebreak</strong> — a 10-point tiebreak replaces an entire deciding set. Common in doubles at ATP/WTA tour events.</li>
+        <li><strong>Pro set</strong> — first to 8 games (with a tiebreak at 8-8) replaces best-of-three. Used in some amateur tournaments.</li>
+      </ul>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/rules/" class="context-card">
+          <span class="context-label">Hub</span>
+          <span class="context-title">All Tennis Rules</span>
+        </a>
+        <a href="/rules/tie-break-rules-explained/" class="context-card">
+          <span class="context-label">Rules</span>
+          <span class="context-title">Tiebreak Rules Explained</span>
+        </a>
+        <a href="/rules/how-many-sets-in-tennis/" class="context-card">
+          <span class="context-label">Rules</span>
+          <span class="context-title">How Many Sets in a Match</span>
+        </a>
+        <a href="/rankings/" class="context-card">
+          <span class="context-label">Rankings</span>
+          <span class="context-title">ATP & WTA Rankings</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Tennis Scoring — Frequently Asked Questions" />
+  </article>
+</BaseLayout>
+
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 36px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--gray-800);
+  }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p {
+    font-size: 1rem;
+    line-height: 1.75;
+    margin: 0 0 16px;
+  }
+  .article-body ul {
+    margin: 0 0 16px;
+    padding-left: 22px;
+    line-height: 1.75;
+  }
+  .article-body ul li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>

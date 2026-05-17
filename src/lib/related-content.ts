@@ -133,6 +133,7 @@ export function getEvergreenPlayerLinks(player: Pick<Player, 'tour'>): RelatedLi
     { href: `/rankings/`, title: `${tourLabel} Rankings`, contextLabel: 'Live data' },
     { href: `/records/`, title: 'Tennis Records', contextLabel: 'All-time stats' },
     { href: `/tournaments/`, title: 'Tournament Guides', contextLabel: 'Grand Slams + Masters' },
+    { href: `/rules/`, title: 'Tennis Rules', contextLabel: 'Scoring, sets, tiebreak' },
     { href: `/lifestyle/money/`, title: 'Tennis Money', contextLabel: 'Prize money & net worth' },
     { href: `/lifestyle/career/`, title: 'Tennis Career Paths', contextLabel: 'Going pro' },
   ];
@@ -246,6 +247,7 @@ export function getEvergreenTournamentLinks(): RelatedLink[] {
     { href: `/tournaments/`, title: 'All Tournaments', contextLabel: 'Index' },
     { href: `/calendar/`, title: '2026 Tennis Calendar', contextLabel: 'Schedule' },
     { href: `/rankings/`, title: 'ATP & WTA Rankings', contextLabel: 'Live data' },
+    { href: `/rules/how-many-sets-in-tennis/`, title: 'Match Format Rules', contextLabel: 'Best of 3 vs 5' },
     { href: `/lifestyle/money/`, title: 'Tennis Prize Money', contextLabel: 'Earnings & purse' },
     { href: `/lifestyle/travel/`, title: 'Tennis Travel Guides', contextLabel: 'Visit a Slam' },
   ];

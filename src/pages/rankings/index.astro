@@ -127,6 +127,9 @@ const sbCatLabels: Record<string, string> = {
         <p class="qa-text">
           The ATP and WTA rankings are rolling 52-week point totals that determine seedings and qualification for every tour event. As of {rankingDate}, Jannik Sinner sits at ATP No.&nbsp;1 with Carlos Alcaraz close behind; on the WTA side Aryna Sabalenka and Iga Swiatek are the leading contenders. Players defend points earned 52 weeks earlier each week, and only the best 19 results count for ATP men (16 for WTA). Updates are published every Monday by the ATP and WTA.
         </p>
+        <p class="qa-followup">
+          <strong>How the math works:</strong> see our explainer on <a href="/rules/tennis-scoring-explained/">tennis scoring</a>, the <a href="/rules/how-many-sets-in-tennis/">best-of-3 vs best-of-5 format</a>, and the full <a href="/rules/">tennis rules hub</a>.
+        </p>
       </section>
 
       <!-- TWO-COLUMN LAYOUT -->
@@ -394,6 +397,15 @@ const sbCatLabels: Record<string, string> = {
     line-height: 1.6;
     color: var(--gray-800);
   }
+  .qa-followup {
+    margin: 10px 0 0;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-600);
+    padding-top: 10px;
+    border-top: 1px dashed var(--gray-200);
+  }
+  .qa-followup a { color: var(--court-green); }
 
   /* ===== TWO-COLUMN LAYOUT ===== */
   .rankings-layout {
