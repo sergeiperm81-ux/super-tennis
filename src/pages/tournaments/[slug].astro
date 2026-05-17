@@ -6,6 +6,7 @@ import LiteYouTube from '../../components/LiteYouTube.astro';
 import { getArticleBySlug, getArticleSlugs } from '../../lib/supabase';
 import { addInterlinks } from '../../lib/interlinks';
 import { getArticlePhotoUrl } from '../../lib/player-photos';
+import { buildHowToSchema } from '../../lib/howto-schema';
 import { tournamentVideos } from '../../data/youtube-channels';
 import { marked } from 'marked';
 
@@ -83,6 +84,15 @@ const faqJsonLd = article.faqs && Array.isArray(article.faqs) && article.faqs.le
     acceptedAnswer: { '@type': 'Answer', text: faq.answer },
   })),
 } : null;
+
+// HowTo JSON-LD for how-to-* tournament articles (e.g. how-to-watch-french-open-2026)
+const howToJsonLd = buildHowToSchema(
+  slug as string,
+  article.title,
+  article.meta_description || article.excerpt || '',
+  bodyHtml,
+  'tournaments',
+);
 ---
 
 <ArticleLayout
@@ -100,6 +110,7 @@ const faqJsonLd = article.faqs && Array.isArray(article.faqs) && article.faqs.le
 >
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   {faqJsonLd && <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />}
+  {howToJsonLd && <script type="application/ld+json" set:html={JSON.stringify(howToJsonLd)} />}
 
   <div set:html={bodyHtml} />
 

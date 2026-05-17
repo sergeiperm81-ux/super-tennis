@@ -5,6 +5,7 @@ import RelatedArticles from '../../components/RelatedArticles.astro';
 import { getArticleBySlug, getArticleSlugs } from '../../lib/supabase';
 import { addInterlinks } from '../../lib/interlinks';
 import { getArticlePhotoUrl } from '../../lib/player-photos';
+import { buildHowToSchema } from '../../lib/howto-schema';
 import { marked } from 'marked';
 
 export async function getStaticPaths() {
@@ -73,6 +74,15 @@ const jsonLd = {
     name: 'Tennis Equipment',
   },
 };
+
+// HowTo JSON-LD for how-to-* gear articles (Codex SEO audit 2026-05-17)
+const howToJsonLd = buildHowToSchema(
+  slug as string,
+  article.title,
+  article.meta_description || article.excerpt || '',
+  bodyHtml,
+  'gear',
+);
 ---
 
 <ArticleLayout
@@ -91,6 +101,7 @@ const jsonLd = {
   categoryHref="/gear/"
 >
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  {howToJsonLd && <script type="application/ld+json" set:html={JSON.stringify(howToJsonLd)} />}
 
   <div set:html={bodyHtml} />
 
