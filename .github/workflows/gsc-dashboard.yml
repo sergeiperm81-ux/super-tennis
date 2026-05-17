@@ -1,0 +1,17 @@
+name: GSC Dashboard (one-shot)
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  dashboard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - run: npm install --no-save --no-audit --no-fund google-auth-library dotenv
+      - env:
+          GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
+        run: node scripts/gsc-dashboard.mjs
