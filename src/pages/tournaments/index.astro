@@ -227,6 +227,14 @@ const tournamentFaqs = [
         <p class="subtitle">Complete guides to Grand Slams, Masters 1000, and the biggest events in tennis{tournamentGuides.length > 0 && ` — ${tournamentGuides.length} tournament guides`}</p>
       </section>
 
+      {/* Quick Answer block — AI-citable summary (Codex audit 2026-05-17) */}
+      <section class="quick-answer">
+        <h2 class="qa-label">Quick Answer</h2>
+        <p class="qa-text">
+          The four Grand Slam tournaments are the Australian Open (January, Melbourne, hard court), Roland Garros (May-June, Paris, clay), Wimbledon (June-July, London, grass), and the US Open (August-September, New York, hard court). Below the Slams, the nine ATP Masters 1000 and ten WTA 1000 events are the most important annual tournaments; the season culminates in the ATP Finals (Turin) and WTA Finals (Riyadh) for the top eight singles and doubles players. Total prize money across the four Slams in 2026 is approximately €230 million.
+        </p>
+      </section>
+
       {/* ===== 2026 CALENDAR STRIP ===== */}
       <section class="calendar-section">
         <h2 class="section-title">📅 2026 Tournament Calendar</h2>
@@ -398,6 +406,29 @@ const tournamentFaqs = [
     color: var(--gray-600);
     font-size: 1.1rem;
     margin: 8px 0 0;
+  }
+
+  /* Quick Answer (AI-citable summary) */
+  .quick-answer {
+    margin: 0 0 32px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--gray-800);
   }
 
   .section-title {

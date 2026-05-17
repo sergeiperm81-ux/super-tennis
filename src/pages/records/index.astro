@@ -427,6 +427,14 @@ function pickRecordImage(article: { slug: string; image_url?: string }, subcateg
         <p class="subtitle">The greatest achievements and milestones in tennis history</p>
       </section>
 
+      <!-- Quick Answer block — AI-citable summary (Codex audit 2026-05-17) -->
+      <section class="quick-answer">
+        <h2 class="qa-label">Quick Answer</h2>
+        <p class="qa-text">
+          Novak Djokovic holds the men's all-time Grand Slam record (24 titles) and most weeks at No.&nbsp;1 (428). Margaret Court leads the women's overall Grand Slam list (24 titles), with Serena Williams holding the Open Era women's record (23). Other notable records include Sam Groth's fastest-ever serve (263.4 km/h, 2012), the longest match in history (Isner vs. Mahut, 11h&nbsp;5m at 2010 Wimbledon), and Steffi Graf's 377 weeks at women's No.&nbsp;1.
+        </p>
+      </section>
+
       <!-- Records Hero Banner -->
       <div class="records-hero">
         <img src="/images/records/tennis-trophy-gold.webp" alt="Tennis championship trophy" class="records-hero-img" loading="eager" decoding="async" width="1200" height="400" onerror="this.parentElement.style.display='none'" />
@@ -861,6 +869,29 @@ function pickRecordImage(article: { slug: string; image_url?: string }, subcateg
     color: var(--gray-600);
     font-size: 1.1rem;
     margin: 8px 0 0;
+  }
+
+  /* Quick Answer (AI-citable summary) */
+  .quick-answer {
+    margin: 0 0 32px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--gray-800);
   }
 
   /* Records Hero Banner */

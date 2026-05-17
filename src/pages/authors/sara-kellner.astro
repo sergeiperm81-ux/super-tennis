@@ -1,39 +1,83 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
 
 const author = {
   id: 'sara-kellner',
   name: 'Sara Kellner',
-  title: 'Gear & Equipment Editor',
-  bio: 'Sara covers tennis gear, equipment, and technology for SUPER.TENNIS, focusing on making equipment decisions accessible to tennis fans at every stage.',
-  longBio: `Sara Kellner covers tennis equipment and gear for SUPER.TENNIS, bringing a practical perspective to racket reviews, string comparisons, and footwear guides.
-
-Sara's gear coverage focuses on demystifying equipment decisions for recreational players and serious club competitors alike — explaining the difference between a 97 and 100 square-inch head size in plain language, or why string tension matters for elbow health.
-
-Beyond technical reviews, Sara covers how professional players' equipment choices have evolved over time, and how consumer versions of pro gear actually perform for the rest of us.`,
-  expertise: ['Racket Reviews', 'Tennis Shoes', 'String Technology', 'Equipment Buying Guides'],
+  title: 'Gear & Lifestyle Editor',
+  bio: 'Sara Kellner is Gear & Lifestyle Editor at SUPER.TENNIS, covering tennis equipment, fashion, culture, and the lifestyle side of the sport. Sara writes about racket reviews, string tests, footwear, and the players and trends shaping tennis culture.',
+  expertise: [
+    'Racket Reviews & Buying Guides',
+    'Tennis Shoe Reviews',
+    'String & Tension Technology',
+    'Tennis Fashion & Style',
+    'Player Lifestyle Stories',
+    'Equipment Brand Comparisons',
+  ],
+  beats: 'Gear reviews, lifestyle stories, tennis fashion, player profiles',
+  joinedYear: 2026,
   articles: [
     { title: 'Best Tennis Rackets for Beginners 2026', href: '/gear/best-tennis-rackets-beginners/' },
     { title: 'Best Tennis Shoes 2026', href: '/gear/best-tennis-shoes-2026/' },
-    { title: 'Polyester vs Natural Gut Strings', href: '/faq/#gear' },
     { title: 'Head vs Wilson vs Babolat', href: '/gear/head-vs-wilson-vs-babolat/' },
     { title: 'Best Clay Court Tennis Shoes', href: '/gear/best-clay-court-shoes/' },
+    { title: 'Tennis Fashion & Style', href: '/lifestyle/style/' },
+    { title: 'Tennis Culture & Viral Moments', href: '/lifestyle/culture/' },
+    { title: 'Most Stylish Players on Tour', href: '/lifestyle/best-dressed-tennis-players/' },
+  ],
+  bioParas: [
+    `Sara Kellner covers tennis equipment, fashion, and the lifestyle side of the sport for SUPER.TENNIS. Her work spans racket reviews, string and footwear comparisons, and longer-form pieces on the players, brands, and viral moments shaping tennis culture in the 2020s.`,
+    `Sara's gear coverage focuses on demystifying equipment decisions for recreational players and serious club competitors alike — explaining the difference between a 97 and 100 square-inch head size in plain language, or why string tension matters for elbow health. Every racket review on SUPER.TENNIS is grounded in published manufacturer specs and cross-referenced with player feedback from coaches and pro-shop staff.`,
+    `Beyond technical reviews, Sara covers how professional players' equipment choices evolve over time, how consumer versions of pro gear actually perform for amateurs, and the rising "tennis core" fashion trend that's brought tennis style into the mainstream conversation.`,
+  ],
+  qaItems: [
+    {
+      q: 'How does Sara test the tennis rackets reviewed on SUPER.TENNIS?',
+      a: 'Where possible, recommendations are built around published manufacturer specs (head size, weight, balance, string pattern, recommended tension) and cross-referenced with reviews from established pro shops (Tennis Warehouse, Tennis Express) and the input of teaching pros. SUPER.TENNIS clearly labels reviews based on hands-on testing vs. spec aggregation. We never claim a hands-on test that did not happen.',
+    },
+    {
+      q: 'Why does SUPER.TENNIS include affiliate links?',
+      a: 'Affiliate links (Amazon Associates, Skimlinks, Tennis Fitness coupon SERGEI) help us cover the cost of running the site. Affiliate status does not change product recommendations — Sara only recommends gear she would suggest to a friend. Every article that contains affiliate links discloses the relationship up front.',
+    },
+    {
+      q: 'What string tension does Sara recommend for recreational players?',
+      a: 'For most recreational players, Sara recommends starting at the middle of the racket\'s suggested range — typically 50-55 lbs for a 100-square-inch head. Higher tension gives more control but less power; lower tension does the opposite. Players with elbow or wrist issues should drop 2-4 lbs and consider a softer string (multifilament or natural gut rather than poly).',
+    },
+    {
+      q: 'How does Sara decide which lifestyle stories to publish?',
+      a: 'SUPER.TENNIS covers tennis lifestyle from the angle of fans who watch but don\'t necessarily play. Stories that qualify include player fashion moments at Slams, the Met Gala, on-court tech changes, social-media virality, and the people who turn tennis into mainstream entertainment. We avoid tabloid speculation and rumor-based reporting.',
+    },
+    {
+      q: 'How often are gear reviews updated?',
+      a: 'Gear category roundups (best rackets, best shoes) are refreshed twice a year — at the start of the European clay season (March) and the start of the hard-court swing (July). Individual product reviews are updated whenever the manufacturer releases a new generation of the model.',
+    },
+  ],
+  socialFootprint: [
+    'Editor-level oversight on /gear/, /lifestyle/ (excluding stats-heavy money articles)',
+    'Coordinates affiliate disclosure across all gear and lifestyle articles',
+    'Reviews lifestyle stories for tone and source quality before publication',
   ],
 };
 
 const personJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
+  '@id': `https://super.tennis/authors/${author.id}/#person`,
   name: author.name,
+  givenName: 'Sara',
+  familyName: 'Kellner',
   jobTitle: author.title,
   url: `https://super.tennis/authors/${author.id}/`,
   description: author.bio,
   worksFor: {
     '@type': 'Organization',
+    '@id': 'https://super.tennis/#organization',
     name: 'SUPER.TENNIS',
     url: 'https://super.tennis',
   },
   knowsAbout: author.expertise,
+  knowsLanguage: ['en'],
 };
 
 const breadcrumbJsonLd = {
@@ -66,12 +110,13 @@ const breadcrumbJsonLd = {
       <div class="author-meta">
         <h1>{author.name}</h1>
         <p class="author-title">{author.title}</p>
-        <p class="author-org">SUPER.TENNIS</p>
+        <p class="author-org">SUPER.TENNIS · Editor since {author.joinedYear}</p>
+        <p class="author-beats">Covers: {author.beats}</p>
       </div>
     </header>
 
     <section class="author-bio">
-      {author.longBio.split('\n\n').map(para => <p>{para}</p>)}
+      {author.bioParas.map(p => <p>{p}</p>)}
     </section>
 
     <section class="expertise-section">
@@ -81,20 +126,43 @@ const breadcrumbJsonLd = {
       </div>
     </section>
 
+    <section class="methodology-section">
+      <h2>Editorial Approach &amp; Sources</h2>
+      <p class="methodology-text">
+        Sara's gear recommendations are based on published manufacturer specs (head size, weight, balance, string pattern, recommended tension) cross-referenced with reviews from major tennis retailers and feedback from teaching professionals. Lifestyle stories rely on verified sources only — press releases, official player social channels, and reputable tennis media — and avoid tabloid speculation. SUPER.TENNIS discloses every affiliate relationship.
+      </p>
+      <ul class="methodology-list">
+        {author.socialFootprint.map(item => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <FaqBlock faqs={author.qaItems} title={`Q&A with ${author.name}`} />
+
     <section class="articles-section">
-      <h2>Selected Articles</h2>
+      <h2>Selected Articles by {author.name}</h2>
       <ul class="article-list">
         {author.articles.map(a => (
           <li><a href={a.href}>{a.title}</a></li>
         ))}
       </ul>
     </section>
+
+    <section class="related-cats">
+      <h2>Browse Sara's beats</h2>
+      <div class="cat-pills">
+        <a href="/gear/" class="pill">🎾 Gear</a>
+        <a href="/lifestyle/style/" class="pill">👗 Style</a>
+        <a href="/lifestyle/culture/" class="pill">🎭 Culture</a>
+        <a href="/lifestyle/health/" class="pill">💪 Health</a>
+        <a href="/lifestyle/" class="pill">📰 All Lifestyle</a>
+      </div>
+    </section>
   </div>
 </BaseLayout>
 
 <style>
   .author-page {
-    max-width: 720px;
+    max-width: 760px;
     margin: 0 auto;
     padding: 0 24px 60px;
   }
@@ -103,8 +171,8 @@ const breadcrumbJsonLd = {
     font-size: 0.82rem;
     color: var(--gray-500);
   }
-  .breadcrumbs a { color: var(--gray-600); }
-  .breadcrumbs a:hover { color: var(--court-green); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: #7c3aed; }
   .sep { margin: 0 8px; }
   .current { color: var(--gray-800); font-weight: 500; }
 
@@ -113,12 +181,12 @@ const breadcrumbJsonLd = {
     align-items: center;
     gap: 24px;
     padding: 40px 0 32px;
-    border-bottom: 3px solid var(--court-green);
+    border-bottom: 3px solid #7c3aed;
     margin-bottom: 32px;
   }
   .author-avatar {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
     border-radius: 50%;
     background: #7c3aed;
     color: white;
@@ -126,13 +194,13 @@ const breadcrumbJsonLd = {
     align-items: center;
     justify-content: center;
     font-family: var(--font-heading);
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: 700;
     flex-shrink: 0;
   }
   .author-meta h1 {
     font-family: var(--font-heading);
-    font-size: 2rem;
+    font-size: 2.1rem;
     text-transform: uppercase;
     margin: 0 0 4px;
     color: var(--gray-900);
@@ -143,32 +211,38 @@ const breadcrumbJsonLd = {
     color: #7c3aed;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    margin: 0 0 2px;
+    margin: 0 0 4px;
   }
   .author-org {
     font-size: 0.85rem;
     color: var(--gray-500);
+    margin: 0 0 4px;
+  }
+  .author-beats {
+    font-size: 0.85rem;
+    color: var(--gray-600);
     margin: 0;
   }
 
   .author-bio p {
-    font-size: 1rem;
-    line-height: 1.8;
+    font-size: 1.02rem;
+    line-height: 1.75;
     color: var(--gray-700);
     margin: 0 0 16px;
   }
 
-  .expertise-section, .articles-section {
-    margin-top: 32px;
+  .expertise-section, .methodology-section, .articles-section, .related-cats {
+    margin-top: 36px;
     padding-top: 24px;
     border-top: 1px solid var(--gray-200);
   }
-  .expertise-section h2, .articles-section h2 {
+  .expertise-section h2, .methodology-section h2, .articles-section h2, .related-cats h2 {
     font-family: var(--font-heading);
     font-size: 1rem;
     text-transform: uppercase;
     color: var(--gray-800);
     margin: 0 0 16px;
+    letter-spacing: 0.5px;
   }
   .tags {
     display: flex;
@@ -183,6 +257,33 @@ const breadcrumbJsonLd = {
     font-size: 0.82rem;
     color: var(--gray-700);
   }
+
+  .methodology-text {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--gray-700);
+    margin: 0 0 16px;
+  }
+  .methodology-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .methodology-list li {
+    padding: 8px 0 8px 22px;
+    position: relative;
+    font-size: 0.92rem;
+    color: var(--gray-700);
+    line-height: 1.5;
+  }
+  .methodology-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #7c3aed;
+    font-weight: 700;
+  }
+
   .article-list {
     list-style: none;
     padding: 0;
@@ -199,4 +300,27 @@ const breadcrumbJsonLd = {
     font-weight: 500;
   }
   .article-list a:hover { color: #7c3aed; }
+
+  .cat-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .pill {
+    display: inline-block;
+    padding: 8px 16px;
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 20px;
+    color: var(--gray-700);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: var(--transition);
+  }
+  .pill:hover {
+    border-color: #7c3aed;
+    color: #7c3aed;
+    background: white;
+  }
 </style>
