@@ -129,8 +129,13 @@ function categoryLabel(category: string): string {
  */
 export function getEvergreenPlayerLinks(player: Pick<Player, 'tour'>): RelatedLink[] {
   const tourLabel = player.tour === 'atp' ? 'ATP' : 'WTA';
+  const pointsExplainer = player.tour === 'atp'
+    ? { href: '/rankings/atp-ranking-points-explained/', title: 'ATP Ranking Points', contextLabel: 'How math works' }
+    : { href: '/rankings/wta-ranking-points-explained/', title: 'WTA Ranking Points', contextLabel: 'How math works' };
   return [
     { href: `/rankings/`, title: `${tourLabel} Rankings`, contextLabel: 'Live data' },
+    pointsExplainer,
+    { href: `/rankings/how-tennis-rankings-work/`, title: 'How Rankings Work', contextLabel: 'System overview' },
     { href: `/records/`, title: 'Tennis Records', contextLabel: 'All-time stats' },
     { href: `/tournaments/`, title: 'Tournament Guides', contextLabel: 'Grand Slams + Masters' },
     { href: `/rules/`, title: 'Tennis Rules', contextLabel: 'Scoring, sets, tiebreak' },
@@ -247,6 +252,7 @@ export function getEvergreenTournamentLinks(): RelatedLink[] {
     { href: `/tournaments/`, title: 'All Tournaments', contextLabel: 'Index' },
     { href: `/calendar/`, title: '2026 Tennis Calendar', contextLabel: 'Schedule' },
     { href: `/rankings/`, title: 'ATP & WTA Rankings', contextLabel: 'Live data' },
+    { href: `/rankings/how-tennis-rankings-work/`, title: 'How Rankings Work', contextLabel: 'Points & seeding' },
     { href: `/rules/how-many-sets-in-tennis/`, title: 'Match Format Rules', contextLabel: 'Best of 3 vs 5' },
     { href: `/lifestyle/money/`, title: 'Tennis Prize Money', contextLabel: 'Earnings & purse' },
     { href: `/lifestyle/travel/`, title: 'Tennis Travel Guides', contextLabel: 'Visit a Slam' },

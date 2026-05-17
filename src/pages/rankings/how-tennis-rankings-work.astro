@@ -1,0 +1,364 @@
+---
+/**
+ * /rankings/how-tennis-rankings-work/ — General "how rankings work" hub-style explainer.
+ * Codex Round 3 evergreen cluster #2 (Rankings Explained).
+ *
+ * Search intent: someone who just wants to understand the system overall.
+ * Does NOT cover per-tournament point tables — that's the ATP/WTA sister pages.
+ * Does NOT cover live-vs-official intricacies — that's the dedicated explainer.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+
+const title = 'How Tennis Rankings Work — ATP and WTA Explained (2026) | SUPER.TENNIS';
+const h1 = 'How Tennis Rankings Work';
+const metaDescription = 'How tennis rankings work in 2026: the rolling 52-week point system used by both ATP and WTA, why rankings change every Monday, how many results count (ATP: best 19, WTA: best 16), mandatory tournaments, and the difference between rankings and Race standings.';
+const publishedDate = '2026-05-17';
+
+const quickAnswer = "Both ATP and WTA rankings are 52-week rolling point totals. Players earn points by reaching specific rounds at sanctioned tournaments; the bigger the event, the more points are awarded. Each Monday after a tournament ends, the player keeps the points they just earned and loses the points they earned at the same tournament 52 weeks ago. Only the player's best results count — ATP uses the best 19 results, WTA uses the best 16. Skipping a mandatory event means the player still loses last year's points without earning replacement points, so rankings can drop without playing.";
+
+const faqs = [
+  {
+    q: 'How often are tennis rankings updated?',
+    a: 'Every Monday. The ATP and WTA both publish updated rankings each Monday morning, reflecting the results of tournaments that finished the previous week. During the year-end ATP Finals and WTA Finals, the final official rankings of the season are published the Monday after those events.',
+  },
+  {
+    q: "What's the difference between ATP and WTA ranking calculations?",
+    a: "Both tours use a 52-week rolling system, but two key differences exist. (1) Results counted: ATP counts a player's best 19 results, WTA counts the best 16. (2) Mandatory-event structure: each tour designates certain tournaments as mandatory, and skipping them counts as a zero-point result, which can drag the ranking down. Both tours award 2,000 points for winning a Grand Slam.",
+  },
+  {
+    q: 'What is a "Race" in tennis rankings?',
+    a: 'The Race (ATP Race to Turin / WTA Race to the WTA Finals) is a year-to-date points-only standings that tracks who qualifies for the year-end championships. Unlike the regular rankings (rolling 52 weeks), the Race only counts points earned in the current calendar year. The top 8 in the Race at season\'s end qualify for the ATP Finals / WTA Finals.',
+  },
+  {
+    q: 'Can a player drop in rankings without playing?',
+    a: "Yes. If a player skips an event where they earned points 52 weeks earlier, those old points expire ('drop off') without being replaced, lowering their total. This is why injured players and those on extended breaks see steady ranking drops even while resting. Both tours offer 'protected ranking' status to players returning from long absences (typically 6+ months for injury, or maternity for WTA).",
+  },
+  {
+    q: 'Are there separate rankings for doubles?',
+    a: 'Yes. Both ATP and WTA maintain a separate doubles ranking, calculated independently from singles. Many top doubles specialists never play singles at all. The doubles ranking uses similar 52-week rolling logic but with different point distributions and mandatory-event lists.',
+  },
+  {
+    q: 'How do rankings affect tournament seeding?',
+    a: 'Tournament seeding is based on the official ranking the day the draw is made. The top 32 players in singles (or top 16 in smaller draws) are placed at fixed positions to ensure top seeds don\'t meet until later rounds. A player ranked No. 1 cannot face the No. 2 before the final, the No. 3 or 4 cannot meet the top two before the semifinals, and so on through quarterfinals (5-8), round of 16 (9-16), and round of 32 (17-32).',
+  },
+  {
+    q: 'What is "defending points"?',
+    a: "A player is 'defending points' at a tournament when they earned points at the same tournament 52 weeks ago that are about to expire. To keep their ranking stable, they need to match (or beat) their previous result. If Player X won 1,000 points by reaching the final of a tournament last year, they're defending 1,000 points this year — losing in the first round means they lose 990 points (1,000 expiring, only 10 earned).",
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/rankings/how-tennis-rankings-work/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: {
+    '@type': 'Person',
+    name: 'Alex Morgan',
+    url: 'https://super.tennis/authors/alex-morgan/',
+    worksFor: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Rankings', item: 'https://super.tennis/rankings/' },
+    { '@type': 'ListItem', position: 3, name: 'How Rankings Work' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/rankings/">Rankings</a> <span class="sep">/</span>
+      <span class="current">How Rankings Work</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">📊</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/authors/alex-morgan/">Alex Morgan</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <aside class="system-note">
+      <span class="system-note-label">Current System Note</span>
+      <p>This explains the <strong>2026 ATP and WTA rankings systems</strong>. ATP point structure has been stable since the 2024 reform; WTA's 2024 reform restructured mandatory-event rules. If either tour announces a rule change, this page will be updated.</p>
+    </aside>
+
+    <div class="article-body">
+      <h2 id="basics">The Basics: 52-Week Rolling Points</h2>
+      <p>
+        A tennis player's ranking is the sum of points they earned at sanctioned tournaments over the past 52 weeks. Points are awarded for reaching specific rounds — the bigger the tournament, the more points each round is worth.
+      </p>
+      <p>
+        Every Monday after a tournament concludes, two things happen simultaneously to every player who competed there:
+      </p>
+      <ul>
+        <li>They <strong>add</strong> the points they earned this week (whether 10 for a first-round loss or 2,000 for winning a Grand Slam)</li>
+        <li>They <strong>subtract</strong> the points they earned at the same tournament 52 weeks ago (which now "drop off" the rolling window)</li>
+      </ul>
+      <p>
+        This is why a player who reached the final of a tournament last year is "defending points" this year — they need to match that result to keep their ranking stable. Losing earlier means their ranking drops, even if they were playing well.
+      </p>
+
+      <h2 id="results-count">How Many Results Count</h2>
+      <p>
+        Neither tour counts every match a player has played. Each tour caps the number of results that count toward the ranking:
+      </p>
+      <ul>
+        <li><strong>ATP — Best 19 results</strong> over the 52-week window. The mandatory events (Grand Slams + Masters 1000 + ATP Finals if qualified) always count; below those, the player's best 6 results from other tournaments count.</li>
+        <li><strong>WTA — Best 16 results</strong> over the 52-week window. Mandatory Grand Slams + mandatory WTA 1000 events always count; below those, the player's best results from other tournaments count.</li>
+      </ul>
+      <p>
+        For deep details on each tour's exact point distribution, see <a href="/rankings/atp-ranking-points-explained/">ATP ranking points explained</a> and <a href="/rankings/wta-ranking-points-explained/">WTA ranking points explained</a>.
+      </p>
+
+      <h2 id="tournaments">What Counts as a Sanctioned Tournament</h2>
+      <p>
+        Both tours run a tiered tournament schedule. Each tier awards points to the winner:
+      </p>
+      <ul>
+        <li><strong>Grand Slams (Australian Open, Roland Garros, Wimbledon, US Open)</strong> — 2,000 points to the singles champion. Equal on both tours.</li>
+        <li><strong>ATP Masters 1000 / WTA 1000 events</strong> — 1,000 points to the champion. The biggest non-Slam events on each tour.</li>
+        <li><strong>ATP 500 / WTA 500</strong> — 500 points to the champion. Mid-tier events.</li>
+        <li><strong>ATP 250 / WTA 250</strong> — 250 points. Smaller tour events.</li>
+        <li><strong>ATP Finals / WTA Finals</strong> — Year-end championships for the top 8. Up to 1,500 points for an undefeated champion.</li>
+        <li><strong>Challengers / ITF events</strong> — Lower-tier events used by developing players and those climbing back from injury. Smaller point values; results from these tournaments fill the lower slots in the best-N system.</li>
+      </ul>
+
+      <h2 id="mandatory">Mandatory Events</h2>
+      <p>
+        Some tournaments are <strong>mandatory</strong>: top-ranked players must play them, and skipping (without an approved medical reason) counts as a <em>zero-point result</em>. This is one of the most common reasons a top player's ranking drops without them playing at all.
+      </p>
+      <p>
+        Mandatory events typically include:
+      </p>
+      <ul>
+        <li>All four Grand Slams (both tours)</li>
+        <li>The bulk of Masters 1000 / WTA 1000 events (with specific exemptions outlined by each tour each season)</li>
+        <li>The year-end Finals (for players who qualify)</li>
+      </ul>
+
+      <h2 id="rankings-vs-race">Rankings vs Race: What's the Difference?</h2>
+      <p>
+        Both tours run two parallel standings at the same time:
+      </p>
+      <ul>
+        <li><strong>Rankings</strong> (the famous No. 1, No. 2, etc.): a <em>rolling 52-week</em> snapshot. Determines seeding at every tournament. Always the published "world ranking" number.</li>
+        <li><strong>Race</strong> (Race to Turin for ATP / Race to the WTA Finals for WTA): a <em>calendar-year-only</em> standings. Only counts points earned in the current season. Used to determine the 8 qualifiers for the year-end Finals.</li>
+      </ul>
+      <p>
+        The Race and the rankings usually align by the end of the year because the rolling 52-week window has rolled through most of the calendar year. But mid-season they can look very different — a player who had a great late-season run last year might rank No. 5 in the regular rankings but No. 15 in the Race in March.
+      </p>
+
+      <h2 id="live-vs-official">Live Rankings vs Official Rankings</h2>
+      <p>
+        The "live ranking" is a real-time projection of where a player would rank if updated points were applied immediately, mid-tournament. The "official ranking" is the one published every Monday. These differ during tournament weeks — see our full explainer at <a href="/rankings/live-rankings-vs-official-rankings/">live rankings vs official rankings</a> for examples and how to read them.
+      </p>
+
+      <h2 id="protected-rankings">Protected Rankings & Special Cases</h2>
+      <p>
+        Both tours offer a <strong>protected ranking</strong> mechanism for players who are absent due to injury, illness, or pregnancy:
+      </p>
+      <ul>
+        <li>Eligibility typically requires 6+ consecutive months out of competition.</li>
+        <li>The protected ranking is the player's average ranking during the first 3 months of their absence.</li>
+        <li>It can be used to enter a limited number of tournaments (typically 9 main draws + select Slams) for up to 12 months after returning.</li>
+        <li>The protected ranking is used <em>only for entry into tournaments</em> — it does NOT affect seeding or actual world ranking, which still reflects current points.</li>
+      </ul>
+      <p>
+        WTA additionally offers a Special Ranking for players returning from pregnancy, with similar mechanics but extended timelines reflecting the longer absence period.
+      </p>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/rankings/atp-ranking-points-explained/" class="context-card">
+          <span class="context-label">ATP</span>
+          <span class="context-title">ATP Ranking Points Explained</span>
+        </a>
+        <a href="/rankings/wta-ranking-points-explained/" class="context-card">
+          <span class="context-label">WTA</span>
+          <span class="context-title">WTA Ranking Points Explained</span>
+        </a>
+        <a href="/rankings/live-rankings-vs-official-rankings/" class="context-card">
+          <span class="context-label">Live</span>
+          <span class="context-title">Live vs Official Rankings</span>
+        </a>
+        <a href="/rankings/" class="context-card">
+          <span class="context-label">Live Data</span>
+          <span class="context-title">Current ATP & WTA Rankings</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="How Tennis Rankings Work — FAQ" />
+  </article>
+</BaseLayout>
+
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--gray-800);
+  }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p {
+    font-size: 1rem;
+    line-height: 1.75;
+    margin: 0 0 16px;
+  }
+  .article-body ul, .article-body ol {
+    margin: 0 0 16px;
+    padding-left: 22px;
+    line-height: 1.75;
+  }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+  .article-body em { font-style: italic; color: var(--gray-700); }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>

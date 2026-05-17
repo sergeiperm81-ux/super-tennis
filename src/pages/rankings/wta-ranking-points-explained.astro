@@ -1,0 +1,434 @@
+---
+/**
+ * /rankings/wta-ranking-points-explained/ — WTA-specific, table-heavy.
+ * Codex Round 3 evergreen cluster #2.
+ *
+ * Search intent: WTA-specific lookup ("WTA 1000 points", "WTA Finals points",
+ * "WTA mandatory tournaments"). Mirrors the ATP page but with WTA's
+ * 16-best-results system and the 2024 mandatory-event reform.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+
+const title = 'WTA Ranking Points Explained — 2026 Point Distribution | SUPER.TENNIS';
+const h1 = 'WTA Ranking Points Explained';
+const metaDescription = "WTA ranking points 2026: full point distribution tables for Grand Slams, WTA 1000 (mandatory and non-mandatory), WTA 500, WTA 250, WTA Finals, and ITF events. How the best-16 rule works, the 2024 mandatory-tournament reform, and special rankings for maternity returns.";
+const publishedDate = '2026-05-17';
+
+const quickAnswer = "WTA rankings are based on a player's best 16 results over a 52-week rolling window. Grand Slam champions earn 2,000 points; WTA 1000 winners earn 1,000 (with a slightly higher figure at the 'mandatory' 1000 events under the 2024 reform); WTA 500 winners earn 470-500; WTA 250 winners earn 250-280. The WTA Finals year-end championship awards up to 1,500 points to an undefeated champion. Mandatory event status changed in 2024 with the WTA's strategic restructure; skipping a mandatory event counts as a zero-point result.";
+
+const slamTable = [
+  { round: 'Champion (W)', points: '2,000' },
+  { round: 'Final (F)', points: '1,300' },
+  { round: 'Semifinal (SF)', points: '780' },
+  { round: 'Quarterfinal (QF)', points: '430' },
+  { round: 'Round of 16 (R16)', points: '240' },
+  { round: 'Round of 32 (R32)', points: '130' },
+  { round: 'Round of 64 (R64)', points: '70' },
+  { round: 'Round of 128 (R128, first-round win)', points: '10' },
+];
+
+const wta1000Table = [
+  { round: 'Champion (W)', points: '1,000' },
+  { round: 'Final (F)', points: '650' },
+  { round: 'Semifinal (SF)', points: '390' },
+  { round: 'Quarterfinal (QF)', points: '215' },
+  { round: 'Round of 16 (R16)', points: '120' },
+  { round: 'Round of 32 (R32)', points: '65' },
+  { round: 'Round of 64 (R64)', points: '35' },
+];
+
+const wta500Table = [
+  { round: 'Champion (W)', points: '500' },
+  { round: 'Final (F)', points: '325' },
+  { round: 'Semifinal (SF)', points: '195' },
+  { round: 'Quarterfinal (QF)', points: '108' },
+  { round: 'Round of 16 (R16)', points: '60' },
+  { round: 'Round of 32 (R32)', points: '1' },
+];
+
+const wta250Table = [
+  { round: 'Champion (W)', points: '250' },
+  { round: 'Final (F)', points: '163' },
+  { round: 'Semifinal (SF)', points: '98' },
+  { round: 'Quarterfinal (QF)', points: '54' },
+  { round: 'Round of 16 (R16)', points: '30' },
+];
+
+const finalsTable = [
+  { row: 'Round-robin match win', points: '125 each (up to 3 wins = 375)' },
+  { row: 'Semifinal win', points: '330' },
+  { row: 'Final win', points: '750' },
+  { row: 'Maximum (undefeated champion)', points: '~1,500' },
+];
+
+const faqs = [
+  {
+    q: "How many points does a Grand Slam winner get in WTA rankings?",
+    a: "The women's singles champion at any of the four Grand Slams earns 2,000 WTA ranking points — identical to the ATP champion. The runner-up earns 1,300. Semifinalists earn 780 each, quarterfinalists 430, round-of-16 240, round-of-32 130, round-of-64 70, and a first-round win (from R128) earns 10 points.",
+  },
+  {
+    q: 'What is the WTA best-16 rule?',
+    a: "The WTA rankings only count a player's best 16 tournament results over the rolling 52-week period. Mandatory events (all 4 Grand Slams + the mandatory WTA 1000 events + WTA Finals if qualified) always count; the remaining slots go to the player's best results from any other events (WTA 500, 250, ITF, Billie Jean King Cup).",
+  },
+  {
+    q: 'What changed with the WTA 2024 reform?',
+    a: "The 2024 WTA strategic restructure: (1) expanded several WTA 1000 events to 96-draw, 12-day formats matching the ATP equivalents; (2) clarified mandatory-tournament rules; (3) increased prize money commitments at the 1000 level; (4) tightened the maternity-leave protected-ranking framework. The general 52-week rolling, best-16 logic was preserved.",
+  },
+  {
+    q: 'How much can a player earn at the WTA Finals?',
+    a: "At the WTA Finals (year-end championship for the top 8), each round-robin match win earns ~125 points. The semifinal winner gets ~330 points, and the final winner gets ~750 points. An undefeated champion earns roughly 1,500 points. The exact per-round figures have been adjusted slightly across recent seasons — check the WTA for the most current breakdown.",
+  },
+  {
+    q: 'How does maternity protected ranking work on the WTA?',
+    a: 'A player returning from pregnancy gets a "Special Ranking" — equal to her ranking on the day she took maternity leave. She can use this ranking to enter up to 12 main draws (including up to 8 Grand Slams) within 3 years of giving birth. The protected ranking is for entry only and does NOT affect seeding or the actual world ranking, which still reflects current points earned. The framework was tightened in the 2024 reform.',
+  },
+  {
+    q: 'Does Billie Jean King Cup count for WTA ranking points?',
+    a: "Yes. The Billie Jean King Cup (formerly Fed Cup) awards WTA ranking points based on rounds reached and matches won. The November Finals carry the highest point values; earlier qualifying and group-stage rounds award smaller amounts. The exact point structure is published by the WTA each season alongside other team-event integrations.",
+  },
+  {
+    q: 'Do WTA 125 (ITF/Challenger) events count?',
+    a: 'Yes. WTA 125 events (the bridge tier between ITF World Tour and the main WTA Tour) award up to 160 points to the champion. Higher-tier ITF World Tour events (W100/W75/W60/W35/W15) also contribute points, especially for players in the 100-500 ranking range. These results fill the lower slots of the best-16 system.',
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/rankings/wta-ranking-points-explained/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: {
+    '@type': 'Person',
+    name: 'Alex Morgan',
+    url: 'https://super.tennis/authors/alex-morgan/',
+    worksFor: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Rankings', item: 'https://super.tennis/rankings/' },
+    { '@type': 'ListItem', position: 3, name: 'WTA Ranking Points' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/rankings/">Rankings</a> <span class="sep">/</span>
+      <span class="current">WTA Ranking Points</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">🎾</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/authors/alex-morgan/">Alex Morgan</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <aside class="system-note">
+      <span class="system-note-label">Current System Note</span>
+      <p>Point tables reflect the <strong>WTA 2024 reform</strong>, still in effect for the 2026 season. The strategic restructure expanded several WTA 1000 events to 96-draw / 12-day formats, clarified mandatory-tournament rules, increased prize money at the 1000 level, and tightened the maternity protected-ranking framework. Exact figures may be adjusted by the WTA annually — check the official WTA site for in-cycle changes.</p>
+    </aside>
+
+    <div class="article-body">
+      <h2 id="grand-slams">Grand Slam Points (W: 2,000)</h2>
+      <p>
+        All four Grand Slams (Australian Open, Roland Garros, Wimbledon, US Open) award 2,000 points to the women's singles champion. WTA Grand Slam matches are <a href="/rules/how-many-sets-in-tennis/">best-of-three sets</a>, with a 10-point tiebreak in the deciding set since 2022.
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Round Reached</th><th>Points</th></tr></thead>
+          <tbody>
+            {slamTable.map(r => <tr><td>{r.round}</td><td><strong>{r.points}</strong></td></tr>)}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="wta-1000">WTA 1000 (W: 1,000)</h2>
+      <p>
+        Examples: Indian Wells, Miami Open, Madrid Open, Italian Open (Rome), Canadian Open, Cincinnati Open, China Open (Beijing), Wuhan Open, Dubai, Doha. The biggest non-Slam events on the WTA tour, with significant prize money and mandatory status for top-ranked players.
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Round Reached</th><th>Points</th></tr></thead>
+          <tbody>
+            {wta1000Table.map(r => <tr><td>{r.round}</td><td><strong>{r.points}</strong></td></tr>)}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="wta-500">WTA 500 (W: 500)</h2>
+      <p>
+        Examples: Adelaide International, Stuttgart Open, Berlin Open, Eastbourne, Washington Open, Tokyo, Hong Kong. About 12-14 events per season.
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Round Reached</th><th>Points</th></tr></thead>
+          <tbody>
+            {wta500Table.map(r => <tr><td>{r.round}</td><td><strong>{r.points}</strong></td></tr>)}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="wta-250">WTA 250 (W: 250)</h2>
+      <p>
+        About 18-20 events per season — entry-point WTA tour stops, often the path for rising players from ITF World Tour into the WTA top 100.
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Round Reached</th><th>Points</th></tr></thead>
+          <tbody>
+            {wta250Table.map(r => <tr><td>{r.round}</td><td><strong>{r.points}</strong></td></tr>)}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="wta-finals">WTA Finals (Up to ~1,500)</h2>
+      <p>
+        The WTA Finals is the year-end championship for the top 8 ranked players. Points are <strong>cumulative</strong>: each round-robin match win earns roughly 125 points, the semifinal win adds ~330, and the final win adds ~750. An undefeated champion can earn roughly 1,500 total. Exact per-round numbers are adjusted by the WTA each season.
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Achievement</th><th>Points</th></tr></thead>
+          <tbody>
+            {finalsTable.map(r => <tr><td>{r.row}</td><td><strong>{r.points}</strong></td></tr>)}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="best-16">The Best-16 Rule</h2>
+      <p>
+        A WTA ranking is the sum of the player's <strong>best 16 results</strong> over the rolling 52-week window. Mandatory events fill the first slots automatically (whether or not the player participated — a no-show counts as zero). The rest is filled from the player's best other results.
+      </p>
+      <p>
+        Compared to the ATP best-19 system, the smaller WTA cap means each result has slightly more weight on the WTA. Strong WTA 500 and 250 performances can move a player up the rankings faster than equivalent ATP 500/250 wins would on the men's side.
+      </p>
+
+      <h2 id="protected-ranking">Protected Ranking & Special Ranking</h2>
+      <p>
+        Two return-to-tour frameworks for WTA players:
+      </p>
+      <ul>
+        <li><strong>Protected Ranking</strong> — for players returning from a non-pregnancy long absence (typically 6+ months for injury or illness). Equal to the player's average ranking over the first 3 months of absence. Usable to enter up to 9 main draws within 9 months of returning.</li>
+        <li><strong>Special Ranking</strong> — for players returning from pregnancy. Equal to the player's ranking on the day she took leave. Usable to enter up to 12 main draws including up to 8 Grand Slams within 3 years of birth. The 2024 reform expanded this framework.</li>
+      </ul>
+      <p>
+        Neither affects seeding or actual ranking; both are for tournament entry only.
+      </p>
+
+      <h2 id="differences-from-atp">Key Differences from ATP Rankings</h2>
+      <ul>
+        <li><strong>Best 16</strong> instead of ATP's best 19 — each WTA tournament has slightly more weight.</li>
+        <li><strong>Slightly different per-round point values</strong> — Slam SF on WTA is 780 vs ATP's 800; WTA QF is 430 vs ATP's 400. The differences are minor but real.</li>
+        <li><strong>Different mandatory event lists</strong> — both tours have their own mandatory schedule based on their respective tour calendars.</li>
+        <li><strong>Special Ranking for maternity</strong> — WTA-specific; ATP has no equivalent because the situation doesn't arise on the men's tour.</li>
+      </ul>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/rankings/how-tennis-rankings-work/" class="context-card">
+          <span class="context-label">Hub</span>
+          <span class="context-title">How Tennis Rankings Work</span>
+        </a>
+        <a href="/rankings/atp-ranking-points-explained/" class="context-card">
+          <span class="context-label">ATP</span>
+          <span class="context-title">ATP Ranking Points Explained</span>
+        </a>
+        <a href="/rankings/live-rankings-vs-official-rankings/" class="context-card">
+          <span class="context-label">Live</span>
+          <span class="context-title">Live vs Official Rankings</span>
+        </a>
+        <a href="/tournaments/wta-finals-guide/" class="context-card">
+          <span class="context-label">Tournament</span>
+          <span class="context-title">WTA Finals Guide</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="WTA Ranking Points — FAQ" />
+  </article>
+</BaseLayout>
+
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--gray-800);
+  }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p { font-size: 1rem; line-height: 1.75; margin: 0 0 16px; }
+  .article-body ul, .article-body ol { margin: 0 0 16px; padding-left: 22px; line-height: 1.75; }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+
+  .points-table-wrap { overflow-x: auto; margin: 8px 0 24px; }
+  .points-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  .points-table th, .points-table td {
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .points-table th {
+    background: var(--gray-50);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-700);
+    font-weight: 700;
+  }
+  .points-table td:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--court-green);
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>

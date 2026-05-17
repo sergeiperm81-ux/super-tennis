@@ -1,0 +1,471 @@
+---
+/**
+ * /rankings/atp-ranking-points-explained/ — ATP-specific, table-heavy.
+ * Codex Round 3 evergreen cluster #2 (Rankings Explained).
+ *
+ * Search intent: "how many points for X tournament", "ATP Masters 1000 points",
+ * "ATP 500 points table". Practical, lookup-oriented page.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+
+const title = 'ATP Ranking Points Explained — 2026 Point Distribution | SUPER.TENNIS';
+const h1 = 'ATP Ranking Points Explained';
+const metaDescription = "ATP ranking points 2026: full point distribution tables for Grand Slams, Masters 1000 (96-draw and 56-draw), ATP 500, ATP 250, ATP Finals, and Challengers. How the best-19 rule works and how points actually expire.";
+const publishedDate = '2026-05-17';
+
+const quickAnswer = "ATP rankings are based on a player's best 19 results over a 52-week rolling window. Grand Slam champions earn 2,000 points; Masters 1000 winners earn 1,000; ATP 500 winners earn 500; ATP 250 winners earn 250. The ATP Finals year-end championship can award up to 1,500 points to an undefeated champion. Players must play the mandatory events (all 4 Grand Slams + the qualifying Masters 1000 set), or those slots count as zeros. The 2024 ATP point restructure expanded most Masters 1000 events to 96-draw / 12-day formats, with slightly stretched point tables for those tournaments.";
+
+const slamTable = [
+  { round: 'Champion (W)', points: '2,000' },
+  { round: 'Final (F)', points: '1,300' },
+  { round: 'Semifinal (SF)', points: '800' },
+  { round: 'Quarterfinal (QF)', points: '400' },
+  { round: 'Round of 16 (R16)', points: '200' },
+  { round: 'Round of 32 (R32)', points: '100' },
+  { round: 'Round of 64 (R64)', points: '50' },
+  { round: 'Round of 128 (R128, first-round win)', points: '10' },
+];
+
+const masters96Table = [
+  { round: 'Champion (W)', points: '1,000' },
+  { round: 'Final (F)', points: '650' },
+  { round: 'Semifinal (SF)', points: '400' },
+  { round: 'Quarterfinal (QF)', points: '200' },
+  { round: 'Round of 16 (R16)', points: '100' },
+  { round: 'Round of 32 (R32)', points: '50' },
+  { round: 'Round of 64 (R64)', points: '30' },
+  { round: 'Round of 128 (R128, first-round win)', points: '10' },
+];
+
+const masters56Table = [
+  { round: 'Champion (W)', points: '1,000' },
+  { round: 'Final (F)', points: '650' },
+  { round: 'Semifinal (SF)', points: '400' },
+  { round: 'Quarterfinal (QF)', points: '200' },
+  { round: 'Round of 16 (R16)', points: '100' },
+  { round: 'Round of 32 (R32)', points: '50' },
+];
+
+const atp500Table = [
+  { round: 'Champion (W)', points: '500' },
+  { round: 'Final (F)', points: '330' },
+  { round: 'Semifinal (SF)', points: '200' },
+  { round: 'Quarterfinal (QF)', points: '100' },
+  { round: 'Round of 16 (R16)', points: '50' },
+  { round: 'Round of 32 (R32)', points: '25' },
+];
+
+const atp250Table = [
+  { round: 'Champion (W)', points: '250' },
+  { round: 'Final (F)', points: '165' },
+  { round: 'Semifinal (SF)', points: '100' },
+  { round: 'Quarterfinal (QF)', points: '50' },
+  { round: 'Round of 16 (R16)', points: '25' },
+];
+
+const finalsTable = [
+  { row: 'Round-robin match win', points: '200 each (up to 3 wins = 600)' },
+  { row: 'Semifinal win', points: '400' },
+  { row: 'Final win', points: '500' },
+  { row: 'Maximum (undefeated champion)', points: '1,500' },
+];
+
+const faqs = [
+  {
+    q: 'How many points does a Grand Slam winner get in ATP rankings?',
+    a: 'The men\'s singles champion at any of the four Grand Slams earns 2,000 ATP ranking points. The runner-up earns 1,300. Semifinalists earn 800 each, quarterfinalists 400, round-of-16 200, round-of-32 100, round-of-64 50, and any player who wins their first-round match (advancing from the round of 128) earns 10 points.',
+  },
+  {
+    q: 'What is the ATP best-19 rule?',
+    a: "The ATP rankings only count a player's best 19 tournament results over the rolling 52-week period. Within those 19, the mandatory events (4 Grand Slams + 8-9 qualifying Masters 1000 events + ATP Finals if the player qualifies) always count. The remaining slots go to the player's best results from other ATP events (500s, 250s, Olympic medal, Davis Cup, Challengers).",
+  },
+  {
+    q: 'What happens if an ATP player skips a mandatory event?',
+    a: 'Skipping a mandatory event counts as a zero-point result in the player\'s best-19. The previous year\'s points at that tournament expire and are not replaced. Top-100 players who repeatedly skip mandatory events (without approved medical exemption) face fines and tour-disciplinary measures, in addition to the ranking drop.',
+  },
+  {
+    q: 'How much can a player earn at the ATP Finals?',
+    a: "At the ATP Finals (year-end championship for the top 8), each round-robin match win earns 200 points. The semifinal winner gets an additional 400 points, and the final winner gets another 500. An undefeated champion (3 round-robin wins + SF + F) earns the maximum 1,500 points. A champion who lost a round-robin match but still made the final can still earn up to 1,500 by winning the title.",
+  },
+  {
+    q: 'Do Challenger and ITF event points count toward ATP rankings?',
+    a: "Yes. ATP Challenger Tour events (Challenger 50/75/100/125/175) and the highest-tier ITF Futures awards points that count toward the ATP world ranking. They fill the lower slots in the best-19 system once mandatory and main tour events are accounted for. Challenger 175 winners earn 175 points; Challenger 100 winners earn 100; smaller ones earn less.",
+  },
+  {
+    q: 'Does the Olympics give ATP ranking points?',
+    a: "From 2024 onwards, Olympic singles medals award ranking points: 400 for gold, 280 for silver, 180 for bronze, plus smaller amounts for earlier rounds. From 2008 to 2020 the Olympics gave variable points (and zero in 2024 before being reinstated). The exact 2026 point structure for Olympic tennis is confirmed for LA28 — check the ATP for any in-cycle adjustments.",
+  },
+  {
+    q: 'How many Masters 1000 events are there in 2026?',
+    a: 'There are 9 ATP Masters 1000 events: Indian Wells, Miami Open, Monte-Carlo Masters, Madrid Open, Italian Open (Rome), Canadian Open (Toronto/Montreal), Cincinnati Open, Shanghai Masters, and Paris Masters. Five of them (Indian Wells, Miami, Madrid, Rome, Shanghai) use 96-player draws spanning 12 days; the other four use the older 56-draw / 1-week format.',
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/rankings/atp-ranking-points-explained/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: {
+    '@type': 'Person',
+    name: 'Alex Morgan',
+    url: 'https://super.tennis/authors/alex-morgan/',
+    worksFor: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Rankings', item: 'https://super.tennis/rankings/' },
+    { '@type': 'ListItem', position: 3, name: 'ATP Ranking Points' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/rankings/">Rankings</a> <span class="sep">/</span>
+      <span class="current">ATP Ranking Points</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">🎾</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/authors/alex-morgan/">Alex Morgan</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <aside class="system-note">
+      <span class="system-note-label">Current System Note</span>
+      <p>Point tables on this page reflect the <strong>2024 ATP point restructure</strong>, still in effect for the 2026 season. Five Masters 1000 events now use 96-draw / 12-day formats with slightly stretched point tables; the other four keep the older 56-draw / 1-week format.</p>
+    </aside>
+
+    <div class="article-body">
+      <h2 id="grand-slams">Grand Slam Points (W: 2,000)</h2>
+      <p>
+        All four Grand Slams (Australian Open, Roland Garros, Wimbledon, US Open) award identical points. The men's singles draw is 128 players (best-of-five sets — see <a href="/rules/how-many-sets-in-tennis/">match format rules</a>).
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Round Reached</th><th>Points</th></tr></thead>
+          <tbody>
+            {slamTable.map(r => <tr><td>{r.round}</td><td><strong>{r.points}</strong></td></tr>)}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="masters-1000-96">Masters 1000 — 96-Draw Events (W: 1,000)</h2>
+      <p>
+        Used at <strong>Indian Wells, Miami Open, Madrid Open, Italian Open (Rome), and Shanghai Masters</strong>. These events run 12 days and use 96-player draws (32 seeds get a first-round bye).
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Round Reached</th><th>Points</th></tr></thead>
+          <tbody>
+            {masters96Table.map(r => <tr><td>{r.round}</td><td><strong>{r.points}</strong></td></tr>)}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="masters-1000-56">Masters 1000 — 56-Draw Events (W: 1,000)</h2>
+      <p>
+        Used at <strong>Monte-Carlo, Canadian Open, Cincinnati Open, and Paris Masters</strong>. These events run 1 week with 56-player draws (top 8 seeds get first-round byes).
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Round Reached</th><th>Points</th></tr></thead>
+          <tbody>
+            {masters56Table.map(r => <tr><td>{r.round}</td><td><strong>{r.points}</strong></td></tr>)}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="atp-500">ATP 500 (W: 500)</h2>
+      <p>
+        Examples: Barcelona Open, Halle Open, Queen's Club, Vienna Open, Tokyo, Rotterdam, Dubai, Rio Open, Acapulco.
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Round Reached</th><th>Points</th></tr></thead>
+          <tbody>
+            {atp500Table.map(r => <tr><td>{r.round}</td><td><strong>{r.points}</strong></td></tr>)}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="atp-250">ATP 250 (W: 250)</h2>
+      <p>
+        The smallest tour tier, with about 30 events worldwide. Useful for top players to build form, and the main path for rising players to enter the top 100.
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Round Reached</th><th>Points</th></tr></thead>
+          <tbody>
+            {atp250Table.map(r => <tr><td>{r.round}</td><td><strong>{r.points}</strong></td></tr>)}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="atp-finals">ATP Finals (Up to 1,500)</h2>
+      <p>
+        The ATP Finals (held in Turin through 2025, then moving venues) is the year-end championship for the top 8 ranked players. Points are <strong>cumulative</strong>: a player earns 200 for each round-robin match win, plus 400 for the semifinal win, plus 500 for the final win.
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Achievement</th><th>Points</th></tr></thead>
+          <tbody>
+            {finalsTable.map(r => <tr><td>{r.row}</td><td><strong>{r.points}</strong></td></tr>)}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="best-19">The Best-19 Rule</h2>
+      <p>
+        A player's ATP ranking is the sum of their <strong>best 19 results</strong> over the past 52 weeks. The 19 slots are filled in this priority order:
+      </p>
+      <ol>
+        <li>All 4 Grand Slams (whether or not the player participated)</li>
+        <li>The qualifying Masters 1000 events (per the player's mandatory list — typically 8 of the 9)</li>
+        <li>ATP Finals (if the player qualified)</li>
+        <li>The player's best remaining results from any other counting events (ATP 500, 250, Challengers, Olympics, Davis Cup)</li>
+      </ol>
+      <p>
+        Skipping a mandatory event puts a zero in that slot. Skipping a non-mandatory tournament doesn't penalize the player at all — they simply earn 0 from that event and might fill the slot with a better result elsewhere.
+      </p>
+
+      <h2 id="examples">Worked Example</h2>
+      <p>
+        Imagine an ATP top-20 player ending the season with the following best results:
+      </p>
+      <ul>
+        <li>Wimbledon SF — 800 points</li>
+        <li>Australian Open QF — 400</li>
+        <li>Roland Garros R16 — 200</li>
+        <li>US Open R32 — 100</li>
+        <li>Indian Wells F — 650</li>
+        <li>Miami SF — 400</li>
+        <li>Rome QF — 200</li>
+        <li>Madrid R16 — 100</li>
+        <li>Shanghai R32 — 50</li>
+        <li>Monte Carlo SF — 400</li>
+        <li>Canada QF — 200</li>
+        <li>Cincinnati R16 — 100</li>
+        <li>Paris R32 — 50</li>
+        <li>Queen's W — 500</li>
+        <li>Dubai SF — 200</li>
+        <li>Halle QF — 100</li>
+        <li>Vienna W — 500</li>
+        <li>Tokyo F — 330</li>
+        <li>Rotterdam SF — 200</li>
+      </ul>
+      <p>
+        Total: <strong>5,580 points</strong>, roughly top-10. The takeaway: deep Slam runs (800 for a SF) and Masters 1000 wins are the foundation; ATP 500 wins fill the remaining slots.
+      </p>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/rankings/how-tennis-rankings-work/" class="context-card">
+          <span class="context-label">Hub</span>
+          <span class="context-title">How Tennis Rankings Work</span>
+        </a>
+        <a href="/rankings/wta-ranking-points-explained/" class="context-card">
+          <span class="context-label">WTA</span>
+          <span class="context-title">WTA Ranking Points Explained</span>
+        </a>
+        <a href="/rankings/live-rankings-vs-official-rankings/" class="context-card">
+          <span class="context-label">Live</span>
+          <span class="context-title">Live vs Official Rankings</span>
+        </a>
+        <a href="/tournaments/atp-finals-complete-guide/" class="context-card">
+          <span class="context-label">Tournament</span>
+          <span class="context-title">ATP Finals Guide</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="ATP Ranking Points — FAQ" />
+  </article>
+</BaseLayout>
+
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--gray-800);
+  }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p { font-size: 1rem; line-height: 1.75; margin: 0 0 16px; }
+  .article-body ul, .article-body ol { margin: 0 0 16px; padding-left: 22px; line-height: 1.75; }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+
+  .points-table-wrap { overflow-x: auto; margin: 8px 0 24px; }
+  .points-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  .points-table th, .points-table td {
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .points-table th {
+    background: var(--gray-50);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-700);
+    font-weight: 700;
+  }
+  .points-table td:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--court-green);
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>

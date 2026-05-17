@@ -12266,14 +12266,6 @@
     </image:image>
   </url>
   <url>
-    <loc>https://super.tennis/news/2026-05-17-key-moments-from-sinner-medvedev-semifinal-vomiting-panic-attack-and-umpire-dispute/</loc>
-    <image:image>
-      <image:loc>https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Andrey_Medvedev_2012.JPG/500px-Andrey_Medvedev_2012.JPG</image:loc>
-      <image:title>Key Moments from Sinner-Medvedev Semifinal: Vomiting, Panic Attack, and Umpire Dispute</image:title>
-      <image:caption>The semifinal match between Jannik Sinner and Daniil Medvedev featured dramatic moments, including Sinner vomiting and a tense argument with the umpire.</image:caption>
-    </image:image>
-  </url>
-  <url>
     <loc>https://super.tennis/news/2026-03-25-logan-lerman-turns-heads-with-shirtless-tennis-match-in-l-a/</loc>
     <image:image>
       <image:loc>https://super.tennis/images/news/equip-05.webp</image:loc>
@@ -12447,14 +12439,6 @@
       <image:loc>https://super.tennis/images/news/atmo-07.webp</image:loc>
       <image:title>Tense Moment: Chris Eubanks and Coco Vandeweghe Clash at Indian Wells</image:title>
       <image:caption>Tensions rose at Indian Wells as Chris Eubanks rolled his eyes at Coco Vandeweghe during a live broadcast. The unexpected exchange left viewers buzzing about the dynamic between these two players and </image:caption>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://super.tennis/news/2026-05-17-sinner-advances-to-italian-open-final-against-ruud/</loc>
-    <image:image>
-      <image:loc>https://super.tennis/images/news/atmo-08.webp</image:loc>
-      <image:title>Sinner Advances to Italian Open Final Against Ruud</image:title>
-      <image:caption>Jannik Sinner has successfully advanced to the Italian Open final after overcoming Daniil Medvedev in a challenging semifinal.</image:caption>
     </image:image>
   </url>
   <url>
@@ -13386,6 +13370,14 @@
     </image:image>
   </url>
   <url>
+    <loc>https://super.tennis/news/2026-05-17-key-moments-from-sinner-medvedev-semifinal-vomiting-panic-attack-and-umpire-dispute/</loc>
+    <image:image>
+      <image:loc>https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Andrey_Medvedev_2012.JPG/500px-Andrey_Medvedev_2012.JPG</image:loc>
+      <image:title>Key Moments from Sinner-Medvedev Semifinal: Vomiting, Panic Attack, and Umpire Dispute</image:title>
+      <image:caption>The semifinal match between Jannik Sinner and Daniil Medvedev featured dramatic moments, including Sinner vomiting and a tense argument with the umpire.</image:caption>
+    </image:image>
+  </url>
+  <url>
     <loc>https://super.tennis/news/2026-04-01-shocking-withdrawal-surge-jack-draper-joins-djokovic-in-monte-carlo-exit/</loc>
     <image:image>
       <image:loc>https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Draper_MCM23_%2855%29_%2852883527225%29.jpg/500px-Draper_MCM23_%2855%29_%2852883527225%29.jpg</image:loc>
@@ -13471,6 +13463,14 @@
       <image:loc>https://super.tennis/images/news/court-12.webp</image:loc>
       <image:title>Tennis Player Faces Five-Year Suspension for Match-Fixing</image:title>
       <image:caption>A tennis player has been handed a staggering five-year ban after admitting to match-fixing allegations. This shocking turn of events has sent ripples through the sport, raising critical questions abou</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://super.tennis/news/2026-05-17-sinner-advances-to-italian-open-final-against-ruud/</loc>
+    <image:image>
+      <image:loc>https://super.tennis/images/news/atmo-08.webp</image:loc>
+      <image:title>Sinner Advances to Italian Open Final Against Ruud</image:title>
+      <image:caption>Jannik Sinner has successfully advanced to the Italian Open final after overcoming Daniil Medvedev in a challenging semifinal.</image:caption>
     </image:image>
   </url>
   <url>

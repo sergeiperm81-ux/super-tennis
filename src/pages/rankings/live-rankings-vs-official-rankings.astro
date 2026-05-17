@@ -1,0 +1,384 @@
+---
+/**
+ * /rankings/live-rankings-vs-official-rankings/ — Different intent: live vs official.
+ * Codex Round 3 evergreen cluster #2.
+ *
+ * Search intent: confused viewer mid-tournament. "Why is the live ranking
+ * different from the official ranking?" Doesn't overlap with the ATP/WTA
+ * points pages; doesn't overlap with the how-it-works hub.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+
+const title = 'Live Rankings vs Official Rankings — What\'s the Difference? | SUPER.TENNIS';
+const h1 = 'Live Rankings vs Official Rankings';
+const metaDescription = 'Live rankings vs official rankings explained: how live rankings are calculated in real time during a tournament, why they differ from the Monday official rankings, when live becomes official, and how to interpret "if she wins this match, she becomes No. 1" scenarios.';
+const publishedDate = '2026-05-17';
+
+const quickAnswer = "Official rankings are published every Monday by the ATP and WTA. Live rankings are an unofficial real-time projection of where a player would rank if their current tournament points were applied immediately and the prior year's expiring points dropped off now. During a tournament week, a player's live ranking changes after every match — a winning streak can take them past higher-ranked players who haven't played that week. Live becomes official the Monday after the tournament's last match. Live rankings are tracked by third-party sites (LiveTennis, ATPLiveRankings, TennisLiveRanking.com) — the ATP and WTA themselves only publish the weekly official version.";
+
+const faqs = [
+  {
+    q: 'What is a "live ranking" in tennis?',
+    a: "A live ranking is a projection of where a player would currently rank if updated points were applied immediately. It accounts for: (1) points the player is earning at the in-progress tournament, and (2) points from the same tournament 52 weeks ago that are about to expire. It's not published by the ATP or WTA — it's calculated by third-party sites that track results match-by-match.",
+  },
+  {
+    q: 'When does a live ranking become the official ranking?',
+    a: "The Monday after the tournament ends. ATP and WTA publish the new weekly official rankings every Monday morning, reflecting the results of tournaments that finished the previous Sunday (or Saturday for some events). At that moment, the live ranking becomes the official one and the cycle resets for the new week's tournaments.",
+  },
+  {
+    q: 'Why does the live ranking differ from the official one mid-tournament?',
+    a: 'Three reasons: (1) the player is earning points THIS week that aren\'t yet in the official ranking; (2) last year\'s points at the same tournament are about to drop off but haven\'t expired yet officially; (3) other players are simultaneously gaining/losing points whose net effect can shuffle positions. The official ranking lags by up to a week, so it doesn\'t reflect any in-progress tournament drama.',
+  },
+  {
+    q: '"If she wins this match, she becomes No. 1" — how is that calculated?',
+    a: 'Commentators use live-ranking math: they project each player\'s current and future point totals under different scenarios. If Player A is defending 700 points (last year\'s SF) and Player B is defending 200 (last year\'s QF), then a Player B run to the final this year shifts the live ranking enough to potentially overtake Player A. These projections are based on third-party live trackers, not ATP/WTA official systems.',
+  },
+  {
+    q: 'Where can I see live rankings?',
+    a: "Third-party sites that track live rankings include LiveTennis.com, ATPLiveRankings.com, and TennisLiveRanking.com (the source SUPER.TENNIS uses for its rankings data). The ATP and WTA themselves don't publish live rankings — only the weekly Monday official version.",
+  },
+  {
+    q: 'Are live rankings always accurate?',
+    a: 'Third-party live rankings are usually very accurate for the top 100, where every match is tracked. They can be slightly off for lower-ranked players whose Challenger/ITF results may be updated with a delay. Walkovers, retirements, and emergency rule changes can also create small temporary discrepancies between trackers.',
+  },
+  {
+    q: 'What\'s the difference between "live ranking" and "live race"?',
+    a: "Live ranking projects the rolling 52-week ranking. Live Race projects the calendar-year-only Race standings (Race to Turin for ATP, Race to the WTA Finals for WTA) — important during the second half of the season to track who's on track to qualify for the year-end Finals. Both run in parallel.",
+  },
+];
+
+const examples = [
+  {
+    title: 'Mid-tournament climb',
+    body: "Player X enters Miami ranked No. 12 with 2,500 points. She wins three matches at Miami this week (240 + 60 + 120 = 420 points). Her live ranking now shows ~2,920 points. Players ranked No. 9, 10, 11 ahead of her have only added 0-30 points this week. By Friday, X's live ranking has climbed to No. 9 — but the official ranking still says No. 12 until the Monday update.",
+  },
+  {
+    title: 'Defending points scenario',
+    body: 'Player Y won Madrid 12 months ago (1,000 points). This year he loses in the second round at Madrid (60 points). Mid-tournament, Y is already losing 940 points (1,000 expiring, 60 earned). His live ranking can drop 4-6 positions before Madrid even ends. Meanwhile his official ranking — still calculated as of the last Monday — looks fine until the Monday after Madrid concludes.',
+  },
+  {
+    title: 'Race to No. 1',
+    body: 'Going into the US Open, Player A is No. 1 with 9,500 points, defending 800 from last year\'s SF. Player B is No. 2 with 9,200 points, defending only 200 from last year\'s R32. A reaches the final this year (1,300 points): net +500 vs defending. B wins the title (2,000 points): net +1,800 vs defending. Result: B finishes US Open with a live total of 11,000 vs A\'s 10,000 — and B becomes live No. 1 the moment he wins championship point.',
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/rankings/live-rankings-vs-official-rankings/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: {
+    '@type': 'Person',
+    name: 'Alex Morgan',
+    url: 'https://super.tennis/authors/alex-morgan/',
+    worksFor: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Rankings', item: 'https://super.tennis/rankings/' },
+    { '@type': 'ListItem', position: 3, name: 'Live vs Official' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/rankings/">Rankings</a> <span class="sep">/</span>
+      <span class="current">Live vs Official</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">📡</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/authors/alex-morgan/">Alex Morgan</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <aside class="system-note">
+      <span class="system-note-label">Current System Note</span>
+      <p>This page describes live vs official rankings as published in 2026. Both ATP and WTA continue to update only on <strong>Monday mornings</strong>; live rankings remain unofficial third-party projections. If either tour starts publishing intra-week official updates, this page will be revised.</p>
+    </aside>
+
+    <div class="article-body">
+      <h2 id="official">What "Official Ranking" Means</h2>
+      <p>
+        The official tennis ranking is the one the ATP and WTA publish on their respective websites every Monday morning. It's a snapshot frozen until the next Monday — even if a player wins a Grand Slam on a Sunday, their official ranking doesn't reflect it until the following day.
+      </p>
+      <p>
+        Official rankings are used for:
+      </p>
+      <ul>
+        <li><strong>Tournament seeding</strong> — the draw is made using the official ranking on the cutoff date (typically the Monday two weeks before the event)</li>
+        <li><strong>Tournament entry</strong> — players are accepted into main draws and qualifying draws based on their official ranking</li>
+        <li><strong>Wildcards and special exemptions</strong> — eligibility is checked against the official ranking</li>
+        <li><strong>Year-end awards and bonuses</strong> — finishing the year at No. 1 in the official ranking is the year-end championship benchmark</li>
+      </ul>
+
+      <h2 id="live">What "Live Ranking" Means</h2>
+      <p>
+        A live ranking is a real-time projection: <em>what the ranking would be if updated right now</em>. Third-party trackers calculate this by:
+      </p>
+      <ol>
+        <li>Starting with the last Monday's official ranking</li>
+        <li>Adding points the player has earned this week at the current tournament (round-by-round)</li>
+        <li>Subtracting points the player earned at the same tournament 52 weeks ago that are about to expire</li>
+        <li>Repeating for every player active this week, then re-sorting by total</li>
+      </ol>
+      <p>
+        The result is a dynamic leaderboard that can change after every match. A player on a deep tournament run can climb 5-10 positions in their live ranking over the course of a week.
+      </p>
+
+      <h2 id="why-different">Why Live and Official Differ</h2>
+      <p>
+        During tournament weeks, several factors create a gap between live and official:
+      </p>
+      <ul>
+        <li><strong>Lag</strong> — official is updated weekly, so any in-progress tournament action isn't reflected until the next Monday</li>
+        <li><strong>Defending points</strong> — last year's results expire <em>during</em> the current week, not all at once on Sunday; trackers calculate the net effect in real time</li>
+        <li><strong>Cross-tournament</strong> — when ATP runs two tournaments simultaneously (e.g., a 250 alongside a Masters 1000), live trackers calculate net effects across both, while the official ranking just publishes the combined Monday total</li>
+      </ul>
+
+      <h2 id="examples">Three Scenarios Where Live Matters</h2>
+      {examples.map((ex, i) => (
+        <div class="example-block">
+          <h3>Scenario {i + 1}: {ex.title}</h3>
+          <p>{ex.body}</p>
+        </div>
+      ))}
+
+      <h2 id="when-live-becomes-official">When Live Becomes Official</h2>
+      <p>
+        On the Monday after a tournament's final, the live ranking that crystallized at the moment of the championship match becomes the new official ranking. For Grand Slam fortnights, this is the Monday after the final (typically the Monday following the second Sunday). For 1-week events, the Monday after the Sunday final.
+      </p>
+      <p>
+        Until that moment, the live ranking is informational only — broadcasters and commentators may reference it, but no tournament uses live rankings for seeding or entry decisions.
+      </p>
+
+      <h2 id="where-to-find">Where to Find Live Rankings</h2>
+      <p>
+        Several third-party sites track and publish live rankings:
+      </p>
+      <ul>
+        <li><strong>LiveTennis.com</strong> — popular long-standing tracker, both tours</li>
+        <li><strong>ATPLiveRankings.com</strong> — ATP-focused with detailed projection math</li>
+        <li><strong>TennisLiveRanking.com</strong> — source used by SUPER.TENNIS for its live ranking data, with extensive player profiles</li>
+        <li><strong>Tennis Abstract</strong> — analytical/historical tennis stats including live projections</li>
+      </ul>
+      <p>
+        The ATP and WTA themselves do <em>not</em> publish live rankings — only the official weekly Monday update.
+      </p>
+
+      <h2 id="live-race">Live Rankings vs Live Race</h2>
+      <p>
+        Don't confuse these two:
+      </p>
+      <ul>
+        <li><strong>Live Ranking</strong> — projection of the rolling 52-week ranking. Determines seeding, entry, and the world No. 1 conversation.</li>
+        <li><strong>Live Race</strong> — projection of the calendar-year-only Race standings. Tracks year-end Finals qualification. Resets to zero every January.</li>
+      </ul>
+      <p>
+        During the second half of the season, live-race math becomes the dominant story: who's locked into the ATP Finals, who's still chasing the No. 7/8 spots, who needs a specific run at the US Open to qualify, etc.
+      </p>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/rankings/how-tennis-rankings-work/" class="context-card">
+          <span class="context-label">Hub</span>
+          <span class="context-title">How Tennis Rankings Work</span>
+        </a>
+        <a href="/rankings/atp-ranking-points-explained/" class="context-card">
+          <span class="context-label">ATP</span>
+          <span class="context-title">ATP Ranking Points Explained</span>
+        </a>
+        <a href="/rankings/wta-ranking-points-explained/" class="context-card">
+          <span class="context-label">WTA</span>
+          <span class="context-title">WTA Ranking Points Explained</span>
+        </a>
+        <a href="/rankings/" class="context-card">
+          <span class="context-label">Live Data</span>
+          <span class="context-title">Current ATP & WTA Rankings</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Live vs Official Rankings — FAQ" />
+  </article>
+</BaseLayout>
+
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--gray-800);
+  }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p { font-size: 1rem; line-height: 1.75; margin: 0 0 16px; }
+  .article-body ul, .article-body ol { margin: 0 0 16px; padding-left: 22px; line-height: 1.75; }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+  .article-body em { font-style: italic; color: var(--gray-700); }
+
+  .example-block {
+    margin: 0 0 20px;
+    padding: 14px 18px;
+    background: #f0fdf4;
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .example-block h3 {
+    margin: 0 0 8px;
+    font-size: 0.95rem;
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--gray-900);
+  }
+  .example-block p { margin: 0; font-size: 0.94rem; line-height: 1.65; color: var(--gray-800); }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>
