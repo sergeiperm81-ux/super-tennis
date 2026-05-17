@@ -11,9 +11,29 @@ export default defineConfig({
       serialize(item) {
         const url = item.url;
         const today = new Date().toISOString().split('T')[0];
-        // Static pages that truly change daily get today's date
-        // Article/player pages: lastmod reflects recent build date
-        item.lastmod = today;
+        // 2026-05-17: stop tagging EVERY URL with today's lastmod — Google
+        // discounts this as a false-freshness signal. Now: only true-daily
+        // content (homepage, rankings, calendar, news index) gets today.
+        // Evergreen content gets a stable older date so freshness signals
+        // mean something when articles ARE updated.
+        const truly_daily = url === 'https://super.tennis/' ||
+                            url.includes('/rankings/') ||
+                            url === 'https://super.tennis/news/' ||
+                            url === 'https://super.tennis/calendar/';
+        const stable_2026 = '2026-05-01'; // global evergreen anchor
+        const stable_2025 = '2025-09-01'; // older static pages
+        if (truly_daily) {
+          item.lastmod = today;
+        } else if (url.includes('/news/') || /\/\d{4}-\d{2}-\d{2}-/.test(url)) {
+          // Individual news items keep recent lastmod since they ARE recent
+          item.lastmod = today;
+        } else if (url.includes('/about') || url.includes('/faq') || url.includes('/contact') ||
+                   url.includes('/privacy') || url.includes('/terms') || url.includes('/authors/')) {
+          item.lastmod = stable_2025;
+        } else {
+          // articles, players, vs, gear, lifestyle, records, tournaments — evergreen
+          item.lastmod = stable_2026;
+        }
 
         // Priority tiers:
         // 1.0 — Homepage + Rankings (highest traffic)
@@ -42,20 +62,24 @@ export default defineConfig({
           item.changefreq = 'monthly';
         } else if (
           url.includes('/tournaments/') ||
-          url.includes('/calendar/') ||
-          url.includes('/search/')
+          url.includes('/calendar/')
         ) {
           item.priority = 0.7;
           item.changefreq = 'monthly';
         } else if (
+          url.includes('/search/') ||
           url.includes('/privacy') ||
           url.includes('/terms') ||
           url.includes('/about') ||
           url.includes('/faq') ||
           url.includes('/contact') ||
-          url.includes('/stats/')
+          url.includes('/stats/') ||
+          url.includes('/authors/')
         ) {
-          // Skip utility pages from sitemap
+          // Drop utility / service pages from sitemap — Codex audit 2026-05-17.
+          // Was including /search/ at priority 0.7 (false signal: search is
+          // utility, not landing). Now excluded entirely along with stats/
+          // privacy/terms/about/faq/contact/authors (already excluded — kept).
           return undefined;
         } else {
           item.priority = 0.6;

@@ -172,6 +172,31 @@ const ogImage = categoryOgImages[category || ''] || '/og/default.png';
       <ol class="toc__list" id="toc-list"></ol>
     </nav>
 
+    <!-- Trust block — author + dates + sourcing methodology
+         Added 2026-05-17: strong E-E-A-T + GEO signal. AI assistants and
+         Google's quality raters both look for explicit attribution of who
+         wrote a piece and how facts were verified. -->
+    <aside class="trust-block">
+      <div class="trust-author">
+        <span class="trust-by">By</span>
+        <a href={`https://super.tennis/authors/${articleAuthor.id}/`} rel="author" class="trust-author-name">{articleAuthor.name}</a>
+        <span class="trust-author-title">— {articleAuthor.title}</span>
+      </div>
+      <div class="trust-dates">
+        {publishedDate && (
+          <span><span class="trust-label">Published:</span> {new Date(publishedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+        )}
+        {updatedDate && updatedDate !== publishedDate && (
+          <span><span class="trust-label">Updated:</span> {new Date(updatedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+        )}
+      </div>
+      <div class="trust-method">
+        <span class="trust-label">Sources:</span>
+        ATP Tour · WTA Tour · ITF · Wikipedia · official press conferences.
+        Statistical claims cross-checked against ATPtour.com, WTAtennis.com, and tournament-official records before publication.
+      </div>
+    </aside>
+
     <!-- Affiliate Disclosure (shown on gear/lifestyle articles with affiliate links) -->
     {(category === 'gear' || category === 'lifestyle') && (
       <p class="affiliate-disclosure">This article contains affiliate links. If you purchase through these links, we may earn a small commission at no extra cost to you.</p>
@@ -473,6 +498,43 @@ const ogImage = categoryOgImages[category || ''] || '/og/default.png';
   }
   .toc__list :global(a:hover) {
     color: var(--court-green);
+  }
+
+  /* Trust block — author + dates + sourcing methodology */
+  .trust-block {
+    margin: 0 0 24px;
+    padding: 14px 18px;
+    background: var(--gray-50);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 0.85rem;
+    color: var(--gray-700);
+    line-height: 1.55;
+  }
+  .trust-author { margin-bottom: 4px; }
+  .trust-by { color: var(--gray-500); }
+  .trust-author-name {
+    color: var(--court-green);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .trust-author-name:hover { text-decoration: underline; }
+  .trust-author-title { color: var(--gray-500); }
+  .trust-dates {
+    margin-bottom: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: var(--gray-600);
+    font-size: 0.82rem;
+  }
+  .trust-label {
+    color: var(--gray-500);
+    font-weight: 500;
+  }
+  .trust-method {
+    color: var(--gray-600);
+    font-size: 0.82rem;
   }
 
   /* Affiliate Disclosure */

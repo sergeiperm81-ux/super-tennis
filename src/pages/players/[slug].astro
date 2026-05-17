@@ -295,6 +295,23 @@ const profileArticleHtml = articles['profile'].html;
     <!-- Content Grid: Main + Sidebar -->
     <div class="content-grid">
       <div class="content-main">
+        {/* Quick Answer — AI-citable one-paragraph summary. Added 2026-05-17
+            per GEO audit: gives ChatGPT/Perplexity/Claude search a single
+            compact passage to extract as a direct answer to 'who is X'. */}
+        <section class="quick-answer" id="quick-answer" aria-label={`Quick facts about ${player.first_name} ${player.last_name}`}>
+          <h2 class="qa-label">Quick Answer</h2>
+          <p class="qa-text">
+            <strong>{player.first_name} {player.last_name}</strong> is{age ? ` a ${age}-year-old` : ''} {country} {player.tour === 'atp' ? 'ATP' : 'WTA'} tennis player
+            {player.height_cm ? ` standing ${player.height_cm} cm (${Math.floor(player.height_cm / 2.54 / 12)}'${Math.round(player.height_cm / 2.54 % 12)}") tall` : ''}
+            {player.hand ? `, plays ${(handLabels[player.hand] || player.hand).toLowerCase()}` : ''}.
+            {player.career_titles ? ` Career: ${player.career_titles} ATP/WTA singles title${player.career_titles === 1 ? '' : 's'}` : ''}
+            {player.grand_slam_titles ? ` (including ${player.grand_slam_titles} Grand Slam title${player.grand_slam_titles === 1 ? '' : 's'})` : ''}
+            {(player.career_win || player.career_loss) ? `, career win-loss record ${player.career_win || 0}-${player.career_loss || 0}${winPct ? ` (${winPct}%)` : ''}` : ''}.
+            {(player.career_prize_usd || 0) > 0 ? ` Career prize money: ${formatPrize(player.career_prize_usd)}.` : ''}
+            {player.turned_pro ? ` Turned professional in ${player.turned_pro}.` : ''}
+          </p>
+        </section>
+
         <!-- Quick Facts -->
         <section class="quick-facts" id="facts">
           <div class="section-header">
@@ -869,6 +886,30 @@ const profileArticleHtml = articles['profile'].html;
   }
 
   /* Quick Facts */
+  /* Quick Answer — compact AI-citable summary block */
+  .quick-answer {
+    margin: 0 0 32px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--gray-800);
+  }
+  .qa-text strong { color: var(--gray-900); }
+
   .quick-facts { margin-bottom: 40px; }
   .quick-facts h2,
   .bio-section h2,
