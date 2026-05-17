@@ -1,0 +1,395 @@
+---
+/**
+ * /money/tennis-prize-money-explained/ — How prize money actually works.
+ * Codex Round 3 evergreen cluster #3.
+ *
+ * Search intent: "how does tennis prize money work", "why so much for
+ * Wimbledon", "tennis prize money inflation". The conceptual / system
+ * explainer — not the lookup table (that's the Slam breakdown page).
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+
+const title = 'How Tennis Prize Money Works — Distribution, History & 2026 Figures | SUPER.TENNIS';
+const h1 = 'How Tennis Prize Money Works';
+const metaDescription = 'How tennis prize money is structured: where the money comes from (broadcasters, sponsors, federations), how it\'s distributed by round, the equal-prize-money milestones from 1973 to 2007, and how prize pools have grown 50× since the Open Era began in 1968.';
+const publishedDate = '2026-05-17';
+
+const quickAnswer = "Tennis prize money pools come from three sources: broadcaster rights deals (50-70% of a Slam's prize pool), title sponsors (15-25%), and on-site revenue from tickets and hospitality (10-30%). The total is distributed across singles, doubles, mixed doubles, wheelchair, and qualifying. Approximately 50% of each Slam's prize money goes to the round of 32 and earlier — meaning even players who lose in the first or second round earn significant checks. Equal men's and women's prize money was achieved at all four Grand Slams between 1973 (US Open) and 2007 (Wimbledon, Roland Garros).";
+
+const evolutionTable = [
+  { year: '1968 (Open Era begins)', wimbledon: '£2,000', usOpen: '$14,000', notes: 'First year prize money allowed' },
+  { year: '1973 (Equal prize money begins)', wimbledon: '£5,000', usOpen: '$25,000', notes: 'US Open equalizes M/W' },
+  { year: '1990', wimbledon: '£230,000', usOpen: '$350,000', notes: 'Tennis Boom era' },
+  { year: '2007 (All Slams equal)', wimbledon: '£700,000', usOpen: '$1.4M', notes: 'Wimbledon & RG equalize' },
+  { year: '2015', wimbledon: '£1.88M', usOpen: '$3.3M', notes: 'Prize money inflation accelerates' },
+  { year: '2020', wimbledon: '£1.7M (canceled, refunds)', usOpen: '$3.0M', notes: 'COVID era' },
+  { year: '2024', wimbledon: '£2.7M', usOpen: '$3.6M', notes: 'Modern figures' },
+  { year: '2026 (current)', wimbledon: '£3.0M', usOpen: '~$3.6M+', notes: 'Continued growth' },
+];
+
+const sources = [
+  { name: 'Broadcaster rights', percent: '50-70%', detail: 'ESPN, Eurosport, BBC, Sky, etc. — pay billions for multi-year deals' },
+  { name: 'Title + presenting sponsors', percent: '15-25%', detail: 'Rolex, Emirates, IBM, Lavazza, etc.' },
+  { name: 'Tickets & hospitality', percent: '10-30%', detail: 'On-site revenue from spectators and corporate boxes' },
+  { name: 'Merchandise & licensing', percent: '2-5%', detail: 'Tournament-branded products, video games, etc.' },
+];
+
+const distribution = [
+  { round: 'Champion', percent: '~4-5%', context: 'Singles winner of Wimbledon takes ~5% of total prize pool' },
+  { round: 'Finalist', percent: '~2.5%', context: 'Half of champion' },
+  { round: 'Semifinalists (2)', percent: '~1.5% each', context: 'Combined ~3%' },
+  { round: 'Quarterfinalists (4)', percent: '~0.8% each', context: 'Combined ~3.2%' },
+  { round: 'R16 (8)', percent: '~0.4% each', context: 'Combined ~3.2%' },
+  { round: 'R32 (16)', percent: '~0.2% each', context: 'Combined ~3.2%' },
+  { round: 'R64-R128 (96)', percent: '~0.1% each', context: 'Even first-round losers get $80-100K' },
+  { round: 'Doubles + qualifying', percent: '~15-20%', context: 'Rest of prize pool' },
+];
+
+const faqs = [
+  {
+    q: 'Why has tennis prize money grown so much since 1968?',
+    a: 'Three reasons: (1) global broadcaster rights deals — Wimbledon\'s broadcast revenue went from ~£1M in 1980 to £450M+ in 2024; (2) sponsorship inflation — Rolex alone pays Wimbledon $30M+/year; (3) competitive pressure between the four Slams to maintain prestige — when the US Open raises its purse, the others follow within 1-2 years to keep player attendance.',
+  },
+  {
+    q: 'How much does a first-round loser at Wimbledon earn?',
+    a: 'In 2026, a first-round loser in Wimbledon singles earns approximately £66,000. That\'s for losing the very first match — the prize money was specifically structured to reward early-round losers because pro tennis is expensive (most players don\'t break even below the top 100). All four Slams pay roughly £60,000-$100,000 to first-round losers.',
+  },
+  {
+    q: 'Do all four Grand Slams have the same prize money?',
+    a: "No, they differ significantly. In 2026: US Open has the largest total prize pool (~$75M+), then Australian Open (~A$96M / US$63M+), then Wimbledon (£53M / ~$67M), then Roland Garros (~€58M / ~$63M). All four pay roughly equal amounts to the singles champion (~$2.3-3.6M), but the distribution to lower rounds and doubles/qualifying varies.",
+  },
+  {
+    q: "What's the difference between prize money and earnings?",
+    a: 'Prize money is what tournament organizers pay out for results. Earnings are the player\'s total income, which includes prize money + endorsements + appearance fees + exhibitions + business income. For top-10 players, endorsements typically dwarf prize money. For a player like Sinner, $42M career prize money might be only a third of his total career earnings.',
+  },
+  {
+    q: 'Who pays for the prize money at a Grand Slam?',
+    a: 'The Grand Slam tournament itself (and ultimately its umbrella body — the AELTC at Wimbledon, the FFT at Roland Garros, etc.) pays from its budget. The budget is funded primarily by broadcasting rights deals (negotiated separately for each Slam, sometimes for 12+ years out), title sponsorships (Rolex, Emirates, etc.), and on-site revenue (tickets, hospitality, merchandise).',
+  },
+  {
+    q: 'When did Wimbledon start offering equal prize money?',
+    a: 'Wimbledon equalized men\'s and women\'s singles prize money in 2007 — the same year as Roland Garros. The US Open was first in 1973 (driven by Billie Jean King\'s threat to boycott unless equalized). Australian Open followed in 2001. Some non-Slam events still have unequal pools at separate men\'s/women\'s tournaments, but every combined and Grand Slam event now pays equal prize money to singles champions.',
+  },
+  {
+    q: 'How is prize money taxed for tennis players?',
+    a: "It varies by tournament location and player citizenship. Most countries withhold tax on tournament prize money at source (Wimbledon withholds 20% for non-UK residents; the US withholds 30% for non-residents). Players then file in their resident country and may receive credits. Top players typically set up corporate structures in low-tax jurisdictions (Monaco is famously popular among tennis pros — Djokovic, Sinner, Tsitsipas, Rune, and many others reside there), but the tax-domicile rules vary by country and have tightened in recent years.",
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/money/tennis-prize-money-explained/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: {
+    '@type': 'Person',
+    name: 'Alex Morgan',
+    url: 'https://super.tennis/authors/alex-morgan/',
+    worksFor: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Money', item: 'https://super.tennis/money/' },
+    { '@type': 'ListItem', position: 3, name: 'How Prize Money Works' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/money/">Money</a> <span class="sep">/</span>
+      <span class="current">How Prize Money Works</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">💰</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/authors/alex-morgan/">Alex Morgan</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <aside class="system-note">
+      <span class="system-note-label">Current System Note</span>
+      <p>All 2026 prize money figures reflect <strong>tournament announcements from the previous 12 months</strong>. Exact champion's checks and per-round distributions are confirmed annually by each Slam ~3-4 weeks before the event. For per-round dollar amounts, see <a href="/money/grand-slam-prize-money-breakdown/">Grand Slam Prize Money Breakdown</a>.</p>
+    </aside>
+
+    <div class="article-body">
+      <h2 id="where-it-comes-from">Where the Prize Money Comes From</h2>
+      <p>
+        A Grand Slam's prize money pool isn't pulled out of thin air — it's funded by four revenue streams that the tournament has built over decades:
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Source</th><th>Share</th><th>Detail</th></tr></thead>
+          <tbody>
+            {sources.map(s => <tr><td><strong>{s.name}</strong></td><td>{s.percent}</td><td class="ctx">{s.detail}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        The biggest single line item at every Slam is the broadcast rights deal. Wimbledon's deals are with the BBC (free-to-air in the UK), ESPN (US), and 200+ international broadcasters. The US Open's 12-year ESPN deal signed in 2025 is worth approximately $2.04 billion — the largest tennis broadcast deal in history. These multi-year deals give the tournaments certainty when planning prize pool increases.
+      </p>
+
+      <h2 id="how-distributed">How Prize Money Is Distributed</h2>
+      <p>
+        Every Slam follows roughly the same distribution curve, though exact percentages vary. The structure is intentionally weighted toward early rounds — first-round losers get more than you might expect, because organizers want to make the tournament financially viable for ranked players to attend.
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Round</th><th>% of Pool</th><th>Context</th></tr></thead>
+          <tbody>
+            {distribution.map(d => <tr><td><strong>{d.round}</strong></td><td>{d.percent}</td><td class="ctx">{d.context}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        About 15-20% of the total prize pool goes to doubles, mixed doubles, wheelchair, qualifying, and other categories. This proportion has grown over the past decade as the Slams expanded recognition for non-singles categories.
+      </p>
+
+      <h2 id="equal-prize-money">The Long Road to Equal Prize Money</h2>
+      <p>
+        Equal men's and women's prize money at Slams happened gradually over 34 years:
+      </p>
+      <ul>
+        <li><strong>1973 — US Open</strong>. First Slam to equalize. Driven by Billie Jean King's advocacy and a Virginia Slims-funded campaign that threatened to boycott unless prize money was equal.</li>
+        <li><strong>1984-1995 — Australian Open partial steps</strong>. Different format adjustments without full equality.</li>
+        <li><strong>2001 — Australian Open</strong>. Full equality reached.</li>
+        <li><strong>2006-2007 — Wimbledon & Roland Garros</strong>. Wimbledon equalized for 2007 (after Venus Williams's open letter); Roland Garros followed the same year.</li>
+      </ul>
+      <p>
+        Today every combined ATP/WTA event (Indian Wells, Miami, Madrid, Rome, Cincinnati, China Open) also pays equal prize money to men's and women's singles champions. Separate single-tour events still have unequal pools — a WTA 500 in one city typically has a smaller prize pool than an ATP 500 the same week elsewhere — but the gap continues to narrow.
+      </p>
+
+      <h2 id="evolution">Prize Money Evolution: 1968 to 2026</h2>
+      <p>
+        The Open Era (allowing professional players to compete at Slams) began in 1968. Tracking the Wimbledon singles champion's check across the decades shows the curve:
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Year</th><th>Wimbledon</th><th>US Open</th><th>Context</th></tr></thead>
+          <tbody>
+            {evolutionTable.map(r => <tr><td>{r.year}</td><td>{r.wimbledon}</td><td>{r.usOpen}</td><td class="ctx">{r.notes}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Wimbledon's champion's check has grown roughly <strong>1,500-fold</strong> since 1968 — from £2,000 to £3,000,000. Even adjusted for inflation, that's a 50× increase in real terms. The drivers: global TV deals, the Williams sisters / Federer era driving viewership, women's sports investment growth, and post-COVID re-acceleration.
+      </p>
+
+      <h2 id="below-slams">Below the Slams: Tour-Level Prize Money</h2>
+      <p>
+        Outside the Slams, prize money scales sharply downward:
+      </p>
+      <ul>
+        <li><strong>Masters 1000 / WTA 1000</strong> — $1-2M to the champion, ~$8-12M total pool</li>
+        <li><strong>ATP 500 / WTA 500</strong> — $400-700K to the champion, ~$2-4M total pool</li>
+        <li><strong>ATP 250 / WTA 250</strong> — $100-250K to the champion, ~$700K-$1.5M total pool</li>
+        <li><strong>Challenger 175</strong> — $40K to the champion, ~$300K total pool</li>
+        <li><strong>ITF World Tour (W100 / M100)</strong> — $15K to the champion, ~$150K total pool</li>
+      </ul>
+      <p>
+        This sharp drop-off is why ranking matters so much — every position climbed up the ladder unlocks meaningfully larger paychecks. See our <a href="/rankings/how-tennis-rankings-work/">how rankings work</a> explainer for how points translate to tournament entry.
+      </p>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/money/" class="context-card">
+          <span class="context-label">Hub</span>
+          <span class="context-title">Tennis Money & Earnings</span>
+        </a>
+        <a href="/money/how-much-tennis-players-earn/" class="context-card">
+          <span class="context-label">Money</span>
+          <span class="context-title">How Much Players Actually Earn</span>
+        </a>
+        <a href="/money/grand-slam-prize-money-breakdown/" class="context-card">
+          <span class="context-label">Money</span>
+          <span class="context-title">Grand Slam Prize Money Tables</span>
+        </a>
+        <a href="/rankings/how-tennis-rankings-work/" class="context-card">
+          <span class="context-label">Rankings</span>
+          <span class="context-title">How Rankings Work</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Tennis Prize Money — FAQ" />
+  </article>
+</BaseLayout>
+
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text { margin: 0; font-size: 0.98rem; line-height: 1.65; color: var(--gray-800); }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+  .system-note a { color: var(--court-green); }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p { font-size: 1rem; line-height: 1.75; margin: 0 0 16px; }
+  .article-body ul, .article-body ol { margin: 0 0 16px; padding-left: 22px; line-height: 1.75; }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+
+  .points-table-wrap { overflow-x: auto; margin: 8px 0 24px; }
+  .points-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+  .points-table th, .points-table td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    vertical-align: top;
+  }
+  .points-table th {
+    background: var(--gray-50);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-700);
+    font-weight: 700;
+  }
+  .points-table .ctx { color: var(--gray-600); font-size: 0.86rem; }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>

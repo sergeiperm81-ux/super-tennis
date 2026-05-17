@@ -1,0 +1,392 @@
+---
+/**
+ * /money/how-much-tennis-players-earn/ — Practical "how much" breakdown.
+ * Codex Round 3 evergreen cluster #3.
+ *
+ * Search intent: "how much do tennis players make", "tennis player salary",
+ * "richest tennis players", "do top 100 players make money", "tennis pro
+ * net worth". Concrete numbers, by ranking tier.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+
+const title = 'How Much Tennis Players Actually Earn — 2026 Income Breakdown | SUPER.TENNIS';
+const h1 = 'How Much Tennis Players Actually Earn';
+const metaDescription = 'How much do tennis players really earn? Career money leaders ($190M+ for Djokovic), top-10 annual income (~$30-50M combined), top-100 income (~$2-4M), and the reality below: most top-200 players struggle to be net profitable after coach, physio, and travel costs.';
+const publishedDate = '2026-05-17';
+
+const quickAnswer = "Top-10 ATP/WTA singles players earn $20-100M+ per year combined (prize money + endorsements + appearances + business). The top-50 typically earn $2-8M per year, mostly from prize money with smaller sponsorship deals. The top 100 to top 200 range earns $300K-$1M per year, often barely break-even after operating costs ($400-700K/year for coach, physio, travel, and accommodation). Below top 200, most players run at a loss — they're investing in themselves, hoping to break through. Career money leaders through 2026: Djokovic $190M+, Nadal $135M, Federer $130M, Serena $94M. Active rising stars Alcaraz ($45M+) and Sinner ($42M+) have crossed $40M before age 25.";
+
+const earningsByTier = [
+  { tier: 'Top 10', annualIncome: '$20-100M+', mix: '30% prize / 50-65% endorsements / 5-15% appearances / 5-10% business', notes: 'Top 5 earn $50-100M+ combined' },
+  { tier: 'Top 11-25', annualIncome: '$5-15M', mix: '40% prize / 45% endorsements / 10% appearances / 5% business', notes: 'Sponsorship deals still major' },
+  { tier: 'Top 26-50', annualIncome: '$2-5M', mix: '55% prize / 35% endorsements / 10% other', notes: 'Prize money becomes primary' },
+  { tier: 'Top 51-100', annualIncome: '$700K-$2M', mix: '70% prize / 20% endorsements / 10% other', notes: 'Sponsorships are modest racket/apparel deals' },
+  { tier: 'Top 101-200', annualIncome: '$300K-$800K', mix: '85% prize / 10% endorsements / 5% other', notes: 'Often near break-even after operating costs' },
+  { tier: 'Top 201-500', annualIncome: '$80K-$250K', mix: '95% prize / 5% endorsements', notes: 'Net loss for many; living on Challengers and ITFs' },
+  { tier: 'Below top 500', annualIncome: 'Under $50K', mix: '~100% prize money', notes: 'Net loss unless self-coaching and minimal travel' },
+];
+
+const careerLeaders = [
+  { player: 'Novak Djokovic', career: '$190M+', notes: 'All-time prize money leader; still active in 2026' },
+  { player: 'Rafael Nadal', career: '$135M', notes: 'Retired 2024' },
+  { player: 'Roger Federer', career: '$130M', notes: 'Retired 2022; ~$1.1B+ career endorsements separately' },
+  { player: 'Serena Williams', career: '$94M', notes: 'All-time women\'s leader; retired 2022' },
+  { player: 'Andy Murray', career: '$65M', notes: 'Retired 2024' },
+  { player: 'Carlos Alcaraz', career: '$45M+', notes: 'Active; passed $40M before age 23' },
+  { player: 'Jannik Sinner', career: '$42M+', notes: 'Active; ATP World No. 1 in 2026' },
+  { player: 'Iga Swiatek', career: '$36M', notes: 'Active; WTA all-time top-10 prize money' },
+  { player: 'Aryna Sabalenka', career: '$30M+', notes: 'Active; WTA No. 1 in 2026' },
+];
+
+const costStructure = [
+  { item: 'Head coach', annual: '$100,000-$300,000', notes: 'Top players have a coach who travels with them year-round' },
+  { item: 'Physiotherapist', annual: '$80,000-$150,000', notes: 'Many top players hire dedicated physio; others share' },
+  { item: 'Strength & conditioning coach', annual: '$60,000-$120,000', notes: 'Sometimes shared with academy or part-time' },
+  { item: 'Stringer / racket tech', annual: '$30,000-$80,000', notes: 'Often shared across multiple players' },
+  { item: 'Travel + accommodation', annual: '$150,000-$300,000', notes: 'Flights, hotels, food on tour ~35-40 weeks/year' },
+  { item: 'Equipment & apparel', annual: '~$0', notes: 'Usually covered by sponsorship for top 100' },
+  { item: 'Insurance, agents (10-20%), management fees', annual: '$50,000-$200,000+', notes: 'Agency cuts on endorsements + appearance fees' },
+  { item: 'TOTAL operating cost', annual: '$400,000-$700,000+', notes: 'Top-100 baseline; rising as you move up' },
+];
+
+const faqs = [
+  {
+    q: 'How much does the world No. 1 in tennis earn per year?',
+    a: "The world No. 1's combined annual income depends entirely on their endorsement portfolio. Carlos Alcaraz when he was No. 1 earned ~$45M/year ($8-10M prize + $30-35M endorsements). Jannik Sinner in his No. 1 year earns an estimated $40-50M/year. Federer at his peak earned $90M+/year (mostly endorsements). Serena at her peak earned $40M+/year. The exact figure varies by year and endorsement deal cycle.",
+  },
+  {
+    q: 'Do top-100 tennis players make a living?',
+    a: 'Just barely, for many of them. A top-100 player typically earns $700K-$2M in gross prize money per year, but operating costs ($400-700K) plus taxes consume most of it. Some top-100 players net only $100-300K per year after all expenses. The "lower edge" of the top 100 — players ranked 80-100 — often have side jobs (coaching during off-season, exhibitions, content creation) to supplement income. ATP and WTA have introduced Baseline programs to support players in the 100-200 range with minimum income guarantees.',
+  },
+  {
+    q: 'How much does it actually cost to be a pro tennis player?',
+    a: "A full-time tour player spends $400,000-$700,000 per year on operating costs: coach ($100-300K), physio ($80-150K), strength coach ($60-120K), stringer ($30-80K), travel and accommodation ($150-300K), agent fees (10-20% of endorsement income), insurance, and miscellaneous. Equipment and apparel are typically covered by sponsorship. Players just outside the top 100 often share coaches, fly economy, and stay in tournament hotels (not premium ones) to keep costs down.",
+  },
+  {
+    q: 'Why does Federer have more career income than Djokovic if Djokovic has more prize money?',
+    a: 'Because of endorsements. Djokovic leads career prize money ($190M+ vs Federer\'s $130M), but Federer\'s lifetime endorsement income is estimated at $1.1B+ — far more than any other tennis player. His deals with Uniqlo (10-year, $300M+), Rolex (lifetime ambassador), Mercedes, Wilson, Credit Suisse, Lindt, Moët, and his post-retirement On Holding equity stake (worth $300M+ at IPO) make him the highest-total-earning tennis player in history, despite Djokovic\'s larger prize money trophy room.',
+  },
+  {
+    q: 'Who are the highest-paid women in tennis history?',
+    a: 'By prize money: Serena Williams ($94M) leads all women, followed by Venus Williams (~$42M), Maria Sharapova ($38M), Iga Swiatek ($36M+), Simona Halep ($40M), and Petra Kvitová ($37M). By total career earnings including endorsements: Serena ($300M+ estimated) and Sharapova ($330M+ estimated, mostly from sponsorships and business — she was the highest-paid female athlete in the world for 11 consecutive years).',
+  },
+  {
+    q: 'How much do tennis players earn from a single tournament?',
+    a: "Massively variable: a first-round loss in an ATP 250 might pay $5-8K. A Grand Slam champion gets $2.3-3.6M. A Masters 1000 champion gets ~$1M. A Slam first-round loser still earns $60-100K. Players have to consider the cost of attending a tournament (travel, accommodation, entry fees for some events) — for lower-tier events, the break-even bar is winning a few rounds.",
+  },
+  {
+    q: 'Do tennis players pay income tax on prize money?',
+    a: 'Yes. Most countries withhold tax at source on tournament prize money (Wimbledon withholds 20% for non-UK residents, the US withholds 30% for non-residents). Players then file in their resident country and may claim foreign tax credits. Many top players reside in Monaco, Dubai, the Bahamas, or other low-tax jurisdictions, but tax-domicile rules have tightened in recent years — and some Slam venues now apply minimum-tax floors regardless of residency status.',
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/money/how-much-tennis-players-earn/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: {
+    '@type': 'Person',
+    name: 'Alex Morgan',
+    url: 'https://super.tennis/authors/alex-morgan/',
+    worksFor: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Money', item: 'https://super.tennis/money/' },
+    { '@type': 'ListItem', position: 3, name: 'How Much Players Earn' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/money/">Money</a> <span class="sep">/</span>
+      <span class="current">How Much Players Earn</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">📊</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/authors/alex-morgan/">Alex Morgan</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <aside class="system-note">
+      <span class="system-note-label">Current System Note</span>
+      <p>Career prize money figures are <strong>updated continuously as official ATP/WTA records change</strong>. Endorsement and total-earnings figures are widely-reported industry estimates from <em>Forbes</em>, <em>Sportico</em>, and other outlets — accurate within 10-15% for top players, less reliable below top 30.</p>
+    </aside>
+
+    <div class="article-body">
+      <h2 id="by-tier">Annual Income by Ranking Tier</h2>
+      <p>
+        Tennis income drops off sharply as you move down the rankings. Here's a rough breakdown for 2026:
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Ranking Tier</th><th>Annual Income</th><th>Prize/Endorsement Mix</th><th>Notes</th></tr></thead>
+          <tbody>
+            {earningsByTier.map(t => <tr><td><strong>{t.tier}</strong></td><td>{t.annualIncome}</td><td class="ctx">{t.mix}</td><td class="ctx">{t.notes}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        The drop-off after top 100 is the most important number in pro tennis economics: a player ranked 95 may net $200K after expenses; a player ranked 110 might lose $20K. That 15-position gap is the difference between a sustainable career and one that requires outside funding.
+      </p>
+
+      <h2 id="career-leaders">All-Time Career Money Leaders (2026)</h2>
+      <p>
+        Career prize money leaderboard through the 2026 season:
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Player</th><th>Career Prize Money</th><th>Notes</th></tr></thead>
+          <tbody>
+            {careerLeaders.map(p => <tr><td><strong>{p.player}</strong></td><td>{p.career}</td><td class="ctx">{p.notes}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Worth noting: <strong>career prize money ≠ career total earnings</strong>. Federer's career earnings (prize + endorsements + investments) are estimated at $1.5B+ — far more than Djokovic's total despite Djokovic having more prize money. Serena's total career earnings are estimated at $400M+. Sharapova retired with ~$330M total despite "only" $38M in prize money — she was the highest-paid female athlete in the world for 11 straight years thanks to her endorsement portfolio.
+      </p>
+
+      <h2 id="cost-of-pro-tennis">The Cost of Being a Pro</h2>
+      <p>
+        Tennis is one of the most expensive professional sports to compete in, because the player covers their own team. Other pro athletes' teams (coach, physio, S&C) are paid by their club or league. In tennis, every dollar comes out of the player's earnings.
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Cost Item</th><th>Annual</th><th>Notes</th></tr></thead>
+          <tbody>
+            {costStructure.map(c => <tr><td><strong>{c.item}</strong></td><td>{c.annual}</td><td class="ctx">{c.notes}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        For a top-30 player earning $5M/year in prize money + endorsements, $500K in operating costs is 10% — completely manageable. For a player ranked 150 earning $500K/year in prize money, $500K in costs is 100% — they need to cut costs aggressively or risk losing money on the year.
+      </p>
+
+      <h2 id="how-pros-cut-costs">How Lower-Ranked Players Cut Costs</h2>
+      <ul>
+        <li><strong>Skip the full-time coach</strong> — work with an academy coach for stretches, self-coach in between</li>
+        <li><strong>Fly economy</strong> — even some top 100 players still fly economy on long-haul flights</li>
+        <li><strong>Stay in tournament hotels, not premium</strong> — tournament-provided lodging is often the cheapest option</li>
+        <li><strong>Share physio costs</strong> — multiple players share one physio at a single tournament</li>
+        <li><strong>Skip distant tournaments</strong> — focus geographic clusters (e.g., entire European clay swing) to minimize flight costs</li>
+        <li><strong>Family as team</strong> — parent, sibling, or partner serves as travel companion / hitting partner instead of a paid pro</li>
+      </ul>
+
+      <h2 id="four-streams">The Four Income Streams in Detail</h2>
+      <p>
+        For top players, the income mix matters as much as the total. Here's how the four streams typically work:
+      </p>
+      <ol>
+        <li><strong>Prize money</strong> — the most visible. Earned at tournaments based on results. Public and trackable via ATP/WTA records.</li>
+        <li><strong>Endorsements</strong> — apparel deal (Nike, Adidas, Lacoste, Uniqlo, etc.), racket deal (Wilson, Babolat, Head, Yonex), watch (Rolex, Richard Mille, Audemars Piguet), and others (water, food, regional). For top 10 players, this is usually <em>2-3× prize money</em>.</li>
+        <li><strong>Appearance / exhibition fees</strong> — tournament organizers pay top stars to commit to attending a specific event. Off-tour exhibitions (Six Kings Slam in Saudi Arabia, the Laver Cup, charity events) can pay $1-5M for a single weekend.</li>
+        <li><strong>Business equity</strong> — clothing lines (Serena's S by Serena, Federer's stake in On Holding), VC investments (Serena Ventures), academies (Nadal Academy, Mouratoglou Academy), restaurants, real estate. The largest long-term wealth driver for retired players.</li>
+      </ol>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/money/" class="context-card">
+          <span class="context-label">Hub</span>
+          <span class="context-title">Tennis Money & Earnings</span>
+        </a>
+        <a href="/money/tennis-prize-money-explained/" class="context-card">
+          <span class="context-label">Money</span>
+          <span class="context-title">How Prize Money Works</span>
+        </a>
+        <a href="/money/grand-slam-prize-money-breakdown/" class="context-card">
+          <span class="context-label">Money</span>
+          <span class="context-title">Grand Slam Prize Money Tables</span>
+        </a>
+        <a href="/lifestyle/money/" class="context-card">
+          <span class="context-label">Lifestyle</span>
+          <span class="context-title">Net Worth Stories</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Tennis Player Earnings — FAQ" />
+  </article>
+</BaseLayout>
+
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text { margin: 0; font-size: 0.98rem; line-height: 1.65; color: var(--gray-800); }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+  .system-note em { font-style: italic; }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p { font-size: 1rem; line-height: 1.75; margin: 0 0 16px; }
+  .article-body ul, .article-body ol { margin: 0 0 16px; padding-left: 22px; line-height: 1.75; }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+  .article-body em { font-style: italic; color: var(--gray-700); }
+
+  .points-table-wrap { overflow-x: auto; margin: 8px 0 24px; }
+  .points-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+  .points-table th, .points-table td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    vertical-align: top;
+  }
+  .points-table th {
+    background: var(--gray-50);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-700);
+    font-weight: 700;
+  }
+  .points-table .ctx { color: var(--gray-600); font-size: 0.86rem; }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>

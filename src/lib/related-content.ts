@@ -136,10 +136,12 @@ export function getEvergreenPlayerLinks(player: Pick<Player, 'tour'>): RelatedLi
     { href: `/rankings/`, title: `${tourLabel} Rankings`, contextLabel: 'Live data' },
     pointsExplainer,
     { href: `/rankings/how-tennis-rankings-work/`, title: 'How Rankings Work', contextLabel: 'System overview' },
+    { href: `/money/how-much-tennis-players-earn/`, title: 'How Much Players Earn', contextLabel: 'Income reality' },
     { href: `/records/`, title: 'Tennis Records', contextLabel: 'All-time stats' },
     { href: `/tournaments/`, title: 'Tournament Guides', contextLabel: 'Grand Slams + Masters' },
     { href: `/rules/`, title: 'Tennis Rules', contextLabel: 'Scoring, sets, tiebreak' },
-    { href: `/lifestyle/money/`, title: 'Tennis Money', contextLabel: 'Prize money & net worth' },
+    { href: `/money/`, title: 'Tennis Money', contextLabel: 'Prize + endorsements + cost' },
+    { href: `/lifestyle/money/`, title: 'Net Worth Stories', contextLabel: 'Lifestyle articles' },
     { href: `/lifestyle/career/`, title: 'Tennis Career Paths', contextLabel: 'Going pro' },
   ];
 }
@@ -254,7 +256,8 @@ export function getEvergreenTournamentLinks(): RelatedLink[] {
     { href: `/rankings/`, title: 'ATP & WTA Rankings', contextLabel: 'Live data' },
     { href: `/rankings/how-tennis-rankings-work/`, title: 'How Rankings Work', contextLabel: 'Points & seeding' },
     { href: `/rules/how-many-sets-in-tennis/`, title: 'Match Format Rules', contextLabel: 'Best of 3 vs 5' },
-    { href: `/lifestyle/money/`, title: 'Tennis Prize Money', contextLabel: 'Earnings & purse' },
+    { href: `/money/grand-slam-prize-money-breakdown/`, title: 'Slam Prize Money 2026', contextLabel: 'Per-round tables' },
+    { href: `/money/`, title: 'Tennis Money Hub', contextLabel: 'Earnings overview' },
     { href: `/lifestyle/travel/`, title: 'Tennis Travel Guides', contextLabel: 'Visit a Slam' },
   ];
 }

@@ -1,0 +1,354 @@
+---
+/**
+ * /money/ — Tennis Money & Earnings hub.
+ * Codex Round 3 evergreen cluster #3 (of 3: Rules ✓ Rankings ✓ Money ←).
+ *
+ * Strategic note: this is a NEW top-level section. The existing
+ * /lifestyle/money/ subhub remains as a lifestyle-oriented gallery of
+ * money-themed articles (player net worth stories, sponsorship reads,
+ * etc.). This /money/ cluster is a pragmatic explainer set with point
+ * tables, prize money breakdowns, and earnings reality checks.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+
+const title = 'Tennis Money & Earnings — Prize Money, Salaries & Sponsorships | SUPER.TENNIS';
+const h1 = 'Tennis Money & Earnings';
+const metaDescription = 'How much tennis players actually earn: Grand Slam prize money in 2026, the four income streams of a tennis pro (prize money, endorsements, exhibitions, business equity), and the cost reality of life on tour.';
+
+const intro = "Tennis is one of the most lucrative individual sports — and one of the most expensive to compete in. A top-10 player earns $30-100M+ per year combined, but most pros below the top 50 barely break even after coach, physio, and travel costs. This hub breaks down where every dollar comes from, where it goes, and how the 2026 prize money landscape compares to a decade ago.";
+
+const quickAnswer = "A pro tennis player's income has four main streams: prize money (won at tournaments), endorsements (Nike, Rolex, Wilson, etc.), appearance / exhibition fees (paid to show up at events), and business equity (clothing lines, investment funds, stakes in startups). The 2026 Grand Slams pay roughly $2.3-3.6M to each singles champion, with total prize pools of $230M+ across the four Slams combined. The top-10 career money leaders are all retired or active legends (Djokovic ~$190M, Nadal ~$135M, Federer ~$130M, Serena ~$94M); active rising stars Alcaraz and Sinner have already passed $40M before age 25.";
+
+const subpages = [
+  {
+    href: '/money/tennis-prize-money-explained/',
+    title: 'How Tennis Prize Money Works',
+    excerpt: "Where prize money pools come from, how they're distributed by round, the equal-prize-money milestones at Slams, and the inflation curve of the past 40 years.",
+    icon: '💰',
+  },
+  {
+    href: '/money/how-much-tennis-players-earn/',
+    title: 'How Much Tennis Players Actually Earn',
+    excerpt: "Annual income ranges by ranking tier, the prize-money-vs-endorsement split for the top 10, the cost of being a tennis pro, and why most top-200 players don't break even.",
+    icon: '📊',
+  },
+  {
+    href: '/money/grand-slam-prize-money-breakdown/',
+    title: 'Grand Slam Prize Money Breakdown',
+    excerpt: "Full 2026 prize money tables for all four Slams: singles, doubles, qualifying. Champion's check, semifinalist's check, and how Wimbledon's £53M compares to the US Open's $75M+.",
+    icon: '🏆',
+  },
+];
+
+const faqs = [
+  {
+    q: 'Who is the highest-paid tennis player of all time?',
+    a: 'Novak Djokovic leads career prize money with over $190 million through 2026 — the most of any tennis player in history. Roger Federer earned about $130M in prize money (plus an estimated $1.1B+ in career endorsements). Rafael Nadal earned about $135M. Serena Williams earned about $94M, the all-time women\'s record. Counting prize money + endorsements + investments, Federer\'s total career earnings are widely considered the highest in tennis history.',
+  },
+  {
+    q: 'How much does a tennis player earn from a Grand Slam title?',
+    a: 'In 2026, the singles champion at each Grand Slam earns approximately: Australian Open A$3.5M (~US$2.3M), Roland Garros €2.4M, Wimbledon £3.0M, US Open ~$3.6M. The total prize pool across the four Slams is roughly $230M+ — about half of the entire ATP/WTA annual prize money distribution. Full per-round tables: super.tennis/money/grand-slam-prize-money-breakdown/.',
+  },
+  {
+    q: 'Do tennis players make more from sponsorships or prize money?',
+    a: 'For the top 10, endorsements typically generate 2-3x more income than prize money. Federer at his peak earned ~$90M/year from sponsorships (Uniqlo, Rolex, Mercedes, Wilson, Credit Suisse, Lindt, Moët) vs ~$6M from prize money. Sinner earns an estimated $30M/year from Nike + Head + Rolex combined vs $8-10M in prize money. For players ranked 50-100, the ratio inverts: prize money is the primary income, with smaller sponsorship deals making up the rest.',
+  },
+  {
+    q: 'How much does it cost to be a pro tennis player?',
+    a: 'For a top-100 player, annual operating costs run $400K-$700K: full-time coach ($100-300K), physiotherapist ($80-150K), travel + accommodation + food on tour ($150-250K), occasional stringer/strength coach. Equipment is typically free via sponsorship. Players outside the top 100 often share coaches or coach themselves to keep costs down, and many top-200 players struggle to be net profitable.',
+  },
+  {
+    q: 'Has tennis prize money always been equal for men and women?',
+    a: 'No. The US Open became the first Grand Slam to offer equal prize money in 1973 (driven by Billie Jean King\'s advocacy). Australian Open followed in 2001. Roland Garros and Wimbledon held out longest, both equalizing in 2007. Today all four Slams pay equal prize money to men\'s and women\'s singles champions. At ATP/WTA Tour level, individual tournaments set their own prize pools, which still vary significantly between the men\'s and women\'s tours at non-combined events.',
+  },
+  {
+    q: 'What are appearance fees in tennis?',
+    a: 'Tournament organizers (mostly ATP 500 and ATP 250 events, plus exhibition events) pay top players a fee just to show up, separate from prize money. Top stars can earn $200K-$2M per appearance at smaller events. Some tournaments (notably Indian Wells, Roland Garros, US Open, Wimbledon) prohibit appearance fees to ensure a level playing field. Exhibition matches outside the official tour can pay $1-5M per match for top names.',
+  },
+  {
+    q: 'Do retired tennis players still earn money?',
+    a: "Many top retired players earn more in retirement than during their playing careers. Federer's post-retirement deal with On Holding (equity stake) is worth a reported $100M+. Serena Williams runs Serena Ventures (VC fund), her own clothing line, and has produced content for Amazon and Netflix. Andre Agassi co-founded Square Panda (education tech) and runs an academy network. Maria Sharapova retained equity in Supergoop! and other companies, earning estimated $5-10M/year in retirement.",
+  },
+];
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Money' },
+  ],
+};
+
+const collectionJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: title,
+  description: metaDescription,
+  url: 'https://super.tennis/money/',
+  isPartOf: { '@type': 'WebSite', '@id': 'https://super.tennis/#website', name: 'SUPER.TENNIS' },
+  about: { '@type': 'Thing', name: 'Tennis Money & Earnings', description: intro },
+  mainEntity: subpages.map((s, i) => ({
+    '@type': 'Article',
+    headline: s.title,
+    url: `https://super.tennis${s.href}`,
+    position: i + 1,
+  })),
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="website">
+  <script type="application/ld+json" set:html={JSON.stringify(collectionJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <div class="rules-page">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <span class="current">{h1}</span>
+    </nav>
+
+    <header class="rules-hero">
+      <div class="hero-emoji">💰</div>
+      <h1>{h1}</h1>
+      <p class="hero-intro">{intro}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <aside class="system-note">
+      <span class="system-note-label">Current System Note</span>
+      <p>All figures on this hub and its child pages reflect the <strong>2026 season</strong>. Grand Slam prize pools, exchange rates, and endorsement deal values are updated annually — see each sub-page for the exact year of each number and our refresh cadence.</p>
+    </aside>
+
+    <section class="overview">
+      <h2 class="section-title">The 4 Income Streams of a Tennis Pro</h2>
+      <ol class="overview-list">
+        <li><strong>Prize money</strong> — won at tournaments. The most visible income source; ranges from $10 for a first-round Grand Slam win to $2.3-3.6M for a Slam title.</li>
+        <li><strong>Endorsements</strong> — apparel (Nike, Adidas, Uniqlo), racket (Wilson, Babolat, Head, Yonex), watch (Rolex, Richard Mille, Audemars Piguet), and others. For top-10 players, this is usually 2-3× their prize money.</li>
+        <li><strong>Appearance / exhibition fees</strong> — paid to show up at smaller tour events or off-tour exhibitions. $200K-$2M per appearance for top stars.</li>
+        <li><strong>Business equity</strong> — clothing lines (Serena's S by Serena, Federer's On Holding equity), VC investments (Serena Ventures), academies, restaurants. Increasingly the largest long-term wealth driver.</li>
+      </ol>
+    </section>
+
+    <section class="subpages">
+      <h2 class="section-title">Tennis Money in Detail</h2>
+      <div class="subpages-grid">
+        {subpages.map(p => (
+          <a href={p.href} class="subpage-card">
+            <div class="subpage-icon">{p.icon}</div>
+            <h3>{p.title}</h3>
+            <p>{p.excerpt}</p>
+            <span class="subpage-cta">Read full guide →</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="related-context">
+      <h2 class="section-title">Where the Money Connects</h2>
+      <div class="context-grid">
+        <a href="/lifestyle/money/" class="context-card">
+          <span class="context-label">Lifestyle</span>
+          <span class="context-title">Player Net Worth Stories</span>
+        </a>
+        <a href="/rankings/atp-ranking-points-explained/" class="context-card">
+          <span class="context-label">Rankings</span>
+          <span class="context-title">ATP Ranking Points</span>
+        </a>
+        <a href="/rankings/wta-ranking-points-explained/" class="context-card">
+          <span class="context-label">Rankings</span>
+          <span class="context-title">WTA Ranking Points</span>
+        </a>
+        <a href="/tournaments/" class="context-card">
+          <span class="context-label">Tournaments</span>
+          <span class="context-title">Grand Slam Guides</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Tennis Money — Frequently Asked Questions" />
+  </div>
+</BaseLayout>
+
+<style>
+  .rules-page { max-width: 920px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .rules-hero {
+    text-align: center;
+    padding: 32px 0 24px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 32px;
+  }
+  .hero-emoji { font-size: 3rem; margin-bottom: 12px; }
+  .rules-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 12px;
+    color: var(--gray-900);
+  }
+  .hero-intro {
+    max-width: 720px;
+    margin: 0 auto;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--gray-600);
+  }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text { margin: 0; font-size: 0.98rem; line-height: 1.65; color: var(--gray-800); }
+
+  .system-note {
+    margin: 0 0 36px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 0 0 20px;
+  }
+
+  .overview {
+    margin: 36px 0;
+    padding: 24px 28px;
+    background: #f0fdf4;
+    border-radius: var(--radius);
+  }
+  .overview-list {
+    margin: 0;
+    padding-left: 24px;
+    line-height: 1.75;
+    color: var(--gray-800);
+  }
+  .overview-list li { margin-bottom: 12px; }
+
+  .subpages { margin: 44px 0; }
+  .subpages-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .subpage-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 24px 22px;
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+  }
+  .subpage-card:hover {
+    border-color: var(--court-green);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  }
+  .subpage-icon { font-size: 1.8rem; margin-bottom: 12px; }
+  .subpage-card h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0 0 10px;
+    line-height: 1.3;
+    color: var(--gray-900);
+  }
+  .subpage-card p {
+    margin: 0 0 16px;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-600);
+    flex: 1;
+  }
+  .subpage-cta { font-size: 0.85rem; font-weight: 600; color: var(--court-green); }
+
+  .related-context { margin: 44px 0 32px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.88rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) {
+    .subpages-grid { grid-template-columns: repeat(2, 1fr); }
+    .context-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .subpages-grid { grid-template-columns: 1fr; }
+    .context-grid { grid-template-columns: 1fr; }
+    .rules-hero h1 { font-size: 1.9rem; }
+  }
+</style>
