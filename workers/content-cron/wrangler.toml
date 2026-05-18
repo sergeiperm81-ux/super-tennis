@@ -16,3 +16,18 @@ preview_id = "1c137d6469484e939146d7d224833e96"
 
 # Environment variables (non-secret) — set via dashboard or wrangler.toml
 # Secrets are set via: wrangler secret put OPENAI_API_KEY (etc.)
+
+# Send Email binding (Cloudflare Email Workers, free).
+# 2026-05-18: route contact-form notifications to sergeiperm81@gmail.com.
+# REQUIRED ONE-TIME ACTION: verify the destination in the CF dashboard:
+#   1. https://dash.cloudflare.com/?to=/:account/email/routing/destinations
+#   2. Click "Add destination address"
+#   3. Enter sergeiperm81@gmail.com → click "Save"
+#   4. Open gmail → find Cloudflare verification email → click the link
+# Until step 4 is done, the binding exists but send() will fail with a
+# 403 "destination not verified" — the contact form will gracefully fall
+# back to Telegram notification (which is already working). After step 4,
+# both Telegram and email start firing.
+[[send_email]]
+name = "EMAIL_NOTIFY"
+destination_addresses = ["sergeiperm81@gmail.com"]
