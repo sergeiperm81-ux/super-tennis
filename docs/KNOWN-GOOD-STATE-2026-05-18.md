@@ -16,8 +16,9 @@ build on top of a hazy state.
 | **Worker version** | `329a5cec-ceea-4358-81fb-1f1a44784fec` |
 | **Worker secrets** | OPENAI_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID |
 | **Worker bindings** | RATE_LIMIT (KV) |
-| **TypeScript** | `tsc --noEmit` passes (0 errors) |
-| **Build green** | yes (npm run build) |
+| **TypeScript (worker)** | `tsc --noEmit` inside `workers/content-cron/` passes (0 errors) |
+| **TypeScript (root)** | `tsc --noEmit` from repo root fails with 12 type errors: 8 in `astro.config.mjs` (EnumChangefreq mismatch, implicit-any on closure params + indexed access into `STATIC_CLUSTER_DATES`/freshness map), 4 in `workers/content-cron/src/index.ts` (Cloudflare ambient types `KVNamespace`, `ScheduledEvent`, `ExecutionContext` not resolved at root scope). **Does not block build** — Astro uses Vite/esbuild and Worker uses wrangler bundle, both permissive. Cosmetic only; can be fixed by adding `"types": ["@cloudflare/workers-types"]` to a worker-scoped tsconfig + tightening astro.config closures. |
+| **Build green** | yes (npm run build → 2433 pages, image-sitemap regen, deploy succeeds) |
 
 ## Evergreen cluster inventory (16 URLs from Round 1-4)
 
@@ -25,8 +26,8 @@ All cluster URLs verified:
 - HTTP 200 on prod
 - in sitemap-0.xml with correct lastmod + priority + changefreq
 - reachable from homepage in ≤2 clicks (via Footer Tools → hub → child)
-- byline = "SUPER.TENNIS Editorial" (no fake authors)
-- JSON-LD: Article + BreadcrumbList + FAQPage (CollectionPage on hubs)
+- JSON-LD: Article + BreadcrumbList + FAQPage on child pages; CollectionPage + BreadcrumbList + FAQPage on hubs
+- **Byline** = "SUPER.TENNIS Editorial" on the 12 article-style **child pages** (`/rules/{slug}/`, `/rankings/{slug}/`, `/money/{slug}/`, `/watch/{slug}/`). The 4 **hub pages** (`/rules/`, `/money/`, `/watch/`, plus `/rankings/` index) intentionally don't carry a visible byline because they're aggregator/index pages, not articles — same pattern as `/lifestyle/`, `/gear/`, `/records/` hubs. JSON-LD on hubs uses `CollectionPage` (no `author` field required).
 
 ### Round 1: Tennis Rules (published 2026-05-17)
 - `/rules/` — hub
@@ -67,10 +68,11 @@ All cluster URLs verified:
 
 ## Indexing API status
 
-- Daily 200-URL rotation runs at 11:00 UTC via `.github/workflows/indexing-cron.yml` (Today's quota consumed before our priority push could run.)
+- Daily 200-URL rotation runs at 11:00 UTC via `.github/workflows/indexing-cron.yml`. Today's quota was already consumed by that scheduled run before the priority push could fire.
 - Priority push script + workflow created: `scripts/index-new-clusters.mjs` + `.github/workflows/index-new-clusters.yml`
-- **Action needed (next 24h):** re-trigger `gh workflow run index-new-clusters.yml -f dry_run=false` AFTER ~11:30 UTC tomorrow when daily quota resets.
-- Alternative: just let the daily rotation pick up the new URLs naturally over the next ~12 days (full sitemap cycle).
+- **Priority push attempted today (run 26033483712): FAILED.** All 16 URLs returned `Quota exceeded for quota metric 'Publish requests' and limit 'Publish requests per day'` from the Indexing API. This is the expected failure mode given the daily cron already used the 200/day budget — not a script bug. Script + workflow themselves are correct (dry-run passed 16/16 locally).
+- **Action needed (next 24h):** retry `gh workflow run index-new-clusters.yml -f dry_run=false` AFTER ~11:30 UTC tomorrow when the rolling 24h quota window has reset enough to free 16 slots.
+- Alternative if retry also fails: let the daily rotation pick up the new URLs naturally over the next ~12 days (sitemap-0.xml has 2425 entries / 200 per day = full cycle in 12.1 days).
 
 ## Worker pipelines (all live)
 
