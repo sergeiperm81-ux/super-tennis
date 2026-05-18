@@ -69,8 +69,8 @@ async function getArticleLinks(): Promise<EntityLink[]> {
   const staticLinks: EntityLink[] = [
     // Grand Slams
     { name: 'Australian Open', url: '/tournaments/australian-open-guide/', pattern: /\bAustralian Open\b/g },
-    { name: 'Roland Garros', url: '/tournaments/roland-garros-french-open-guide/', pattern: /\bRoland Garros\b/g },
-    { name: 'French Open', url: '/tournaments/roland-garros-french-open-guide/', pattern: /\bFrench Open\b/g },
+    { name: 'Roland Garros', url: '/tournaments/roland-garros-guide/', pattern: /\bRoland Garros\b/g },
+    { name: 'French Open', url: '/tournaments/roland-garros-guide/', pattern: /\bFrench Open\b/g },
     { name: 'Wimbledon', url: '/tournaments/wimbledon-guide/', pattern: /\bWimbledon\b/g },
     { name: 'US Open', url: '/tournaments/us-open-guide/', pattern: /\bUS Open\b/g },
     // Masters & year-end
