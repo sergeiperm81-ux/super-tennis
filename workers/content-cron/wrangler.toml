@@ -30,4 +30,4 @@ preview_id = "1c137d6469484e939146d7d224833e96"
 # both Telegram and email start firing.
 [[send_email]]
 name = "EMAIL_NOTIFY"
-destination_addresses = ["sergeiperm81@gmail.com"]
+destination_address = "sergeiperm81@gmail.com"
