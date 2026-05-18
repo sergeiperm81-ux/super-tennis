@@ -11,13 +11,8 @@
  * - /api/news   → JSON with active news
  * - /api/videos → JSON with 6 featured videos (1 per category, rotated)
  * - /api/brief  → JSON with latest weekly SEO brief (password-protected)
- * - /api/contact (POST) → contact form → Supabase + Telegram + email
+ * - /api/contact (POST) → contact form → Supabase + Telegram notification
  */
-
-// Cloudflare Email Workers send binding — used by /api/contact handler
-// to email contact form submissions to the site owner. Free, no third-party.
-// See wrangler.toml [[send_email]] block.
-import { EmailMessage } from 'cloudflare:email';
 
 export interface Env {
   SUPABASE_URL: string;
@@ -32,12 +27,7 @@ export interface Env {
   RATE_LIMIT?: KVNamespace; // KV for brute-force protection on auth endpoints
   TELEGRAM_BOT_TOKEN?: string; // Telegram bot token for cron failure alerts
   TELEGRAM_CHAT_ID?: string; // Telegram chat ID for cron failure alerts
-  RESEND_API_KEY?: string; // Resend API key (optional alt path) for contact-form email notifications
-  CONTACT_NOTIFY_EMAIL?: string; // Destination email for contact-form notifications (default: sergeiperm81@gmail.com)
-  EMAIL_NOTIFY?: { send(message: EmailMessage): Promise<void> }; // CF Send Email binding (see wrangler.toml)
 }
-
-// EmailMessage type comes from "cloudflare:email" import at the top of the file.
 
 // ============================================================
 // RSS FEEDS
@@ -2016,27 +2006,26 @@ async function clearRateLimit(req: Request, _e: Env): Promise<void> {
 }
 
 // ============================================================
-// CONTACT FORM NOTIFICATION
+// CONTACT FORM NOTIFICATION (Telegram only)
 // ============================================================
 // Called fire-and-forget after a successful contact-form submission.
-// Two parallel notification channels — whichever is configured fires.
-// Whether or not delivery succeeds, the message is already persisted in
-// Supabase (contact_messages table), so a notification failure never
-// loses data.
+// Posts a plain-text message to the owner's Telegram chat using the
+// existing TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID secrets (same bot
+// @Tenniswatchdog_bot used for cron failure alerts).
 //
-// CHANNEL 1: Telegram (works immediately — bot + chat already configured
-// for cron alerts). No setup required.
+// The form message is already persisted in Supabase (contact_messages
+// table) before this function runs, so a Telegram delivery failure
+// never loses the message — it just means the owner has to check
+// Supabase manually.
 //
-// CHANNEL 2: Email via Cloudflare Send Email binding (free, no third
-// party). REQUIRES ONE-TIME verification:
-//   1. https://dash.cloudflare.com/?to=/:account/email/routing/destinations
-//   2. Add destination address: sergeiperm81@gmail.com
-//   3. Click verification link in gmail
-// Until verified, env.EMAIL_NOTIFY.send() returns 403 → caught and logged.
+// Plain text (no parse_mode) deliberately — Telegram's MarkdownV2
+// requires escaping ~17 special characters and any miss returns 400.
+// User-supplied content (name/email/subject/message) routinely contains
+// underscores, dots, and other chars that break parsing.
 //
-// CHANNEL 2-ALT: Email via Resend if RESEND_API_KEY is set (alternate to
-// CF Send Email, useful if CF verification is not done). Sign up at
-// resend.com → wrangler secret put RESEND_API_KEY.
+// Email channels (Cloudflare Send Email / Resend) were removed
+// 2026-05-18 per owner request — Telegram is enough. Git history has
+// the previous multi-channel version if needed.
 interface ContactMessage {
   name: string;
   email: string;
@@ -2044,159 +2033,44 @@ interface ContactMessage {
   message: string;
 }
 
-// Tiny MIME builder for plain-text email. RFC 5322 + RFC 2047 for
-// non-ASCII Subject. Encodes UTF-8 body as quoted-printable-ish via
-// just base64 (safer for emoji/cyrillic in the form).
-function buildPlainTextMime(opts: {
-  from: string;
-  to: string;
-  replyTo?: string;
-  subject: string;
-  body: string;
-}): string {
-  // RFC 2047 base64 encoding for Subject (handles UTF-8 like cyrillic
-  // and emoji without breaking)
-  const subjectB64 = btoa(unescape(encodeURIComponent(opts.subject)));
-  const encodedSubject = `=?UTF-8?B?${subjectB64}?=`;
-
-  // Encode body as base64 so cyrillic/emoji survive transport
-  const bodyB64 = btoa(unescape(encodeURIComponent(opts.body)));
-
-  const headers = [
-    `From: ${opts.from}`,
-    `To: ${opts.to}`,
-    ...(opts.replyTo ? [`Reply-To: ${opts.replyTo}`] : []),
-    `Subject: ${encodedSubject}`,
-    `MIME-Version: 1.0`,
-    `Content-Type: text/plain; charset=UTF-8`,
-    `Content-Transfer-Encoding: base64`,
-    `Date: ${new Date().toUTCString()}`,
-    `Message-ID: <${Date.now()}-${Math.random().toString(36).slice(2)}@super.tennis>`,
-  ];
-
-  // Fold base64 body to ~76 cols (standard MIME line length limit)
-  const wrappedBody = bodyB64.match(/.{1,76}/g)?.join('\n') || bodyB64;
-
-  return `${headers.join('\r\n')}\r\n\r\n${wrappedBody}`;
-}
-
 async function notifyContactMessage(env: Env, msg: ContactMessage): Promise<void> {
-  const notifyEmail = env.CONTACT_NOTIFY_EMAIL || 'sergeiperm81@gmail.com';
-  const supabaseArchive = 'https://supabase.com/dashboard/project/qpnxhiwauhuogwkspxuq/editor';
+  if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) {
+    console.warn('[contact] Telegram secrets missing — notification skipped');
+    return;
+  }
 
-  const plainBody = [
-    'New message from the SUPER.TENNIS contact form.',
+  const text = [
+    '📬 New contact form message',
     '',
-    `Name:    ${msg.name}`,
-    `Email:   ${msg.email}`,
+    `Name: ${msg.name}`,
+    `Email: ${msg.email}`,
     `Subject: ${msg.subject}`,
-    `Time:    ${new Date().toISOString()}`,
     '',
-    '------ Message ------',
+    'Message:',
     msg.message,
-    '------',
     '',
-    'Reply directly to this email to respond to the sender.',
-    `Archive (Supabase): ${supabaseArchive}`,
+    '— super.tennis/contact/',
   ].join('\n');
 
-  // ─── CHANNEL 1: TELEGRAM (works immediately, no user action) ───
-  // Plain text (no parse_mode) so we don't have to escape special chars in
-  // user-supplied name/email/subject/message. Earlier MarkdownV2 attempt
-  // was getting rejected by Telegram (HTTP 400) because the escape rules
-  // are very strict and any miss makes the whole message fail.
-  if (env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID) {
-    try {
-      const tgText = [
-        '📬 New contact form message',
-        '',
-        `Name: ${msg.name}`,
-        `Email: ${msg.email}`,
-        `Subject: ${msg.subject}`,
-        '',
-        'Message:',
-        msg.message,
-        '',
-        '— super.tennis/contact/',
-      ].join('\n');
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: env.TELEGRAM_CHAT_ID,
+        text,
+        disable_web_page_preview: true,
+      }),
+    });
 
-      const tgRes = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: env.TELEGRAM_CHAT_ID,
-          text: tgText,
-          disable_web_page_preview: true,
-        }),
-      });
-
-      if (!tgRes.ok) {
-        const err = await tgRes.text().catch(() => '<no body>');
-        console.error(`[contact] Telegram failed: HTTP ${tgRes.status} — ${err}`);
-      } else {
-        console.log('[contact] Telegram notification sent');
-      }
-    } catch (e: any) {
-      console.error('[contact] Telegram exception:', e?.message || e);
+    if (!res.ok) {
+      const err = await res.text().catch(() => '<no body>');
+      console.error(`[contact] Telegram failed: HTTP ${res.status} — ${err}`);
+    } else {
+      console.log('[contact] Telegram notification sent');
     }
-  }
-
-  // ─── CHANNEL 2: CLOUDFLARE SEND EMAIL (after one-time verification) ───
-  if (env.EMAIL_NOTIFY) {
-    try {
-      // FROM = TO = the verified destination. CF allows sending from a
-      // destination address without verifying super.tennis as a sending
-      // domain. The Reply-To header points to the form sender so hitting
-      // "Reply" in gmail goes to them, not back to yourself.
-      const mime = buildPlainTextMime({
-        from: `SUPER.TENNIS Contact <${notifyEmail}>`,
-        to: notifyEmail,
-        replyTo: msg.email,
-        subject: `[SUPER.TENNIS] ${msg.subject} — from ${msg.name}`,
-        body: plainBody,
-      });
-
-      const cfMessage = new EmailMessage(notifyEmail, notifyEmail, mime);
-      await env.EMAIL_NOTIFY.send(cfMessage);
-      console.log(`[contact] CF email sent to ${notifyEmail}`);
-    } catch (e: any) {
-      const errMsg = e?.message || String(e);
-      if (errMsg.includes('not verified') || errMsg.includes('403') || errMsg.includes('not a verified')) {
-        console.warn(`[contact] CF email skipped — destination not yet verified. Visit https://dash.cloudflare.com/?to=/:account/email/routing/destinations to verify ${notifyEmail}.`);
-      } else {
-        console.error('[contact] CF email exception:', errMsg);
-      }
-    }
-  }
-
-  // ─── CHANNEL 2-ALT: RESEND (alternate to CF if API key is set) ───
-  if (env.RESEND_API_KEY) {
-    try {
-      const safeName = msg.name.replace(/[<>]/g, '');
-      const safeSubject = msg.subject.replace(/[<>]/g, '');
-      const res = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${env.RESEND_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: 'SUPER.TENNIS Contact <onboarding@resend.dev>',
-          to: [notifyEmail],
-          reply_to: [msg.email],
-          subject: `[SUPER.TENNIS] ${safeSubject} — from ${safeName}`,
-          text: plainBody,
-        }),
-      });
-      if (!res.ok) {
-        const err = await res.text().catch(() => '<no body>');
-        console.error(`[contact] Resend failed: HTTP ${res.status} — ${err}`);
-      } else {
-        console.log(`[contact] Resend email sent to ${notifyEmail}`);
-      }
-    } catch (e: any) {
-      console.error('[contact] Resend exception:', e?.message || e);
-    }
+  } catch (e: any) {
+    console.error('[contact] Telegram exception:', e?.message || e);
   }
 }
 
