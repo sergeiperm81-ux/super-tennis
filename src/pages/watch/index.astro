@@ -1,0 +1,356 @@
+---
+/**
+ * /watch/ — How to Watch Tennis hub page.
+ * Round 4 evergreen cluster: hub + 3 child pages
+ *   /watch/where-to-watch-grand-slams/
+ *   /watch/best-tennis-streaming-services/
+ *   /watch/tennis-tv-rights-by-country/
+ *
+ * Search intent target: massive evergreen "where can I watch [tournament]"
+ * queries that spike around every Slam. Companion to /rules/, /rankings/,
+ * and /money/ — the four fundamental "how does tennis work" intent groups.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+
+const title = 'How to Watch Tennis in 2026 — Streaming, TV & Free Options | SUPER.TENNIS';
+const h1 = 'How to Watch Tennis';
+const metaDescription = 'How to watch tennis in 2026: where every Grand Slam streams (Australian Open, Roland Garros, Wimbledon, US Open), best tennis streaming services (Tennis Channel, ESPN+, Stan Sport, Eurosport), free legal options by country, and how to find every ATP and WTA match.';
+
+const intro = "Tennis is one of the most fragmented sports for fans to follow — every Grand Slam has different broadcasters, every region has different rights deals, and the same match can stream on Tennis Channel in the US, Stan Sport in Australia, and the BBC in the UK. This hub maps out exactly where to watch every major tournament, which streaming services are worth paying for, and where you can watch tennis for free legally.";
+
+const quickAnswer = "In 2026, Grand Slams are split between regional broadcasters: Australian Open is on Channel 9 (Australia) / ESPN (US) / Eurosport (Europe); Roland Garros is on TF1 + France TV (France) / Discovery+ + Eurosport (Europe) / NBC + Peacock (US); Wimbledon is on BBC (UK, free) / ESPN (US) / Stan Sport (Australia); US Open is on ESPN+ (US) / Sky Sport (UK) / Eurosport (Europe). For non-Slam events, Tennis TV (atptour.com, ~$120/year) streams every ATP tournament globally, and WTA TV (~$100/year) covers all WTA events. The Tennis Channel app is the most comprehensive paid option in the US.";
+
+const subpages = [
+  {
+    href: '/watch/where-to-watch-grand-slams/',
+    title: 'Where to Watch Each Grand Slam',
+    excerpt: 'Tournament-by-tournament breakdown: Australian Open, Roland Garros, Wimbledon, US Open. Broadcasters by region with prices and free options.',
+    icon: '🏆',
+  },
+  {
+    href: '/watch/best-tennis-streaming-services/',
+    title: 'Best Tennis Streaming Services',
+    excerpt: 'Tennis Channel, ESPN+, Eurosport, Stan Sport, Tennis TV, WTA TV compared. Annual cost, coverage, exclusive matches, and what each one is missing.',
+    icon: '📺',
+  },
+  {
+    href: '/watch/tennis-tv-rights-by-country/',
+    title: 'Tennis TV Rights by Country',
+    excerpt: 'Country-by-country reference table: where ATP/WTA Tour, Grand Slams, and Davis Cup air in the US, UK, Australia, Canada, Spain, France, Germany, and Italy.',
+    icon: '🌍',
+  },
+];
+
+const faqs = [
+  {
+    q: 'What is the cheapest way to watch tennis in 2026?',
+    a: 'In the UK, Wimbledon airs free on BBC and BBC iPlayer — no subscription needed. In France, Roland Garros has free coverage on France Télévisions. In Australia, the Australian Open is free on Channel 9. The US has no free Grand Slam coverage — the cheapest legal option is Tennis Channel Plus (about $9.99/month). For tour-level events, Tennis TV (ATP) costs ~$120/year and is the most comprehensive single subscription globally.',
+  },
+  {
+    q: 'Can I watch tennis on YouTube?',
+    a: 'Yes, partially. The official ATP Tour YouTube channel posts daily highlights of every tournament (free). The WTA YouTube channel does the same for women\'s tennis. Tennis TV (paid subscription) also posts full matches occasionally. The four Grand Slams each have their own YouTube channels with highlights, press conferences, and feature content. Live full matches are rare — they\'re held back for paying broadcasters.',
+  },
+  {
+    q: 'What is Tennis TV and is it worth it?',
+    a: 'Tennis TV (tennistv.com) is the official ATP streaming service. ~$120/year ($13.99/month) gets you every match from every ATP tournament globally — including ATP 250s, 500s, Masters 1000s, and ATP Finals. It does NOT include Grand Slams (those have separate broadcaster deals). For non-US fans who want to follow the ATP tour deeply, it\'s the most comprehensive single subscription available.',
+  },
+  {
+    q: 'Why are Grand Slams not on Tennis TV?',
+    a: 'Grand Slam broadcast rights are owned and sold separately by each tournament — Tennis Australia, the French Tennis Federation, the All England Club, and the USTA. Each Slam negotiates its own region-by-region rights deals worth tens of millions per year (US Open\'s ESPN deal is worth ~$170M/year alone). The ATP tour can\'t bundle them into Tennis TV because they don\'t own the rights.',
+  },
+  {
+    q: 'How do I watch tennis if I\'m traveling abroad?',
+    a: 'A VPN lets you access the streaming service you subscribe to from home. For example: a US Tennis Channel subscriber traveling to Europe can use a VPN to connect to a US server and watch normally. Most major VPNs (NordVPN, ExpressVPN, Surfshark) work with Tennis Channel, ESPN+, and Tennis TV. Note that this technically violates the terms of service of these platforms, though enforcement is minimal.',
+  },
+  {
+    q: 'Is there a "Netflix of tennis"?',
+    a: 'The closest thing is Tennis TV for ATP tour content (~$120/year, every ATP match) or WTA TV for women\'s tour (~$100/year). Neither carries Grand Slams. The Tennis Channel app in the US is the most "Netflix-like" — it carries ATP, WTA, original documentaries, classic match replays, and instructional content for $9.99/month. Outside the US, Eurosport Player (now Discovery+) is the closest European equivalent.',
+  },
+];
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'How to Watch Tennis' },
+  ],
+};
+
+const collectionJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: title,
+  description: metaDescription,
+  url: 'https://super.tennis/watch/',
+  isPartOf: { '@type': 'WebSite', '@id': 'https://super.tennis/#website', name: 'SUPER.TENNIS' },
+  about: { '@type': 'Thing', name: 'How to Watch Tennis', description: intro },
+  mainEntity: subpages.map((s, i) => ({
+    '@type': 'Article',
+    headline: s.title,
+    url: `https://super.tennis${s.href}`,
+    position: i + 1,
+  })),
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="website">
+  <script type="application/ld+json" set:html={JSON.stringify(collectionJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <div class="rules-page">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <span class="current">{h1}</span>
+    </nav>
+
+    <header class="rules-hero">
+      <div class="hero-emoji">📺</div>
+      <h1>{h1}</h1>
+      <p class="hero-intro">{intro}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <aside class="system-note">
+      <span class="system-note-label">Current System Note</span>
+      <p>Broadcast deals and prices on this hub reflect the <strong>2026 tennis season</strong>. Rights deals change yearly — major shifts: US Open ESPN renewal through 2037, Australian Open Stan Sport deal through 2029, Wimbledon BBC/ESPN through 2027. If a streaming service rebrands or a deal ends mid-season, child pages will be updated; the hub stays at the strategic overview level.</p>
+    </aside>
+
+    <section class="overview">
+      <h2 class="section-title">The 5 Things You Need to Know</h2>
+      <ol class="overview-list">
+        <li><strong>No single service covers everything.</strong> Grand Slams have region-specific broadcasters; ATP/WTA tour events have their own dedicated streaming platforms (Tennis TV, WTA TV).</li>
+        <li><strong>Some Grand Slams are free in their home countries.</strong> Wimbledon on BBC (UK), Roland Garros on France TV (France), Australian Open on Channel 9 (Australia). The US Open has never had a free option.</li>
+        <li><strong>Tennis TV (~$120/year) is the closest thing to "all tennis everywhere"</strong> — every ATP match globally, but no Grand Slams. WTA TV (~$100/year) is the equivalent for women's tennis.</li>
+        <li><strong>YouTube has highlights for free.</strong> Every ATP/WTA event posts daily recap videos. Press conferences and feature content land within 24 hours. Live full matches almost never.</li>
+        <li><strong>VPNs unlock regional services from abroad.</strong> Common but technically against most platforms' terms of service; enforcement is minimal.</li>
+      </ol>
+    </section>
+
+    <section class="subpages">
+      <h2 class="section-title">Where to Watch — In Detail</h2>
+      <div class="subpages-grid">
+        {subpages.map(p => (
+          <a href={p.href} class="subpage-card">
+            <div class="subpage-icon">{p.icon}</div>
+            <h3>{p.title}</h3>
+            <p>{p.excerpt}</p>
+            <span class="subpage-cta">Read full guide →</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="related-context">
+      <h2 class="section-title">Adjacent Topics</h2>
+      <div class="context-grid">
+        <a href="/calendar/" class="context-card">
+          <span class="context-label">Schedule</span>
+          <span class="context-title">2026 Tennis Calendar</span>
+        </a>
+        <a href="/tournaments/" class="context-card">
+          <span class="context-label">Tournaments</span>
+          <span class="context-title">Tournament Guides</span>
+        </a>
+        <a href="/rules/" class="context-card">
+          <span class="context-label">Rules</span>
+          <span class="context-title">How Tennis Works</span>
+        </a>
+        <a href="/rankings/" class="context-card">
+          <span class="context-label">Live Data</span>
+          <span class="context-title">ATP & WTA Rankings</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="How to Watch Tennis — Frequently Asked Questions" />
+  </div>
+</BaseLayout>
+
+<style>
+  .rules-page {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .rules-hero {
+    text-align: center;
+    padding: 32px 0 24px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 32px;
+  }
+  .hero-emoji { font-size: 3rem; margin-bottom: 12px; }
+  .rules-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 12px;
+    color: var(--gray-900);
+  }
+  .hero-intro {
+    max-width: 720px;
+    margin: 0 auto;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--gray-600);
+  }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text { margin: 0; font-size: 0.98rem; line-height: 1.65; color: var(--gray-800); }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 0 0 20px;
+  }
+
+  .overview {
+    margin: 36px 0;
+    padding: 24px 28px;
+    background: #f0fdf4;
+    border-radius: var(--radius);
+  }
+  .overview-list {
+    margin: 0;
+    padding-left: 24px;
+    line-height: 1.75;
+    color: var(--gray-800);
+  }
+  .overview-list li { margin-bottom: 12px; }
+
+  .subpages { margin: 44px 0; }
+  .subpages-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .subpage-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 24px 22px;
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+  }
+  .subpage-card:hover {
+    border-color: var(--court-green);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  }
+  .subpage-icon { font-size: 1.8rem; margin-bottom: 12px; }
+  .subpage-card h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0 0 10px;
+    line-height: 1.3;
+    color: var(--gray-900);
+  }
+  .subpage-card p {
+    margin: 0 0 16px;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-600);
+    flex: 1;
+  }
+  .subpage-cta { font-size: 0.85rem; font-weight: 600; color: var(--court-green); }
+
+  .related-context { margin: 44px 0 32px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.88rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) {
+    .subpages-grid { grid-template-columns: repeat(2, 1fr); }
+    .context-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .subpages-grid { grid-template-columns: 1fr; }
+    .context-grid { grid-template-columns: 1fr; }
+    .rules-hero h1 { font-size: 1.9rem; }
+  }
+</style>

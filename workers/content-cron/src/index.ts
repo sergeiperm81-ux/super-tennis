@@ -2555,18 +2555,25 @@ export default {
         const dayNum = Math.floor(Date.now() / 86400000);
         const results: any[] = [];
 
+        // Local shape of a youtube_videos row — narrows seededPick<T>'s
+        // generic so we can read fields without TS18046 'unknown' errors.
+        interface YoutubeVideoRow {
+          video_id: string;
+          title: string;
+          channel_name: string;
+        }
         for (let i = 0; i < VIDEO_CATEGORIES.length; i++) {
           const cat = VIDEO_CATEGORIES[i];
-          const videos = await supabaseQuery(env, 'youtube_videos', 'GET', {
+          const videos = (await supabaseQuery(env, 'youtube_videos', 'GET', {
             'category': `eq.${cat}`,
             'order': 'published_at.desc',
             'limit': '30',
-          });
+          })) as YoutubeVideoRow[];
           if (videos.length > 0) {
             // Staggered rotation: 3 groups of 2, each group changes every 3 days
             const group = Math.floor(i / 2); // 0,0,1,1,2,2
             const seed = Math.floor((dayNum - group) / 3);
-            const picked = seededPick(videos, seed + i * 7);
+            const picked = seededPick<YoutubeVideoRow>(videos, seed + i * 7);
             const meta = VIDEO_CAT_META[cat];
             results.push({
               video_id: picked.video_id,

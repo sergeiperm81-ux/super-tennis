@@ -140,6 +140,7 @@ export function getEvergreenPlayerLinks(player: Pick<Player, 'tour'>): RelatedLi
     { href: `/records/`, title: 'Tennis Records', contextLabel: 'All-time stats' },
     { href: `/tournaments/`, title: 'Tournament Guides', contextLabel: 'Grand Slams + Masters' },
     { href: `/rules/`, title: 'Tennis Rules', contextLabel: 'Scoring, sets, tiebreak' },
+    { href: `/watch/`, title: 'How to Watch Tennis', contextLabel: 'Streaming & TV' },
     { href: `/money/`, title: 'Tennis Money', contextLabel: 'Prize + endorsements + cost' },
     { href: `/lifestyle/money/`, title: 'Net Worth Stories', contextLabel: 'Lifestyle articles' },
     { href: `/lifestyle/career/`, title: 'Tennis Career Paths', contextLabel: 'Going pro' },
@@ -253,6 +254,7 @@ export function getEvergreenTournamentLinks(): RelatedLink[] {
   return [
     { href: `/tournaments/`, title: 'All Tournaments', contextLabel: 'Index' },
     { href: `/calendar/`, title: '2026 Tennis Calendar', contextLabel: 'Schedule' },
+    { href: `/watch/where-to-watch-grand-slams/`, title: 'Where to Watch Slams', contextLabel: 'Broadcasters by region' },
     { href: `/rankings/`, title: 'ATP & WTA Rankings', contextLabel: 'Live data' },
     { href: `/rankings/how-tennis-rankings-work/`, title: 'How Rankings Work', contextLabel: 'Points & seeding' },
     { href: `/rules/how-many-sets-in-tennis/`, title: 'Match Format Rules', contextLabel: 'Best of 3 vs 5' },

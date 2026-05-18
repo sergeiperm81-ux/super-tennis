@@ -1,0 +1,374 @@
+---
+/**
+ * /watch/where-to-watch-grand-slams/ — Tournament-by-tournament broadcaster guide.
+ * Round 4 evergreen cluster #2.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+
+const title = 'Where to Watch Each Grand Slam in 2026 — Full Broadcaster Guide | SUPER.TENNIS';
+const h1 = 'Where to Watch Each Grand Slam';
+const metaDescription = 'Where every 2026 Grand Slam streams: Australian Open broadcasters (Channel 9, ESPN, Eurosport), Roland Garros (France TV, NBC/Peacock, Discovery+), Wimbledon (BBC, ESPN, Stan Sport), US Open (ESPN, Sky Sport). Region-by-region prices and free options.';
+const publishedDate = '2026-05-18';
+
+const quickAnswer = "Every Grand Slam has its own regional broadcasters. In the US: Australian Open on ESPN/ESPN+, Roland Garros on NBC + Peacock, Wimbledon on ESPN/ABC, US Open on ESPN/ESPN+ (12-year $2B deal). In the UK: Australian Open on Eurosport/Discovery+, Roland Garros on Eurosport/Discovery+, Wimbledon FREE on BBC, US Open on Sky Sport. In Australia: Australian Open FREE on Channel 9, Roland Garros on Stan Sport, Wimbledon on Stan Sport, US Open on Stan Sport. In France: Australian Open on Eurosport, Roland Garros FREE on France Télévisions + Amazon Prime, Wimbledon on beIN Sports, US Open on Eurosport.";
+
+const slamSchedule = [
+  {
+    name: 'Australian Open',
+    dates: 'Mid-late January',
+    surface: 'Hard court (GreenSet)',
+    regions: [
+      { region: 'Australia', service: 'Channel 9 + 9Now', price: 'Free', note: 'Full coverage on free-to-air + streaming app' },
+      { region: 'United States', service: 'ESPN, ESPN2, ESPN+', price: 'Cable / $10.99/mo', note: 'Night sessions usually on ESPN main; day sessions on ESPN+' },
+      { region: 'United Kingdom', service: 'Eurosport / Discovery+', price: '£6.99/mo', note: 'Full coverage including all courts' },
+      { region: 'Europe', service: 'Eurosport / Discovery+', price: '€7-12/mo regional', note: 'Pan-European Eurosport deal until 2031' },
+      { region: 'Canada', service: 'TSN, RDS', price: 'Cable / TSN Direct $20/mo', note: '' },
+      { region: 'Asia (most)', service: 'Sony Sports Network', price: 'Regional pay-TV', note: 'India, SE Asia coverage' },
+    ],
+  },
+  {
+    name: 'Roland Garros (French Open)',
+    dates: 'Late May - early June',
+    surface: 'Clay',
+    regions: [
+      { region: 'France', service: 'France Télévisions (free) + Amazon Prime Video', price: 'Free (FT2) / Prime member', note: 'France TV has day sessions, Amazon Prime has night sessions exclusively' },
+      { region: 'United States', service: 'NBC, Peacock, Tennis Channel', price: 'Cable + $5.99/mo (Peacock)', note: 'NBC has weekends + finals; Peacock streams all matches' },
+      { region: 'United Kingdom', service: 'Eurosport / Discovery+ / TNT Sports', price: '£6.99-29.99/mo', note: '' },
+      { region: 'Europe', service: 'Eurosport / Discovery+', price: '€7-12/mo regional', note: 'Pan-European rights' },
+      { region: 'Australia', service: 'Stan Sport, 9Gem', price: '$15/mo (Stan Sport) + free 9Gem highlights', note: '' },
+      { region: 'Canada', service: 'TSN', price: 'Cable / TSN Direct', note: '' },
+    ],
+  },
+  {
+    name: 'Wimbledon',
+    dates: 'Late June - early July',
+    surface: 'Grass',
+    regions: [
+      { region: 'United Kingdom', service: 'BBC One, BBC Two, BBC iPlayer', price: 'Free', note: 'Iconic free-to-air coverage since 1937. iPlayer streams every court live' },
+      { region: 'United States', service: 'ESPN, ESPN+, ABC (finals)', price: 'Cable / ESPN+ $10.99/mo', note: 'ESPN deal through 2027' },
+      { region: 'Australia', service: 'Stan Sport, 9Gem (highlights)', price: '$15/mo Stan Sport', note: '' },
+      { region: 'France', service: 'beIN Sports', price: '€15/mo', note: '' },
+      { region: 'Europe (most)', service: 'Eurosport / Discovery+', price: '€7-12/mo', note: 'Some exceptions like France (beIN) and Germany (Sky/WOW)' },
+      { region: 'Canada', service: 'TSN', price: 'Cable / TSN Direct', note: '' },
+    ],
+  },
+  {
+    name: 'US Open',
+    dates: 'Late August - early September',
+    surface: 'Hard court (DecoTurf)',
+    regions: [
+      { region: 'United States', service: 'ESPN, ESPN+, ESPN Deportes', price: 'Cable / $10.99/mo', note: 'ESPN paid $2.04B for 12-year exclusive deal (2025-2037)' },
+      { region: 'United Kingdom', service: 'Sky Sport Tennis, Now TV', price: '£26/mo (Sky) / £9.99 day pass', note: 'Sky has the rights since 2024' },
+      { region: 'Australia', service: 'Stan Sport', price: '$15/mo', note: '' },
+      { region: 'Europe', service: 'Eurosport / Discovery+', price: '€7-12/mo regional', note: '' },
+      { region: 'France', service: 'Eurosport / Prime Video (some matches)', price: '€7+ / Prime member', note: '' },
+      { region: 'Canada', service: 'Sportsnet', price: 'Cable / Sportsnet Plus', note: '' },
+    ],
+  },
+];
+
+const faqs = [
+  {
+    q: 'Which Grand Slam is the cheapest to watch?',
+    a: 'In its home country, each Slam (except US Open) has a free option: Wimbledon on BBC (UK), Roland Garros on France TV (France, day sessions only — night sessions are Amazon Prime exclusive), Australian Open on Channel 9 (Australia). Outside the home country, costs are similar across all four Slams — roughly $10-15/month for the main streaming option, with cable bundles costing more.',
+  },
+  {
+    q: 'Why is the US Open the only Slam with no free option?',
+    a: 'ESPN paid $2.04 billion for an exclusive 12-year US deal in 2024 (running through 2037), which removed any free over-the-air or PBS-style coverage in the US. Outside the US, the US Open still has free coverage in some markets — particularly Australia where Stan Sport has paywall but 9Network shows a free daily highlights package. The exclusivity of ESPN\'s US deal makes the US Open the most paywalled Slam globally.',
+  },
+  {
+    q: 'Can I watch Wimbledon for free?',
+    a: 'In the UK: yes, completely free on BBC iPlayer and BBC One/Two. Outside the UK, no — Wimbledon requires a paid service (ESPN+ in US, Stan Sport in Australia, Eurosport in Europe, etc.). The BBC stream is geographically restricted, so VPN access from outside the UK is technically against terms of service but commonly used.',
+  },
+  {
+    q: 'Where can I watch Roland Garros night sessions?',
+    a: 'Since 2021, French Open night sessions (after about 8pm Paris time) have been Amazon Prime Video exclusive in France — meaning France Télévisions has only day sessions, but Amazon Prime members get night matches with no extra charge. Outside France, Roland Garros night sessions are available on whichever broadcaster has the regional rights: NBC/Peacock (US), Eurosport (Europe), Stan Sport (Australia), etc.',
+  },
+  {
+    q: 'What\'s the difference between Eurosport and Discovery+?',
+    a: 'They\'re the same company. Eurosport is the broadcaster brand; Discovery+ (formerly Eurosport Player) is the streaming platform that hosts Eurosport content plus additional Discovery library content. Discovery+ launched in 2022 as a rebrand. Most European tennis fans pay for Discovery+ to access Eurosport channels and the Eurosport tennis library on-demand.',
+  },
+  {
+    q: 'Are Grand Slam matches available on YouTube?',
+    a: 'Live full matches: rarely. All four Grand Slams have their own YouTube channels with daily highlights (typically 5-15 minute recaps), press conferences, feature content, and occasional full-match replays of historic matches. The Wimbledon YouTube channel is the most active — they post hundreds of videos per fortnight during the tournament. Live full match streaming is held back for the paying broadcasters.',
+  },
+  {
+    q: 'How do I watch tennis if I move abroad mid-year?',
+    a: 'Three options: (1) Subscribe to a service from your new country — most have month-by-month plans you can cancel anytime. (2) Use a VPN to keep watching your old country\'s service (technically against terms, but widely done). (3) Switch to a global service like Tennis TV (ATP) which works the same everywhere — though Tennis TV doesn\'t carry Grand Slams. Most fans combine option 1 (regional service for Slams) with Tennis TV (for tour events).',
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/watch/where-to-watch-grand-slams/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: { '@type': 'Organization', '@id': 'https://super.tennis/#organization', name: 'SUPER.TENNIS Editorial', url: 'https://super.tennis/about/' },
+  publisher: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis', logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' } },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'How to Watch Tennis', item: 'https://super.tennis/watch/' },
+    { '@type': 'ListItem', position: 3, name: 'Where to Watch Grand Slams' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/watch/">How to Watch Tennis</a> <span class="sep">/</span>
+      <span class="current">Grand Slam Broadcasters</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">🏆</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/about/">SUPER.TENNIS Editorial</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <aside class="system-note">
+      <span class="system-note-label">Current System Note</span>
+      <p>Prices and broadcaster info reflect the <strong>2026 season</strong>. Major deals: ESPN's US Open contract runs through 2037 (signed 2024 for $2.04B), Stan Sport's Australian rights deal extended through 2029, Wimbledon's BBC + ESPN deals run through 2027. Mid-cycle changes (like Amazon Prime acquiring French Open night sessions in 2021) are noted in each row.</p>
+    </aside>
+
+    <div class="article-body">
+      {slamSchedule.map(slam => (
+        <section class="slam-block">
+          <h2 id={slam.name.toLowerCase().replace(/[^a-z]+/g, '-')}>{slam.name}</h2>
+          <p class="slam-meta"><strong>When:</strong> {slam.dates} · <strong>Surface:</strong> {slam.surface}</p>
+          <div class="format-table-wrap">
+            <table class="format-table">
+              <thead>
+                <tr>
+                  <th>Region</th>
+                  <th>Service</th>
+                  <th>Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {slam.regions.map(r => (
+                  <tr>
+                    <td><strong>{r.region}</strong></td>
+                    <td>{r.service}{r.note && <span class="note"> — {r.note}</span>}</td>
+                    <td class={r.price.toLowerCase().includes('free') ? 'price-free' : 'price-paid'}>{r.price}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ))}
+
+      <h2 id="practical-tips">Practical Tips</h2>
+      <ul>
+        <li><strong>Buy the cheapest single-Slam package if you only want one tournament.</strong> Stan Sport's Australian deal allows one-month subscriptions perfect for a Wimbledon fortnight; same for Discovery+ in Europe.</li>
+        <li><strong>Combine Tennis TV with a regional Slam package.</strong> Tennis TV (~$120/year) for every ATP tour event globally + one regional service for Grand Slams is the most complete coverage for ~$15-20/month total.</li>
+        <li><strong>Check whether your cable package already includes ESPN/ESPN+.</strong> US fans with cable often have ESPN+ access through their provider's app without paying extra.</li>
+        <li><strong>BBC iPlayer requires a UK TV License.</strong> Even though Wimbledon is free, BBC technically requires a £159/year TV License — though enforcement for free streaming-only viewers is minimal in practice.</li>
+      </ul>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/watch/" class="context-card">
+          <span class="context-label">Hub</span>
+          <span class="context-title">How to Watch Tennis</span>
+        </a>
+        <a href="/watch/best-tennis-streaming-services/" class="context-card">
+          <span class="context-label">Services</span>
+          <span class="context-title">Best Streaming Services</span>
+        </a>
+        <a href="/watch/tennis-tv-rights-by-country/" class="context-card">
+          <span class="context-label">Reference</span>
+          <span class="context-title">TV Rights by Country</span>
+        </a>
+        <a href="/tournaments/" class="context-card">
+          <span class="context-label">Tournaments</span>
+          <span class="context-title">Tournament Guides</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Watching Grand Slams — Frequently Asked Questions" />
+  </article>
+</BaseLayout>
+
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text { margin: 0; font-size: 0.98rem; line-height: 1.65; color: var(--gray-800); }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p { font-size: 1rem; line-height: 1.75; margin: 0 0 16px; }
+  .article-body ul, .article-body ol { margin: 0 0 16px; padding-left: 22px; line-height: 1.75; }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+
+  .slam-block { margin-bottom: 28px; }
+  .slam-meta {
+    font-size: 0.88rem;
+    color: var(--gray-600);
+    margin: -4px 0 12px;
+  }
+
+  .format-table-wrap { overflow-x: auto; margin: 8px 0 16px; }
+  .format-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+  .format-table th, .format-table td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    vertical-align: top;
+  }
+  .format-table th {
+    background: var(--gray-50);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-700);
+    font-weight: 700;
+  }
+  .format-table td { line-height: 1.5; }
+  .format-table .note { color: var(--gray-500); font-size: 0.85rem; }
+  .price-free { color: var(--court-green); font-weight: 700; }
+  .price-paid { color: var(--gray-800); }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>

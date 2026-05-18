@@ -1,0 +1,375 @@
+---
+/**
+ * /watch/best-tennis-streaming-services/ — Streaming service comparison.
+ * Round 4 evergreen cluster #3.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+
+const title = 'Best Tennis Streaming Services 2026 — Compared | SUPER.TENNIS';
+const h1 = 'Best Tennis Streaming Services';
+const metaDescription = 'Best tennis streaming services compared in 2026: Tennis Channel ($9.99/mo), ESPN+ ($10.99/mo), Tennis TV ($120/yr), WTA TV ($100/yr), Eurosport/Discovery+ (€7-12/mo), Stan Sport ($15/mo). Coverage, exclusive matches, and what each service is missing.';
+const publishedDate = '2026-05-18';
+
+const quickAnswer = "The best tennis streaming services depend on what you want to watch. Tennis Channel ($9.99/month, US) and ESPN+ ($10.99/month, US) cover most ATP/WTA events plus Grand Slams in the US. Tennis TV (~$120/year) streams every ATP match globally but no Grand Slams. WTA TV (~$100/year) is the women's equivalent. Eurosport/Discovery+ (€7-12/mo regional, Europe) is the European hub. Stan Sport ($15/month, Australia) is the only way to watch most non-AO tennis in Australia. For complete coverage, most fans combine 2-3 services.";
+
+const services = [
+  {
+    name: 'Tennis Channel (US)',
+    price: '$9.99/mo or $79.99/yr',
+    coverage: ['ATP 250s/500s/Masters 1000s', 'WTA 250s/500s/1000s', 'Wimbledon (partial)', 'US Open (partial)', 'Original documentaries', 'Classic match replays', 'Instructional content'],
+    missing: ['Australian Open (ESPN exclusive)', 'Roland Garros (NBC/Peacock exclusive)'],
+    bestFor: 'US fans who want the most comprehensive ATP/WTA tour coverage without Grand Slams.',
+    verdict: 'The closest thing to a "Netflix of tennis" — original content plus live matches. Best paid option if you live in the US and don\'t mind missing some Slam matches.',
+  },
+  {
+    name: 'ESPN+ (US)',
+    price: '$10.99/mo or $109.99/yr',
+    coverage: ['Australian Open (full)', 'Wimbledon (full)', 'US Open (full, exclusive through 2037)', 'Some ATP/WTA events', 'College tennis'],
+    missing: ['Roland Garros (NBC/Peacock)', 'Most non-Slam ATP tour events (those are Tennis Channel)'],
+    bestFor: 'US fans who prioritize Grand Slam coverage over tour-level depth.',
+    verdict: 'The Grand Slam streaming service in the US. ESPN\'s 12-year $2B US Open deal makes this the only way to watch the US Open in America.',
+  },
+  {
+    name: 'Tennis TV (Global)',
+    price: '$120/yr or $13.99/mo',
+    coverage: ['Every ATP tournament match globally', 'ATP Cup', 'NextGen Finals', 'ATP Finals', 'Replays of every ATP match back to 2003'],
+    missing: ['ALL Grand Slams (separate broadcaster deals)', 'WTA tour (separate WTA TV)'],
+    bestFor: 'Hardcore ATP tour fans who follow Challenger-level players and watch multiple matches per day.',
+    verdict: 'The single most comprehensive tennis subscription for ATP coverage. Geographically global — works the same in any country. The downside is no Slams.',
+  },
+  {
+    name: 'WTA TV (Global)',
+    price: '$99.99/yr or $11.99/mo',
+    coverage: ['Every WTA tournament match', 'WTA Finals', 'WTA 1000 events', 'Replays and highlights'],
+    missing: ['ALL Grand Slams', 'ATP tour content'],
+    bestFor: 'WTA-focused fans who want every women\'s match globally without Slams.',
+    verdict: 'Smaller library than Tennis TV (women\'s tour has fewer events per year) but the only way to watch most WTA 250/500 events outside their home country.',
+  },
+  {
+    name: 'Eurosport / Discovery+ (Europe)',
+    price: '€7-12/mo (varies by country)',
+    coverage: ['Australian Open (pan-European)', 'Roland Garros (most countries)', 'Wimbledon (most countries)', 'US Open (most countries)', 'ATP 250s/500s', 'WTA events'],
+    missing: ['Wimbledon in UK (BBC has it)', 'Roland Garros in France (France TV has it)'],
+    bestFor: 'European fans who want one subscription covering all four Slams plus tour events.',
+    verdict: 'The European one-stop-shop. Eurosport\'s pan-European deal runs through 2031, making this the most stable European tennis subscription.',
+  },
+  {
+    name: 'Stan Sport (Australia)',
+    price: 'AU$15/mo (Stan Sport add-on to Stan)',
+    coverage: ['Roland Garros', 'Wimbledon', 'US Open', 'ATP/WTA tour events (varies)'],
+    missing: ['Australian Open (Channel 9 has it, free)'],
+    bestFor: 'Australian fans who want non-AO Grand Slams + tour content.',
+    verdict: 'Required for non-AO tennis in Australia. AO is free on Channel 9, so most Aussie tennis fans pair Stan Sport (for the other 3 Slams) with free Channel 9 coverage in January.',
+  },
+];
+
+const faqs = [
+  {
+    q: 'Which single streaming service has the most tennis?',
+    a: 'Tennis TV (~$120/year) has the most tour-level matches — every ATP match from every ATP tournament globally. But it has zero Grand Slam matches. If you measure "most matches", Tennis TV wins. If you measure "most prestigious matches", any Grand Slam broadcaster wins. There\'s no single service that covers both deeply.',
+  },
+  {
+    q: 'Can I subscribe to a single Grand Slam for one fortnight?',
+    a: 'Yes — most services offer month-by-month plans you can cancel after the tournament ends. Stan Sport in Australia, Discovery+ in Europe, and Peacock in the US all support this. ESPN+ requires a longer commitment. Subscribe a few days before the tournament starts, watch the fortnight, cancel before the next billing cycle. Many fans do this for Wimbledon specifically.',
+  },
+  {
+    q: 'Why are tennis streaming rights so fragmented?',
+    a: "Three reasons: (1) Each Grand Slam is owned by a different governing body that negotiates its own broadcast deals, (2) The ATP and WTA tours sell their own tour-level rights separately from Slams, (3) Each country has multiple broadcasters competing for the same content — so US Open might be on ESPN in the US but Sky Sport in the UK and Stan Sport in Australia. No single body has the leverage to consolidate rights into one global service.",
+  },
+  {
+    q: 'Is Apple TV adding tennis?',
+    a: "As of 2026, Apple TV does NOT carry any major tennis events. Apple has been buying live sports rights (MLS, Friday Night Baseball, F1 starting 2025), but tennis isn't in their portfolio. Rumors of Apple bidding for ATP rights have circulated but no deal has been announced. Most analysts expect Apple to enter tennis if the ATP Tour rights bundle comes up for global re-negotiation in 2028.",
+  },
+  {
+    q: 'What\'s the difference between Tennis Channel and Tennis Channel Plus?',
+    a: "Tennis Channel is the cable TV channel (linear broadcast). Tennis Channel Plus is the streaming app — both standalone subscription and free with most cable subscriptions that include Tennis Channel. The streaming app has additional content beyond the linear broadcast: more matches simultaneously, replay access, original documentaries, and player profile content. For most US-based tennis fans, Tennis Channel Plus is the better value at $9.99/month standalone.",
+  },
+  {
+    q: 'Are there any free legal tennis streams?',
+    a: "Yes — but limited. (1) BBC iPlayer streams Wimbledon free in the UK. (2) France Télévisions streams Roland Garros day sessions free in France. (3) Channel 9 + 9Now streams Australian Open free in Australia. (4) Some Davis Cup and Billie Jean King Cup ties are free on national broadcasters. Outside these regional free options, the only legal free content is YouTube highlights and press conferences — no live full matches.",
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/watch/best-tennis-streaming-services/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: { '@type': 'Organization', '@id': 'https://super.tennis/#organization', name: 'SUPER.TENNIS Editorial', url: 'https://super.tennis/about/' },
+  publisher: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis', logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' } },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'How to Watch Tennis', item: 'https://super.tennis/watch/' },
+    { '@type': 'ListItem', position: 3, name: 'Best Streaming Services' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/watch/">How to Watch Tennis</a> <span class="sep">/</span>
+      <span class="current">Best Streaming Services</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">📺</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/about/">SUPER.TENNIS Editorial</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <aside class="system-note">
+      <span class="system-note-label">Current System Note</span>
+      <p>Prices and coverage reflect <strong>2026 service plans</strong>. Streaming services adjust prices and content libraries every 6-12 months — major changes since 2024: Tennis Channel raised standalone price from $7.99 to $9.99 (April 2025); ESPN+ raised from $9.99 to $10.99 (Oct 2024); Discovery+ replaced Eurosport Player branding fully (2022-2024). If a service rebrands or a contract ends, this page is refreshed within 30 days.</p>
+    </aside>
+
+    <div class="article-body">
+      {services.map(s => (
+        <section class="service-block">
+          <h2 id={s.name.toLowerCase().replace(/[^a-z]+/g, '-')}>{s.name}</h2>
+          <p class="service-price"><strong>Price:</strong> {s.price}</p>
+          <div class="service-detail">
+            <div>
+              <h3>What you get</h3>
+              <ul>
+                {s.coverage.map(c => <li>{c}</li>)}
+              </ul>
+            </div>
+            <div>
+              <h3>What's missing</h3>
+              <ul>
+                {s.missing.map(m => <li>{m}</li>)}
+              </ul>
+            </div>
+          </div>
+          <p class="service-best"><strong>Best for:</strong> {s.bestFor}</p>
+          <p class="service-verdict"><strong>Verdict:</strong> {s.verdict}</p>
+        </section>
+      ))}
+
+      <h2 id="recommended-bundles">Recommended Bundles for Full Coverage</h2>
+      <ul>
+        <li><strong>US fan, ATP/WTA focused:</strong> Tennis Channel ($9.99/mo) + ESPN+ ($10.99/mo) = $21/month for nearly all major tennis. Pair with Peacock ($5.99/mo) during Roland Garros for the French Open.</li>
+        <li><strong>European fan, all Slams:</strong> Discovery+ (€7-12/mo) covers Roland Garros, Wimbledon, US Open + tour events in most countries. Add Tennis TV ($120/year) if you want deeper ATP tour content.</li>
+        <li><strong>UK fan, budget-conscious:</strong> BBC iPlayer (free, Wimbledon) + Tennis TV ($120/year, ATP tour) = $10/month effective, no other Slams. Add Discovery+ for the rest.</li>
+        <li><strong>Australian fan:</strong> Channel 9 (free, AO) + Stan Sport ($15/mo, other 3 Slams) + Tennis TV optional.</li>
+        <li><strong>Hardcore fan anywhere:</strong> Tennis TV + WTA TV + your regional Slam package = ~$25-30/month for the most comprehensive coverage possible.</li>
+      </ul>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/watch/" class="context-card">
+          <span class="context-label">Hub</span>
+          <span class="context-title">How to Watch Tennis</span>
+        </a>
+        <a href="/watch/where-to-watch-grand-slams/" class="context-card">
+          <span class="context-label">Slams</span>
+          <span class="context-title">Grand Slam Broadcasters</span>
+        </a>
+        <a href="/watch/tennis-tv-rights-by-country/" class="context-card">
+          <span class="context-label">Reference</span>
+          <span class="context-title">TV Rights by Country</span>
+        </a>
+        <a href="/calendar/" class="context-card">
+          <span class="context-label">Schedule</span>
+          <span class="context-title">2026 Calendar</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Tennis Streaming Services — Frequently Asked Questions" />
+  </article>
+</BaseLayout>
+
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text { margin: 0; font-size: 0.98rem; line-height: 1.65; color: var(--gray-800); }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p { font-size: 1rem; line-height: 1.75; margin: 0 0 16px; }
+  .article-body ul, .article-body ol { margin: 0 0 16px; padding-left: 22px; line-height: 1.75; }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+
+  .service-block {
+    padding: 18px 22px;
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+  }
+  .service-block h2 {
+    margin: 0 0 8px !important;
+    font-size: 1.2rem !important;
+  }
+  .service-price {
+    margin: 0 0 14px !important;
+    font-size: 0.95rem !important;
+    color: var(--gray-700);
+  }
+  .service-detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 12px;
+  }
+  .service-detail h3 {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-500);
+    margin: 0 0 8px;
+    font-family: var(--font-heading);
+  }
+  .service-detail ul {
+    margin: 0 !important;
+    padding-left: 18px !important;
+    font-size: 0.92rem !important;
+    line-height: 1.6 !important;
+  }
+  .service-detail li { margin-bottom: 4px !important; }
+  .service-best, .service-verdict {
+    margin: 8px 0 0 !important;
+    font-size: 0.92rem !important;
+    line-height: 1.55 !important;
+  }
+  .service-verdict { color: var(--gray-700); font-style: italic; }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 720px) { .service-detail { grid-template-columns: 1fr; } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>

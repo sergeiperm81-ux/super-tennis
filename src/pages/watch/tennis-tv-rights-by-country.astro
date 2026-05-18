@@ -1,0 +1,420 @@
+---
+/**
+ * /watch/tennis-tv-rights-by-country/ — Country-by-country reference table.
+ * Round 4 evergreen cluster #4.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+
+const title = 'Tennis TV Rights by Country 2026 — Complete Reference | SUPER.TENNIS';
+const h1 = 'Tennis TV Rights by Country';
+const metaDescription = 'Tennis broadcast rights by country in 2026: where to watch ATP Tour, WTA Tour, Australian Open, Roland Garros, Wimbledon, US Open, Davis Cup, and Billie Jean King Cup in the US, UK, Australia, Canada, Spain, France, Germany, Italy, and more.';
+const publishedDate = '2026-05-18';
+
+const quickAnswer = "Tennis broadcast rights vary by country. The four Grand Slams have separate broadcasters in each region: Australian Open (Channel 9 in AU, ESPN in US, Eurosport across Europe), Roland Garros (France TV + Amazon Prime in France, NBC + Peacock in US, Eurosport elsewhere), Wimbledon (BBC free in UK, ESPN in US, Stan Sport in AU), US Open (ESPN exclusive in US through 2037, Sky Sport in UK). The ATP and WTA tours also sell their own rights — Tennis TV (atptour.com) is global for ATP, WTA TV is global for WTA. This page is the complete country reference.";
+
+const countries = [
+  {
+    name: 'United States',
+    flag: '🇺🇸',
+    rights: [
+      { event: 'Australian Open', service: 'ESPN, ESPN+', price: '$10.99/mo (ESPN+)' },
+      { event: 'Roland Garros', service: 'NBC, Peacock, Tennis Channel', price: '$5.99/mo (Peacock)' },
+      { event: 'Wimbledon', service: 'ESPN, ESPN+, ABC (finals)', price: '$10.99/mo (ESPN+)' },
+      { event: 'US Open', service: 'ESPN, ESPN+, ESPN Deportes', price: '$10.99/mo (ESPN+)' },
+      { event: 'ATP Tour (250s-Masters)', service: 'Tennis Channel, Tennis TV', price: '$9.99/mo (Tennis Channel) + $120/yr Tennis TV' },
+      { event: 'WTA Tour', service: 'Tennis Channel, WTA TV', price: '$9.99/mo + $100/yr WTA TV' },
+      { event: 'Davis Cup', service: 'Tennis Channel (limited)', price: '$9.99/mo' },
+    ],
+  },
+  {
+    name: 'United Kingdom',
+    flag: '🇬🇧',
+    rights: [
+      { event: 'Australian Open', service: 'Eurosport / Discovery+', price: '£6.99/mo' },
+      { event: 'Roland Garros', service: 'Eurosport / Discovery+, TNT Sports', price: '£6.99-29.99/mo' },
+      { event: 'Wimbledon', service: 'BBC One, BBC Two, BBC iPlayer', price: 'Free (with TV License)' },
+      { event: 'US Open', service: 'Sky Sport Tennis, Now TV', price: '£26/mo (Sky) / £9.99 day pass' },
+      { event: 'ATP Tour (250s-Masters)', service: 'Sky Sport, Tennis TV', price: '£26/mo + $120/yr Tennis TV' },
+      { event: 'WTA Tour', service: 'Sky Sport, WTA TV', price: '£26/mo + $100/yr WTA TV' },
+      { event: 'Davis Cup', service: 'BBC Sport, BBC Red Button', price: 'Free' },
+    ],
+  },
+  {
+    name: 'Australia',
+    flag: '🇦🇺',
+    rights: [
+      { event: 'Australian Open', service: 'Channel 9, 9Now, 9Gem', price: 'Free' },
+      { event: 'Roland Garros', service: 'Stan Sport', price: 'AU$15/mo' },
+      { event: 'Wimbledon', service: 'Stan Sport, 9Gem (highlights)', price: 'AU$15/mo' },
+      { event: 'US Open', service: 'Stan Sport', price: 'AU$15/mo' },
+      { event: 'ATP Tour', service: 'Stan Sport, Tennis TV', price: 'AU$15/mo + $120/yr Tennis TV' },
+      { event: 'WTA Tour', service: 'Stan Sport, WTA TV', price: 'AU$15/mo + $100/yr WTA TV' },
+      { event: 'Davis Cup', service: '9Gem (Australia ties), Stan Sport', price: 'Free / AU$15' },
+    ],
+  },
+  {
+    name: 'France',
+    flag: '🇫🇷',
+    rights: [
+      { event: 'Australian Open', service: 'Eurosport / Discovery+', price: '€7-12/mo' },
+      { event: 'Roland Garros', service: 'France Télévisions (day) + Amazon Prime Video (night)', price: 'Free (FT) / Prime member' },
+      { event: 'Wimbledon', service: 'beIN Sports', price: '€15/mo' },
+      { event: 'US Open', service: 'Eurosport / Discovery+, Amazon Prime (some)', price: '€7-12/mo' },
+      { event: 'ATP Tour', service: 'beIN Sports, Tennis TV', price: '€15/mo + $120/yr Tennis TV' },
+      { event: 'Davis Cup', service: 'France TV (when France plays), beIN Sports', price: 'Free / €15/mo' },
+    ],
+  },
+  {
+    name: 'Germany',
+    flag: '🇩🇪',
+    rights: [
+      { event: 'Australian Open', service: 'Eurosport / Discovery+', price: '€7-12/mo' },
+      { event: 'Roland Garros', service: 'Eurosport / Discovery+', price: '€7-12/mo' },
+      { event: 'Wimbledon', service: 'Sky Sport / WOW', price: '€19-29/mo' },
+      { event: 'US Open', service: 'Eurosport / Discovery+', price: '€7-12/mo' },
+      { event: 'ATP Tour', service: 'Sky Sport, Tennis TV', price: '€29/mo + $120/yr Tennis TV' },
+      { event: 'Davis Cup', service: 'ARD/ZDF (when Germany plays), DAZN', price: 'Free / €34.99/mo' },
+    ],
+  },
+  {
+    name: 'Spain',
+    flag: '🇪🇸',
+    rights: [
+      { event: 'Australian Open', service: 'Eurosport / Discovery+', price: '€7-12/mo' },
+      { event: 'Roland Garros', service: 'Eurosport / Discovery+, RTVE (highlights)', price: '€7-12/mo' },
+      { event: 'Wimbledon', service: 'Movistar Plus+', price: '€19/mo' },
+      { event: 'US Open', service: 'Eurosport / Discovery+', price: '€7-12/mo' },
+      { event: 'ATP Tour (incl. Madrid Open)', service: 'Movistar Plus+, Tennis TV', price: '€19/mo + $120/yr Tennis TV' },
+      { event: 'Davis Cup', service: 'TVE (when Spain plays), Movistar Plus+', price: 'Free / €19/mo' },
+    ],
+  },
+  {
+    name: 'Italy',
+    flag: '🇮🇹',
+    rights: [
+      { event: 'Australian Open', service: 'Eurosport / Discovery+', price: '€7-12/mo' },
+      { event: 'Roland Garros', service: 'Eurosport / Discovery+', price: '€7-12/mo' },
+      { event: 'Wimbledon', service: 'Sky Sport / Now TV', price: '€16-30/mo' },
+      { event: 'US Open', service: 'Eurosport / Discovery+', price: '€7-12/mo' },
+      { event: 'ATP Tour (incl. Italian Open)', service: 'Sky Sport, Tennis TV', price: '€30/mo + $120/yr Tennis TV' },
+      { event: 'ATP Finals (Turin host)', service: 'Sky Sport', price: '€30/mo' },
+      { event: 'Davis Cup', service: 'RaiSport (when Italy plays), Sky Sport', price: 'Free / €30/mo' },
+    ],
+  },
+  {
+    name: 'Canada',
+    flag: '🇨🇦',
+    rights: [
+      { event: 'Australian Open', service: 'TSN, RDS', price: 'Cable / TSN Direct $20/mo' },
+      { event: 'Roland Garros', service: 'TSN', price: 'Cable / TSN Direct' },
+      { event: 'Wimbledon', service: 'TSN', price: 'Cable / TSN Direct' },
+      { event: 'US Open', service: 'Sportsnet', price: 'Cable / Sportsnet Plus $19.99/mo' },
+      { event: 'Canadian Open (own event)', service: 'Sportsnet', price: 'Cable' },
+      { event: 'ATP Tour', service: 'Tennis TV', price: '$120/yr' },
+      { event: 'Davis Cup', service: 'Sportsnet (when Canada plays)', price: 'Cable' },
+    ],
+  },
+];
+
+const faqs = [
+  {
+    q: 'Which country has the cheapest tennis viewing?',
+    a: 'The UK is the cheapest for Wimbledon (free on BBC) but expensive for other content (Sky Sport at £26/mo). Australia is mid-range — AO is free, but other Slams require Stan Sport. France has the cheapest premium tennis: France Télévisions free for Roland Garros + Eurosport at €7-12/mo for other Slams. Per Grand Slam fortnight, France works out cheapest if you only watch tennis seasonally.',
+  },
+  {
+    q: 'How long are current tennis broadcast deals?',
+    a: 'ESPN US Open: 12-year deal through 2037 ($2.04 billion total). Stan Sport Australian rights: through 2029. BBC + ESPN Wimbledon: through 2027. Discovery+ pan-European Eurosport tennis: through 2031. Tennis TV (ATP-owned): perpetual (it\'s the tour\'s own product). Most deals are renegotiated within 2-3 years of expiration, so checking current rights every January is wise.',
+  },
+  {
+    q: 'Do all 4 Grand Slams have to be on different broadcasters in each country?',
+    a: 'No, but it usually works out that way because the Slams negotiate independently. Sometimes a single broadcaster wins multiple Slam rights in one country (e.g., ESPN holds 3 of 4 Slams in the US: AO, Wimbledon, US Open). But Roland Garros frequently goes to NBC/Peacock in the US, breaking the consolidation pattern. In most European countries, Eurosport carries 3-4 of the Slams.',
+  },
+  {
+    q: 'Why does Roland Garros sell night sessions separately?',
+    a: 'France\'s Fédération Française de Tennis (FFT) introduced night session matches in 2021 and immediately sold those rights to Amazon Prime Video as a separate package. Day sessions remain on France Télévisions (free). The split was financially driven — Amazon paid significantly more for night-session exclusivity than the FFT could earn from selling them with day sessions. It\'s the only Grand Slam that splits day and night session rights.',
+  },
+  {
+    q: 'Does Tennis TV work everywhere?',
+    a: 'Yes — Tennis TV is geographically global. Same subscription works in any country, same library, same prices ($120/year regardless of where you sign up). The only restriction is that Tennis TV does NOT carry Grand Slams (those have their own regional broadcasters). For ATP tour matches, Tennis TV is the most consistent global option.',
+  },
+  {
+    q: 'Where can I watch ATP Finals 2026?',
+    a: 'ATP Finals (held in Turin through 2025, possibly moving thereafter) airs on the same broadcasters as the rest of the ATP tour in each country: Tennis Channel + Tennis TV in the US, Sky Sport in the UK, Stan Sport in Australia, Sky Sport in Italy (the host country) and Eurosport across Europe. ATP Finals get extra premium coverage from Tennis TV with all-court multi-feed viewing options.',
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/watch/tennis-tv-rights-by-country/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: { '@type': 'Organization', '@id': 'https://super.tennis/#organization', name: 'SUPER.TENNIS Editorial', url: 'https://super.tennis/about/' },
+  publisher: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis', logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' } },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'How to Watch Tennis', item: 'https://super.tennis/watch/' },
+    { '@type': 'ListItem', position: 3, name: 'TV Rights by Country' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/watch/">How to Watch Tennis</a> <span class="sep">/</span>
+      <span class="current">TV Rights by Country</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">🌍</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/about/">SUPER.TENNIS Editorial</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <aside class="system-note">
+      <span class="system-note-label">Current System Note</span>
+      <p>Rights deals reflect the <strong>2026 tennis season</strong>. Prices are approximate as broadcaster pricing changes 1-2 times per year. Major upcoming changes: ESPN US Open through 2037, Stan Sport Australia through 2029, BBC Wimbledon through 2027. We refresh this page within 30 days of any major rights change being announced.</p>
+    </aside>
+
+    <div class="article-body">
+      {countries.map(country => (
+        <section class="country-block">
+          <h2 id={country.name.toLowerCase().replace(/[^a-z]+/g, '-')}>{country.flag} {country.name}</h2>
+          <div class="format-table-wrap">
+            <table class="format-table">
+              <thead>
+                <tr>
+                  <th>Event</th>
+                  <th>Service</th>
+                  <th>Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {country.rights.map(r => (
+                  <tr>
+                    <td><strong>{r.event}</strong></td>
+                    <td>{r.service}</td>
+                    <td class={r.price.toLowerCase().includes('free') ? 'price-free' : 'price-paid'}>{r.price}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ))}
+
+      <h2 id="other-countries">Other Countries — Quick Reference</h2>
+      <ul>
+        <li><strong>Netherlands:</strong> Eurosport/Discovery+ (Slams + tour) — €7-12/mo</li>
+        <li><strong>Belgium:</strong> Eurosport/Discovery+ — €7-12/mo</li>
+        <li><strong>Sweden:</strong> Discovery+, Viaplay — €13-20/mo</li>
+        <li><strong>Switzerland:</strong> Eurosport, SRF (highlights), Sky Sport Switzerland</li>
+        <li><strong>Austria:</strong> Eurosport, ORF Sport+ (highlights)</li>
+        <li><strong>Brazil:</strong> SporTV, Globoplay</li>
+        <li><strong>Argentina:</strong> ESPN Latin America, Star+</li>
+        <li><strong>Mexico:</strong> ESPN Latin America, Star+, TV Azteca</li>
+        <li><strong>Japan:</strong> WOWOW, NHK (highlights)</li>
+        <li><strong>India:</strong> Sony Sports Network, JioCinema</li>
+        <li><strong>South Africa:</strong> SuperSport, DStv</li>
+        <li><strong>Most of Asia (excl. Japan/India):</strong> Sony Sports Network or beIN Sports</li>
+      </ul>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/watch/" class="context-card">
+          <span class="context-label">Hub</span>
+          <span class="context-title">How to Watch Tennis</span>
+        </a>
+        <a href="/watch/where-to-watch-grand-slams/" class="context-card">
+          <span class="context-label">Slams</span>
+          <span class="context-title">Grand Slam Broadcasters</span>
+        </a>
+        <a href="/watch/best-tennis-streaming-services/" class="context-card">
+          <span class="context-label">Services</span>
+          <span class="context-title">Best Streaming Services</span>
+        </a>
+        <a href="/tournaments/" class="context-card">
+          <span class="context-label">Tournaments</span>
+          <span class="context-title">Tournament Guides</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Tennis TV Rights — Frequently Asked Questions" />
+  </article>
+</BaseLayout>
+
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text { margin: 0; font-size: 0.98rem; line-height: 1.65; color: var(--gray-800); }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p { font-size: 1rem; line-height: 1.75; margin: 0 0 16px; }
+  .article-body ul, .article-body ol { margin: 0 0 16px; padding-left: 22px; line-height: 1.75; }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+
+  .country-block { margin-bottom: 28px; }
+
+  .format-table-wrap { overflow-x: auto; margin: 8px 0 16px; }
+  .format-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+  .format-table th, .format-table td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    vertical-align: top;
+  }
+  .format-table th {
+    background: var(--gray-50);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-700);
+    font-weight: 700;
+  }
+  .format-table td { line-height: 1.5; }
+  .price-free { color: var(--court-green); font-weight: 700; }
+  .price-paid { color: var(--gray-800); }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>
