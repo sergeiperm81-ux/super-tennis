@@ -115,3 +115,13 @@
 /videos                         /video/           301
 /videos/                        /video/           301
 /videos/*                       /video/:splat     301
+
+# --- Fake author personas removed 2026-05-17 ---
+# Alex Morgan / Sara Kellner author pages were fictional. Removed for E-E-A-T
+# integrity and to comply with FTC/EU consumer-protection rules around
+# transparent authorship on affiliate-bearing content. All historical
+# /authors/* URLs now 301-redirect to /about/ (which describes the actual
+# editorial process and Organization-level attribution).
+/authors                        /about/           301
+/authors/                       /about/           301
+/authors/*                      /about/           301

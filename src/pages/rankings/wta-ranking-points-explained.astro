@@ -102,10 +102,10 @@ const articleJsonLd = {
   datePublished: publishedDate,
   dateModified: publishedDate,
   author: {
-    '@type': 'Person',
-    name: 'Alex Morgan',
-    url: 'https://super.tennis/authors/alex-morgan/',
-    worksFor: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+    '@type': 'Organization',
+    '@id': 'https://super.tennis/#organization',
+    name: 'SUPER.TENNIS Editorial',
+    url: 'https://super.tennis/about/',
   },
   publisher: {
     '@type': 'Organization',
@@ -140,7 +140,7 @@ const breadcrumbJsonLd = {
     <header class="article-hero">
       <div class="hero-emoji">🎾</div>
       <h1>{h1}</h1>
-      <p class="byline">By <a href="/authors/alex-morgan/">Alex Morgan</a> · Updated {publishedDate}</p>
+      <p class="byline">By <a href="/about/">SUPER.TENNIS Editorial</a> · Updated {publishedDate}</p>
     </header>
 
     <section class="quick-answer">

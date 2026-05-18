@@ -85,33 +85,20 @@ const catLabels: Record<string, string> = {
 // Add interlinks to body
 const bodyHtml = article.body ? await addInterlinks(article.body, `/news/${slug}/`) : '';
 
-// Determine author from category — gives meaningful E-E-A-T signals to Google.
-// 2026-05-17: replaced static Organization with Person, with per-category split.
-//   Alex Morgan handles stats/records/H2H/players (BUZZ + analytical content)
-//   Sara Kellner handles fashion/love/lifestyle/scandal/viral
-function pickAuthor(cat: string) {
-  const fashionAndLifestyle = new Set(['fashion', 'love', 'viral', 'scandal']);
-  if (fashionAndLifestyle.has(cat)) {
-    return {
-      '@type': 'Person',
-      name: 'Sara Kellner',
-      jobTitle: 'Tennis Lifestyle Editor',
-      url: 'https://super.tennis/authors/sara-kellner/',
-      worksFor: { '@type': 'Organization', '@id': 'https://super.tennis/#organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
-    };
-  }
-  return {
-    '@type': 'Person',
-    name: 'Alex Morgan',
-    jobTitle: 'Senior Tennis Editor',
-    url: 'https://super.tennis/authors/alex-morgan/',
-    worksFor: { '@type': 'Organization', '@id': 'https://super.tennis/#organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
-  };
-}
-const author = pickAuthor(cat);
-const authorName = author.name;
-const authorUrl = author.url;
-const authorTitle = author.jobTitle;
+// Editorial attribution — Organization-only.
+// 2026-05-17: removed fake Person personas (Alex Morgan / Sara Kellner) per
+// category. Fake-author bylines on a news/affiliate site violate Google's
+// E-E-A-T policy + FTC consumer-protection rules. All news is now attributed
+// to SUPER.TENNIS Editorial as an Organization.
+const author = {
+  '@type': 'Organization',
+  '@id': 'https://super.tennis/#organization',
+  name: 'SUPER.TENNIS Editorial',
+  url: 'https://super.tennis/about/',
+};
+const authorName = 'SUPER.TENNIS Editorial';
+const authorUrl = '/about/';
+const authorTitle = 'Editorial Team';
 
 // NewsArticle JSON-LD
 const newsJsonLd = {

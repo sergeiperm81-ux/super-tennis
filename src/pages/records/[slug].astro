@@ -67,11 +67,10 @@ const jsonLd = {
   ...(article.created_at && { datePublished: article.created_at }),
   ...(article.updated_at && { dateModified: article.updated_at }),
   author: {
-    '@type': 'Person',
-    name: 'Alex Morgan',
-    jobTitle: 'Senior Tennis Editor',
-    url: 'https://super.tennis/authors/alex-morgan/',
-    worksFor: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+    '@type': 'Organization',
+    '@id': 'https://super.tennis/#organization',
+    name: 'SUPER.TENNIS Editorial',
+    url: 'https://super.tennis/about/',
   },
   publisher: {
     '@type': 'Organization',

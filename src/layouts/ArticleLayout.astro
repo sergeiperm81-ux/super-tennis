@@ -21,16 +21,18 @@ const absoluteImage = image
   ? (image.startsWith('http') ? image : `https://super.tennis${image}`)
   : undefined;
 
-// Assign author persona by category
-const authorByCategory: Record<string, { name: string; id: string; title: string }> = {
-  gear: { name: 'Sara Kellner', id: 'sara-kellner', title: 'Gear & Equipment Editor' },
-  lifestyle: { name: 'Alex Morgan', id: 'alex-morgan', title: 'Senior Tennis Editor' },
-  records: { name: 'Alex Morgan', id: 'alex-morgan', title: 'Senior Tennis Editor' },
-  vs: { name: 'Alex Morgan', id: 'alex-morgan', title: 'Senior Tennis Editor' },
-  tournaments: { name: 'Alex Morgan', id: 'alex-morgan', title: 'Senior Tennis Editor' },
-  news: { name: 'Alex Morgan', id: 'alex-morgan', title: 'Senior Tennis Editor' },
+// Editorial attribution — Organization-only.
+// 2026-05-17: removed fake author personas (Alex Morgan / Sara Kellner) that
+// were previously assigned per category. Per-Person authorship without real
+// humans behind the bylines is deceptive to readers and violates Google's
+// E-E-A-T spam policy + FTC/EU consumer protection rules (especially on
+// affiliate-bearing gear/lifestyle pages). All content is now attributed to
+// SUPER.TENNIS Editorial as an Organization.
+const articleAuthor = {
+  name: 'SUPER.TENNIS Editorial',
+  title: 'Editorial Team',
+  url: '/about/',
 };
-const articleAuthor = authorByCategory[category || ''] || { name: 'Alex Morgan', id: 'alex-morgan', title: 'Senior Tennis Editor' };
 
 // Portrait detection is now handled client-side via JS (works for ALL image sources)
 
@@ -72,16 +74,10 @@ const articleJsonLd = {
     '@id': `https://super.tennis${Astro.url.pathname}`,
   },
   author: {
-    '@type': 'Person',
-    name: articleAuthor.name,
-    jobTitle: articleAuthor.title,
-    url: `https://super.tennis/authors/${articleAuthor.id}/`,
-    worksFor: {
-      '@type': 'Organization',
-      '@id': 'https://super.tennis/#organization',
-      name: 'SUPER.TENNIS',
-      url: 'https://super.tennis',
-    },
+    '@type': 'Organization',
+    '@id': 'https://super.tennis/#organization',
+    name: 'SUPER.TENNIS Editorial',
+    url: 'https://super.tennis/about/',
   },
   publisher: {
     '@type': 'Organization',
@@ -179,7 +175,7 @@ const ogImage = categoryOgImages[category || ''] || '/og/default.png';
     <aside class="trust-block">
       <div class="trust-author">
         <span class="trust-by">By</span>
-        <a href={`https://super.tennis/authors/${articleAuthor.id}/`} rel="author" class="trust-author-name">{articleAuthor.name}</a>
+        <a href={articleAuthor.url} rel="author" class="trust-author-name">{articleAuthor.name}</a>
         <span class="trust-author-title">— {articleAuthor.title}</span>
       </div>
       <div class="trust-dates">
