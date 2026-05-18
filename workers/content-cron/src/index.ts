@@ -26,6 +26,8 @@ export interface Env {
   RATE_LIMIT?: KVNamespace; // KV for brute-force protection on auth endpoints
   TELEGRAM_BOT_TOKEN?: string; // Telegram bot token for cron failure alerts
   TELEGRAM_CHAT_ID?: string; // Telegram chat ID for cron failure alerts
+  RESEND_API_KEY?: string; // Resend API key for contact-form email notifications (set via `wrangler secret put RESEND_API_KEY`)
+  CONTACT_NOTIFY_EMAIL?: string; // Destination email for contact-form notifications (default: sergeiperm81@gmail.com)
 }
 
 // ============================================================
@@ -1947,6 +1949,148 @@ async function refreshTopArticles(env: Env): Promise<string> {
 }
 
 // ============================================================
+// RATE LIMITER (module scope — see TDZ fix note inside fetch)
+// ============================================================
+// Max 15 attempts per IP per 15 minutes. Originally lived inside fetch()
+// alongside the rest of the API handlers, but `const RATE_LIMIT_MAX` was
+// declared AFTER /api/contact's call to checkRateLimit(), so on every
+// contact form POST the closure read RATE_LIMIT_MAX while it was still in
+// the temporal dead zone → ReferenceError → CF 1101 → 500 response. The
+// form silently failed for every real user (contact_messages was empty
+// despite the form being live for weeks). Hoisting to module scope makes
+// the constants and helpers available before any fetch handler runs.
+const RATE_LIMIT_MAX = 15;
+const RATE_LIMIT_WINDOW_S = 900;
+
+async function checkRateLimit(req: Request, e: Env): Promise<Response | null> {
+  if (!e.RATE_LIMIT) {
+    console.warn('RATE_LIMIT KV not configured — rate limiting disabled');
+    return null;
+  }
+  const ip = req.headers.get('CF-Connecting-IP') || 'unknown';
+  const key = `rl:${ip}`;
+  const raw = await e.RATE_LIMIT.get(key);
+  const entry: { count: number; firstAt: number } = raw
+    ? JSON.parse(raw)
+    : { count: 0, firstAt: Date.now() };
+
+  if (entry.count >= RATE_LIMIT_MAX) {
+    const retryAfter = Math.ceil((entry.firstAt + RATE_LIMIT_WINDOW_S * 1000 - Date.now()) / 1000);
+    return new Response(JSON.stringify({ error: 'Too many requests. Try again later.' }), {
+      status: 429,
+      headers: {
+        'Content-Type': 'application/json',
+        'Retry-After': String(Math.max(retryAfter, 1)),
+        ...corsHeaders(req),
+      },
+    });
+  }
+  return null;
+}
+
+async function recordFailedAttempt(req: Request, e: Env): Promise<void> {
+  if (!e.RATE_LIMIT) return;
+  const ip = req.headers.get('CF-Connecting-IP') || 'unknown';
+  const key = `rl:${ip}`;
+  const raw = await e.RATE_LIMIT.get(key);
+  const entry: { count: number; firstAt: number } = raw
+    ? JSON.parse(raw)
+    : { count: 0, firstAt: Date.now() };
+  entry.count += 1;
+  await e.RATE_LIMIT.put(key, JSON.stringify(entry), { expirationTtl: RATE_LIMIT_WINDOW_S });
+}
+
+async function clearRateLimit(req: Request, _e: Env): Promise<void> {
+  if (!_e.RATE_LIMIT) return;
+  const ip = req.headers.get('CF-Connecting-IP') || 'unknown';
+  await _e.RATE_LIMIT.delete(`rl:${ip}`);
+}
+
+// ============================================================
+// CONTACT FORM NOTIFICATION
+// ============================================================
+// Called fire-and-forget after a successful contact-form submission.
+// Tries Resend (email) first if RESEND_API_KEY is configured. Whether or
+// not the email succeeds, the message is already persisted in Supabase
+// (contact_messages table), so a notification failure never loses data.
+//
+// Setup steps for the owner to enable email notifications:
+//   1. Sign up at https://resend.com (free tier: 100 emails/day, 3,000/mo)
+//   2. Copy your API key from the Resend dashboard
+//   3. cd workers/content-cron/
+//   4. wrangler secret put RESEND_API_KEY
+//      (paste the key when prompted, press Enter)
+//   5. Optional: wrangler secret put CONTACT_NOTIFY_EMAIL
+//      (defaults to sergeiperm81@gmail.com if not set)
+//
+// The from-address is Resend's onboarding subdomain — works without any
+// DNS setup on super.tennis. Once you verify super.tennis in the Resend
+// dashboard, swap the from-address to something like
+// "Contact <contact@super.tennis>" for better deliverability.
+interface ContactMessage {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
+async function notifyContactMessage(env: Env, msg: ContactMessage): Promise<void> {
+  if (!env.RESEND_API_KEY) {
+    // Not configured yet — skip silently. Message is already in Supabase.
+    console.log('[contact] No RESEND_API_KEY set — skipping email notification');
+    return;
+  }
+
+  const notifyEmail = env.CONTACT_NOTIFY_EMAIL || 'sergeiperm81@gmail.com';
+  const safeName = msg.name.replace(/[<>]/g, '');
+  const safeSubject = msg.subject.replace(/[<>]/g, '');
+
+  // Plain text body — Gmail renders it cleanly and avoids HTML spam filters
+  const textBody = [
+    'New message from the SUPER.TENNIS contact form.',
+    '',
+    `Name:    ${msg.name}`,
+    `Email:   ${msg.email}`,
+    `Subject: ${msg.subject}`,
+    `Time:    ${new Date().toISOString()}`,
+    '',
+    '------ Message ------',
+    msg.message,
+    '------',
+    '',
+    'Reply directly to this email to respond to the sender.',
+    `Archive: https://supabase.com/dashboard/project/qpnxhiwauhuogwkspxuq/editor (contact_messages table)`,
+  ].join('\n');
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'SUPER.TENNIS Contact <onboarding@resend.dev>',
+        to: [notifyEmail],
+        reply_to: [msg.email], // Hitting Reply in Gmail responds to the sender, not Resend
+        subject: `[SUPER.TENNIS] ${safeSubject} — from ${safeName}`,
+        text: textBody,
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '<no body>');
+      console.error(`[contact] Resend failed: HTTP ${res.status} — ${errText}`);
+    } else {
+      console.log(`[contact] Email notification sent to ${notifyEmail}`);
+    }
+  } catch (e: any) {
+    // Notification failures must not crash the form submission flow.
+    console.error('[contact] Resend exception:', e?.message || e);
+  }
+}
+
+// ============================================================
 // TELEGRAM ALERT HELPER
 // ============================================================
 async function sendTelegramAlert(env: Env, text: string): Promise<void> {
@@ -2353,7 +2497,7 @@ export default {
   },
 
   // HTTP handler for manual triggers + API
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
     // CORS preflight
@@ -2380,11 +2524,15 @@ export default {
         if (name.length > 200 || email.length > 200 || message.length > 5000 || (subject || '').length > 200) {
           return new Response(JSON.stringify({ error: 'Field too long' }), { status: 400, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://super.tennis' } });
         }
-        // Store in Supabase
+        // Store in Supabase (always succeeds — this is the archive)
         await supabaseQuery(env, 'contact_messages', 'POST', {}, {
           name, email, subject: subject || 'general', message,
           created_at: new Date().toISOString(),
         });
+        // Fire-and-forget notification — runs after response is sent so a
+        // slow Resend/Telegram call never blocks the user-facing 200.
+        // Failures here are logged but do not affect the form submission.
+        ctx.waitUntil(notifyContactMessage(env, { name, email, subject: subject || 'general', message }));
         return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://super.tennis' } });
       } catch (e: any) {
         console.error('API error:', e.message);
@@ -2460,53 +2608,12 @@ export default {
       return null; // query param auth removed for security
     }
 
-    // ── Rate limiter: max 15 failed auth attempts per IP per 15 minutes ──
-    const RATE_LIMIT_MAX = 15;
-    const RATE_LIMIT_WINDOW_S = 900; // 15 minutes
-
-    async function checkRateLimit(req: Request, e: Env): Promise<Response | null> {
-      if (!e.RATE_LIMIT) {
-        console.warn('RATE_LIMIT KV not configured — rate limiting disabled');
-        return null;
-      }
-      const ip = req.headers.get('CF-Connecting-IP') || 'unknown';
-      const key = `rl:${ip}`;
-      const raw = await e.RATE_LIMIT.get(key);
-      const entry: { count: number; firstAt: number } = raw
-        ? JSON.parse(raw)
-        : { count: 0, firstAt: Date.now() };
-
-      if (entry.count >= RATE_LIMIT_MAX) {
-        const retryAfter = Math.ceil((entry.firstAt + RATE_LIMIT_WINDOW_S * 1000 - Date.now()) / 1000);
-        return new Response(JSON.stringify({ error: 'Too many requests. Try again later.' }), {
-          status: 429,
-          headers: {
-            'Content-Type': 'application/json',
-            'Retry-After': String(Math.max(retryAfter, 1)),
-            ...corsHeaders(req),
-          },
-        });
-      }
-      return null;
-    }
-
-    async function recordFailedAttempt(req: Request, e: Env): Promise<void> {
-      if (!e.RATE_LIMIT) return;
-      const ip = req.headers.get('CF-Connecting-IP') || 'unknown';
-      const key = `rl:${ip}`;
-      const raw = await e.RATE_LIMIT.get(key);
-      const entry: { count: number; firstAt: number } = raw
-        ? JSON.parse(raw)
-        : { count: 0, firstAt: Date.now() };
-      entry.count += 1;
-      await e.RATE_LIMIT.put(key, JSON.stringify(entry), { expirationTtl: RATE_LIMIT_WINDOW_S });
-    }
-
-    async function clearRateLimit(req: Request, e: Env): Promise<void> {
-      if (!e.RATE_LIMIT) return;
-      const ip = req.headers.get('CF-Connecting-IP') || 'unknown';
-      await e.RATE_LIMIT.delete(`rl:${ip}`);
-    }
+    // Rate-limit helpers moved to module scope (see top of file) to fix TDZ
+    // bug: when these were defined inside fetch(), the `const RATE_LIMIT_MAX`
+    // declaration ran AFTER /api/contact's call to checkRateLimit() and threw
+    // ReferenceError → CF Worker exception 1101. Form silently 500'd on every
+    // POST. The local references below now resolve to the module-scope
+    // versions defined near the top of the file.
 
     /**
      * Constant-time string comparison. Prevents timing attacks where an
