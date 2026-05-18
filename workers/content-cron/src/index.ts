@@ -2080,11 +2080,6 @@ function buildPlainTextMime(opts: {
   return `${headers.join('\r\n')}\r\n\r\n${wrappedBody}`;
 }
 
-// Telegram MarkdownV2 needs ~17 characters escaped. Helper keeps it readable.
-function escapeTelegramMd(s: string): string {
-  return String(s).replace(/[_*[\]()~`>#+\-=|{}.!\\]/g, '\\$&');
-}
-
 async function notifyContactMessage(env: Env, msg: ContactMessage): Promise<void> {
   const notifyEmail = env.CONTACT_NOTIFY_EMAIL || 'sergeiperm81@gmail.com';
   const supabaseArchive = 'https://supabase.com/dashboard/project/qpnxhiwauhuogwkspxuq/editor';
@@ -2106,17 +2101,23 @@ async function notifyContactMessage(env: Env, msg: ContactMessage): Promise<void
   ].join('\n');
 
   // ─── CHANNEL 1: TELEGRAM (works immediately, no user action) ───
+  // Plain text (no parse_mode) so we don't have to escape special chars in
+  // user-supplied name/email/subject/message. Earlier MarkdownV2 attempt
+  // was getting rejected by Telegram (HTTP 400) because the escape rules
+  // are very strict and any miss makes the whole message fail.
   if (env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID) {
     try {
       const tgText = [
-        '📬 *New contact form message*',
+        '📬 New contact form message',
         '',
-        `*Name:* ${escapeTelegramMd(msg.name)}`,
-        `*Email:* ${escapeTelegramMd(msg.email)}`,
-        `*Subject:* ${escapeTelegramMd(msg.subject)}`,
+        `Name: ${msg.name}`,
+        `Email: ${msg.email}`,
+        `Subject: ${msg.subject}`,
         '',
-        '*Message:*',
-        escapeTelegramMd(msg.message),
+        'Message:',
+        msg.message,
+        '',
+        '— super.tennis/contact/',
       ].join('\n');
 
       const tgRes = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -2125,7 +2126,6 @@ async function notifyContactMessage(env: Env, msg: ContactMessage): Promise<void
         body: JSON.stringify({
           chat_id: env.TELEGRAM_CHAT_ID,
           text: tgText,
-          parse_mode: 'MarkdownV2',
           disable_web_page_preview: true,
         }),
       });
