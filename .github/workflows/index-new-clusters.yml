@@ -1,0 +1,39 @@
+name: Indexing API — Push New Clusters
+
+# Manual one-off submission of the 16 evergreen cluster URLs (Round 1-4)
+# to Google's Indexing API. Use after publishing a new cluster or whenever
+# you want to nudge Google to re-crawl the cluster pages. Counts against
+# the 200/day Indexing API quota (16 of 200, leaving 184 for the daily
+# rotation in indexing-cron.yml).
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (no actual submissions)'
+        default: 'false'
+        required: false
+
+jobs:
+  index-clusters:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Submit cluster URLs to Indexing API
+        run: |
+          node scripts/index-new-clusters.mjs ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
+        env:
+          GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
