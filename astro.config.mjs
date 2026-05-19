@@ -1,7 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
-import sitemap from '@astrojs/sitemap';
+import sitemap, { ChangeFreqEnum } from '@astrojs/sitemap';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
@@ -11,6 +11,7 @@ import { dirname, resolve } from 'node:path';
 // news.updated_at, players.stats_updated_at). Empty object if missing
 // (e.g. local dev without Supabase creds).
 const __dirname = dirname(fileURLToPath(import.meta.url));
+/** @type {Record<string, string>} */
 let freshnessMap = {};
 try {
   const raw = readFileSync(resolve(__dirname, 'src/data/freshness-map.json'), 'utf8');
@@ -23,6 +24,8 @@ const BASE = 'https://super.tennis';
 
 /**
  * Extract URL path from full URL (e.g. https://super.tennis/lifestyle/x/ → /lifestyle/x/).
+ * @param {string} fullUrl
+ * @returns {string | null}
  */
 function urlPath(fullUrl) {
   if (!fullUrl.startsWith(BASE)) return null;
@@ -62,6 +65,7 @@ export default defineConfig({
         // even though they were published in May 2026 — Google saw them
         // as stale. Update these dates when the page content is materially
         // refreshed.
+        /** @type {Record<string, string>} */
         const STATIC_CLUSTER_DATES = {
           '/rules/': '2026-05-17',
           '/rules/tennis-scoring-explained/': '2026-05-17',
@@ -123,14 +127,14 @@ export default defineConfig({
 
         if (url === 'https://super.tennis/' || isRankingsIndex) {
           item.priority = 1.0;
-          item.changefreq = 'daily';
+          item.changefreq = ChangeFreqEnum.DAILY;
         } else if (
           url.includes('/players/') ||
           url.includes('/news/') ||
           url.includes('/vs/')
         ) {
           item.priority = 0.9;
-          item.changefreq = 'weekly';
+          item.changefreq = ChangeFreqEnum.WEEKLY;
         } else if (
           url.includes('/gear/') ||
           url.includes('/lifestyle/') ||
@@ -141,13 +145,13 @@ export default defineConfig({
           isRankingsExplainer
         ) {
           item.priority = 0.8;
-          item.changefreq = 'monthly';
+          item.changefreq = ChangeFreqEnum.MONTHLY;
         } else if (
           url.includes('/tournaments/') ||
           url.includes('/calendar/')
         ) {
           item.priority = 0.7;
-          item.changefreq = 'monthly';
+          item.changefreq = ChangeFreqEnum.MONTHLY;
         } else if (
           url.includes('/search/') ||
           url.includes('/privacy') ||
@@ -162,7 +166,7 @@ export default defineConfig({
           return undefined;
         } else {
           item.priority = 0.6;
-          item.changefreq = 'monthly';
+          item.changefreq = ChangeFreqEnum.MONTHLY;
         }
 
         return item;

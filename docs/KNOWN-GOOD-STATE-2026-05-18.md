@@ -17,7 +17,7 @@ build on top of a hazy state.
 | **Worker secrets** | OPENAI_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID |
 | **Worker bindings** | RATE_LIMIT (KV) |
 | **TypeScript (worker)** | `tsc --noEmit` inside `workers/content-cron/` passes (0 errors) |
-| **TypeScript (root)** | `tsc --noEmit` from repo root fails with 12 type errors: 8 in `astro.config.mjs` (EnumChangefreq mismatch, implicit-any on closure params + indexed access into `STATIC_CLUSTER_DATES`/freshness map), 4 in `workers/content-cron/src/index.ts` (Cloudflare ambient types `KVNamespace`, `ScheduledEvent`, `ExecutionContext` not resolved at root scope). **Does not block build** — Astro uses Vite/esbuild and Worker uses wrangler bundle, both permissive. Cosmetic only; can be fixed by adding `"types": ["@cloudflare/workers-types"]` to a worker-scoped tsconfig + tightening astro.config closures. |
+| **TypeScript (root)** | `tsc --noEmit` from repo root passes (0 errors). Fixed 2026-05-19 — see commit history. Root tsconfig now excludes `workers/**` so its own worker-scoped tsconfig (with `@cloudflare/workers-types`) is authoritative; `astro.config.mjs` got proper JSDoc types + `ChangeFreqEnum` imported from `@astrojs/sitemap`. |
 | **Build green** | yes (npm run build → 2433 pages, image-sitemap regen, deploy succeeds) |
 
 ## Evergreen cluster inventory (16 URLs from Round 1-4)
