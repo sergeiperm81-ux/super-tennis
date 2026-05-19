@@ -146,7 +146,7 @@ const meta = {
   status: 'published',
   meta_title: "Tennis Engagement Boom 2026: Sabalenka, Sakkari, Korda, Paul, De Minaur",
   meta_description: "Eight ATP and WTA engagements between November 2025 and March 2026. Aryna Sabalenka's two-year timeline, Maria Sakkari's family ring, Alex de Minaur and Katie Boulter's neutral European wedding — inside tennis's quiet wedding year.",
-  image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Aryna_Sabalenka_at_2025_Miami_Open_04.jpg/800px-Aryna_Sabalenka_at_2025_Miami_Open_04.jpg',
+  image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Aryna_Sabalenka_at_2025_Miami_Open_04.jpg/500px-Aryna_Sabalenka_at_2025_Miami_Open_04.jpg',
   image_alt: "Aryna Sabalenka at the 2025 Miami Open — the WTA world No. 1 announced her engagement in March 2026",
   published_at: now,
   updated_at: now,
