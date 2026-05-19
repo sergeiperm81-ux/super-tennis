@@ -4,10 +4,14 @@ import LiteYouTube from '../../components/LiteYouTube.astro';
 import { getArticles, getLatestRankings, getPlayerBySlug } from '../../lib/supabase';
 import { countryFlags, fallbackPlayers, getFlagUrl } from '../../lib/fallback-data';
 
-// Fetch news at build time for SSG (Google can see content)
+// Fetch news at build time for SSG (Google can see content).
+// limit=300 — covers ~30 days of fresh news across all 6 categories so the
+// JS category filter (buzz/scandal/money/love/viral/fashion) actually has
+// content to filter. Was unbounded (Worker default 20) → filter tabs
+// appeared empty because last 20 were almost all buzz during tour weeks.
 let ssgNews: any[] = [];
 try {
-  const res = await fetch('https://supertennis-cron.sfedoroff.workers.dev/api/news');
+  const res = await fetch('https://supertennis-cron.sfedoroff.workers.dev/api/news?limit=300');
   if (res.ok) {
     const data = await res.json();
     ssgNews = (Array.isArray(data) ? data : []).filter((n: any) => n.body && n.body.length > 50).slice(0, 50);

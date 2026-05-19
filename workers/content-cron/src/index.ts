@@ -630,6 +630,43 @@ function passesQualityChecks(article: any, source: RssItem | undefined): { ok: b
 }
 
 // ============================================================
+// CATEGORY VERIFICATION
+// ============================================================
+// 2026-05-19: high-risk categories (love, scandal, fashion) get demoted
+// to "buzz" if the SOURCE itself doesn't mention category-specific terms.
+// This catches cases where GPT misclassifies a routine match-news as
+// "scandal" because a player was frustrated, or tags a tour-news as
+// "love" because someone mentioned their family. The article itself
+// stays — only the category tag is corrected. Lower-risk categories
+// (money, viral, buzz) aren't gated because their false-positive cost
+// is much lower.
+const CATEGORY_GATE_KEYWORDS: Record<string, RegExp> = {
+  love: /\b(engag(ed|ement)|wedding|marri(ed|age)|husband|wife|girlfriend|boyfriend|partner|pregnan|baby|expecting|dating|breakup|broke up|divorce|romance)\b/i,
+  scandal: /\b(fine[ds]?|ban(ned|n)|suspend(ed|ing)|doping|positive test|caught|cheated|controversy|outrage|sanction|charges?|allegation[s]?|misconduct|investig(at|ate))\b/i,
+  fashion: /\b(outfit|fashion|dress(ed|ing)?|wore|wearing|collection|brand|nike|adidas|gucci|chanel|prada|louis vuitton|met gala|red carpet|photo ?shoot|kit\b)/i,
+};
+
+/**
+ * If GPT chose a high-risk category but the source doesn't contain the
+ * category's gating keywords, demote to "buzz". Returns the adjusted
+ * category (same or "buzz") plus an optional reason for logging.
+ */
+function verifyCategory(
+  category: string,
+  source: RssItem | undefined,
+): { category: string; demoted: boolean; reason?: string } {
+  const gate = CATEGORY_GATE_KEYWORDS[category];
+  if (!gate) return { category, demoted: false };
+  if (!source) return { category, demoted: false };
+
+  const sourceText = `${source.title || ''} ${source.description || ''}`;
+  if (gate.test(sourceText)) {
+    return { category, demoted: false };
+  }
+  return { category: 'buzz', demoted: true, reason: `${category} → buzz: no gating keyword in source` };
+}
+
+// ============================================================
 // NEWS GENERATION
 // ============================================================
 async function generateNews(env: Env): Promise<string> {
@@ -700,21 +737,32 @@ async function generateNews(env: Env): Promise<string> {
     return logs.join('\n');
   }
 
-  // 5. Post-generation quality filter — reject fabrications and tabloid headlines
+  // 5. Post-generation quality filter — reject fabrications and tabloid
+  //    headlines, then verify high-risk categories against source keywords.
   const qualityFiltered: any[] = [];
   let rejectedCount = 0;
+  let demotedCount = 0;
   for (const c of curated) {
     const origIdx = (c.original_index || 0) - 1;
     const source = allCandidates[origIdx];
     const check = passesQualityChecks(c, source);
-    if (check.ok) {
-      qualityFiltered.push(c);
-    } else {
+    if (!check.ok) {
       rejectedCount++;
       log(`  🚫 REJECT: ${(c.title || '?').slice(0, 60)}... [${check.reason}]`);
+      continue;
     }
+    // Category verification — demote love/scandal/fashion to buzz if source
+    // doesn't contain the matching keyword set. Article still ships, just
+    // with the correct tag. Quality stays, category-noise goes down.
+    const verdict = verifyCategory(c.category || 'buzz', source);
+    if (verdict.demoted) {
+      demotedCount++;
+      log(`  ↓ DEMOTE: ${(c.title || '?').slice(0, 60)}... [${verdict.reason}]`);
+      c.category = verdict.category;
+    }
+    qualityFiltered.push(c);
   }
-  log(`   Quality filter: ${qualityFiltered.length} pass, ${rejectedCount} reject`);
+  log(`   Quality filter: ${qualityFiltered.length} pass, ${rejectedCount} reject, ${demotedCount} category-demoted`);
 
   if (qualityFiltered.length === 0) {
     log('❌ All stories failed quality checks');

@@ -16,7 +16,11 @@
   async function fetchNews() {
     if (_newsCache) return _newsCache;
     try {
-      const res = await fetch(API + '/api/news');
+      // limit=300 — covers ~30 days of fresh news across all 6 categories so
+      // the JS category filter (buzz/scandal/money/love/viral/fashion) has
+      // content to filter. Default was 20 → filter tabs appeared empty
+      // because last 20 were almost all buzz during tour weeks.
+      const res = await fetch(API + '/api/news?limit=300');
       if (!res.ok) throw new Error(res.status);
       _newsCache = await res.json();
       return _newsCache;
