@@ -28,6 +28,9 @@ That last piece is what separates the new resorts from the old training camps. T
 
 ## 1. Mandarin Oriental Bodrum — Mouratoglou's Aegean outpost
 
+![Bodrum harbour and Aegean coastline, Turkey](https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Bodrum_06.jpg/500px-Bodrum_06.jpg)
+*The Aegean coast at Bodrum, Turkey — home of the Mandarin Oriental's Mouratoglou Tennis Center. Photo: Chris Mitchell / Wikimedia Commons / CC BY-SA 4.0*
+
 The Mouratoglou name has been attached to elite tennis since Patrick Mouratoglou's decade coaching Serena Williams. His flagship academy is in Biot, on the French Riviera between Nice and Cannes. The brand's most ambitious resort partnership is on the Turkish coast, at the Mandarin Oriental Bodrum.
 
 The on-site Mouratoglou Tennis Center has three tennis courts and three padel courts, with programs running off Patrick Mouratoglou's own coaching methodology. Guests can book one-on-one sessions, attend clinics, or simply pick a partner from the on-site coaching staff and play their way through the week. The Mandarin Oriental side of the equation is the rest of the day: private beach, multiple restaurants, an extensive spa, family-grade pools.
@@ -39,6 +42,9 @@ The Mouratoglou-branded centers also operate inside Costa Navarino in Greece and
 **Standout off-court:** Aegean private beach and the Mandarin Oriental spa, which is one of the strongest in the Eastern Mediterranean.
 
 ## 2. Don Carlos Marbella — Spain's first Rafa Nadal Academy resort
+
+![Sunset over Puerto Banús beach, Marbella, Spain](https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Sunset_and_beach_in_Puerto_Banos%2C_Marbella_%28Spain%29_-_panoramio.jpg/500px-Sunset_and_beach_in_Puerto_Banos%2C_Marbella_%28Spain%29_-_panoramio.jpg)
+*Puerto Banús, Marbella — the Costa del Sol shoreline that surrounds the Rafa Nadal Tennis Centre at Don Carlos. Photo: Panoramio contributor / Wikimedia Commons*
 
 Spain's Costa del Sol has hosted serious tennis since the 1970s. The 2026 update arrived in the form of the Rafa Nadal Tennis Centre at the five-star Don Carlos Marbella, a partnership that imported the Manacor methodology onto Mediterranean coastal clay. The set-up is seven clay courts and two padel courts, certified coaches trained inside the Nadal system, and Wingfield real-time stroke analytics on every session.
 
@@ -52,6 +58,9 @@ If you are stacking a multi-country tennis tour, there is also a Rafa Nadal Tenn
 
 ## 3. La Manga Club, Murcia, Spain — the old heavyweight
 
+![Tennis Centre at La Manga Club, Spain](https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Tennis_centre_la_manga_club.jpg/500px-Tennis_centre_la_manga_club.jpg)
+*The Racquets Club at La Manga, the largest tennis facility on this list with 26 courts. Photo: LMC123 / Wikimedia Commons / CC BY-SA 4.0*
+
 La Manga Club is the one resort on this list that did not need a 2024 announcement to enter the conversation. It has been the European training-camp default for thirty years, sitting between the Mediterranean and the dry hills of inland Murcia. The Racquets Club on site is the largest tennis facility on the list: 26 tennis courts and 10 padel courts, plus year-round academies and programs for every level.
 
 The wider resort also runs three championship golf courses, eight FIFA-standard football pitches, and one of the largest spa wings in Spain. Accommodation ranges from rooms inside the Grand Hyatt La Manga Club Golf & Spa to standalone apartments and villas spread across the property. This is the place to choose if the trip is multi-sport, multi-generational, or if you simply want the largest selection of court availability of any resort in the European catalogue.
@@ -62,6 +71,9 @@ The wider resort also runs three championship golf courses, eight FIFA-standard 
 
 ## 4. Verdura Resort, Sicily — Rocco Forte's racket club
 
+![Selinunte beach, southern Sicily](https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Selinunte_spiaggia.jpg/500px-Selinunte_spiaggia.jpg)
+*Southern Sicilian coast near Sciacca, where the Verdura Resort sits along the same stretch of Trapani-province shoreline. Photo: Dedda71 / Wikimedia Commons / CC BY-SA 3.0*
+
 The Verdura Resort, the Rocco Forte hotel group's flagship on the southern Sicilian coast, runs a quietly ambitious racket club covering tennis, padel and pickleball. The Verdura Tennis Academy opens in March and runs through November, offering private coaching, group clinics and informal match play across every level.
 
 What makes Verdura distinctive is the layering of the tennis program inside one of the better-rated coastal resorts in Europe. Six restaurants. A 60-metre infinity pool. A spa block that travel critics rate against the Italian Riviera's best. The tennis coaches build sessions around the techniques of [Rafael Nadal](/players/rafael-nadal/) and [Roger Federer](/players/roger-federer/), and the academy hosts occasional intensive camps and exhibitions featuring former tour professionals.
@@ -71,6 +83,9 @@ What makes Verdura distinctive is the layering of the tennis program inside one 
 **Standout off-court:** the food. Sicily's regional cuisine is folded into the resort menu more carefully than it is at almost any other property on this list.
 
 ## 5. Hôtel Royal, Évian-les-Bains — French Alpine views over Lake Geneva
+
+![Évian-les-Bains port on Lake Geneva at morning](https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Petite_port_d%27%C3%89vian-les-Bains_au_matin_%28juin_2019%29.JPG/500px-Petite_port_d%27%C3%89vian-les-Bains_au_matin_%28juin_2019%29.JPG)
+*Morning at Évian-les-Bains port, Lake Geneva — the French Alpine setting of the Evian Resort. Photo: Florian Pépellin / Wikimedia Commons / CC BY-SA 4.0*
 
 The Hôtel Royal, the heritage anchor of the Evian Resort estate, sits above Lake Geneva on the French side of the border with Switzerland. The Tennis & Racket Sports club on site has four tennis courts, including GreenSet and artificial-grass surfaces, plus padel and pickleball options. The courts are folded into a landscaped park with lake views that travel writers have, in the last twelve months, started ranking among the most photogenic tennis settings in continental Europe.
 
@@ -84,6 +99,9 @@ A note for the international traveller: the resort is on the French side of Lake
 
 ## 6. Pine Cliffs Resort, Algarve — Annabel Croft's home academy
 
+![Pine Cliffs Hotel and Resort, Algarve, Portugal](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/2017-08-05_Pine_Cliffs_Hotel_and_resort.JPG/500px-2017-08-05_Pine_Cliffs_Hotel_and_resort.JPG)
+*Pine Cliffs Resort above the red cliffs of the Algarve, home of the Annabel Croft Tennis Academy. Photo: Kolforn / Wikimedia Commons / CC BY 3.0*
+
 The Pine Cliffs Resort sits on top of the dramatic red cliffs of the Algarve, Portugal's southern coast, and houses the Annabel Croft Tennis Academy. Croft, the former British No. 1 and Wimbledon junior champion, has lent her name to the academy since the late 2000s. In 2025, the program was rebuilt with new programming and refreshed coaching staff.
 
 The set-up is four floodlit courts (two clay, two hard) plus four padel courts. Programming ranges from individual lessons through clinics to multi-day intensive camps for every level. The off-court complement is what the Algarve does best: direct beach access via a small clifftop elevator, a nine-hole golf course, the Serenity spa, and several restaurants and bars across the property.
@@ -94,6 +112,9 @@ The set-up is four floodlit courts (two clay, two hard) plus four padel courts. 
 
 ## 7. Bürgenstock Resort, Switzerland — the Alpine dome courts
 
+![Bürgenstock Hotel Palace, Lake Lucerne, Switzerland](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Buergenstock-Hotel_Palace-01ASD.jpg/500px-Buergenstock-Hotel_Palace-01ASD.jpg)
+*Bürgenstock Resort on its 500-metre cliff above Lake Lucerne — home of the Diamond Domes tennis courts. Photo: Asurnipal / Wikimedia Commons / CC BY-SA 4.0*
+
 Bürgenstock Resort sits on a 500-metre cliff above Lake Lucerne, in the Swiss Alps. Its tennis offering, the Diamond Domes, is one of the most architecturally striking in Europe: three hard courts inside transparent glass domes with panoramic mountain and lake views. Guests can book private lessons or longer personalised programs, and then collapse afterwards into the resort's award-winning spa and Michelin-tier restaurants.
 
 The Bürgenstock model is the most luxury-end of the list. It does not promise the highest court count or the deepest coaching bench. It promises that the matches you play will be played inside one of the most photographed contemporary tennis spaces in the world.
@@ -103,6 +124,9 @@ The Bürgenstock model is the most luxury-end of the list. It does not promise t
 **Standout off-court:** the Alpine setting. A Bürgenstock match is the only tennis lesson you might frame.
 
 ## 8. Kalimera Kriti, Crete — Greece's biggest tennis village
+
+![Northern coast of Crete, Greece](https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Northern_coast_Crete_beach_detail.jpg/500px-Northern_coast_Crete_beach_detail.jpg)
+*The northern Cretan coast — Kalimera Kriti's 26 clay courts and 500-seat centre clay court open directly onto this stretch of Aegean shoreline. Photo: Jebulon / Wikimedia Commons / CC0*
 
 Kalimera Kriti Hotel & Village Resort sits on the northeast coast of Crete and calls itself, accurately, the largest tennis centre in Greece. After a 2023 modernisation, the centre runs 26 genuine red clay courts, a 500-seat centre clay court, five padel courts and four new pickleball courts. Several courts look out directly over the Aegean.
 
@@ -148,6 +172,10 @@ For the [growing class of engaged tennis couples](/lifestyle/tennis-engagement-b
 
 The forehand is still yours. The view, this year, comes with the lesson.
 
+### Photo credits
+
+All inline photos used in this article are licensed under Creative Commons or Public Domain via Wikimedia Commons. Individual attribution is shown beneath each image. Hero image: "Tennis Centre, La Manga Club" by LMC123 / Wikimedia Commons / CC BY-SA 4.0.
+
 ### Sources
 
 - SmartFlyer Luxury Travel Trends Report 2026
@@ -159,9 +187,7 @@ The forehand is still yours. The view, this year, comes with the lesson.
 - Pine Cliffs Resort — Annabel Croft Tennis Academy
 - Bürgenstock Resort — Diamond Domes tennis programme
 - Kalimera Kriti Hotel & Village Resort — Patricio Travel tennis programs
-- Euronews Travel: "Tennis travel: Europe's top hotels and resorts for a Grand Slam holiday" (Michael Starling, May 16 2026) — foundational survey of the same eight resorts
-
-Photo: Tennis Centre, La Manga Club — by LMC123 / Wikimedia Commons / CC BY-SA 4.0`;
+- Euronews Travel: "Tennis travel: Europe's top hotels and resorts for a Grand Slam holiday" (Michael Starling, May 16 2026) — foundational survey of the same eight resorts`;
 
 const meta = {
   slug,
@@ -180,7 +206,7 @@ const meta = {
   ai_generated_at: now,
 };
 
-console.log(`Publishing /lifestyle/${slug}/...`);
+console.log(`Publishing /lifestyle/${slug}/ with inline photos...`);
 const { data, error } = await supabase
   .from('articles')
   .upsert(meta, { onConflict: 'slug' })
