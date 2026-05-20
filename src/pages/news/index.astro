@@ -5,13 +5,12 @@ import { getArticles, getLatestRankings, getPlayerBySlug } from '../../lib/supab
 import { countryFlags, fallbackPlayers, getFlagUrl } from '../../lib/fallback-data';
 
 // Fetch news at build time for SSG (Google can see content).
-// limit=300 — covers ~30 days of fresh news across all 6 categories so the
-// JS category filter (buzz/scandal/money/love/viral/fashion) actually has
-// content to filter. Was unbounded (Worker default 20) → filter tabs
-// appeared empty because last 20 were almost all buzz during tour weeks.
+// 2026-05-19: removed category filter tabs (owner decision) — news is now
+// a single chronological feed. limit=80 gives ~50 SSG-rendered items +
+// buffer for the "Load more" dynamic loader.
 let ssgNews: any[] = [];
 try {
-  const res = await fetch('https://supertennis-cron.sfedoroff.workers.dev/api/news?limit=300');
+  const res = await fetch('https://supertennis-cron.sfedoroff.workers.dev/api/news?limit=80');
   if (res.ok) {
     const data = await res.json();
     ssgNews = (Array.isArray(data) ? data : []).filter((n: any) => n.body && n.body.length > 50).slice(0, 50);
@@ -138,23 +137,15 @@ const sbCatLabels: Record<string, string> = {
         <!-- ========== MAIN: Accordion List ========== -->
         <main class="np-main">
 
-          <!-- Filters (populated by client-side script) -->
-          <div class="np-filters" id="np-filters">
-            <button class="np-filter active" data-cat="all">All</button>
-            <button class="np-filter" data-cat="scandal" style="--cat-color: #dc2626">Scandal</button>
-            <button class="np-filter" data-cat="love" style="--cat-color: #e11d7e">Love</button>
-            <button class="np-filter" data-cat="money" style="--cat-color: #d4a017">Money</button>
-            <button class="np-filter" data-cat="fashion" style="--cat-color: #9333ea">Fashion</button>
-            <button class="np-filter" data-cat="viral" style="--cat-color: #f97316">Viral</button>
-            <button class="np-filter" data-cat="buzz" style="--cat-color: #16a34a">Buzz</button>
-          </div>
+          <!-- 2026-05-19: removed category filter tabs. News is now a
+               single chronological feed — owner found the category split
+               (scandal/love/money/fashion/viral/buzz) created an expectation
+               that didn't match the actual mix of tour news. -->
 
           <!-- News List (SSG pre-rendered + client-side hydration) -->
           <div class="np-list" id="np-list" data-dynamic="news-full" data-limit="100">
             {ssgNews.length > 0 ? (
               ssgNews.map((n: any) => {
-                const cat = n.category || 'buzz';
-                const catColor = newsCatColors[cat] || '#16a34a';
                 // Use the actual DB slug (format: YYYY-MM-DD-title-slug) — NOT a title-derived slug.
                 // Previously we built the slug from title only, causing /news/andy-murray-s-goodbye/
                 // while [slug].astro generated /news/2026-03-10-andy-murray-s-goodbye/ → 100% 404s.
@@ -162,7 +153,7 @@ const sbCatLabels: Record<string, string> = {
                 const timeAgo = n.published_at ? new Date(n.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
                 const summary = n.excerpt || (n.body ? stripHtml(n.body).substring(0, 160) + '...' : '');
                 return (
-                  <details class="np-item" data-cat={cat} id={slug}>
+                  <details class="np-item" id={slug}>
                     <summary>
                       <div class="np-item__header">
                         {n.image_url ? (
@@ -177,7 +168,6 @@ const sbCatLabels: Record<string, string> = {
                         )}
                         <div class="np-item__info">
                           <div class="np-item__meta">
-                            <span class="np-cat-badge" style={`background: ${catColor}`}>{cat}</span>
                             {timeAgo && <span class="np-item__time">{timeAgo}</span>}
                           </div>
                           <h3 class="np-item__title">{n.title}</h3>
@@ -338,34 +328,6 @@ const sbCatLabels: Record<string, string> = {
     min-width: 0;
   }
 
-  /* Filters */
-  .np-filters {
-    display: flex;
-    gap: 8px;
-    padding: 0 0 20px;
-    flex-wrap: wrap;
-  }
-  .np-filter {
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    background: var(--gray-100);
-    color: var(--gray-600);
-    transition: all 0.2s;
-    border: 1px solid transparent;
-  }
-  .np-filter:hover {
-    background: var(--gray-200);
-    color: var(--gray-800);
-  }
-  .np-filter.active {
-    background: var(--gray-900);
-    color: var(--white);
-  }
-
   /* Empty state */
   .np-empty {
     text-align: center;
@@ -477,17 +439,6 @@ const sbCatLabels: Record<string, string> = {
     align-items: center;
     gap: 10px;
     margin-bottom: 4px;
-  }
-  .np-cat-badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: white;
-    line-height: 1.4;
   }
   .np-item__time {
     font-size: 0.78rem;
@@ -945,24 +896,8 @@ const sbCatLabels: Record<string, string> = {
 </style>
 
 <script>
-  // Category filters — uses event delegation since items are loaded dynamically
-  document.getElementById('np-filters')?.addEventListener('click', (e) => {
-    const btn = (e.target as HTMLElement).closest('.np-filter');
-    if (!btn) return;
-    const cat = btn.getAttribute('data-cat');
-    document.querySelectorAll('.np-filter').forEach(f => f.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.np-item').forEach(item => {
-      if (cat === 'all' || item.getAttribute('data-cat') === cat) {
-        (item as HTMLElement).classList.remove('hidden');
-      } else {
-        (item as HTMLElement).classList.add('hidden');
-      }
-    });
-  });
-
-  // Hash navigation is handled by dynamic-content.js after items load
-
-  // Load Earlier is handled entirely by dynamic-content.js (has access to renderNewsFullItem)
+  // 2026-05-19: removed category filter click handler — filter UI was removed.
+  // Hash navigation is handled by dynamic-content.js after items load.
+  // Load Earlier is handled entirely by dynamic-content.js.
 </script>
 <script src="/js/dynamic-content.js" defer></script>

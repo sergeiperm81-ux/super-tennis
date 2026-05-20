@@ -16,11 +16,9 @@
   async function fetchNews() {
     if (_newsCache) return _newsCache;
     try {
-      // limit=300 — covers ~30 days of fresh news across all 6 categories so
-      // the JS category filter (buzz/scandal/money/love/viral/fashion) has
-      // content to filter. Default was 20 → filter tabs appeared empty
-      // because last 20 were almost all buzz during tour weeks.
-      const res = await fetch(API + '/api/news?limit=300');
+      // 2026-05-19: removed category filter UI; limit=80 covers ~50 SSG
+      // items + buffer for the "Load Earlier" dynamic loader.
+      const res = await fetch(API + '/api/news?limit=80');
       if (!res.ok) throw new Error(res.status);
       _newsCache = await res.json();
       return _newsCache;
@@ -68,17 +66,16 @@
   var catLabels = { buzz: 'Buzz', scandal: 'Scandal', love: 'Love', money: 'Money', fashion: 'Fashion', viral: 'Viral', business: 'Money', funny: 'Viral', wellness: 'Wellness' };
 
   // ── Render: buzz card (homepage) ──
+  // 2026-05-19: category badge removed for consistency with /news/ page,
+  // which no longer surfaces categories (single chronological feed).
   function renderBuzzCard(item) {
     var href = item.body ? '/news/#' + item.slug : (item.source_url || '#');
     var target = item.body ? '' : ' target="_blank" rel="noopener"';
-    var color = catColors[item.category] || '#16a34a';
-    var label = catLabels[item.category] || 'Buzz';
     var img = item.image_url || '/images/news/court-01.webp';
 
     return '<a href="' + esc(href) + '"' + target + ' class="buzz-card">' +
       '<div class="buzz-card__image">' +
         '<img src="' + esc(img) + '" alt="" loading="lazy" onerror="this.src=\'/images/news/court-01.webp\'" />' +
-        '<span class="buzz-badge" style="background:' + color + '">' + label + '</span>' +
       '</div>' +
       '<div class="buzz-card__body">' +
         '<h3 class="buzz-card__title">' + esc(item.title) + '</h3>' +
@@ -112,8 +109,8 @@
   function renderNewsFullItem(item) {
     var href = item.source_url || '#';
     var img = item.image_url || '/images/news/court-01.webp';
-    var color = catColors[item.category] || '#16a34a';
-    var label = catLabels[item.category] || 'Buzz';
+    // 2026-05-19: category badge removed from /news/ output (single feed now).
+    // catColors/catLabels are still used elsewhere (sidebar articles).
     var date = item.published_at ? new Date(item.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
 
     var bodyHtml = '';
@@ -139,7 +136,7 @@
         .join('\n');
     }
 
-    return '<details class="np-item" data-cat="' + esc(item.category) + '" id="' + esc(item.slug) + '">' +
+    return '<details class="np-item" id="' + esc(item.slug) + '">' +
       '<summary class="np-item__header">' +
         '<a href="' + esc(href) + '" target="_blank" rel="noopener" class="np-item__thumb" onclick="event.stopPropagation()">' +
           '<img src="' + esc(img) + '" alt="" loading="lazy" onerror="this.src=\'/images/news/court-01.webp\'" />' +
@@ -147,7 +144,6 @@
         '</a>' +
         '<div class="np-item__info">' +
           '<div class="np-item__meta">' +
-            '<span class="np-cat-badge" style="background:' + color + '">' + label + '</span>' +
             '<span class="np-item__time">' + timeAgo(item.published_at) + '</span>' +
           '</div>' +
           '<h2 class="np-item__title">' + esc(item.title) + '</h2>' +
@@ -172,14 +168,13 @@
   window.__renderNewsFullItem = renderNewsFullItem;
 
   // ── Render: sidebar news card ──
+  // 2026-05-19: removed category badge — single-feed model on /news/ page
+  // makes per-card category labels misleading (most are buzz anyway).
   function renderSidebarNews(item) {
     var href = item.body ? '/news/#' + item.slug : (item.source_url || '#');
     var target = item.body ? '' : ' target="_blank" rel="noopener"';
-    var color = catColors[item.category] || '#16a34a';
-    var label = catLabels[item.category] || 'Buzz';
 
     return '<a href="' + esc(href) + '"' + target + ' class="sb-news-item">' +
-      '<span class="sb-news-badge" style="background:' + color + '">' + label + '</span>' +
       '<span class="sb-news-title">' + esc(item.title) + '</span>' +
       '<span class="sb-news-time">' + timeAgo(item.published_at) + '</span>' +
     '</a>';
