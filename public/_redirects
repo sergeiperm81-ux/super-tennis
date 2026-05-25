@@ -125,3 +125,17 @@
 /authors                        /about/           301
 /authors/                       /about/           301
 /authors/*                      /about/           301
+
+# --- Archived AI-fluff articles 2026-05-25 ---
+# Three generic AI articles auto-published by the (now-disabled) Monday
+# weekly cron between 2026-05-11 and 2026-05-25. All three opened with
+# variations of "Tennis is not just a sport, it's a [X]..." — textbook
+# graphomania with no specific facts. Archived in Supabase (status=
+# archived) → SSG skips them. Redirects below pass any indexed-URL
+# traffic to the relevant hub instead of 404.
+/lifestyle/the-joy-of-playing-tennis-a-lifestyle-guide        /lifestyle/    301
+/lifestyle/the-joy-of-playing-tennis-a-lifestyle-guide/       /lifestyle/    301
+/gear/tennis-gear-guide-for-club-players                       /gear/         301
+/gear/tennis-gear-guide-for-club-players/                      /gear/         301
+/tournaments/tennis-tournament-culture-history-atmosphere      /tournaments/  301
+/tournaments/tennis-tournament-culture-history-atmosphere/     /tournaments/  301

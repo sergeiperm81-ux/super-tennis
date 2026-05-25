@@ -1140,7 +1140,11 @@ Return ONLY a JSON object (no markdown fences, no extra text):
     const jsonStr = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     const article = JSON.parse(jsonStr);
 
-    // 3. Insert into articles table
+    // 3. Insert into articles table as DRAFT (defense-in-depth after the
+    //    2026-05-25 incident where a generic AI fluff piece auto-published
+    //    on Monday cron). Was status: 'published'. To ship one of these
+    //    articles, a human reviews it in Supabase + manually updates the
+    //    status from 'draft' to 'published'.
     await supabaseQuery(env, 'articles', 'POST', { 'on_conflict': 'slug' }, [{
       slug: article.slug,
       title: article.title,
@@ -1152,7 +1156,7 @@ Return ONLY a JSON object (no markdown fences, no extra text):
       meta_description: article.meta_description || article.excerpt,
       image_url: null,
       image_alt: null,
-      status: 'published',
+      status: 'draft',
       published_at: new Date().toISOString(),
     }]);
 
@@ -2465,16 +2469,17 @@ export default {
       }
     }
 
-    // WEEKLY (Monday): New evergreen article + weekly brief → REBUILD
+    // WEEKLY (Monday): brief generation only.
+    // 2026-05-25: DISABLED generateWeeklyArticle. The unconstrained AI
+    // article generator produced "The Joy of Playing Tennis: A Lifestyle
+    // Guide" — generic fluff, no quality filter, auto-published. Same
+    // failure mode as the AI graphomania flagged earlier in March-April
+    // 2026. To re-enable: (a) add hard quality gates (topic specificity,
+    // forbid-phrase regex like the news pipeline) and (b) keep
+    // status='draft' so a human must promote to 'published' before
+    // anything ships. Until both are in, auto-publish stays off.
     const dayOfWeek = now.getUTCDay(); // 0=Sun, 1=Mon
     if (dayOfWeek === 1) {
-      console.log('📝 Weekly article generation (Monday)');
-      try {
-        await generateWeeklyArticle(env);
-      } catch (e: any) {
-        console.error(`⚠️ Weekly article failed: ${e.message}`);
-        failures.push(`📝 Weekly article: ${e.message}`);
-      }
       console.log('📋 Weekly brief generation (Monday)');
       try {
         await generateWeeklyBrief(env);
