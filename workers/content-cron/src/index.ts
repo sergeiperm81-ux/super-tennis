@@ -1066,108 +1066,33 @@ const VIDEO_CAT_META: Record<string, { label: string; color: string }> = {
 };
 
 // ============================================================
-// WEEKLY ARTICLE GENERATION
+// WEEKLY ARTICLE GENERATION — REMOVED 2026-05-25
 // ============================================================
-const ARTICLE_SECTIONS = ['tournaments', 'gear', 'lifestyle'] as const;
+// The auto-generated "evergreen" article pipeline was completely removed
+// after producing three pieces of generic AI fluff between 2026-05-11 and
+// 2026-05-25 ("The Joy of Playing Tennis", "The Ultimate Tennis Gear
+// Guide for Club Players", "The Essence of Tennis Tournaments: A Cultural
+// Journey"). All three were archived. The owner does NOT want this
+// generator running in any form — manually, on schedule, or otherwise.
+//
+// All future evergreen content must be either:
+//   1. Hand-written by a human and inserted via scripts/publish-*.mjs, or
+//   2. Generated, manually reviewed, then promoted from draft to published
+//      via Supabase directly (with full editor control over the output).
+//
+// If a new automated pipeline is ever proposed, it MUST have:
+//   - Hard quality regex (forbidden phrases, generic-title detection)
+//   - Source-faithfulness checks like the news pipeline
+//   - Insert as status='draft', not 'published'
+//   - Owner approval before any deployment
+//
+// Original function, ARTICLE_SECTIONS, ARTICLE_SYSTEM_PROMPTS, scheduler
+// call, and /trigger/article admin endpoint were all deleted in
+// commit log entry "fix(content): completely remove Monday article
+// generator" — see git history if you need to reconstruct the logic
+// for a future, properly-gated replacement.
 
-const ARTICLE_SYSTEM_PROMPTS: Record<string, string> = {
-  tournaments: `You are a tennis travel and tournament expert writing for super.tennis, a website for casual fans who love tennis culture.
-Write an engaging, evergreen article that will stay relevant for years. Focus on history, atmosphere, spectator tips, venue guides, or cultural aspects of tournaments.
-Use markdown formatting with ## headers. Write 800-1200 words. Be informative and entertaining.`,
-
-  gear: `You are a tennis equipment specialist writing for super.tennis, a website for casual fans and recreational players.
-Write an engaging, evergreen guide about tennis equipment, technology, or gear choices. Make it practical and useful for club players.
-Use markdown formatting with ## headers. Write 800-1200 words. Include actionable advice.`,
-
-  lifestyle: `You are a tennis lifestyle and culture writer for super.tennis, a website for casual fans.
-Write an engaging, evergreen article about tennis culture, fashion, travel, fitness, movies, books, or the social side of tennis.
-Use markdown formatting with ## headers. Write 800-1200 words. Be entertaining and insightful.`,
-};
-
-async function generateWeeklyArticle(env: Env): Promise<string> {
-  const logs: string[] = [];
-  const log = (msg: string) => { logs.push(msg); console.log(msg); };
-
-  const weekNum = Math.floor(Date.now() / (7 * 86400000));
-  const section = ARTICLE_SECTIONS[weekNum % 3];
-  log(`📝 Weekly article: section="${section}" (week ${weekNum})`);
-
-  // 1. Get existing articles to avoid duplication
-  let existingTitles = '';
-  try {
-    const existing = await supabaseQuery(env, 'articles', 'GET', {
-      'category': `eq.${section}`,
-      'select': 'title',
-      'limit': '100',
-    });
-    existingTitles = (existing || []).map((a: any) => a.title).join('\n- ');
-    log(`   Found ${existing.length} existing ${section} articles`);
-  } catch (e: any) {
-        console.error('API error:', e.message);
-    log(`   ⚠️ Could not fetch existing articles: ${e.message}`);
-  }
-
-  // 2. Generate article via OpenAI
-  log('🤖 Calling OpenAI for article generation...');
-  const userPrompt = `Write a NEW evergreen article for the "${section}" section of super.tennis.
-The article must be relevant for months or years — avoid references to specific recent events or dates.
-
-${existingTitles ? `EXISTING articles in this section (DO NOT duplicate these topics):\n- ${existingTitles}\n` : ''}
-Return ONLY a JSON object (no markdown fences, no extra text):
-{"slug":"kebab-case-slug-max-60-chars","title":"Article Title","body":"full markdown article 800-1200 words","excerpt":"first 150-200 chars summary","meta_title":"SEO title max 60 chars","meta_description":"SEO description max 155 chars"}`;
-
-  try {
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: ARTICLE_SYSTEM_PROMPTS[section] },
-          { role: 'user', content: userPrompt },
-        ],
-        temperature: 0.8,
-        max_tokens: 4000,
-      }),
-    });
-
-    if (!res.ok) throw new Error(`OpenAI ${res.status}: ${await res.text()}`);
-    const data = await res.json() as any;
-    const content = data.choices[0]?.message?.content || '';
-    const jsonStr = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    const article = JSON.parse(jsonStr);
-
-    // 3. Insert into articles table as DRAFT (defense-in-depth after the
-    //    2026-05-25 incident where a generic AI fluff piece auto-published
-    //    on Monday cron). Was status: 'published'. To ship one of these
-    //    articles, a human reviews it in Supabase + manually updates the
-    //    status from 'draft' to 'published'.
-    await supabaseQuery(env, 'articles', 'POST', { 'on_conflict': 'slug' }, [{
-      slug: article.slug,
-      title: article.title,
-      category: section,
-      subcategory: null,
-      body: article.body,
-      excerpt: article.excerpt || article.body.slice(0, 200),
-      meta_title: article.meta_title || article.title,
-      meta_description: article.meta_description || article.excerpt,
-      image_url: null,
-      image_alt: null,
-      status: 'draft',
-      published_at: new Date().toISOString(),
-    }]);
-
-    log(`   ✅ Generated: "${article.title}" (${section}/${article.slug})`);
-  } catch (e: any) {
-        console.error('API error:', e.message);
-    log(`   ❌ Article generation failed: ${e.message}`);
-  }
-
-  return logs.join('\n');
-}
+// (function body fully removed — see comment block above for rationale)
 
 // ============================================================
 // WEEKLY BRIEF GENERATION
@@ -2797,10 +2722,14 @@ export default {
         return new Response(result, { headers: { 'Content-Type': 'text/plain' } });
       }
 
+      // /trigger/article endpoint REMOVED 2026-05-25 along with the
+      // generateWeeklyArticle function — see the comment block in the
+      // weekly-article section of this file. Calling it now returns 410.
       if (url.pathname === '/trigger/article') {
-        const result = await generateWeeklyArticle(env);
-        await triggerRebuild(env);
-        return new Response(result, { headers: { 'Content-Type': 'text/plain' } });
+        return new Response(
+          'AI article generator was removed on 2026-05-25 after auto-publishing generic AI fluff. See workers/content-cron/src/index.ts ~line 1068 for full rationale.',
+          { status: 410, headers: { 'Content-Type': 'text/plain' } },
+        );
       }
 
       if (url.pathname === '/trigger/brief') {
