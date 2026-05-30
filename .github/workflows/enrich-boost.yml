@@ -1,11 +1,15 @@
 name: Player Enrichment Boost (Tue+Fri)
 
 on:
-  schedule:
-    # Tuesday 07:00 UTC (10:00 Sofia) — midweek refresh
-    - cron: '0 7 * * 2'
-    # Friday 07:00 UTC (10:00 Sofia) — end-of-week refresh
-    - cron: '0 7 * * 5'
+  # 2026-05-30: scheduled runs PAUSED for 2 days until the June 1 GitHub
+  # Actions minutes reset. This is the chunkiest single job — it runs a full
+  # player-enrich + astro build + Cloudflare deploy inline (~8-15 min). With
+  # the account near its monthly cap, pausing it stops the largest avoidable
+  # drain. RE-ENABLE AFTER JUNE 1 by uncommenting the schedule block below.
+  # Manual runs still available via workflow_dispatch in the meantime.
+  # schedule:
+  #   - cron: '0 7 * * 2'   # Tuesday 07:00 UTC (10:00 Sofia) — midweek refresh
+  #   - cron: '0 7 * * 5'   # Friday 07:00 UTC (10:00 Sofia) — end-of-week refresh
   workflow_dispatch: # Allow manual trigger
 
 jobs:

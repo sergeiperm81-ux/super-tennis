@@ -2,9 +2,13 @@ name: Social Poster — Bluesky
 
 on:
   schedule:
-    # Every 30 min from 5:00 to 20:30 UTC (08:00-23:30 Sofia)
-    # = up to 32 slots/day, we post ~20 news = nice spread
-    - cron: '*/30 5-20 * * *'
+    # 2026-05-30: halved from */30 to hourly to cut GitHub Actions minutes.
+    # Each run bills >=1 minute (GitHub rounds up), so 32 slots/day was
+    # ~960 billed min/month even though most runs are seconds long. Hourly
+    # = 16 slots/day from 5:00-20:00 UTC (08:00-23:00 Sofia). We post ~20
+    # news/day and the script posts multiple per run on backlog, so a
+    # 16-slot spread still clears the queue.
+    - cron: '0 5-20 * * *'
   workflow_dispatch: {}
 
 jobs:

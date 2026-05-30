@@ -1,11 +1,12 @@
 name: Lighthouse CI
 
 on:
-  # Run after every deploy to production
-  workflow_run:
-    workflows: ["Build & Deploy"]
-    types: [completed]
-  # Also allow manual runs
+  # 2026-05-30: moved OFF per-deploy (workflow_run) onto a weekly schedule
+  # to cut GitHub Actions minutes. Lighthouse was firing after EVERY
+  # Build & Deploy (~121 runs/month × ~3 min). A weekly audit is plenty
+  # for tracking Core Web Vitals trends. Manual runs still available.
+  schedule:
+    - cron: '0 6 * * 1'   # Mondays 06:00 UTC (09:00 Sofia)
   workflow_dispatch:
     inputs:
       url:
@@ -16,7 +17,8 @@ on:
 jobs:
   lighthouse:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    # Runs on both schedule and manual dispatch; no event-conditional needed
+    # now that the workflow_run trigger is gone.
     timeout-minutes: 15
 
     steps:
