@@ -551,15 +551,10 @@ const playerProfile = profilePlayer ? {
               <h2 class="fun-tools-title">🎾 Tennis Fan Tools</h2>
             </div>
             <div class="fun-tools-grid">
-              <a href="/roland-garros-bracket/" class="fun-tool-card rg-card">
-                <div class="fun-tool-icon">🏺</div>
-                <div class="fun-tool-body">
-                  <div class="fun-tool-badge">LIVE NOW</div>
-                  <div class="fun-tool-name">Roland Garros 2026<br/>Bracket Predictor</div>
-                  <div class="fun-tool-desc">Pick your champion & share your predictions</div>
-                </div>
-                <div class="fun-tool-arrow">→</div>
-              </a>
+              <!-- 2026-06-06: removed Roland Garros Bracket Predictor — RG 2026
+                   final is today/tomorrow, so a "pick the winner" tool is now
+                   stale (and it already listed the withdrawn Alcaraz as a pick).
+                   Page deleted + 301-redirected to the RG guide. -->
               <a href="/tennis-legend-quiz/" class="fun-tool-card quiz-card">
                 <div class="fun-tool-icon">🏆</div>
                 <div class="fun-tool-body">
@@ -595,10 +590,8 @@ const playerProfile = profilePlayer ? {
             ))}
           </div>
 
-          <!-- RG 2026 BANNER -->
-          <a href="/roland-garros-bracket" class="rg-banner-link">
-            <img src="/images/rg-banner.png" alt="Roland Garros 2026 — Pick your winner" class="rg-banner-img" width="800" loading="eager" decoding="async" />
-          </a>
+          <!-- RG 2026 bracket-predictor banner removed 2026-06-06 (tournament
+               final reached; predictor retired). -->
 
           <!-- TRENDING NEWS (loaded client-side) -->
           <div class="sb-trending">

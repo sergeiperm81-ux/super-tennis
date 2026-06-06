@@ -139,3 +139,11 @@
 /gear/tennis-gear-guide-for-club-players/                      /gear/         301
 /tournaments/tennis-tournament-culture-history-atmosphere      /tournaments/  301
 /tournaments/tennis-tournament-culture-history-atmosphere/     /tournaments/  301
+
+# 2026-06-06: Roland Garros 2026 Bracket Predictor retired (final reached;
+# "pick the winner" tool stale + it listed withdrawn Alcaraz). Page + its
+# shareable per-player card URLs (/roland-garros-bracket/{player}/) redirect
+# to the evergreen RG guide so old shared links don't 404.
+/roland-garros-bracket          /tournaments/roland-garros-guide/   301
+/roland-garros-bracket/         /tournaments/roland-garros-guide/   301
+/roland-garros-bracket/*        /tournaments/roland-garros-guide/   301
