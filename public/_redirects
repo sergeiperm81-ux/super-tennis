@@ -147,3 +147,14 @@
 /roland-garros-bracket          /tournaments/roland-garros-guide/   301
 /roland-garros-bracket/         /tournaments/roland-garros-guide/   301
 /roland-garros-bracket/*        /tournaments/roland-garros-guide/   301
+
+# 2026-06-06: archived 3 stale RG 2026 prediction/preview articles (the
+# tournament final is here, so "who will win" previews are obsolete).
+# Set to status='archived' in Supabase → SSG no longer builds them.
+# Redirect indexed traffic to the evergreen RG guide.
+/tournaments/french-open-2026-preview               /tournaments/roland-garros-guide/   301
+/tournaments/french-open-2026-preview/              /tournaments/roland-garros-guide/   301
+/tournaments/roland-garros-2026-mens-predictions    /tournaments/roland-garros-guide/   301
+/tournaments/roland-garros-2026-mens-predictions/   /tournaments/roland-garros-guide/   301
+/tournaments/roland-garros-2026-womens-predictions  /tournaments/roland-garros-guide/   301
+/tournaments/roland-garros-2026-womens-predictions/ /tournaments/roland-garros-guide/   301
