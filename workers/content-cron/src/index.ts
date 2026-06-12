@@ -1750,8 +1750,8 @@ async function fetchGA4Analytics(env: Env, days: number): Promise<any> {
   const dateEnd = 'today';
   const dateStart = `${days}daysAgo`;
 
-  // Run all 3 reports in parallel
-  const [dailyReport, countriesReport, devicesReport] = await Promise.all([
+  // Run all 4 reports in parallel
+  const [dailyReport, countriesReport, devicesReport, pagesReport] = await Promise.all([
     ga4Report(propertyId, token, {
       dateRanges: [{ startDate: dateStart, endDate: dateEnd }],
       dimensions: [{ name: 'date' }],
@@ -1775,6 +1775,17 @@ async function fetchGA4Analytics(env: Env, days: number): Promise<any> {
       dimensions: [{ name: 'deviceCategory' }],
       metrics: [{ name: 'sessions' }],
       orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
+    }),
+    // 2026-06-12: top pages by pageviews — was hardcoded topPages: [] which
+    // left the /stats/ dashboard's page table empty whenever GA4 (rather
+    // than the Cloudflare fallback) served the data. Needed for affiliate
+    // coverage analysis: which high-traffic pages lack monetization.
+    ga4Report(propertyId, token, {
+      dateRanges: [{ startDate: dateStart, endDate: dateEnd }],
+      dimensions: [{ name: 'pagePath' }],
+      metrics: [{ name: 'screenPageViews' }],
+      orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+      limit: 30,
     }),
   ]);
 
@@ -1810,6 +1821,13 @@ async function fetchGA4Analytics(env: Env, days: number): Promise<any> {
   const startLabel = new Date(Date.now() - days * 86400000).toISOString().split('T')[0];
   const endLabel = new Date().toISOString().split('T')[0];
 
+  // Top pages — same {path, count} shape the Cloudflare fallback produces,
+  // so the /stats/ dashboard renders both sources identically.
+  const topPages = ga4Rows(pagesReport).map(row => ({
+    path: row.dims[0],
+    count: parseInt(row.metrics[0]) || 0,
+  })).filter(p => p.count > 0);
+
   return {
     period: { start: startLabel, end: endLabel },
     source: 'ga4',
@@ -1817,7 +1835,7 @@ async function fetchGA4Analytics(env: Env, days: number): Promise<any> {
     chartData,
     countries,
     devices,
-    topPages: [],
+    topPages,
     statusCodes: [],
   };
 }
