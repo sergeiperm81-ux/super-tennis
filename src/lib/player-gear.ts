@@ -246,6 +246,65 @@ export const playerGearMap: Record<string, PlayerGear> = {
     brand: 'Wilson',
     amazonUrl: amz('Wilson Pro Staff tennis racket'),
   },
+
+  // ── Added 2026-06-12 (monetization audit): current hot names from GA4
+  // top pages + RG 2026 coverage. Only players with publicly documented
+  // racket sponsorships — uncertain ones (Mensik, Shnaider, Draper,
+  // de Minaur) deliberately left out rather than guessed.
+  'holger-rune': {
+    racket: 'Babolat Pure Aero',
+    brand: 'Babolat',
+    amazonUrl: amz('Babolat Pure Aero tennis racket'),
+    gearPageUrl: '/gear/best-tennis-rackets-2026/',
+  },
+  'joao-fonseca': {
+    racket: 'Yonex Ezone 98',
+    brand: 'Yonex',
+    amazonUrl: amz('Yonex Ezone 98 tennis racket'),
+    gearPageUrl: '/gear/best-tennis-rackets-2026/',
+  },
+  'lorenzo-musetti': {
+    racket: 'Head Extreme Tour',
+    brand: 'Head',
+    amazonUrl: amz('Head Extreme Tour tennis racket'),
+    gearPageUrl: '/gear/best-tennis-rackets-2026/',
+  },
+  'frances-tiafoe': {
+    racket: 'Yonex Ezone 98',
+    brand: 'Yonex',
+    amazonUrl: amz('Yonex Ezone 98 tennis racket'),
+    gearPageUrl: '/gear/best-tennis-rackets-2026/',
+  },
+  'naomi-osaka': {
+    racket: 'Yonex Ezone 98',
+    brand: 'Yonex',
+    amazonUrl: amz('Yonex Ezone 98 tennis racket'),
+    gearPageUrl: '/gear/best-tennis-rackets-2026/',
+  },
+  'emma-raducanu': {
+    racket: 'Wilson Blade 98',
+    brand: 'Wilson',
+    amazonUrl: amz('Wilson Blade 98 tennis racket'),
+    gearPageUrl: '/gear/best-tennis-rackets-2026/',
+  },
+  'madison-keys': {
+    racket: 'Yonex Ezone 100',
+    brand: 'Yonex',
+    amazonUrl: amz('Yonex Ezone 100 tennis racket'),
+    gearPageUrl: '/gear/best-tennis-rackets-2026/',
+  },
+  'marta-kostyuk': {
+    racket: 'Wilson Blade 98',
+    brand: 'Wilson',
+    amazonUrl: amz('Wilson Blade 98 tennis racket'),
+    gearPageUrl: '/gear/best-tennis-rackets-2026/',
+  },
+  'jasmine-paolini': {
+    racket: 'Wilson Blade 98',
+    brand: 'Wilson',
+    amazonUrl: amz('Wilson Blade 98 tennis racket'),
+    gearPageUrl: '/gear/best-tennis-rackets-2026/',
+  },
 };
 
 /**
@@ -292,4 +351,52 @@ export function findGearForText(
   }
 
   return best ? { slug: best.slug, name: best.name, gear: best.gear } : null;
+}
+
+/**
+ * Two-tier player detection for article monetization:
+ *   1. TITLE match (via findGearForText) — headline subject, strongest
+ *      relevance signal.
+ *   2. BODY match — the player most mentioned in the text, requiring at
+ *      least 2 word-boundary mentions so a passing name-drop doesn't
+ *      trigger a gear card. Ties break toward the earliest first mention.
+ *
+ * Returns null when no mapped player clears either tier — callers should
+ * then show a generic /gear/ CTA instead of forcing an irrelevant
+ * product link (relevance discipline > raw link count).
+ */
+export function findGearForArticle(
+  title: string,
+  body: string,
+): { slug: string; name: string; gear: PlayerGear; matchedIn: 'title' | 'body' } | null {
+  const titleHit = findGearForText(title || '');
+  if (titleHit) return { ...titleHit, matchedIn: 'title' };
+
+  if (!body) return null;
+  let best: { count: number; firstIdx: number; slug: string; name: string; gear: PlayerGear } | null = null;
+
+  for (const [slug, gear] of Object.entries(playerGearMap)) {
+    const parts = slug.split('-');
+    const lastName = parts[parts.length - 1];
+    if (lastName.length < 4) continue;
+
+    // Count all word-boundary mentions (see backspace warning above).
+    const re = new RegExp('\\b' + lastName + '\\b', 'gi');
+    const matches = body.match(re);
+    if (!matches || matches.length < 2) continue;
+
+    const firstIdx = body.search(new RegExp('\\b' + lastName + '\\b', 'i'));
+    if (
+      best === null ||
+      matches.length > best.count ||
+      (matches.length === best.count && firstIdx < best.firstIdx)
+    ) {
+      const name = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+      best = { count: matches.length, firstIdx, slug, name, gear };
+    }
+  }
+
+  return best
+    ? { slug: best.slug, name: best.name, gear: best.gear, matchedIn: 'body' }
+    : null;
 }

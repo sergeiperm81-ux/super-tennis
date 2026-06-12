@@ -16,16 +16,22 @@
 import { playerGearMap } from '../lib/player-gear';
 
 interface Props {
-  playerSlug: string;
-  playerName: string;
+  playerSlug?: string;
+  playerName?: string;
   heading?: string;
+  /**
+   * When true and no gear matches, render a generic internal CTA to the
+   * (fully monetized) /gear/ hub instead of nothing. Gives every article
+   * a monetization path without forcing irrelevant Amazon links.
+   */
+  fallback?: boolean;
 }
 
-const { playerSlug, playerName, heading = '🎾 Racket Spotlight' } = Astro.props;
-const gear = playerGearMap[playerSlug];
+const { playerSlug = '', playerName = '', heading = '🎾 Racket Spotlight', fallback = false } = Astro.props;
+const gear = playerSlug ? playerGearMap[playerSlug] : undefined;
 ---
 
-{gear && (
+{gear ? (
   <div class="pgear">
     <h3 class="pgear__title">{heading}</h3>
     <a href={gear.amazonUrl} class="pgear__card" target="_blank" rel="noopener sponsored">
@@ -38,6 +44,15 @@ const gear = playerGearMap[playerSlug];
       <a href={gear.gearPageUrl} class="pgear__more">Compare more rackets →</a>
     )}
     <p class="pgear__disclaimer">As an Amazon Associate, SUPER.TENNIS earns from qualifying purchases.</p>
+  </div>
+) : fallback && (
+  <div class="pgear pgear--fallback">
+    <h3 class="pgear__title">🎾 Play Like the Pros</h3>
+    <a href="/gear/" class="pgear__card pgear__card--internal">
+      <span class="pgear__racket">Rackets, shoes, strings & more</span>
+      <span class="pgear__player">Hand-tested guides for every level and budget</span>
+      <span class="pgear__cta">Browse gear guides →</span>
+    </a>
   </div>
 )}
 
@@ -111,4 +126,14 @@ const gear = playerGearMap[playerSlug];
     opacity: 0.7;
     line-height: 1.4;
   }
+  /* Fallback (internal /gear/ CTA) — green accent instead of Amazon amber
+     so readers can tell editorial guides from sponsored product links. */
+  .pgear--fallback {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+  }
+  .pgear--fallback .pgear__title { color: #166534; }
+  .pgear__card--internal { border-color: #86efac; }
+  .pgear__card--internal:hover { box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2); }
+  .pgear--fallback .pgear__cta { color: var(--court-green, #16a34a); }
 </style>

@@ -7,7 +7,7 @@ import { getArticleBySlug, getArticleSlugs } from '../../lib/supabase';
 import { addInterlinks } from '../../lib/interlinks';
 import { getArticlePhotoUrl } from '../../lib/player-photos';
 import { buildHowToSchema } from '../../lib/howto-schema';
-import { findGearForText } from '../../lib/player-gear';
+import { findGearForArticle } from '../../lib/player-gear';
 import { marked } from 'marked';
 
 export async function getStaticPaths() {
@@ -90,12 +90,13 @@ const howToJsonLd = buildHowToSchema(
   'lifestyle',
 );
 
-// "Gear from this story" — detect the headline player and offer their
-// racket (Amazon affiliate). 2026-06-12 monetization audit: 101 of 109
+// "Gear from this story" — two-tier player detection (title first, then
+// body with a 2-mention threshold) + generic /gear/ CTA fallback so EVERY
+// lifestyle article has a monetization path. 2026-06-12 audit: 101 of 109
 // lifestyle articles had ZERO affiliate links while lifestyle is the main
 // content pipeline (~1 article/day). Site-side block keeps the writing
-// bot untouched; renders nothing when no mapped player is in the title.
-const gearMatch = findGearForText(article.title || '');
+// bot untouched.
+const gearMatch = findGearForArticle(article.title || '', article.body || '');
 ---
 
 <ArticleLayout
@@ -117,13 +118,12 @@ const gearMatch = findGearForText(article.title || '');
 
   <div set:html={bodyHtml} />
 
-  {gearMatch && (
-    <PlayerGearBlock
-      playerSlug={gearMatch.slug}
-      playerName={gearMatch.name}
-      heading="🎾 Gear from this story"
-    />
-  )}
+  <PlayerGearBlock
+    playerSlug={gearMatch?.slug}
+    playerName={gearMatch?.name}
+    heading="🎾 Gear from this story"
+    fallback
+  />
 
   <RelatedArticles category="lifestyle" currentSlug={slug as string} />
   <ArticleFooter backLabel="All Lifestyle Articles" backHref="/lifestyle/" />
