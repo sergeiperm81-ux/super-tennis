@@ -25,16 +25,37 @@ interface Props {
    * a monetization path without forcing irrelevant Amazon links.
    */
   fallback?: boolean;
+  /**
+   * Fallback CTA targeting. Defaults to the generic /gear/ hub, but callers
+   * can point a topic-relevant fallback at a specific guide — e.g. travel
+   * articles → the tennis-bags guide — so the link matches the story instead
+   * of dumping every non-player article on the same hub.
+   */
+  fallbackHref?: string;
+  fallbackTitle?: string;
+  fallbackLead?: string;
+  fallbackSub?: string;
+  fallbackCta?: string;
 }
 
-const { playerSlug = '', playerName = '', heading = '🎾 Racket Spotlight', fallback = false } = Astro.props;
+const {
+  playerSlug = '',
+  playerName = '',
+  heading = '🎾 Racket Spotlight',
+  fallback = false,
+  fallbackHref = '/gear/',
+  fallbackTitle = '🎾 Play Like the Pros',
+  fallbackLead = 'Rackets, shoes, strings & more',
+  fallbackSub = 'Hand-tested guides for every level and budget',
+  fallbackCta = 'Browse gear guides →',
+} = Astro.props;
 const gear = playerSlug ? playerGearMap[playerSlug] : undefined;
 ---
 
 {gear ? (
   <div class="pgear">
     <h3 class="pgear__title">{heading}</h3>
-    <a href={gear.amazonUrl} class="pgear__card" target="_blank" rel="noopener sponsored">
+    <a href={gear.amazonUrl} class="pgear__card" target="_blank" rel="noopener sponsored" data-aff="player_racket">
       <span class="pgear__brand">{gear.brand}</span>
       <span class="pgear__racket">{gear.racket}</span>
       <span class="pgear__player">{playerName}'s racket of choice</span>
@@ -42,23 +63,23 @@ const gear = playerSlug ? playerGearMap[playerSlug] : undefined;
     </a>
     <div class="pgear__links">
       {gear.gearPageUrl && (
-        <a href={gear.gearPageUrl} class="pgear__more">🎾 Compare rackets →</a>
+        <a href={gear.gearPageUrl} class="pgear__more" data-aff="compare_rackets">🎾 Compare rackets →</a>
       )}
       {/* Shoes added 2026-06-12: shoes are the #1 gear-traffic category and
           convert better than rackets ($70 avg order ≈ shoes, not $200 rackets).
           Links to our monetized shoes guide rather than a fabricated
           per-player shoe model. */}
-      <a href="/gear/best-tennis-shoes-2026/" class="pgear__more">👟 Court shoes →</a>
+      <a href="/gear/best-tennis-shoes-2026/" class="pgear__more" data-aff="court_shoes">👟 Court shoes →</a>
     </div>
     <p class="pgear__disclaimer">As an Amazon Associate, SUPER.TENNIS earns from qualifying purchases.</p>
   </div>
 ) : fallback && (
   <div class="pgear pgear--fallback">
-    <h3 class="pgear__title">🎾 Play Like the Pros</h3>
-    <a href="/gear/" class="pgear__card pgear__card--internal">
-      <span class="pgear__racket">Rackets, shoes, strings & more</span>
-      <span class="pgear__player">Hand-tested guides for every level and budget</span>
-      <span class="pgear__cta">Browse gear guides →</span>
+    <h3 class="pgear__title">{fallbackTitle}</h3>
+    <a href={fallbackHref} class="pgear__card pgear__card--internal" data-aff="gear_fallback">
+      <span class="pgear__racket">{fallbackLead}</span>
+      <span class="pgear__player">{fallbackSub}</span>
+      <span class="pgear__cta">{fallbackCta}</span>
     </a>
   </div>
 )}

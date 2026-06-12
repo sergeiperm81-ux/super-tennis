@@ -102,6 +102,20 @@ const isHealth = article.subcategory === 'health';
 const hasInlineTF = /tennisfitness|Fq9Sy7S5/i.test(article.body || '');
 const showTennisFitness = isHealth && !hasInlineTF;
 const gearMatch = isHealth ? null : findGearForArticle(article.title || '', article.body || '');
+
+// Topic-aware fallback (2026-06-12): the 'travel'/'style' subcategories are
+// too mixed to blanket-route (e.g. "Padel Explained" and "Tennis Couples"
+// live there too), so we match on the title instead. Genuine travel guides
+// → the tennis-bags guide; everything else keeps the generic /gear/ fallback.
+const isTravelGuide = /\btravel\b/i.test(article.title || '');
+const fallbackCfg = isTravelGuide
+  ? {
+      fallbackHref: '/gear/best-tennis-bags-guide/',
+      fallbackTitle: '🎒 Travel-Ready: Tennis Bags',
+      fallbackLead: 'Racquet bags, backpacks & carry-ons for the road',
+      fallbackCta: 'See the best tennis bags →',
+    }
+  : {};
 ---
 
 <ArticleLayout
@@ -131,6 +145,7 @@ const gearMatch = isHealth ? null : findGearForArticle(article.title || '', arti
       playerName={gearMatch?.name}
       heading="🎾 Gear from this story"
       fallback
+      {...fallbackCfg}
     />
   )}
 

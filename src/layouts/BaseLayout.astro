@@ -80,6 +80,37 @@ const websiteSchema = {
     gtag('config', 'G-Z6JY7X381V');
   </script>
 
+  <!--
+    Monetization click tracking (2026-06-12). Fires a GA4 event when a reader
+    clicks an affiliate or gear-guide link so we can finally see WHICH block
+    converts (player racket / shoes / Tennis Fitness / gear fallback) — until
+    now a blind spot. Event delegation: one passive listener, zero extra
+    requests, never calls preventDefault so navigation is untouched. block=
+    comes from data-aff on the CTA; dest= from the URL.
+  -->
+  <script>
+    document.addEventListener('click', function (e) {
+      var t = e.target;
+      var a = t && t.closest ? t.closest('a') : null;
+      if (!a || typeof gtag !== 'function') return;
+      var href = a.getAttribute('href') || '';
+      var rel = a.getAttribute('rel') || '';
+      var block = (a.dataset && a.dataset.aff) || '';
+      var isAff = /\bsponsored\b/.test(rel) || /amazon\.|memberstennisfitness/i.test(href);
+      var isGear = !!block || /^\/gear\//.test(href);
+      if (!isAff && !isGear) return;
+      var dest = /amazon\./i.test(href) ? 'amazon'
+        : /memberstennisfitness/i.test(href) ? 'tennis_fitness'
+        : /^\/gear\//.test(href) ? 'gear_guide' : 'other';
+      gtag('event', isAff ? 'affiliate_click' : 'gear_click', {
+        destination: dest,
+        block: block || 'inline',
+        link_url: href,
+        page_path: location.pathname,
+      });
+    }, { passive: true });
+  </script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{fullTitle}</title>
