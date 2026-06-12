@@ -40,9 +40,16 @@ const gear = playerSlug ? playerGearMap[playerSlug] : undefined;
       <span class="pgear__player">{playerName}'s racket of choice</span>
       <span class="pgear__cta">View on Amazon →</span>
     </a>
-    {gear.gearPageUrl && (
-      <a href={gear.gearPageUrl} class="pgear__more">Compare more rackets →</a>
-    )}
+    <div class="pgear__links">
+      {gear.gearPageUrl && (
+        <a href={gear.gearPageUrl} class="pgear__more">🎾 Compare rackets →</a>
+      )}
+      {/* Shoes added 2026-06-12: shoes are the #1 gear-traffic category and
+          convert better than rackets ($70 avg order ≈ shoes, not $200 rackets).
+          Links to our monetized shoes guide rather than a fabricated
+          per-player shoe model. */}
+      <a href="/gear/best-tennis-shoes-2026/" class="pgear__more">👟 Court shoes →</a>
+    </div>
     <p class="pgear__disclaimer">As an Amazon Associate, SUPER.TENNIS earns from qualifying purchases.</p>
   </div>
 ) : fallback && (
@@ -110,9 +117,13 @@ const gear = playerSlug ? playerGearMap[playerSlug] : undefined;
     color: #d97706;
     font-weight: 600;
   }
+  .pgear__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 10px;
+  }
   .pgear__more {
-    display: inline-block;
-    margin-top: 8px;
     font-size: 0.78rem;
     color: var(--court-green, #16a34a);
     text-decoration: none;

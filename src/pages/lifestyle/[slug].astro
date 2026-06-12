@@ -3,6 +3,7 @@ import ArticleLayout from '../../layouts/ArticleLayout.astro';
 import ArticleFooter from '../../components/ArticleFooter.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import PlayerGearBlock from '../../components/PlayerGearBlock.astro';
+import TennisFitnessBlock from '../../components/TennisFitnessBlock.astro';
 import { getArticleBySlug, getArticleSlugs } from '../../lib/supabase';
 import { addInterlinks } from '../../lib/interlinks';
 import { getArticlePhotoUrl } from '../../lib/player-photos';
@@ -90,13 +91,17 @@ const howToJsonLd = buildHowToSchema(
   'lifestyle',
 );
 
-// "Gear from this story" — two-tier player detection (title first, then
-// body with a 2-mention threshold) + generic /gear/ CTA fallback so EVERY
-// lifestyle article has a monetization path. 2026-06-12 audit: 101 of 109
-// lifestyle articles had ZERO affiliate links while lifestyle is the main
-// content pipeline (~1 article/day). Site-side block keeps the writing
-// bot untouched.
-const gearMatch = findGearForArticle(article.title || '', article.body || '');
+// Monetization block routing (2026-06-12 audit):
+//   - health/fitness articles → Tennis Fitness program (50% commission,
+//     far higher ROI than Amazon's ~3%). Skip when the body already has an
+//     inline TF link to avoid a duplicate.
+//   - everything else → gear block: player racket (title/body match) or a
+//     generic /gear/ CTA fallback so EVERY article has a money path.
+// The writing bot stays untouched — all routing is site-side.
+const isHealth = article.subcategory === 'health';
+const hasInlineTF = /tennisfitness|Fq9Sy7S5/i.test(article.body || '');
+const showTennisFitness = isHealth && !hasInlineTF;
+const gearMatch = isHealth ? null : findGearForArticle(article.title || '', article.body || '');
 ---
 
 <ArticleLayout
@@ -118,12 +123,16 @@ const gearMatch = findGearForArticle(article.title || '', article.body || '');
 
   <div set:html={bodyHtml} />
 
-  <PlayerGearBlock
-    playerSlug={gearMatch?.slug}
-    playerName={gearMatch?.name}
-    heading="🎾 Gear from this story"
-    fallback
-  />
+  {showTennisFitness ? (
+    <TennisFitnessBlock />
+  ) : !isHealth && (
+    <PlayerGearBlock
+      playerSlug={gearMatch?.slug}
+      playerName={gearMatch?.name}
+      heading="🎾 Gear from this story"
+      fallback
+    />
+  )}
 
   <RelatedArticles category="lifestyle" currentSlug={slug as string} />
   <ArticleFooter backLabel="All Lifestyle Articles" backHref="/lifestyle/" />
