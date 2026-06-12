@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PlayerGearBlock from '../../components/PlayerGearBlock.astro';
 import { getPlayerBySlug, getTopPlayerSlugs, getRelatedPlayers, getArticleBySlug } from '../../lib/supabase';
 import { fallbackPlayers, countryFlags, countryNames, handLabels, getFlagUrl } from '../../lib/fallback-data';
 import { addInterlinks } from '../../lib/interlinks';
@@ -696,6 +697,15 @@ const profileArticleHtml = articles['profile'].html;
             Compare with {relatedSlugs[0]?.last_name || 'Nadal'} →
           </a>
         </div>
+
+        {/* Racket affiliate block — renders only for the 44 players in
+            playerGearMap. Added 2026-06-12: player pages were the largest
+            unmonetized traffic segment while the racket data already
+            existed in code (previously used only on /vs/ pages). */}
+        <PlayerGearBlock
+          playerSlug={player.slug}
+          playerName={`${player.first_name} ${player.last_name}`}
+        />
 
         <!-- Share Buttons -->
         <div class="sidebar-widget share-widget">

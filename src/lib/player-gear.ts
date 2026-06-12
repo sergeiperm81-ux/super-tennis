@@ -258,3 +258,38 @@ export function getVsGear(p1Slug: string, p2Slug: string): [PlayerGear | null, P
     playerGearMap[p2Slug] || null,
   ];
 }
+
+/**
+ * Find gear for the most prominent mapped player mentioned in a text
+ * (typically an article title). Matches last names with word boundaries;
+ * when several players appear ("Sinner beats Djokovic"), the EARLIEST
+ * mention wins — headline subject first.
+ *
+ * Used by the lifestyle "Gear from this story" block (2026-06-12
+ * monetization audit: 101 of 109 lifestyle articles had zero affiliate
+ * links while being the site's main content pipeline).
+ */
+export function findGearForText(
+  text: string,
+): { slug: string; name: string; gear: PlayerGear } | null {
+  if (!text) return null;
+  let best: { idx: number; slug: string; name: string; gear: PlayerGear } | null = null;
+
+  for (const [slug, gear] of Object.entries(playerGearMap)) {
+    const parts = slug.split('-');
+    const lastName = parts[parts.length - 1];
+    // Skip too-short surnames to avoid false positives inside other words
+    if (lastName.length < 4) continue;
+
+    // NB: string-concat, not a template literal — '\b' inside a template
+    // literal is the backspace char, which silently breaks the regex.
+    const re = new RegExp('\\b' + lastName + '\\b', 'i');
+    const m = re.exec(text);
+    if (m && (best === null || m.index < best.idx)) {
+      const name = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+      best = { idx: m.index, slug, name, gear };
+    }
+  }
+
+  return best ? { slug: best.slug, name: best.name, gear: best.gear } : null;
+}

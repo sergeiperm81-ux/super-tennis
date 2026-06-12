@@ -1,0 +1,114 @@
+---
+/**
+ * PlayerGearBlock — compact Amazon-affiliate card for a player's racket.
+ *
+ * Data source: src/lib/player-gear.ts (playerGearMap, 44 ATP/WTA players,
+ * tag supertennis0b-20). Renders NOTHING when the player isn't in the map,
+ * so it's safe to drop onto any page unconditionally.
+ *
+ * Added 2026-06-12 after the monetization audit: player pages were the
+ * largest unmonetized traffic segment (~267 views/30d in the top-30 alone)
+ * even though the racket data already existed in code (used only on /vs/).
+ *
+ * Compliance: rel="sponsored" per Google guidelines; the Amazon Associates
+ * operating agreement requires the earnings disclosure shown inline below.
+ */
+import { playerGearMap } from '../lib/player-gear';
+
+interface Props {
+  playerSlug: string;
+  playerName: string;
+  heading?: string;
+}
+
+const { playerSlug, playerName, heading = '🎾 Racket Spotlight' } = Astro.props;
+const gear = playerGearMap[playerSlug];
+---
+
+{gear && (
+  <div class="pgear">
+    <h3 class="pgear__title">{heading}</h3>
+    <a href={gear.amazonUrl} class="pgear__card" target="_blank" rel="noopener sponsored">
+      <span class="pgear__brand">{gear.brand}</span>
+      <span class="pgear__racket">{gear.racket}</span>
+      <span class="pgear__player">{playerName}'s racket of choice</span>
+      <span class="pgear__cta">View on Amazon →</span>
+    </a>
+    {gear.gearPageUrl && (
+      <a href={gear.gearPageUrl} class="pgear__more">Compare more rackets →</a>
+    )}
+    <p class="pgear__disclaimer">As an Amazon Associate, SUPER.TENNIS earns from qualifying purchases.</p>
+  </div>
+)}
+
+<style>
+  .pgear {
+    margin: 24px 0;
+    padding: 16px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius, 8px);
+  }
+  .pgear__title {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #92400e;
+    margin: 0 0 10px;
+  }
+  .pgear__card {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px 14px;
+    background: white;
+    border: 1px solid #fcd34d;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .pgear__card:hover {
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+    transform: translateY(-1px);
+  }
+  .pgear__brand {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #78350f;
+    font-weight: 700;
+  }
+  .pgear__racket {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.3;
+  }
+  .pgear__player {
+    font-size: 0.78rem;
+    color: #64748b;
+  }
+  .pgear__cta {
+    margin-top: 6px;
+    font-size: 0.8rem;
+    color: #d97706;
+    font-weight: 600;
+  }
+  .pgear__more {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 0.78rem;
+    color: var(--court-green, #16a34a);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .pgear__more:hover { text-decoration: underline; }
+  .pgear__disclaimer {
+    margin: 8px 0 0;
+    font-size: 0.68rem;
+    color: #92400e;
+    opacity: 0.7;
+    line-height: 1.4;
+  }
+</style>

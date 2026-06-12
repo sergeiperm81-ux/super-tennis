@@ -158,3 +158,17 @@
 /tournaments/roland-garros-2026-mens-predictions/   /tournaments/roland-garros-guide/   301
 /tournaments/roland-garros-2026-womens-predictions  /tournaments/roland-garros-guide/   301
 /tournaments/roland-garros-2026-womens-predictions/ /tournaments/roland-garros-guide/   301
+
+# 2026-06-12: fourth stale RG prediction page found via GA4 top-pages audit
+# (different slug pattern, missed in the June 6 sweep). Archived in Supabase.
+/tournaments/roland-garros-2026-favorites-predictions   /tournaments/roland-garros-guide/   301
+/tournaments/roland-garros-2026-favorites-predictions/  /tournaments/roland-garros-guide/   301
+
+# 2026-06-12: GA4 shows 19 views/30d on /tournaments/roland-garros/results/
+# — a route that never existed (people hunting RG results landed on 404).
+# Catch the whole /tournaments/roland-garros/ namespace → evergreen guide.
+# Note: does NOT shadow real slugs like /tournaments/roland-garros-guide
+# (different path segment, no slash after "roland-garros").
+/tournaments/roland-garros        /tournaments/roland-garros-guide/   301
+/tournaments/roland-garros/       /tournaments/roland-garros-guide/   301
+/tournaments/roland-garros/*      /tournaments/roland-garros-guide/   301
