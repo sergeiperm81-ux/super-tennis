@@ -118,6 +118,17 @@ const newsJsonLd = {
   },
   ...(article.image_url && { image: { '@type': 'ImageObject', url: article.image_url } }),
   mainEntityOfPage: `https://super.tennis/news/${slug}/`,
+  // Name the original source in schema (2026-06-17 GEO audit) — a strong
+  // trust/citability signal that this is a faithful rewrite of a known outlet.
+  ...(article.source_url && {
+    isBasedOn: {
+      '@type': 'NewsArticle',
+      url: article.source_url,
+      ...(article.source_name && {
+        publisher: { '@type': 'Organization', name: article.source_name },
+      }),
+    },
+  }),
 };
 ---
 
@@ -147,11 +158,13 @@ const newsJsonLd = {
     </time>
   </div>
 
-  {/* Source attribution */}
+  {/* Source attribution — name the real outlet (2026-06-17 GEO audit).
+      The column is source_name; the old code read article.source (undefined)
+      so every page rendered the generic "Original Article". */}
   {article.source_url?.startsWith('https://') && (
     <div class="news-source">
       <span class="news-source-label">Source:</span>
-      <a href={article.source_url} target="_blank" rel="noopener noreferrer">{article.source || 'Original Article'}</a>
+      <a href={article.source_url} target="_blank" rel="noopener noreferrer">{article.source_name || article.source || 'Original Article'}</a>
     </div>
   )}
 

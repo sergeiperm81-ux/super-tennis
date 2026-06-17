@@ -41,6 +41,7 @@ SUPER.TENNIS is a tennis news and lifestyle portal covering players, gear, recor
 - How tennis rankings work: https://super.tennis/rankings/how-tennis-rankings-work/
 - ATP ranking points explained: https://super.tennis/rankings/atp-ranking-points-explained/
 - About SUPER.TENNIS: https://super.tennis/about/
+- Editorial standards (sourcing, fact-checking, corrections): https://super.tennis/editorial-standards/
 
 ### Records & all-time stats
 - Most Grand Slam titles all time: https://super.tennis/records/most-grand-slam-titles/
