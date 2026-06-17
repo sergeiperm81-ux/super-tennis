@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FaqBlock from '../../components/FaqBlock.astro';
-import { getLatestRankings, getPlayerBySlug } from '../../lib/supabase';
+import { getLatestRankings, getPlayerBySlug, getDirectoryPlayers } from '../../lib/supabase';
 import { fallbackPlayers, countryFlags, getFlagUrl } from '../../lib/fallback-data';
 
 // Generic placeholder — tennis ball silhouette
@@ -34,6 +34,16 @@ try {
 // Fetch real ranked players from Supabase
 let atpRankings = await getLatestRankings('atp', 20);
 let wtaRankings = await getLatestRankings('wta', 20);
+
+// Full crawlable directory of every generated player page (fixes orphans —
+// the cards above only link ~40 players; this links the whole set as
+// lightweight text links so all profiles are reachable within 1 click).
+let directoryPlayers: Awaited<ReturnType<typeof getDirectoryPlayers>> = [];
+try {
+  directoryPlayers = await getDirectoryPlayers();
+} catch { /* directory is best-effort; page still renders without it */ }
+const directoryAtp = directoryPlayers.filter(p => p.tour === 'atp');
+const directoryWta = directoryPlayers.filter(p => p.tour === 'wta');
 
 // Map a ranking record to player card format
 function mapRanking(r: any) {
@@ -313,6 +323,31 @@ const playerFaqs = [
         </div>
       </section>
 
+      {directoryPlayers.length > 0 && (
+        <section class="player-directory">
+          <h2>Full Player Directory</h2>
+          <p class="directory-intro">Every player profile on SUPER.TENNIS — {directoryPlayers.length.toLocaleString()} ATP &amp; WTA players, A–Z by surname.</p>
+          <div class="directory-cols">
+            <div class="directory-col">
+              <h3>ATP <span class="dir-count">({directoryAtp.length})</span></h3>
+              <ul class="directory-list">
+                {directoryAtp.map(p => (
+                  <li><a href={`/players/${p.slug}/`}>{p.first_name} {p.last_name}</a></li>
+                ))}
+              </ul>
+            </div>
+            <div class="directory-col">
+              <h3>WTA <span class="dir-count">({directoryWta.length})</span></h3>
+              <ul class="directory-list">
+                {directoryWta.map(p => (
+                  <li><a href={`/players/${p.slug}/`}>{p.first_name} {p.last_name}</a></li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+      )}
+
       <FaqBlock faqs={playerFaqs} />
     </div>
   </div>
@@ -514,6 +549,58 @@ const playerFaqs = [
     line-height: 1.4;
   }
 
+  /* Full player directory (crawlable links — fixes orphans) */
+  .player-directory {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 2px solid #eee;
+  }
+  .player-directory h2 {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+  }
+  .directory-intro {
+    color: var(--gray-500, #888);
+    font-size: 0.9rem;
+    margin: 0 0 20px;
+  }
+  .directory-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+  .directory-col h3 {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--gray-200, #eee);
+  }
+  .dir-count { color: var(--gray-400, #aaa); font-weight: 400; }
+  .directory-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    columns: 2;
+    column-gap: 24px;
+  }
+  .directory-list li {
+    margin: 0 0 6px;
+    break-inside: avoid;
+  }
+  .directory-list a {
+    color: var(--gray-700, #444);
+    text-decoration: none;
+    font-size: 0.86rem;
+    transition: color 0.15s;
+  }
+  .directory-list a:hover { color: var(--court-green); text-decoration: underline; }
+
   /* Responsive */
   @media (max-width: 1024px) {
     .players-grid { grid-template-columns: repeat(3, 1fr); }
@@ -522,6 +609,8 @@ const playerFaqs = [
     .players-grid { grid-template-columns: repeat(2, 1fr); }
     .articles-row { grid-template-columns: 1fr; }
     .page-hero h1 { font-size: 2rem; }
+    .directory-cols { grid-template-columns: 1fr; gap: 24px; }
+    .directory-list { columns: 1; }
   }
   /* Search & Filter */
   .search-bar {

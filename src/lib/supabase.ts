@@ -410,6 +410,31 @@ export async function getTopPlayerSlugs(limit = 200): Promise<string[]> {
   }
 }
 
+// Directory of every player that actually gets a generated page, WITH names —
+// for the crawlable /players/ directory that fixes orphans (2026-06-17 GEO
+// audit: only ~40 of ~1,174 player pages were linked; the rest were
+// sitemap-only). Intersecting with getTopPlayerSlugs guarantees we never link
+// a slug that wasn't built (no 404s). Sorted by last name for an A–Z list.
+export interface DirectoryPlayer {
+  slug: string;
+  first_name: string;
+  last_name: string;
+  tour: string;
+}
+export async function getDirectoryPlayers(): Promise<DirectoryPlayer[]> {
+  try {
+    const slugSet = new Set(await getTopPlayerSlugs(500));
+    const allPlayers = await ensurePlayersCache();
+    return allPlayers
+      .filter(p => slugSet.has(p.slug) && p.first_name && p.last_name)
+      .map(p => ({ slug: p.slug, first_name: p.first_name, last_name: p.last_name, tour: p.tour }))
+      .sort((a, b) => (a.last_name || '').localeCompare(b.last_name || ''));
+  } catch (e) {
+    console.error('getDirectoryPlayers error:', e);
+    return [];
+  }
+}
+
 // Helper: get related players (same tour, sorted by career titles)
 export async function getRelatedPlayers(tour: 'atp' | 'wta', excludeSlug: string, limit = 4) {
   const allPlayers = await ensurePlayersCache();

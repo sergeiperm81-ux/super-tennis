@@ -68,10 +68,6 @@ const jsonLd = {
     logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
   },
   ...(heroImage && { image: heroImage }),
-  about: {
-    '@type': 'Product',
-    name: 'Tennis Equipment',
-  },
 };
 
 // HowTo JSON-LD for how-to-* gear articles (Codex SEO audit 2026-05-17)
@@ -82,6 +78,54 @@ const howToJsonLd = buildHowToSchema(
   bodyHtml,
   'gear',
 );
+
+// Product ItemList JSON-LD (2026-06-17 GEO audit).
+// Gear roundups list each product as an <h2> section ("Best Overall: Wilson
+// Clash 100 v2") containing an Amazon affiliate link. We extract those into an
+// ItemList of Product nodes so AI/Google parse the page as a product roundup.
+// We do NOT fabricate prices or ratings (we don't have per-product data) — only
+// the name and the real affiliate offer URL, which is honest and valid.
+function extractGearProducts(html: string): { name: string; url: string }[] {
+  if (!html) return [];
+  const out: { name: string; url: string }[] = [];
+  const seen = new Set<string>();
+  const sections = html.split(/<h2[^>]*>/i).slice(1);
+  for (const sec of sections) {
+    const hMatch = sec.match(/^([\s\S]*?)<\/h2>/i);
+    if (!hMatch) continue;
+    const heading = hMatch[1].replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').trim();
+    // Only "Best X: Product Name" roundup headings are products. Requiring the
+    // colon-prefix excludes generic sections ("Where to Buy", "Weight
+    // Categories") that also contain affiliate links but aren't products —
+    // those would otherwise become junk Product nodes.
+    const ci = heading.indexOf(': ');
+    if (ci === -1) continue;
+    const name = heading.slice(ci + 2).trim();
+    if (!name || name.length < 3 || name.length > 90) continue;
+    if (!/[A-Za-z]/.test(name)) continue;
+    const az = sec.match(/href="(https:\/\/www\.amazon\.com\/[^"]*tag=supertennis0b-20[^"]*)"/i);
+    if (!az) continue; // only sections with a real affiliate link count as products
+    if (seen.has(name)) continue;
+    seen.add(name);
+    out.push({ name, url: az[1].replace(/&amp;/g, '&') });
+  }
+  return out;
+}
+const gearProducts = extractGearProducts(bodyHtml as string);
+const itemListJsonLd = gearProducts.length >= 2 ? {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: article.title,
+  itemListElement: gearProducts.map((p, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    item: {
+      '@type': 'Product',
+      name: p.name,
+      offers: { '@type': 'Offer', url: p.url, availability: 'https://schema.org/InStock' },
+    },
+  })),
+} : null;
 ---
 
 <ArticleLayout
@@ -101,6 +145,7 @@ const howToJsonLd = buildHowToSchema(
 >
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   {howToJsonLd && <script type="application/ld+json" set:html={JSON.stringify(howToJsonLd)} />}
+  {itemListJsonLd && <script type="application/ld+json" set:html={JSON.stringify(itemListJsonLd)} />}
 
   <div set:html={bodyHtml} />
 
