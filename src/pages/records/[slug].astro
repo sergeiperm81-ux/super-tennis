@@ -94,6 +94,14 @@ const faqJsonLd = article.faqs && Array.isArray(article.faqs) && article.faqs.le
     acceptedAnswer: { '@type': 'Answer', text: faq.answer },
   })),
 } : null;
+
+// Quick Answer (2026-06-17 GEO audit): records pages buried the key fact in
+// generic intro prose ("Tennis is a sport steeped in tradition…"). Surface the
+// first FAQ's answer — already vetted, factual and dated — as an extractable
+// lead for AI Overviews/Perplexity/ChatGPT. Scales to every records page that
+// has FAQs, with no body rewriting and no accuracy risk. (excerpt/meta were
+// unusable — many empty or contained leaked "# heading" markdown.)
+const firstFaq = Array.isArray(article.faqs) && article.faqs.length > 0 ? article.faqs[0] : null;
 ---
 
 <ArticleLayout
@@ -115,9 +123,49 @@ const faqJsonLd = article.faqs && Array.isArray(article.faqs) && article.faqs.le
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   {faqJsonLd && <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />}
 
+  {firstFaq?.answer && (
+    <aside class="record-quick-answer" aria-label="Quick answer">
+      <span class="rqa-label">Quick Answer</span>
+      {firstFaq.question && <p class="rqa-q">{firstFaq.question}</p>}
+      <p class="rqa-a">{firstFaq.answer}</p>
+    </aside>
+  )}
+
   <div set:html={bodyHtml} />
 
   <RelatedArticles category="records" currentSlug={slug as string} />
 
   <ArticleFooter backLabel="All Tennis Records" backHref="/records/" />
 </ArticleLayout>
+
+<style>
+  /* Quick Answer — extractable lead pulled from the page's first FAQ. */
+  .record-quick-answer {
+    margin: 0 0 28px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #fef2f2 0%, #fff 100%);
+    border-left: 3px solid #dc2626;
+    border-radius: 0 var(--radius, 8px) var(--radius, 8px) 0;
+  }
+  .rqa-label {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #dc2626;
+    margin: 0 0 8px;
+  }
+  .rqa-q {
+    margin: 0 0 6px;
+    font-weight: 700;
+    color: var(--gray-900);
+    font-size: 0.95rem;
+  }
+  .rqa-a {
+    margin: 0;
+    font-size: 1.02rem;
+    line-height: 1.6;
+    color: var(--gray-800);
+  }
+</style>
