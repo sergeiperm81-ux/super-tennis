@@ -109,19 +109,44 @@ const playerWikipediaUrls: Record<string, string[]> = {
 };
 const playerSameAs = playerWikipediaUrls[player.slug as string] || [];
 
-// JSON-LD structured data
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Person',
+// Combine curated Wikipedia/Wikidata links with the player's own verified
+// social profiles from the DB — extends entity linking far beyond the ~37
+// hardcoded players to anyone with socials on file.
+const socialSameAs = [player.social_instagram, player.social_twitter, player.social_facebook].filter(Boolean);
+const allSameAs = [...new Set([...playerSameAs, ...socialSameAs])];
+const tourOrg = player.tour === 'wta'
+  ? { name: 'WTA Tour', url: 'https://www.wtatennis.com' }
+  : { name: 'ATP Tour', url: 'https://www.atptour.com' };
+const profileModified = player.stats_updated_at
+  ? new Date(player.stats_updated_at).toISOString()
+  : undefined;
+
+// JSON-LD: ProfilePage wrapping an Athlete entity.
+// Enriched 2026-06-17 (GEO audit): Athlete typing + jobTitle + tour
+// affiliation + expanded sameAs + machine-readable dateModified turn a thin
+// profile into a citable athlete entity at ~1,100-page scale — the #1
+// traffic template. Previously a bare Person with name/image/nationality.
+const personEntity = {
+  '@type': ['Person', 'Athlete'],
+  '@id': `https://super.tennis/players/${player.slug}/#person`,
   name: `${player.first_name} ${player.last_name}`,
   url: `https://super.tennis/players/${player.slug}/`,
   image: player.image_url,
+  jobTitle: 'Professional Tennis Player',
+  ...(player.tour && { gender: player.tour === 'wta' ? 'Female' : 'Male' }),
   nationality: { '@type': 'Country', name: country },
   birthDate: player.birth_date || undefined,
   height: player.height_cm ? { '@type': 'QuantitativeValue', value: player.height_cm, unitCode: 'CMT' } : undefined,
   description: player.bio_short || `Professional tennis player from ${country}`,
-  sport: 'Tennis',
-  ...(playerSameAs.length > 0 && { sameAs: playerSameAs }),
+  knowsAbout: 'Tennis',
+  affiliation: { '@type': 'SportsOrganization', name: tourOrg.name, url: tourOrg.url },
+  ...(allSameAs.length > 0 && { sameAs: allSameAs }),
+};
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  ...(profileModified && { dateModified: profileModified }),
+  mainEntity: personEntity,
 };
 
 // Format prize money

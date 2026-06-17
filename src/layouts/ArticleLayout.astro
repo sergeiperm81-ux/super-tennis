@@ -55,38 +55,12 @@ const breadcrumbJsonLd = {
     }]),
 };
 
-// Article JSON-LD
-const articleJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: title,
-  description,
-  ...(absoluteImage && {
-    image: {
-      '@type': 'ImageObject',
-      url: absoluteImage,
-    },
-  }),
-  ...(publishedDate && { datePublished: publishedDate }),
-  ...(updatedDate && { dateModified: updatedDate }),
-  mainEntityOfPage: {
-    '@type': 'WebPage',
-    '@id': `https://super.tennis${Astro.url.pathname}`,
-  },
-  author: {
-    '@type': 'Organization',
-    '@id': 'https://super.tennis/#organization',
-    name: 'SUPER.TENNIS Editorial',
-    url: 'https://super.tennis/about/',
-  },
-  publisher: {
-    '@type': 'Organization',
-    '@id': 'https://super.tennis/#organization',
-    name: 'SUPER.TENNIS',
-    url: 'https://super.tennis',
-    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
-  },
-};
+// NOTE (2026-06-17 GEO audit): the Article JSON-LD used to be emitted here
+// AND again by every consuming page template (gear/lifestyle/records/
+// tournaments/vs/news), producing two competing Article nodes per page.
+// Each page already emits its own richer Article/NewsArticle (with dates,
+// canonical url, and type-specific fields), so this layout no longer emits
+// one — single source of truth, no duplicate/ambiguous nodes.
 
 // Category color mapping
 const categoryColors: Record<string, string> = {
@@ -113,7 +87,6 @@ const ogImage = categoryOgImages[category || ''] || '/og/default.png';
 
 <BaseLayout title={title} description={description} ogImage={absoluteImage || ogImage} ogType="article" publishedTime={publishedDate}>
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
-  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
 
   <!-- Reading Progress Bar -->
   <div class="reading-progress" id="reading-progress" aria-hidden="true">

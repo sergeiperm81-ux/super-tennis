@@ -64,19 +64,10 @@ const [sinnerPhoto, djokovicPhoto, swiatekPhoto, alcarazPhoto, federerPhoto,
   getPlayerPhoto('coco-gauff'),
 ]);
 
-// Homepage JSON-LD
-const homepageJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: 'SUPER.TENNIS',
-  url: 'https://super.tennis',
-  description: 'Tennis for everyone. Players, records, gear, lifestyle — the world of tennis beyond the court.',
-  publisher: {
-    '@type': 'Organization',
-    name: 'SUPER.TENNIS',
-    url: 'https://super.tennis',
-  },
-};
+// NOTE (2026-06-17 GEO audit): the homepage used to pass its own WebSite
+// JSON-LD here, but BaseLayout already emits a WebSite (with SearchAction)
+// + Organization on every page. Two WebSite nodes was redundant/conflicting,
+// so the homepage no longer adds a second one.
 
 // Badge colors
 const badgeColors: Record<string, string> = {
@@ -326,7 +317,7 @@ const playerProfile = profilePlayer ? {
 };
 ---
 
-<BaseLayout title="Home" jsonLd={homepageJsonLd} dynamicContent={true}>
+<BaseLayout title="Home" dynamicContent={true}>
   <!-- TRENDING NOW ticker bar -->
   <div class="trending-bar" id="trending-bar">
     <div class="trending-bar__label">TRENDING</div>
@@ -342,6 +333,11 @@ const playerProfile = profilePlayer ? {
       <div class="news-layout">
         <!-- ========== MAIN CONTENT COLUMN ========== -->
         <main class="news-main">
+
+          {/* SEO/a11y H1 — the magazine grid has no visible H1; this gives the
+              page a single, descriptive top-level heading without disrupting
+              the design (2026-06-17 audit). */}
+          <h1 class="home-h1">SUPER.TENNIS — Tennis News, Players, Gear, Records &amp; Lifestyle</h1>
 
           <!-- TENNIS BUZZ — Daily News (loaded client-side) -->
           <section class="buzz-section">
@@ -647,6 +643,20 @@ const playerProfile = profilePlayer ? {
 </BaseLayout>
 
 <style>
+  /* Visually-hidden H1 — present for SEO/screen readers, invisible in the
+     magazine layout. */
+  .home-h1 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   /* ===== TRENDING BAR ===== */
   .trending-bar {
     display: flex;

@@ -7,21 +7,21 @@ SUPER.TENNIS is a tennis news and lifestyle portal covering players, gear, recor
 ## What we cover
 
 - **Player profiles**: 1,100+ ATP/WTA player profile pages with stats, biography, net worth, racket setup, height/age, and career highlights — sourced from Wikipedia, ATP, and WTA
-- **Daily news**: 6-10 faithfully-rewritten news items per day from ESPN, BBC Sport, Tennis World USA, and other quality sources (890 active items in archive)
+- **Daily news**: 6-10 faithfully-rewritten news items per day from ESPN, BBC Sport, Tennis World USA, and other quality sources (1,628 active items in archive)
 - **Gear guides**: 42 in-depth reviews of rackets, shoes, strings, bags, and accessories with buying recommendations
 - **Records & stats**: 40 articles on all-time tennis records, fastest serves, longest matches, Grand Slam statistics, career achievements
-- **Tournament guides**: 31 guides to all Grand Slams, Masters 1000, ATP/WTA Finals, Davis Cup, and other tour events
+- **Tournament guides**: 26 guides to all Grand Slams, Masters 1000, ATP/WTA Finals, Davis Cup, and other tour events
 - **Head-to-head comparisons**: 58 player vs player matchup analyses (Federer vs Nadal, Sinner vs Alcaraz, big rivalries)
-- **Lifestyle**: 76 articles on tennis fashion, fitness, diet, mental health, celebrity culture, dating, relationships, retirement
+- **Lifestyle**: 114 articles on tennis fashion, fitness, diet, mental health, celebrity culture, dating, relationships, retirement
 - **Player profile dives**: 277 long-form profile articles on top-tier players (career, training, sponsorship, family)
-- **FAQ**: 26 answers to the most common tennis questions about rules, rankings, Grand Slams, and gear
+- **FAQ**: a comprehensive tennis FAQ answering the most common questions about rules, rankings, Grand Slams, and gear
 
 ## Key facts for citation
 
 - Site: https://super.tennis
-- Content: 524 long-form articles, 1,100+ player pages, 890 active news items, 26 FAQs
-- Updated: Daily (news 07:00 Sofia, rankings 11:00 UTC, YouTube Shorts 3×/day, Bluesky 8×/day)
-- Last content update: 2026-05-11
+- Content: 557 long-form articles, 1,100+ player pages, 1,628 active news items
+- Updated: Daily (news 07:00 Sofia, rankings 11:00 UTC, YouTube Shorts daily, Bluesky ~20×/day)
+- Last content update: 2026-06-17
 - Language: English only
 - Authority: Data sourced from ATP Tour, WTA Tour, ITF, Wikipedia. News from ESPN, BBC Sport, Tennis World USA, Daily Mail Sport, Bleacher Report
 - Editorial policy: faithful-rewrite only — no invented quotes, scores, deals, or relationships. Articles fact-checked against original source.
@@ -38,6 +38,8 @@ SUPER.TENNIS is a tennis news and lifestyle portal covering players, gear, recor
 
 ### Reference / FAQ
 - Tennis FAQ (rules, scoring, Grand Slams): https://super.tennis/faq/
+- How tennis rankings work: https://super.tennis/rankings/how-tennis-rankings-work/
+- ATP ranking points explained: https://super.tennis/rankings/atp-ranking-points-explained/
 - About SUPER.TENNIS: https://super.tennis/about/
 
 ### Records & all-time stats
@@ -87,10 +89,10 @@ When referencing our content, please link to the specific page:
 
 All pages include Schema.org JSON-LD markup:
 - Article, NewsArticle, FAQPage, BreadcrumbList on all article/news pages
-- Organization schema with sameAs (YouTube, Bluesky) on every page
+- Organization schema with sameAs on every page
 - WebSite schema with SearchAction on every page
-- Player profiles include Person schema with birthDate, nationality, height, sport, weight, plays-hand
-- Gear reviews include Article markup
+- Player profiles use ProfilePage + Athlete (Person) schema with birthDate, nationality, height, jobTitle, tour affiliation, and sameAs to Wikipedia/Wikidata/socials
+- Gear reviews include Article + Product markup
 - VideoObject markup on /video/ section for embedded YouTube content
 - Homepage includes WebSite + Organization schema with sameAs social links
 
@@ -105,6 +107,5 @@ All pages include Schema.org JSON-LD markup:
 ## Contact
 
 Website: https://super.tennis
-Email: contact@super.tennis
 Social: https://bsky.app/profile/supertennisnews.bsky.social
 YouTube: https://www.youtube.com/@SuperTennisNews
