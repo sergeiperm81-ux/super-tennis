@@ -1,0 +1,14 @@
+{
+  "_comment": "Пути в dist/, чей контент меняется между сборками из-за ЖИВЫХ данных (rankings, news, lastmod=today). Исключаются из CHANGED при КРОСС-ВРЕМЕННОМ diff против baseline, чтобы data-drift не давал ложных тревог. ГЛАВНЫЙ golden-тест (OFF-vs-ON одной сессии) их НЕ игнорирует — там данные идентичны. Синтаксис: '*'=внутри сегмента, '**'=любая глубина. См. docs/I18N_NOTES.md §5.",
+  "patterns": [
+    "index.html",
+    "news/**",
+    "rankings/index.html",
+    "calendar/**",
+    "stats/**",
+    "sitemap*.xml",
+    "rss.xml",
+    "llms.txt",
+    "404.html"
+  ]
+}
