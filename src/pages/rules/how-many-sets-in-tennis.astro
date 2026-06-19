@@ -5,6 +5,10 @@
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FaqBlock from '../../components/FaqBlock.astro';
+import { getPageAlternates } from '../../lib/i18n';
+
+// hreflang to localized version(s) when published — [] when flag OFF (English output unchanged).
+const alternates = await getPageAlternates('rules/how-many-sets-in-tennis', Astro.url.pathname);
 
 const title = 'How Many Sets in a Tennis Match? Best of 3 vs Best of 5 | SUPER.TENNIS';
 const h1 = 'How Many Sets in a Tennis Match?';
@@ -90,7 +94,7 @@ const breadcrumbJsonLd = {
 };
 ---
 
-<BaseLayout title={title} description={metaDescription} ogType="article">
+<BaseLayout title={title} description={metaDescription} ogType="article" alternates={alternates}>
   <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
 
