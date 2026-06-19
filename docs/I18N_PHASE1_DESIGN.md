@@ -12,6 +12,20 @@
 
 ---
 
+## 0. Вердикт ревью (2026-06-19)
+
+**APPROVED с 2 точечными правками — обе внесены ниже.** Решения ревьюера:
+- ✅ `lang CHECK (es/fr/zh)` — жёсткий список (лучше для staged rollout). Оставлен как есть (§1).
+- ✅ Ключ news = `news.id` bigint (реально есть в схеме, правильнее slug). Оставлен (§1.2).
+- ✅ `zod` добавить в `dependencies` (сейчас его нет — `package.json`). Будет при исполнении.
+- 🔧 **[P1] Санитизация переведённого HTML** — внесено в §3, §4, §5 (через `sanitizeArticleHtml`).
+- 🔧 **[P2] `translation_glossary` НЕ public-read** — public SELECT убран, только service key (§1).
+- `updated_at` без триггера — принято (обновление через upsert в коде, ок для этого этапа).
+
+После этих правок — go на миграцию `i18n_translation_tables` + код.
+
+---
+
 ## 1. DDL новых таблиц (черновик миграции — НЕ применять до одобрения)
 
 Все таблицы **additive**, в существующие — ноль изменений. RLS on + только public SELECT
@@ -90,12 +104,14 @@ create table public.translation_glossary (
   unique (lang, source_term, kind)
 );
 
--- RLS: включить на всех + только public SELECT опубликованного
+-- RLS: включить на ВСЕХ. Контент-таблицы — public SELECT опубликованного.
+-- [P2] translation_glossary — служебная: RLS on БЕЗ public-политики => для anon/public
+--      доступ закрыт по умолчанию; читается ТОЛЬКО service key (build/script). Посетителю не нужен.
 alter table public.article_translations enable row level security;
 alter table public.news_translations    enable row level security;
 alter table public.player_translations  enable row level security;
 alter table public.page_translations    enable row level security;
-alter table public.translation_glossary enable row level security;
+alter table public.translation_glossary enable row level security;  -- без public policy
 
 create policy "Public read article_translations" on public.article_translations
   for select to public using (status = 'published');
@@ -105,8 +121,7 @@ create policy "Public read player_translations" on public.player_translations
   for select to public using (status = 'published');
 create policy "Public read page_translations" on public.page_translations
   for select to public using (status = 'published');
-create policy "Public read translation_glossary" on public.translation_glossary
-  for select to public using (true);
+-- translation_glossary: НЕТ public-политики (service-key-only).
 
 -- Индексы по lang + FK (ускоряют build-time выборку «всё на язык X»)
 create index article_translations_lang_idx on public.article_translations (lang);
@@ -116,14 +131,11 @@ create index page_translations_lang_idx    on public.page_translations (lang);
 create index translation_glossary_lang_idx on public.translation_glossary (lang, kind);
 ```
 
-**Открытые вопросы ревьюеру (DDL):**
-- `lang CHECK (...)` жёстко зашивает es/fr/zh — при добавлении языка нужна миграция. Альтернатива:
-  без CHECK (гибче, но меньше защиты). Предлагаю CHECK сейчас (явность важнее).
-- news FK на `news.id` (bigint): подтвердить, что Worker в Phase 4 сможет отдавать `id` клиенту
-  для подстановки перевода. Если нет — заменить ключ на `news_slug text`. (Не блокер для Phase 1,
-  таблица создаётся, наполняется в Phase 4.)
-- `updated_at` без триггера автообновления — обновляем из кода при upsert. Триггер можно добавить
-  отдельно, если ревьюер хочет.
+**Решения ревьюера по DDL (одобрено, см. §0):**
+- `lang CHECK (es/fr/zh)` — оставлен жёстким (явность > гибкость для staged rollout).
+- news FK = `news.id` bigint — одобрен. В Phase 4 Worker должен отдавать `id` клиенту для
+  подстановки перевода (если вдруг нельзя — отдельная миграция на `news_slug`; не блокер сейчас).
+- `updated_at` без триггера — принято; обновление из кода при upsert.
 
 ---
 
@@ -154,8 +166,8 @@ export const PAGE_SCHEMA_VERSION = 1;
 английскому источнику; при расхождении строка пишется со `status='review'` и НЕ публикуется.
 Изменение набора полей = бамп `PAGE_SCHEMA_VERSION` + миграция данных, не молчаливое расширение.
 
-**Вопрос ревьюеру:** zod ещё не в deps — добавить `zod` в dependencies (используется и на build-time
-рендере). Ок?
+**Решено (§0):** `zod` добавляется в `dependencies` при исполнении (используется и на build-time
+рендере для валидации `fields_json`).
 
 ---
 
@@ -201,6 +213,8 @@ export function getPlayerTranslation(playerId: string, locale: Locale): Promise<
 - `localePrefix('en') === ''` — английский всегда на корне (HARD INVARIANT №1).
 - Чтение переводов — кэш в памяти на build (как существующий `ensure*Cache`), батчами по 1000.
 - Нет перевода → `null` → `getStaticPaths` не эмитит путь (HARD INVARIANT №3, билд не падает).
+- **[P1]** Любой HTML-перевод (`body`/`bodyBlocks`), идущий в `set:html`, проходит
+  `sanitizeArticleHtml()` (на write — канонически; на read — defense-in-depth), как английский путь.
 
 ---
 
@@ -223,9 +237,19 @@ node scripts/i18n/translate-content.mjs --type <page|article|news|player> --lang
 3. Вызов GPT-4o-mini: system-prompt = «спортивный перевод, СОХРАНЯЙ HTML-теги/атрибуты без
    изменений, имена собственные не переводи кроме глоссария, тон тёплый болельщицкий
    (см. article_writing_playbook)». Для `page` — переводим именованные поля по схеме §2.
-4. **Проверка целостности:** кол-во HTML-тегов на входе=выходе; для `page` — `PageTranslationV1`
-   парсится + `faqs.length`/`bodyBlocks.length` = источнику. Провал → `status='review'`, без публикации.
-5. INSERT в соответствующую `*_translations` (источник — только SELECT, НИКОГДА не меняется).
+4. **[P1] Санитизация (на write):** переведённый `body` и каждый HTML-блок (`bodyBlocks[]`)
+   пропускаются через существующий `sanitizeArticleHtml()` из `src/lib/sanitize.ts` ПЕРЕД записью.
+   Это тот же санитайзер, что защищает английский рендер перед `set:html` (см. lifestyle/news роуты).
+5. **Проверка целостности:** кол-во HTML-тегов источника=перевода — сравнивается на УЖЕ
+   санитизированных строках с обеих сторон (sanitize(EN-source) vs sanitize(translation)), иначе
+   discard несовпадающих тегов даст ложные срабатывания. Для `page` — `PageTranslationV1` парсится
+   + `faqs.length`/`bodyBlocks.length` = источнику. Провал → `status='review'`, без публикации.
+6. INSERT санитизированного перевода в `*_translations` (источник — только SELECT, НИКОГДА не меняется).
+
+> **Двойная защита (write + read).** Канонически санитизируем на write (шаг 4). Дополнительно
+> locale-роуты ОБЯЗАНЫ вызывать `sanitizeArticleHtml()` перед `set:html` — ровно как английские
+> `lifestyle/[slug]` и `news/[slug]` (defense-in-depth: если в таблицу попал несанитизированный
+> контент в обход скрипта, рендер всё равно безопасен).
 6. Аккумулируем стоимость; в конце — сводка.
 
 **Образец dry-run вывода:**
@@ -263,6 +287,9 @@ in_tok×$0.15/M + out_tok×$0.60/M (out ≈ in×1.1 для es/fr, ×0.7 для z
   сообщением (без вывода значений).
 - `I18N_LOCALES` пуст → Astro-каркас не строит ни одной locale-страницы (флаг OFF = golden diff чист).
 - Валидация входа: `--type`/`--lang` из белого списка; иначе ошибка.
+- **[P1] Санитизация:** переведённый HTML санитизируется `sanitizeArticleHtml()` на write +
+  гарантированно на read перед `set:html`. Глоссарий (`translation_glossary`) — service-key-only
+  (RLS без public-политики, [P2]).
 
 ---
 
@@ -273,15 +300,17 @@ in_tok×$0.15/M + out_tok×$0.60/M (out ≈ in×1.1 для es/fr, ×0.7 для z
 - Автоперевод в ежедневном пайплайне — НЕ подключаем (Phase 4).
 - Реальный backfill — НЕ запускаем (Phase 2-3).
 
-## 7. Чеклист одобрения (что ревьюер подтверждает перед исполнением)
+## 7. Чеклист одобрения (подтверждён ревьюером 2026-06-19)
 
-- [ ] DDL additive, FK/типы/RLS/индексы корректны; ключ news (id vs slug) согласован.
-- [ ] `lang CHECK` (жёсткий список) vs без него — выбор сделан.
-- [ ] `PageTranslationV1` (поля v1) достаточна для evergreen-кластера.
-- [ ] `zod` в deps — ок.
-- [ ] Контракт `i18n.ts` (особенно `localePrefix('en')===''` и null→no-build) — ок.
-- [ ] Интерфейс/guardrails перевод-скрипта (dry-run default, max-cost, idempotent) — ок.
-- [ ] Список ENV (`OPENAI_API_KEY`, `I18N_LOCALES`) — ок, ключи завести.
+- [x] DDL additive, FK/типы/RLS/индексы корректны; ключ news = `news.id` bigint.
+- [x] `lang CHECK` (жёсткий список) — одобрен.
+- [x] `PageTranslationV1` (поля v1) достаточна для evergreen-кластера.
+- [x] `zod` в deps — одобрен (добавить при исполнении).
+- [x] Контракт `i18n.ts` (`localePrefix('en')===''`, null→no-build) — одобрен.
+- [x] Интерфейс/guardrails перевод-скрипта (dry-run default, max-cost, idempotent) — одобрен.
+- [x] Список ENV (`OPENAI_API_KEY`, `I18N_LOCALES`) — одобрен, ключи завести.
+- [x] **[P1]** Санитизация переведённого HTML (`sanitizeArticleHtml`, write+read) — внесена.
+- [x] **[P2]** `translation_glossary` без public-чтения (service-key-only) — внесена.
 
 **После проставления галок** — даю команду на: (1) применить миграцию `i18n_translation_tables`,
 (2) создать `src/lib/i18n-schema.ts` + `src/lib/i18n.ts`, (3) написать `translate-content.mjs`,
