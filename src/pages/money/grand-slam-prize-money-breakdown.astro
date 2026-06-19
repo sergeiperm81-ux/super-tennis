@@ -9,6 +9,10 @@
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FaqBlock from '../../components/FaqBlock.astro';
+import { getPageAlternates } from '../../lib/i18n';
+
+// hreflang to localized version(s) when published — [] when flag OFF (English output unchanged).
+const alternates = await getPageAlternates('money/grand-slam-prize-money-breakdown', Astro.url.pathname);
 
 const title = 'Grand Slam Prize Money Breakdown — 2026 Tables (AO/RG/W/USO) | SUPER.TENNIS';
 const h1 = 'Grand Slam Prize Money Breakdown';
@@ -120,7 +124,7 @@ const breadcrumbJsonLd = {
 };
 ---
 
-<BaseLayout title={title} description={metaDescription} ogType="article">
+<BaseLayout title={title} description={metaDescription} ogType="article" alternates={alternates}>
   <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
 

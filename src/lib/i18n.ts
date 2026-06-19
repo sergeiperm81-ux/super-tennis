@@ -183,6 +183,27 @@ export async function getArticleTranslation(
   return data as ArticleTranslation;
 }
 
+/**
+ * Build-time alternates for an English evergreen page: en + any PUBLISHED locale translations
+ * of the same page_key. Returns [] when no active locales or no translations exist → the English
+ * page renders its current static en+x-default hreflang (golden diff clean when flag OFF).
+ * The ONLY sanctioned English-output change in the pilot (added hreflang) — see
+ * scripts/i18n/allowed-english-diff.json.
+ */
+export async function getPageAlternates(pageKey: string, enPath: string): Promise<Alternate[]> {
+  const active = getActiveLocales();
+  if (active.length === 0) return [];
+  const { data, error } = await supabase
+    .from('page_translations')
+    .select('lang')
+    .eq('page_key', pageKey)
+    .eq('status', 'published')
+    .in('lang', active as string[]);
+  if (error || !data || data.length === 0) return [];
+  const avail = data.map((r) => r.lang as Locale);
+  return buildAlternates(enPath, avail);
+}
+
 export async function getPlayerTranslation(
   playerId: string,
   locale: Locale,

@@ -1,0 +1,15 @@
+{
+  "_comment": "Sanctioned English-output changes per phase. diff-dist significant-CHANGED among English files MUST be a subset of these URLs, and the delta MUST match allowed_change (verified by eyeballing the HTML diff). Anything else = regression.",
+  "phase-2-es-pilot": {
+    "urls": [
+      "rules/tennis-scoring-explained/index.html",
+      "rules/tie-break-rules-explained/index.html",
+      "rules/how-many-sets-in-tennis/index.html",
+      "money/tennis-prize-money-explained/index.html",
+      "money/how-much-tennis-players-earn/index.html",
+      "money/grand-slam-prize-money-breakdown/index.html"
+    ],
+    "allowed_change": "Added <link rel=\"alternate\" hreflang=\"es\" ...> in <head> (via BaseLayout alternates prop). No change to <title>, canonical, x-default, content, or body.",
+    "reviewed_at": "2026-06-19"
+  }
+}

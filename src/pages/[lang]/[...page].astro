@@ -1,0 +1,105 @@
+---
+/**
+ * Localized evergreen page renderer (/es/rules/..., /es/money/..., future fr/zh).
+ * Renders from page_translations.fields_json. Static .astro English pages are untouched.
+ * Phase 2 pilot: es only, evergreen cluster. data-pagefind-ignore keeps search English-only.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+import '../../styles/evergreen-article.css';
+import {
+  getActiveLocales,
+  getPageTranslation,
+  buildAlternates,
+  type Locale,
+} from '../../lib/i18n';
+import { sanitizeArticleHtml } from '../../lib/sanitize-core.mjs';
+import { supabase } from '../../lib/supabase';
+
+export async function getStaticPaths() {
+  const locales = getActiveLocales(); // [] when I18N_LOCALES empty → zero locale pages built
+  if (locales.length === 0) return [];
+
+  const paths: Array<{ params: { lang: string; page: string }; props: { locale: Locale; pageKey: string } }> = [];
+  for (const locale of locales) {
+    const { data } = await supabase
+      .from('page_translations')
+      .select('page_key')
+      .eq('lang', locale)
+      .eq('status', 'published');
+    for (const row of data || []) {
+      paths.push({ params: { lang: locale, page: row.page_key }, props: { locale, pageKey: row.page_key } });
+    }
+  }
+  return paths;
+}
+
+// Per-locale UI chrome strings (content lives in page_translations; these are page furniture).
+const UI: Record<string, { quickAnswer: string; faqTitle: string; switchLabel: string }> = {
+  es: { quickAnswer: 'Respuesta rápida', faqTitle: 'Preguntas frecuentes', switchLabel: 'English' },
+  fr: { quickAnswer: 'Réponse rapide', faqTitle: 'Questions fréquentes', switchLabel: 'English' },
+  zh: { quickAnswer: '快速解答', faqTitle: '常见问题', switchLabel: 'English' },
+};
+
+const { locale, pageKey } = Astro.props as { locale: Locale; pageKey: string };
+const t = await getPageTranslation(pageKey, locale);
+if (!t) return Astro.redirect('/');
+
+const ui = UI[locale] ?? UI.es;
+const enPath = `/${pageKey}/`;
+const alternates = buildAlternates(enPath, [locale]); // en + this locale + x-default=en
+const blocks = (t.bodyBlocks || []).map((b) => sanitizeArticleHtml(b)); // [P1] sanitize on read
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: t.h1,
+  description: t.metaDescription,
+  inLanguage: locale,
+  datePublished: '2026-05-17',
+  dateModified: '2026-05-17',
+  author: {
+    '@type': 'Organization',
+    '@id': 'https://super.tennis/#organization',
+    name: 'SUPER.TENNIS Editorial',
+    url: 'https://super.tennis/about/',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+---
+
+<BaseLayout
+  title={t.title}
+  description={t.metaDescription}
+  ogType="article"
+  locale={locale}
+  alternates={alternates}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+
+  <article class="rules-article" lang={locale} data-pagefind-ignore>
+    <div class="lang-switch"><a href={enPath} hreflang="en">{ui.switchLabel}</a></div>
+
+    <header class="article-hero">
+      <h1>{t.h1}</h1>
+    </header>
+
+    {t.quickAnswer && (
+      <section class="quick-answer">
+        <h2 class="qa-label">{ui.quickAnswer}</h2>
+        <p class="qa-text">{t.quickAnswer}</p>
+      </section>
+    )}
+
+    <div class="article-body">
+      {blocks.map((b) => <Fragment set:html={b} />)}
+    </div>
+
+    {t.faqs && t.faqs.length > 0 && <FaqBlock faqs={t.faqs} title={ui.faqTitle} />}
+  </article>
+</BaseLayout>
