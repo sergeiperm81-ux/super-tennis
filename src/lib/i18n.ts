@@ -15,8 +15,11 @@ import { validatePageFields } from './i18n-schema.mjs';
 export type Locale = 'en' | 'es' | 'fr' | 'zh';
 export const DEFAULT_LOCALE: Locale = 'en';
 
-/** Локали, которые МОГУТ быть активированы через env (кроме дефолтной en). */
+/** Локали, которые МОГУТ быть активированы (кроме дефолтной en). */
 const ACTIVATABLE: Locale[] = ['es', 'fr', 'zh'];
+/** Shipped pilot: es активен по умолчанию. Override через I18N_LOCALES (CSV) меняет набор;
+ *  I18N_LOCALES=none|off отключает все локали (чисто английский сайт). */
+const SHIPPED_DEFAULT: Locale[] = ['es'];
 
 const OG_LOCALE: Record<Locale, string> = {
   en: 'en_US',
@@ -46,17 +49,20 @@ function readEnv(key: string): string {
 
 let _activeCache: Locale[] | null = null;
 
-/** Активные локали из I18N_LOCALES (CSV). Пусто/нет → [] (сайт = английский, как сейчас). */
+/** Активные локали. Не задано I18N_LOCALES → shipped-дефолт (es). I18N_LOCALES=none|off → [].
+ *  Иначе — CSV из I18N_LOCALES, пересечённый с ACTIVATABLE. */
 export function getActiveLocales(): Locale[] {
   if (_activeCache) return _activeCache;
-  const raw = readEnv('I18N_LOCALES').trim();
-  if (!raw) {
+  const raw = readEnv('I18N_LOCALES').trim().toLowerCase();
+  if (raw === '') {
+    _activeCache = [...SHIPPED_DEFAULT];
+    return _activeCache;
+  }
+  if (raw === 'none' || raw === 'off') {
     _activeCache = [];
     return _activeCache;
   }
-  const requested = new Set(
-    raw.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean),
-  );
+  const requested = new Set(raw.split(',').map((s) => s.trim()).filter(Boolean));
   _activeCache = ACTIVATABLE.filter((l) => requested.has(l));
   return _activeCache;
 }
