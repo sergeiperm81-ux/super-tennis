@@ -1,0 +1,19 @@
+[
+  { "source": "deuce", "target": "iguales", "kind": "term" },
+  { "source": "advantage", "target": "ventaja", "kind": "term" },
+  { "source": "tie-break", "target": "tie-break", "kind": "term" },
+  { "source": "match tie-break", "target": "super tie-break", "kind": "term" },
+  { "source": "best of 3 sets", "target": "al mejor de 3 sets", "kind": "term" },
+  { "source": "best of 5 sets", "target": "al mejor de 5 sets", "kind": "term" },
+  { "source": "break point", "target": "punto de break", "kind": "term" },
+  { "source": "main draw", "target": "cuadro principal", "kind": "term" },
+  { "source": "qualifying", "target": "fase previa", "kind": "term" },
+  { "source": "prize money", "target": "dinero en premios", "kind": "term" },
+  { "source": "singles", "target": "individual", "kind": "term" },
+  { "source": "doubles", "target": "dobles", "kind": "term" },
+  { "source": "wheelchair", "target": "en silla de ruedas", "kind": "term" },
+  { "source": "equal prize money", "target": "igualdad de premios", "kind": "term" },
+  { "source": "server", "target": "sacador", "kind": "term" },
+  { "source": "court", "target": "pista", "kind": "term" },
+  { "source": "service box", "target": "cuadro de saque", "kind": "term" }
+]

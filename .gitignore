@@ -26,3 +26,7 @@ ultra-ridge-*.json
 
 # Generated at build time from Supabase — regenerated each deploy
 src/data/freshness-map.json
+
+# i18n local review artifacts (translations live in Supabase, not git)
+scripts/i18n/_translated-es/
+scripts/i18n/_dump-translations.mjs
