@@ -5,9 +5,11 @@
  * источник read-only, санитизация на write [P1], cost-guard.
  *
  *   node scripts/i18n/translate-content.mjs --type <page|article|news|player> --lang <es|fr|zh>
- *        [--limit N] [--ids a,b] [--model gpt-4o-mini] [--confirm] [--max-cost 25]
+ *        [--limit N] [--ids a,b] [--model gpt-4o-mini] [--confirm] [--max-cost 25] [--force]
  *
  * Без --confirm = DRY-RUN: считает кандидатов и стоимость, НЕ зовёт API, НЕ пишет в БД.
+ * --force: перепереводит УЖЕ переведённые строки (overwrite через upsert). Использовать
+ *          вместе с --ids для точечного переперевода плохой страницы (иначе — все строки типа).
  */
 import 'dotenv/config';
 import { createClient } from '@supabase/supabase-js';
@@ -30,10 +32,11 @@ const PRICE_OUT = 0.6 / 1e6;
 const OUT_RATIO = { es: 1.1, fr: 1.1, zh: 0.7 };
 
 function parseArgs(argv) {
-  const a = { limit: null, ids: null, model: 'gpt-4o-mini', confirm: false, maxCost: 25 };
+  const a = { limit: null, ids: null, model: 'gpt-4o-mini', confirm: false, maxCost: 25, force: false };
   for (let i = 0; i < argv.length; i++) {
     const k = argv[i];
     if (k === '--confirm') a.confirm = true;
+    else if (k === '--force') a.force = true;
     else if (k === '--type') a.type = argv[++i];
     else if (k === '--lang') a.lang = argv[++i];
     else if (k === '--limit') a.limit = parseInt(argv[++i], 10);
@@ -96,8 +99,9 @@ async function loadGlossary(sb, lang) {
   return data || [];
 }
 
-/** Возвращает кандидатов: [{ key, sourceFields }] без существующего перевода для (type,lang). */
-async function getCandidates(sb, type, lang, ids) {
+/** Возвращает кандидатов: [{ key, sourceFields }] без существующего перевода для (type,lang).
+ *  force=true → НЕ пропускает уже переведённые (для точечного переперевода, обычно с ids). */
+async function getCandidates(sb, type, lang, ids, force = false) {
   if (type === 'page') {
     // Источник статических страниц — реестр scripts/i18n/page-sources/*.json (Phase 2 наполнит).
     const dir = join(__dirname, 'page-sources');
@@ -118,7 +122,7 @@ async function getCandidates(sb, type, lang, ids) {
         console.warn(`[translate] skipping invalid page_key in ${f}: ${JSON.stringify(key)}`);
         continue;
       }
-      if (translated.has(key)) continue;
+      if (!force && translated.has(key)) continue;
       if (ids && !ids.includes(key)) continue;
       out.push({ key, sourceFields: obj.fields, isPage: true });
     }
@@ -149,7 +153,7 @@ async function getCandidates(sb, type, lang, ids) {
   const out = [];
   for (const row of src || []) {
     const key = String(row[srcKey]);
-    if (translated.has(key)) continue;
+    if (!force && translated.has(key)) continue;
     if (ids && !ids.includes(key)) continue;
     const sourceFields = {};
     for (const f of fields) if (row[f] != null && row[f] !== '') sourceFields[f] = row[f];
@@ -243,7 +247,12 @@ async function main() {
 
   const sb = createClient(requireEnv('SUPABASE_URL'), requireEnv('SUPABASE_SERVICE_KEY'));
 
-  let candidates = await getCandidates(sb, args.type, args.lang, args.ids);
+  if (args.force && !args.ids) {
+    console.warn('[translate] --force WITHOUT --ids: will re-translate ALL already-translated ' +
+      `${args.type}/${args.lang} rows (cost guard still applies). Add --ids to target specific rows.`);
+  }
+
+  let candidates = await getCandidates(sb, args.type, args.lang, args.ids, args.force);
   if (args.limit != null) candidates = candidates.slice(0, args.limit);
   const glossary = await loadGlossary(sb, args.lang);
   const chars = sumChars(candidates);
@@ -284,9 +293,9 @@ async function main() {
       if (args.type === 'page') {
         const v = validatePageFields(fields);
         if (!v.ok) { console.warn(`  [review] page ${item.key}: ${v.error}`); review++; }
-        row = { page_key: item.key, lang: args.lang, fields_json: fields, status: v.ok ? status : 'review' };
+        row = { page_key: item.key, lang: args.lang, fields_json: fields, status: v.ok ? status : 'review', updated_at: new Date().toISOString() };
       } else {
-        row = { [item.fkCol]: castKey(args.type, item.key), lang: args.lang, ...fields, status };
+        row = { [item.fkCol]: castKey(args.type, item.key), lang: args.lang, ...fields, status, updated_at: new Date().toISOString() };
       }
       const transTable = args.type === 'page' ? 'page_translations' : item.transTable;
       const { error } = await sb.from(transTable).upsert(row, {
