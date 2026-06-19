@@ -1,29 +1,9 @@
 /**
  * HTML sanitization utility for LLM-generated content.
  * Applied before set:html to prevent XSS from malicious database content.
+ *
+ * The implementation lives in ./sanitize-core.mjs so the node i18n translation script can
+ * share the exact same config (it cannot import a .ts file). This wrapper keeps the existing
+ * import path (`./sanitize`) stable for all current consumers (e.g. lib/interlinks.ts).
  */
-import sanitizeHtml from 'sanitize-html';
-
-const ALLOWED_TAGS = [
-  ...sanitizeHtml.defaults.allowedTags,
-  'img', 'figure', 'figcaption', 'picture', 'source',
-  'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-  'details', 'summary',
-  'mark', 'del', 'ins',
-];
-
-const ALLOWED_ATTRIBUTES: sanitizeHtml.IOptions['allowedAttributes'] = {
-  ...sanitizeHtml.defaults.allowedAttributes,
-  a: ['href', 'name', 'target', 'rel', 'class'],
-  img: ['src', 'alt', 'width', 'height', 'loading', 'class'],
-  '*': ['class', 'id'],
-};
-
-export function sanitizeArticleHtml(html: string): string {
-  return sanitizeHtml(html, {
-    allowedTags: ALLOWED_TAGS,
-    allowedAttributes: ALLOWED_ATTRIBUTES,
-    allowedSchemes: ['https', 'http', 'mailto'],
-    disallowedTagsMode: 'discard',
-  });
-}
+export { sanitizeArticleHtml } from './sanitize-core.mjs';

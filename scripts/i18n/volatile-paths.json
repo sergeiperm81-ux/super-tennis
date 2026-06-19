@@ -1,11 +1,17 @@
 {
-  "_comment": "Пути в dist/, чей контент меняется между сборками из-за ЖИВЫХ данных (rankings, news, lastmod=today). Исключаются из CHANGED при КРОСС-ВРЕМЕННОМ diff против baseline, чтобы data-drift не давал ложных тревог. ГЛАВНЫЙ golden-тест (OFF-vs-ON одной сессии) их НЕ игнорирует — там данные идентичны. Синтаксис: '*'=внутри сегмента, '**'=любая глубина. См. docs/I18N_NOTES.md §5.",
+  "_comment": "Пути в dist/, чей контент меняется между сборками из-за ЖИВЫХ данных (rankings, news, latest-articles, leaderboards, lastmod=today). Исключаются из CHANGED при КРОСС-ВРЕМЕННОМ diff против baseline, чтобы data-drift не давал ложных тревог. Проверено двумя последовательными сборками с идентичным кодом (2026-06-19): нон-детерминируются index-хабы + news/rankings/calendar + rss. ГЛАВНЫЙ golden-тест (OFF-vs-ON одной сессии) их НЕ игнорирует — там данные идентичны. Кросс-временной diff надёжно покрывает СТАТИЧЕСКИЕ страницы (rules/money/watch/explainers). Синтаксис: '*'=внутри сегмента, '**'=любая глубина. См. docs/I18N_NOTES.md §5.",
   "patterns": [
     "index.html",
     "news/**",
     "rankings/index.html",
     "calendar/**",
     "stats/**",
+    "records/index.html",
+    "gear/index.html",
+    "lifestyle/index.html",
+    "vs/index.html",
+    "tournaments/index.html",
+    "players/index.html",
     "sitemap*.xml",
     "rss.xml",
     "llms.txt",

@@ -8,7 +8,8 @@
 > Типы из БД (проверено SELECT): `articles.id` integer · `news.id` bigint ·
 > `players.player_id` text (NOT NULL, идиоматичный кросс-табличный ключ) · `slug` text NOT NULL.
 > Существующие RLS: public SELECT (`articles`: status='published'; `news`: is_active=true;
-> `players`: true). Новые таблицы зеркалят public-read.
+> `players`: true). Новые контент-таблицы переводов зеркалят public-read; служебный
+> `translation_glossary` — RLS on БЕЗ public-политики (service-key-only, [P2]).
 
 ---
 
@@ -315,3 +316,21 @@ in_tok×$0.15/M + out_tok×$0.60/M (out ≈ in×1.1 для es/fr, ×0.7 для z
 **После проставления галок** — даю команду на: (1) применить миграцию `i18n_translation_tables`,
 (2) создать `src/lib/i18n-schema.ts` + `src/lib/i18n.ts`, (3) написать `translate-content.mjs`,
 (4) каркас Astro (флаг OFF) + golden diff OFF-vs-OFF = чисто.
+
+## 8. Отложенные follow-ups (из code/security review Phase 1, не блокеры)
+
+Зафиксировано при ревью Phase 1; исправить до соответствующих фаз:
+- **[Phase 2, до запуска locale-роутов]** Sanitizer hardening: явный
+  `allowedSchemesAppliedToAttributes: ['href','src','action']` и убрать `id` из wildcard
+  `'*'` в `sanitize-core.mjs`. НЕ сделано в Phase 1 намеренно: санитайзер общий с английским
+  рендером, любая правка конфига ломает «byte-identical» гарантию рефактора → нужна отдельная
+  правка с собственным golden-diff (затронет и английский путь).
+- **[Phase 2]** `getPageTranslation`/read-хелперы: добавить build-time кэш (как `ensure*Cache`
+  в supabase.ts), иначе N запросов в `getStaticPaths`.
+- **[качество]** `countTags` считает только открывающие теги (parity по количеству, не по типу).
+  Для Phase 2 при желании усилить до структурного сравнения.
+- **[тесты]** `getActiveLocales()` кэш `_activeCache` — добавить reset-хук для юнит-тестов.
+
+Уже исправлено в Phase 1 (по ревью): санитизация `bodyBlocks[]`/`faqs[].a` на write; явные
+колонки в `getArticleTranslation`/`getPlayerTranslation`; пагинация источника (players 136K);
+allowlist `--model`; regex-валидация `page_key`.
