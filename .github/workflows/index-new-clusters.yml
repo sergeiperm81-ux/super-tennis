@@ -1,5 +1,10 @@
 name: Indexing API — Push New Clusters
 
+# ⚠️ DO NOT USE 2026-06-19. Google's Indexing API is officially only for JobPosting /
+# BroadcastEvent pages, not general content. These evergreen cluster URLs are general
+# content — submitting them is outside Google's policy. Use sitemap + Search Console.
+# Kept for reference only; companion daily cron (indexing-cron.yml) is disabled.
+#
 # Manual one-off submission of the 16 evergreen cluster URLs (Round 1-4)
 # to Google's Indexing API. Use after publishing a new cluster or whenever
 # you want to nudge Google to re-crawl the cluster pages. Counts against

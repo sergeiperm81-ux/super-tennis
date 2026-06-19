@@ -1,5 +1,14 @@
 name: Google Indexing API — Daily Bulk Submit
 
+# ⚠️ DISABLED 2026-06-19 (INDEXING_ENABLED repo var set to false).
+# Google's Indexing API (urlNotifications:publish) is OFFICIALLY supported ONLY for
+# pages with JobPosting or BroadcastEvent/livestream structured data — NOT general
+# content. This cron submitted regular tennis URLs (players/news/evergreen/etc.) with
+# URL_UPDATED, which is outside Google's stated policy. Do NOT re-enable for general
+# content. Discovery of normal pages = sitemap + Search Console.
+# Refs: https://developers.google.com/search/apis/indexing-api/v3/quickstart
+#       https://developers.google.com/search/apis/indexing-api/v3/using-api
+
 on:
   # Run daily at 11:00 UTC (14:00 Sofia). Google's Indexing API quota
   # is a ROLLING 24-hour window, not calendar-based — so the cron must
