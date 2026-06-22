@@ -1,0 +1,47 @@
+name: News Backup — Recover Missed Cron
+
+# Safety net for the Cloudflare Worker's 04:00 UTC news cron, which occasionally
+# misses a tick (CF scheduled triggers are best-effort — this happened 2026-06-22,
+# producing 0 news that day). Runs at 04:10 UTC: AFTER the CF cron, BEFORE the
+# 04:30 UTC site deploy. Calls /trigger/news, which dedupes against existing
+# active news — so if the CF cron already ran, this is a harmless no-op; if it
+# missed, this recreates the day's news in time for the deploy to build it (and
+# the homepage feed, which reads the API live, shows it immediately either way).
+#
+# Auth: the Worker compares the Bearer token against ANALYTICS_PASSWORD, which
+# already exists as a repo secret — reused here, no new secret needed.
+
+on:
+  schedule:
+    - cron: '10 4 * * *'   # 04:10 UTC = 07:10 Sofia (EEST), 10 min after the CF cron
+  workflow_dispatch:        # allow manual recovery from the Actions tab
+
+jobs:
+  news-backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger news generation (idempotent)
+        env:
+          TOKEN: ${{ secrets.ANALYTICS_PASSWORD }}
+          TG_BOT: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          set -uo pipefail
+          echo "POST /trigger/news ..."
+          RESP=$(curl -s -m 180 -w $'\n__HTTP__%{http_code}' -X POST \
+            "https://supertennis-cron.sfedoroff.workers.dev/trigger/news" \
+            -H "Authorization: Bearer $TOKEN")
+          CODE=$(printf '%s' "$RESP" | sed -n 's/.*__HTTP__//p')
+          BODY=$(printf '%s' "$RESP" | sed 's/__HTTP__[0-9]*$//')
+          echo "HTTP $CODE"
+          echo "$BODY"
+          if [ "$CODE" != "200" ]; then
+            echo "::error::news backup trigger failed (HTTP $CODE)"
+            if [ -n "${TG_BOT:-}" ] && [ -n "${TG_CHAT:-}" ]; then
+              curl -s -X POST "https://api.telegram.org/bot${TG_BOT}/sendMessage" \
+                -d chat_id="${TG_CHAT}" \
+                --data-urlencode "text=⚠️ SUPER.TENNIS news backup FAILED (HTTP $CODE). The Worker /trigger/news did not respond OK — check the Cloudflare Worker." >/dev/null || true
+            fi
+            exit 1
+          fi
+          echo "News backup OK."
