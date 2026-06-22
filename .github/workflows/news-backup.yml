@@ -1,47 +1,67 @@
 name: News Backup — Recover Missed Cron
 
-# Safety net for the Cloudflare Worker's 04:00 UTC news cron, which occasionally
-# misses a tick (CF scheduled triggers are best-effort — this happened 2026-06-22,
-# producing 0 news that day). Runs at 04:10 UTC: AFTER the CF cron, BEFORE the
-# 04:30 UTC site deploy. Calls /trigger/news, which dedupes against existing
-# active news — so if the CF cron already ran, this is a harmless no-op; if it
-# missed, this recreates the day's news in time for the deploy to build it (and
-# the homepage feed, which reads the API live, shows it immediately either way).
+# Safety net for the Cloudflare Worker's 04:00 UTC news cron, which is
+# best-effort and occasionally misses a tick (happened 2026-06-22 → 0 news that
+# day). Runs at 04:10 UTC (after the CF cron, before the 04:30 deploy).
+#
+# IMPORTANT: it FIRST checks whether today's news already exists. /trigger/news
+# is NOT a strict no-op on re-run — the RSS pool is large, so a second call just
+# mines ~9 *different* fresh stories, which would double the daily volume. So we
+# only call it when the newest news is NOT from today (i.e. the cron missed).
 #
 # Auth: the Worker compares the Bearer token against ANALYTICS_PASSWORD, which
-# already exists as a repo secret — reused here, no new secret needed.
+# already exists as a repo secret — reused here. Telegram alert on recovery
+# (so we know the CF cron missed) and on failure.
 
 on:
   schedule:
-    - cron: '10 4 * * *'   # 04:10 UTC = 07:10 Sofia (EEST), 10 min after the CF cron
-  workflow_dispatch:        # allow manual recovery from the Actions tab
+    - cron: '10 4 * * *'   # 04:10 UTC = 07:10 Sofia, 10 min after the CF cron
+  workflow_dispatch:        # manual recovery / test from the Actions tab
 
 jobs:
   news-backup:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger news generation (idempotent)
+      - name: Recover news only if today's batch is missing
         env:
           TOKEN: ${{ secrets.ANALYTICS_PASSWORD }}
           TG_BOT: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+          WORKER: https://supertennis-cron.sfedoroff.workers.dev
         run: |
           set -uo pipefail
-          echo "POST /trigger/news ..."
+          TODAY=$(date -u +%Y-%m-%d)
+          echo "Today (UTC): $TODAY"
+
+          NEWEST=$(curl -s -m 30 "$WORKER/api/news?limit=1" \
+            | grep -oE '"published_at":"[0-9]{4}-[0-9]{2}-[0-9]{2}' | head -1 \
+            | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}')
+          echo "Newest news date: ${NEWEST:-none}"
+
+          if [ "$NEWEST" = "$TODAY" ]; then
+            echo "✅ Today's news already present (CF cron ran) — nothing to do."
+            exit 0
+          fi
+
+          echo "⚠️ No news for today — recovering via /trigger/news ..."
           RESP=$(curl -s -m 180 -w $'\n__HTTP__%{http_code}' -X POST \
-            "https://supertennis-cron.sfedoroff.workers.dev/trigger/news" \
-            -H "Authorization: Bearer $TOKEN")
+            "$WORKER/trigger/news" -H "Authorization: Bearer $TOKEN")
           CODE=$(printf '%s' "$RESP" | sed -n 's/.*__HTTP__//p')
           BODY=$(printf '%s' "$RESP" | sed 's/__HTTP__[0-9]*$//')
           echo "HTTP $CODE"
           echo "$BODY"
+
+          notify() {
+            [ -n "${TG_BOT:-}" ] && [ -n "${TG_CHAT:-}" ] && \
+              curl -s -X POST "https://api.telegram.org/bot${TG_BOT}/sendMessage" \
+                -d chat_id="${TG_CHAT}" --data-urlencode "text=$1" >/dev/null || true
+          }
+
           if [ "$CODE" != "200" ]; then
             echo "::error::news backup trigger failed (HTTP $CODE)"
-            if [ -n "${TG_BOT:-}" ] && [ -n "${TG_CHAT:-}" ]; then
-              curl -s -X POST "https://api.telegram.org/bot${TG_BOT}/sendMessage" \
-                -d chat_id="${TG_CHAT}" \
-                --data-urlencode "text=⚠️ SUPER.TENNIS news backup FAILED (HTTP $CODE). The Worker /trigger/news did not respond OK — check the Cloudflare Worker." >/dev/null || true
-            fi
+            notify "⚠️ SUPER.TENNIS news backup FAILED (HTTP $CODE) — the 04:00 UTC cron missed AND recovery failed. Check the Worker."
             exit 1
           fi
-          echo "News backup OK."
+
+          notify "ℹ️ SUPER.TENNIS news backup recovered today's news — the 04:00 UTC Cloudflare cron missed its tick."
+          echo "Recovered today's news."
