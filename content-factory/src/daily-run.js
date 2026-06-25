@@ -144,6 +144,8 @@ async function main() {
         title: headline.title,
         summary: headline.summary || '',
         category: headline.category,
+        slug: headline.slug,
+        playerSlugs: Array.isArray(headline.player_slugs) ? headline.player_slugs : [],
       });
 
       // Update video_publications with YouTube result
