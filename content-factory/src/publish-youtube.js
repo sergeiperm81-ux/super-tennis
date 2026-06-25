@@ -53,7 +53,9 @@ async function uploadWithRetry(youtube, requestBody, filePath, attempts = 3) {
  * @param {string} opts.title - Video title (max 100 chars)
  * @param {string} opts.summary - Lead text for description
  * @param {string} opts.category - News category for hashtags
- * @returns {Promise<string>} Video ID
+ * @returns {Promise<string|null>} Video ID on success, or null when skipped
+ *   (no credentials). Throws on a real upload failure so the caller can record
+ *   the actual error.
  */
 export async function publishToYouTube(filePath, { title, summary = '', category = 'buzz', slug = '', playerSlugs = [] }) {
   if (!CLIENT_ID || !REFRESH_TOKEN) {
@@ -144,7 +146,11 @@ export async function publishToYouTube(filePath, { title, summary = '', category
   } catch (err) {
     console.error(`   ❌ YouTube error:`, err.message);
     if (err.errors) console.error('   Details:', JSON.stringify(err.errors));
-    return null;
+    // Re-throw the real upload error (instead of returning null) so daily-run's
+    // catch records the actual cause in video_publications.youtube_error, not a
+    // generic "Upload returned null". The no-credentials skip above still
+    // returns null intentionally — that's not an error.
+    throw err;
   }
 }
 
