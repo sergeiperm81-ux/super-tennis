@@ -24,7 +24,12 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          # Pinned to 20 (LTS) on 2026-06-25: Node 22 on the GitHub runner image
+          # started throwing undici "Premature close" on every OAuth token fetch
+          # (oauth2.googleapis.com/token), which broke all uploads from ~midday
+          # while the morning Node-22 run still worked — i.e. a runner-image
+          # regression. Node 20 uses a stabler HTTP stack with googleapis.
+          node-version: 20
 
       - name: Install dependencies
         run: npm ci
