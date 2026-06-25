@@ -89,14 +89,22 @@ export async function publishToYouTube(filePath, { title, summary = '', category
     console.log(`   ✅ YouTube: https://youtube.com/shorts/${videoId}`);
 
     // Optional top comment carrying the article link — an extra funnel surface.
-    // Uses the existing youtube.force-ssl scope (no re-auth). Non-fatal: a
-    // failure here never fails the upload. Pinning is not available via API.
-    if (flagOn('YT_TOP_COMMENT') && articleUrl) {
+    // Also gated on YT_DESC_LINK so flipping YT_DESC_LINK off yields a genuinely
+    // link-free A/B arm (no link in the description AND none in a comment).
+    // commentThreads.insert requires snippet.channelId per the API — we resolve
+    // the channel that owns the video via channels.list(mine:true), so there's
+    // no hardcode and no extra secret. Uses the existing youtube.force-ssl
+    // scope (no re-auth). Non-fatal: never fails the upload.
+    if (flagOn('YT_TOP_COMMENT') && flagOn('YT_DESC_LINK') && articleUrl) {
       try {
+        const chRes = await youtube.channels.list({ part: ['id'], mine: true });
+        const channelId = chRes.data.items?.[0]?.id;
+        if (!channelId) throw new Error('could not resolve channelId (channels.list mine=true returned none)');
         await youtube.commentThreads.insert({
           part: ['snippet'],
           requestBody: {
             snippet: {
+              channelId,
               videoId,
               topLevelComment: { snippet: { textOriginal: `📰 Full story → ${articleUrl}` } },
             },

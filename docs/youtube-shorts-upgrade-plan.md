@@ -94,13 +94,16 @@ daily uploads). No new credentials, no re-authorization:
 
 | Flag | Default | Effect |
 |---|---|---|
-| `YT_DESC_LINK` | `1` (on) | Clickable article link + UTM as first description line |
+| `YT_DESC_LINK` | `1` (on) | **Master link switch** — clickable article link + UTM as first description line. Also gates the top comment. |
 | `YT_PLAYER_HASHTAGS` | `1` (on) | Append human-readable player hashtags |
-| `YT_TOP_COMMENT` | `1` (on) | Post a top-level comment with the link after upload |
+| `YT_TOP_COMMENT` | `1` (on) | Post a top-level comment with the link after upload (only when `YT_DESC_LINK` is also on) |
 | `YT_UTM_CAMPAIGN` | `shorts` | UTM campaign value (for A-B labelling) |
 
-Set any to `0` in the workflow `env:` to disable. For an A-B on reach impact of links,
-toggle `YT_DESC_LINK` per period and compare.
+Set any to `0` in the workflow `env:` to disable. `YT_DESC_LINK` is the **master**
+switch for the link funnel: the top comment is gated on it too, so setting
+`YT_DESC_LINK=0` produces a genuinely link-free A/B arm (no link in the description
+**and** none in a comment). So a clean reach-impact A/B is just toggling
+`YT_DESC_LINK` per period.
 
 ## 6. Rollout & metrics
 - Phase 1 to all videos at once (effect is measured via GA4, independent of impressions).
