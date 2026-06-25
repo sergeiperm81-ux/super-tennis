@@ -31,9 +31,12 @@ function getAuthClient() {
 // Google can return 5xx. On 2026-06-25 these clustered for hours, and 3 attempts
 // over ~9s wasn't enough — so 5 attempts with exponential backoff (3/6/12/24s,
 // ~45s total) ride out longer bad windows; the next scheduled cron covers a full
-// outage. A fresh read stream is created per attempt (a failed stream can't be
-// re-sent), and each attempt re-does the token fetch (the part that flakes).
+// outage. Each attempt re-does the token fetch (the part that flakes). The video
+// is read once into a Buffer (not a stream): native fetch — which we forced the
+// transport onto, see getAuthClient — rejects a streamed body without
+// `duplex:'half'`, but accepts a Buffer with a known length, and the file is tiny.
 async function uploadWithRetry(youtube, requestBody, filePath, attempts = 5) {
+  const body = fs.readFileSync(filePath);
   const isTransient = (m = '') =>
     /premature close|econnreset|etimedout|socket hang up|eai_again|enotfound|network|\b50[0234]\b/i.test(m);
   let lastErr;
@@ -42,7 +45,7 @@ async function uploadWithRetry(youtube, requestBody, filePath, attempts = 5) {
       return await youtube.videos.insert({
         part: ['snippet', 'status'],
         requestBody,
-        media: { body: fs.createReadStream(filePath) },
+        media: { body },
       });
     } catch (err) {
       lastErr = err;
