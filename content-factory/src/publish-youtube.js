@@ -14,6 +14,15 @@ const REFRESH_TOKEN = process.env.YOUTUBE_REFRESH_TOKEN;
 function getAuthClient() {
   const oauth2 = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET);
   oauth2.setCredentials({ refresh_token: REFRESH_TOKEN });
+  // 2026-06-25 incident fix: google-auth-library mints the OAuth access token
+  // via gaxios's default node-fetch path, which throws "Premature close" on
+  // oauth2.googleapis.com/token after a recent Node security release — it broke
+  // every upload from ~midday, while the morning run (pre-patch runner image)
+  // worked. Node's native fetch hits the same endpoint fine, so force the token
+  // transport onto it. (DefaultTransporter exposes its Gaxios via `.defaults`.)
+  try {
+    oauth2.transporter.defaults.fetchImplementation = globalThis.fetch;
+  } catch { /* unexpected client shape — fall back to the default transport */ }
   return oauth2;
 }
 
