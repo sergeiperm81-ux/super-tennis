@@ -17,11 +17,14 @@ function getAuthClient() {
   return oauth2;
 }
 
-// Upload with retry on transient errors. The OAuth token endpoint occasionally
+// Upload with retry on transient errors. The OAuth token endpoint intermittently
 // drops the connection ("oauth2.googleapis.com/token: Premature close") and
-// Google can return 5xx — both are transient and clear on retry. A fresh
-// read stream is created per attempt (a failed stream can't be re-sent).
-async function uploadWithRetry(youtube, requestBody, filePath, attempts = 3) {
+// Google can return 5xx. On 2026-06-25 these clustered for hours, and 3 attempts
+// over ~9s wasn't enough — so 5 attempts with exponential backoff (3/6/12/24s,
+// ~45s total) ride out longer bad windows; the next scheduled cron covers a full
+// outage. A fresh read stream is created per attempt (a failed stream can't be
+// re-sent), and each attempt re-does the token fetch (the part that flakes).
+async function uploadWithRetry(youtube, requestBody, filePath, attempts = 5) {
   const isTransient = (m = '') =>
     /premature close|econnreset|etimedout|socket hang up|eai_again|enotfound|network|\b50[0234]\b/i.test(m);
   let lastErr;
@@ -35,7 +38,7 @@ async function uploadWithRetry(youtube, requestBody, filePath, attempts = 3) {
     } catch (err) {
       lastErr = err;
       if (i < attempts && isTransient(err.message)) {
-        const waitMs = 2000 * i;
+        const waitMs = 3000 * 2 ** (i - 1); // 3s, 6s, 12s, 24s
         console.warn(`   ⚠️ Upload attempt ${i}/${attempts} failed (${err.message}); retrying in ${waitMs}ms`);
         await new Promise((r) => setTimeout(r, waitMs));
         continue;
