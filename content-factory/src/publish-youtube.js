@@ -11,17 +11,41 @@ const CLIENT_ID = process.env.YOUTUBE_CLIENT_ID;
 const CLIENT_SECRET = process.env.YOUTUBE_CLIENT_SECRET;
 const REFRESH_TOKEN = process.env.YOUTUBE_REFRESH_TOKEN;
 
+// Native fetch (undici) with a `duplex: 'half'` shim. We force the google-auth /
+// googleapis transport onto native fetch because google-auth-library's default
+// node-fetch path throws "Premature close" on oauth2.googleapis.com/token after
+// a recent Node security release (2026-06-25 incident). But undici rejects a
+// streamed request body without `duplex`, and the video upload is a stream — so
+// inject it for non-string bodies. The token request body is a string (no duplex
+// needed); the media upload is a stream (gets duplex:'half').
+function nativeFetchWithDuplex(input, init = {}) {
+  if (init && init.body != null && typeof init.body !== 'string' && init.duplex == null) {
+    return globalThis.fetch(input, { ...init, duplex: 'half' });
+  }
+  return globalThis.fetch(input, init);
+}
+
 function getAuthClient() {
   const oauth2 = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET);
   oauth2.setCredentials({ refresh_token: REFRESH_TOKEN });
+  // Route the token fetch (and the upload, which shares this transporter) through
+  // native fetch — see nativeFetchWithDuplex above for the full rationale.
+  try {
+    oauth2.transporter.defaults.fetchImplementation = nativeFetchWithDuplex;
+  } catch { /* unexpected client shape — fall back to the default transport */ }
   return oauth2;
 }
 
-// Upload with retry on transient errors. The OAuth token endpoint occasionally
+// Upload with retry on transient errors. The OAuth token endpoint intermittently
 // drops the connection ("oauth2.googleapis.com/token: Premature close") and
-// Google can return 5xx — both are transient and clear on retry. A fresh
-// read stream is created per attempt (a failed stream can't be re-sent).
-async function uploadWithRetry(youtube, requestBody, filePath, attempts = 3) {
+// Google can return 5xx. On 2026-06-25 these clustered for hours, and 3 attempts
+// over ~9s wasn't enough — so 5 attempts with exponential backoff (3/6/12/24s,
+// ~45s total) ride out longer bad windows; the next scheduled cron covers a full
+// outage. A fresh read stream is created per attempt (a failed stream can't be
+// re-sent), and each attempt re-does the token fetch (the part that flakes).
+// (googleapis pipes the media body, so it must be a stream; native fetch then
+// needs duplex:'half', injected by nativeFetchWithDuplex — see getAuthClient.)
+async function uploadWithRetry(youtube, requestBody, filePath, attempts = 5) {
   const isTransient = (m = '') =>
     /premature close|econnreset|etimedout|socket hang up|eai_again|enotfound|network|\b50[0234]\b/i.test(m);
   let lastErr;
@@ -35,7 +59,7 @@ async function uploadWithRetry(youtube, requestBody, filePath, attempts = 3) {
     } catch (err) {
       lastErr = err;
       if (i < attempts && isTransient(err.message)) {
-        const waitMs = 2000 * i;
+        const waitMs = 3000 * 2 ** (i - 1); // 3s, 6s, 12s, 24s
         console.warn(`   ⚠️ Upload attempt ${i}/${attempts} failed (${err.message}); retrying in ${waitMs}ms`);
         await new Promise((r) => setTimeout(r, waitMs));
         continue;
