@@ -11,17 +11,27 @@ const CLIENT_ID = process.env.YOUTUBE_CLIENT_ID;
 const CLIENT_SECRET = process.env.YOUTUBE_CLIENT_SECRET;
 const REFRESH_TOKEN = process.env.YOUTUBE_REFRESH_TOKEN;
 
+// Native fetch (undici) with a `duplex: 'half'` shim. We force the google-auth /
+// googleapis transport onto native fetch because google-auth-library's default
+// node-fetch path throws "Premature close" on oauth2.googleapis.com/token after
+// a recent Node security release (2026-06-25 incident). But undici rejects a
+// streamed request body without `duplex`, and the video upload is a stream — so
+// inject it for non-string bodies. The token request body is a string (no duplex
+// needed); the media upload is a stream (gets duplex:'half').
+function nativeFetchWithDuplex(input, init = {}) {
+  if (init && init.body != null && typeof init.body !== 'string' && init.duplex == null) {
+    return globalThis.fetch(input, { ...init, duplex: 'half' });
+  }
+  return globalThis.fetch(input, init);
+}
+
 function getAuthClient() {
   const oauth2 = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET);
   oauth2.setCredentials({ refresh_token: REFRESH_TOKEN });
-  // 2026-06-25 incident fix: google-auth-library mints the OAuth access token
-  // via gaxios's default node-fetch path, which throws "Premature close" on
-  // oauth2.googleapis.com/token after a recent Node security release — it broke
-  // every upload from ~midday, while the morning run (pre-patch runner image)
-  // worked. Node's native fetch hits the same endpoint fine, so force the token
-  // transport onto it. (DefaultTransporter exposes its Gaxios via `.defaults`.)
+  // Route the token fetch (and the upload, which shares this transporter) through
+  // native fetch — see nativeFetchWithDuplex above for the full rationale.
   try {
-    oauth2.transporter.defaults.fetchImplementation = globalThis.fetch;
+    oauth2.transporter.defaults.fetchImplementation = nativeFetchWithDuplex;
   } catch { /* unexpected client shape — fall back to the default transport */ }
   return oauth2;
 }
@@ -31,12 +41,11 @@ function getAuthClient() {
 // Google can return 5xx. On 2026-06-25 these clustered for hours, and 3 attempts
 // over ~9s wasn't enough — so 5 attempts with exponential backoff (3/6/12/24s,
 // ~45s total) ride out longer bad windows; the next scheduled cron covers a full
-// outage. Each attempt re-does the token fetch (the part that flakes). The video
-// is read once into a Buffer (not a stream): native fetch — which we forced the
-// transport onto, see getAuthClient — rejects a streamed body without
-// `duplex:'half'`, but accepts a Buffer with a known length, and the file is tiny.
+// outage. A fresh read stream is created per attempt (a failed stream can't be
+// re-sent), and each attempt re-does the token fetch (the part that flakes).
+// (googleapis pipes the media body, so it must be a stream; native fetch then
+// needs duplex:'half', injected by nativeFetchWithDuplex — see getAuthClient.)
 async function uploadWithRetry(youtube, requestBody, filePath, attempts = 5) {
-  const body = fs.readFileSync(filePath);
   const isTransient = (m = '') =>
     /premature close|econnreset|etimedout|socket hang up|eai_again|enotfound|network|\b50[0234]\b/i.test(m);
   let lastErr;
@@ -45,7 +54,7 @@ async function uploadWithRetry(youtube, requestBody, filePath, attempts = 5) {
       return await youtube.videos.insert({
         part: ['snippet', 'status'],
         requestBody,
-        media: { body },
+        media: { body: fs.createReadStream(filePath) },
       });
     } catch (err) {
       lastErr = err;
