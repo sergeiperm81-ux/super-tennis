@@ -17,6 +17,35 @@ function getAuthClient() {
   return oauth2;
 }
 
+// Upload with retry on transient errors. The OAuth token endpoint occasionally
+// drops the connection ("oauth2.googleapis.com/token: Premature close") and
+// Google can return 5xx — both are transient and clear on retry. A fresh
+// read stream is created per attempt (a failed stream can't be re-sent).
+async function uploadWithRetry(youtube, requestBody, filePath, attempts = 3) {
+  const isTransient = (m = '') =>
+    /premature close|econnreset|etimedout|socket hang up|eai_again|enotfound|network|\b50[0234]\b/i.test(m);
+  let lastErr;
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      return await youtube.videos.insert({
+        part: ['snippet', 'status'],
+        requestBody,
+        media: { body: fs.createReadStream(filePath) },
+      });
+    } catch (err) {
+      lastErr = err;
+      if (i < attempts && isTransient(err.message)) {
+        const waitMs = 2000 * i;
+        console.warn(`   ⚠️ Upload attempt ${i}/${attempts} failed (${err.message}); retrying in ${waitMs}ms`);
+        await new Promise((r) => setTimeout(r, waitMs));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastErr;
+}
+
 /**
  * Upload a video to YouTube as a Short
  * @param {string} filePath - Path to .mp4 file
@@ -65,25 +94,20 @@ export async function publishToYouTube(filePath, { title, summary = '', category
   console.log(`📺 YouTube: uploading "${safeTitle}"...`);
 
   try {
-    const res = await youtube.videos.insert({
-      part: ['snippet', 'status'],
-      requestBody: {
-        snippet: {
-          title: safeTitle,
-          description: fullDescription,
-          categoryId: '17', // Sports
-          tags: ['tennis', 'super tennis', 'atp', 'wta', 'tennis news', category],
-          defaultLanguage: 'en',
-        },
-        status: {
-          privacyStatus: 'public',
-          selfDeclaredMadeForKids: false,
-        },
+    const requestBody = {
+      snippet: {
+        title: safeTitle,
+        description: fullDescription,
+        categoryId: '17', // Sports
+        tags: ['tennis', 'super tennis', 'atp', 'wta', 'tennis news', category],
+        defaultLanguage: 'en',
       },
-      media: {
-        body: fs.createReadStream(filePath),
+      status: {
+        privacyStatus: 'public',
+        selfDeclaredMadeForKids: false,
       },
-    });
+    };
+    const res = await uploadWithRetry(youtube, requestBody, filePath);
 
     const videoId = res.data.id;
     console.log(`   ✅ YouTube: https://youtube.com/shorts/${videoId}`);

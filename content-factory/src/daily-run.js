@@ -213,6 +213,16 @@ async function main() {
     console.log(`  ${yt} │ ${r.title}`);
   }
   console.log(`\n⏱️  Done in ${elapsed}s`);
+
+  // Surface silent upload failures: publishToYouTube swallows upload errors and
+  // returns null, so the job would otherwise exit 0 ("success") even when
+  // nothing was published. Fail the run when no video uploaded, so the
+  // workflow's failure step fires the Telegram alert instead of a green tick.
+  const uploaded = results.filter((r) => r.youtube).length;
+  if (uploaded === 0 && results.length > 0) {
+    console.error(`❌ ${results.length} video(s) attempted, 0 uploaded — failing the run to trigger the alert.`);
+    process.exit(1);
+  }
 }
 
 main().catch(err => {
