@@ -17,6 +17,35 @@ function getAuthClient() {
   return oauth2;
 }
 
+// Upload with retry on transient errors. The OAuth token endpoint occasionally
+// drops the connection ("oauth2.googleapis.com/token: Premature close") and
+// Google can return 5xx — both are transient and clear on retry. A fresh
+// read stream is created per attempt (a failed stream can't be re-sent).
+async function uploadWithRetry(youtube, requestBody, filePath, attempts = 3) {
+  const isTransient = (m = '') =>
+    /premature close|econnreset|etimedout|socket hang up|eai_again|enotfound|network|\b50[0234]\b/i.test(m);
+  let lastErr;
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      return await youtube.videos.insert({
+        part: ['snippet', 'status'],
+        requestBody,
+        media: { body: fs.createReadStream(filePath) },
+      });
+    } catch (err) {
+      lastErr = err;
+      if (i < attempts && isTransient(err.message)) {
+        const waitMs = 2000 * i;
+        console.warn(`   ⚠️ Upload attempt ${i}/${attempts} failed (${err.message}); retrying in ${waitMs}ms`);
+        await new Promise((r) => setTimeout(r, waitMs));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastErr;
+}
+
 /**
  * Upload a video to YouTube as a Short
  * @param {string} filePath - Path to .mp4 file
@@ -24,7 +53,9 @@ function getAuthClient() {
  * @param {string} opts.title - Video title (max 100 chars)
  * @param {string} opts.summary - Lead text for description
  * @param {string} opts.category - News category for hashtags
- * @returns {Promise<string>} Video ID
+ * @returns {Promise<string|null>} Video ID on success, or null when skipped
+ *   (no credentials). Throws on a real upload failure so the caller can record
+ *   the actual error.
  */
 export async function publishToYouTube(filePath, { title, summary = '', category = 'buzz', slug = '', playerSlugs = [] }) {
   if (!CLIENT_ID || !REFRESH_TOKEN) {
@@ -65,25 +96,20 @@ export async function publishToYouTube(filePath, { title, summary = '', category
   console.log(`📺 YouTube: uploading "${safeTitle}"...`);
 
   try {
-    const res = await youtube.videos.insert({
-      part: ['snippet', 'status'],
-      requestBody: {
-        snippet: {
-          title: safeTitle,
-          description: fullDescription,
-          categoryId: '17', // Sports
-          tags: ['tennis', 'super tennis', 'atp', 'wta', 'tennis news', category],
-          defaultLanguage: 'en',
-        },
-        status: {
-          privacyStatus: 'public',
-          selfDeclaredMadeForKids: false,
-        },
+    const requestBody = {
+      snippet: {
+        title: safeTitle,
+        description: fullDescription,
+        categoryId: '17', // Sports
+        tags: ['tennis', 'super tennis', 'atp', 'wta', 'tennis news', category],
+        defaultLanguage: 'en',
       },
-      media: {
-        body: fs.createReadStream(filePath),
+      status: {
+        privacyStatus: 'public',
+        selfDeclaredMadeForKids: false,
       },
-    });
+    };
+    const res = await uploadWithRetry(youtube, requestBody, filePath);
 
     const videoId = res.data.id;
     console.log(`   ✅ YouTube: https://youtube.com/shorts/${videoId}`);
@@ -120,7 +146,11 @@ export async function publishToYouTube(filePath, { title, summary = '', category
   } catch (err) {
     console.error(`   ❌ YouTube error:`, err.message);
     if (err.errors) console.error('   Details:', JSON.stringify(err.errors));
-    return null;
+    // Re-throw the real upload error (instead of returning null) so daily-run's
+    // catch records the actual cause in video_publications.youtube_error, not a
+    // generic "Upload returned null". The no-credentials skip above still
+    // returns null intentionally — that's not an error.
+    throw err;
   }
 }
 

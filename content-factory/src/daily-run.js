@@ -213,6 +213,19 @@ async function main() {
     console.log(`  ${yt} │ ${r.title}`);
   }
   console.log(`\n⏱️  Done in ${elapsed}s`);
+
+  // Surface upload failures: publishToYouTube re-throws real upload errors, so a
+  // failed upload leaves result.youtube null and the real cause is already saved
+  // to video_publications.youtube_error. Fail the run if ANY attempted video
+  // didn't upload — this covers the current single-upload cron (0 of 1) AND a
+  // future VIDEOS_PER_RUN>1 batch where one upload fails (1 of 2), so a partial
+  // failure no longer passes as a green tick. Bookkeeping above has already
+  // persisted the successful uploads, so failing here only fires the alert.
+  const uploaded = results.filter((r) => r.youtube).length;
+  if (results.length > 0 && uploaded < results.length) {
+    console.error(`❌ ${uploaded}/${results.length} videos uploaded — failing the run to trigger the alert.`);
+    process.exit(1);
+  }
 }
 
 main().catch(err => {
