@@ -74,6 +74,11 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           VIDEOS_PER_RUN: '1'
+          # Phase 1 funnel flags — set any to '0' to disable / A-B test. Default on.
+          YT_DESC_LINK: '1'         # clickable article link + UTM in description
+          YT_PLAYER_HASHTAGS: '1'   # human-readable player hashtags (#JannikSinner)
+          YT_TOP_COMMENT: '1'       # post top comment with the article link
+          YT_UTM_CAMPAIGN: 'shorts' # GA4 utm_campaign label
         run: node src/daily-run.js
 
       - name: Save bg-history (background rotation state)

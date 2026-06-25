@@ -26,7 +26,7 @@ function getAuthClient() {
  * @param {string} opts.category - News category for hashtags
  * @returns {Promise<string>} Video ID
  */
-export async function publishToYouTube(filePath, { title, summary = '', category = 'buzz' }) {
+export async function publishToYouTube(filePath, { title, summary = '', category = 'buzz', slug = '', playerSlugs = [] }) {
   if (!CLIENT_ID || !REFRESH_TOKEN) {
     console.log('⏭️  YouTube: skipped (no credentials)');
     return null;
@@ -35,12 +35,25 @@ export async function publishToYouTube(filePath, { title, summary = '', category
   const auth = getAuthClient();
   const youtube = google.youtube({ version: 'v3', auth });
 
-  // Build description — no links (YouTube dislikes them in Shorts)
-  const hashtags = buildHashtags(category);
+  // Phase 1 funnel (2026-06-25): drive viewers to the article so YouTube
+  // actually sends traffic to the site (GA4 showed ~0 before). All env-flagged
+  // for instant rollback / A-B. Description links ARE clickable on Shorts —
+  // the old "no links" note was over-cautious.
+  const utmCampaign = process.env.YT_UTM_CAMPAIGN || 'shorts';
+  const articleUrl = slug
+    ? `https://super.tennis/news/${slug}/?utm_source=youtube&utm_medium=shorts&utm_campaign=${utmCampaign}`
+    : null;
+  const linkLine = (flagOn('YT_DESC_LINK') && articleUrl)
+    ? `▶ Full story: ${articleUrl}`
+    : 'Full story & more tennis news on super.tennis';
+  const hashtags = [
+    buildHashtags(category),
+    flagOn('YT_PLAYER_HASHTAGS') ? playerHashtags(playerSlugs) : '',
+  ].filter(Boolean).join(' ').trim();
   const fullDescription = [
     summary,
     '',
-    'Get the full story and more tennis news on super.tennis',
+    linkLine,
     '',
     hashtags,
     '#Shorts',
@@ -74,6 +87,35 @@ export async function publishToYouTube(filePath, { title, summary = '', category
 
     const videoId = res.data.id;
     console.log(`   ✅ YouTube: https://youtube.com/shorts/${videoId}`);
+
+    // Optional top comment carrying the article link — an extra funnel surface.
+    // Also gated on YT_DESC_LINK so flipping YT_DESC_LINK off yields a genuinely
+    // link-free A/B arm (no link in the description AND none in a comment).
+    // commentThreads.insert requires snippet.channelId per the API — we resolve
+    // the channel that owns the video via channels.list(mine:true), so there's
+    // no hardcode and no extra secret. Uses the existing youtube.force-ssl
+    // scope (no re-auth). Non-fatal: never fails the upload.
+    if (flagOn('YT_TOP_COMMENT') && flagOn('YT_DESC_LINK') && articleUrl) {
+      try {
+        const chRes = await youtube.channels.list({ part: ['id'], mine: true });
+        const channelId = chRes.data.items?.[0]?.id;
+        if (!channelId) throw new Error('could not resolve channelId (channels.list mine=true returned none)');
+        await youtube.commentThreads.insert({
+          part: ['snippet'],
+          requestBody: {
+            snippet: {
+              channelId,
+              videoId,
+              topLevelComment: { snippet: { textOriginal: `📰 Full story → ${articleUrl}` } },
+            },
+          },
+        });
+        console.log('   💬 Top comment posted with article link');
+      } catch (e) {
+        console.warn(`   ⚠️ Top comment failed (non-fatal): ${e.message}`);
+      }
+    }
+
     return videoId;
   } catch (err) {
     console.error(`   ❌ YouTube error:`, err.message);
@@ -94,4 +136,21 @@ function buildHashtags(category) {
     wellness: '#health #fitness #tennisfitness',
   };
   return `${base} ${catTags[category] || catTags.buzz}`;
+}
+
+// Env flag helper: ON unless explicitly disabled. Defaults to ON so the funnel
+// works with zero configuration ("без участия"); set to 0/false/off to A-B.
+function flagOn(name) {
+  const v = String(process.env[name] ?? '1').toLowerCase();
+  return v !== '0' && v !== 'false' && v !== 'off';
+}
+
+// player_slugs → human-readable hashtags: "jannik-sinner" → "#JannikSinner".
+// Capped at 3 to avoid a spammy tag wall.
+function playerHashtags(slugs) {
+  if (!Array.isArray(slugs)) return '';
+  return slugs
+    .slice(0, 3)
+    .map((s) => '#' + String(s).split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(''))
+    .join(' ');
 }
