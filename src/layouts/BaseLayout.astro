@@ -274,34 +274,35 @@ const websiteSchema = {
 
   <!-- Google AdSense (deferred — after page render) -->
   <script async defer src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8691721344110584" crossorigin="anonymous"></script>
+
+  <style>
+    .lang-switcher {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 12px 24px 0;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+    }
+    .lang-switcher-globe { opacity: 0.55; }
+    .lang-switcher a {
+      color: var(--gray-600);
+      text-decoration: none;
+      padding: 4px 12px;
+      border: 1px solid var(--gray-300);
+      border-radius: 14px;
+    }
+    .lang-switcher a:hover { color: var(--court-green); border-color: var(--court-green); }
+    .lang-switcher .lang-cur {
+      color: var(--court-green);
+      font-weight: 700;
+      padding: 4px 12px;
+      border: 1px solid var(--court-green);
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--court-green) 8%, transparent);
+    }
+  </style>
 </body>
 </html>
-
-<style>
-  .lang-switcher {
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 12px 24px 0;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.82rem;
-  }
-  .lang-switcher-globe { opacity: 0.55; }
-  .lang-switcher a {
-    color: var(--gray-600);
-    text-decoration: none;
-    padding: 3px 11px;
-    border: 1px solid var(--gray-200);
-    border-radius: 14px;
-  }
-  .lang-switcher a:hover { color: var(--court-green); border-color: var(--court-green); }
-  .lang-switcher .lang-cur {
-    color: var(--court-green);
-    font-weight: 700;
-    padding: 3px 11px;
-    border: 1px solid var(--court-green);
-    border-radius: 14px;
-  }
-</style>
