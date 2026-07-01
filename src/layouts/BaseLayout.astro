@@ -34,6 +34,13 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 // locale='en' → htmlLang='en', ogLocaleValue='en_US' (identical to previous hardcoded values).
 const htmlLang = hreflang(locale);
 const ogLocaleValue = ogLocale(locale);
+
+// Visible EN/ES language switcher — shown only on pages that have a translation
+// (alternates has more than just self + x-default). Renders nothing otherwise.
+const LANG_LABELS: Record<string, string> = { en: 'English', es: 'Español', fr: 'Français', zh: '中文' };
+const switcherLangs = alternates
+  .filter((a) => a.hreflang !== 'x-default')
+  .map((a) => ({ code: a.hreflang === 'zh-Hans' ? 'zh' : a.hreflang, href: a.href }));
 // Avoid duplicate SUPER.TENNIS in title tag
 const cleanTitle = title.replace(/\s*[—|]\s*SUPER\.TENNIS\s*/gi, '').trim();
 const fullTitle = cleanTitle === 'Home' ? 'SUPER.TENNIS — Tennis for Everyone' : `${cleanTitle} | SUPER.TENNIS`;
@@ -197,6 +204,16 @@ const websiteSchema = {
 <body>
   <Header />
   <main style={`padding-top: var(--header-height);`}>
+    {switcherLangs.length > 1 && (
+      <div class="lang-switcher" data-pagefind-ignore>
+        <span class="lang-switcher-globe" aria-hidden="true">🌐</span>
+        {switcherLangs.map((l) => (
+          l.code === locale
+            ? <span class="lang-cur">{LANG_LABELS[l.code] ?? l.code}</span>
+            : <a href={l.href} hreflang={l.code}>{LANG_LABELS[l.code] ?? l.code}</a>
+        ))}
+      </div>
+    )}
     <slot />
   </main>
   <Footer />
@@ -259,3 +276,32 @@ const websiteSchema = {
   <script async defer src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8691721344110584" crossorigin="anonymous"></script>
 </body>
 </html>
+
+<style>
+  .lang-switcher {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 12px 24px 0;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+  }
+  .lang-switcher-globe { opacity: 0.55; }
+  .lang-switcher a {
+    color: var(--gray-600);
+    text-decoration: none;
+    padding: 3px 11px;
+    border: 1px solid var(--gray-200);
+    border-radius: 14px;
+  }
+  .lang-switcher a:hover { color: var(--court-green); border-color: var(--court-green); }
+  .lang-switcher .lang-cur {
+    color: var(--court-green);
+    font-weight: 700;
+    padding: 3px 11px;
+    border: 1px solid var(--court-green);
+    border-radius: 14px;
+  }
+</style>
