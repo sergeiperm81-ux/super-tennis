@@ -96,13 +96,13 @@ const jsonLd = {
   description={t.meta_description || t.excerpt || t.title}
   breadcrumbs={[
     { label: HOME_LABEL[locale] ?? 'Inicio', href: '/' },
-    { label: catLabel, href: `/${category}/` },
+    { label: catLabel, href: `/${locale}/${category}/` },
     { label: t.title },
   ]}
   image={heroImage || undefined}
   category={category}
   categoryLabel={catLabel}
-  categoryHref={`/${category}/`}
+  categoryHref={`/${locale}/${category}/`}
   locale={locale}
   alternates={alternates}
 >

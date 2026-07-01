@@ -1,0 +1,109 @@
+---
+/**
+ * Localized section hub (/es/{lifestyle|gear|vs|records|tournaments}/).
+ * Clean Spanish listing of the section's translated articles → makes /es/ browsable.
+ * Simpler than the English hub (no filters/subcats) — a titled card grid.
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getActiveLocales, buildAlternates, type Locale } from '../../../lib/i18n';
+import { getArticles, supabase } from '../../../lib/supabase';
+import { getArticlePhotoUrl } from '../../../lib/player-photos';
+
+export async function getStaticPaths() {
+  const CATS = ['lifestyle', 'gear', 'vs', 'records', 'tournaments'];
+  const locales = getActiveLocales();
+  if (locales.length === 0) return [];
+  const paths: Array<{ params: { lang: string; category: string }; props: { locale: Locale; category: string } }> = [];
+  for (const locale of locales) for (const category of CATS) paths.push({ params: { lang: locale, category }, props: { locale, category } });
+  return paths;
+}
+
+const CAT_LABEL: Record<string, Record<string, string>> = {
+  lifestyle: { es: 'Estilo de vida', fr: 'Style de vie', zh: '生活方式' },
+  gear: { es: 'Equipamiento', fr: 'Équipement', zh: '装备' },
+  vs: { es: 'Cara a cara', fr: 'Face à face', zh: '对阵' },
+  records: { es: 'Récords', fr: 'Records', zh: '纪录' },
+  tournaments: { es: 'Torneos', fr: 'Tournois', zh: '赛事' },
+};
+const HUB_INTRO: Record<string, Record<string, string>> = {
+  lifestyle: { es: 'Historias, cultura y la vida del tenis más allá de la pista.' },
+  gear: { es: 'Guías de raquetas, calzado, cuerdas y accesorios de tenis.' },
+  vs: { es: 'Los grandes duelos y rivalidades del tenis, cara a cara.' },
+  records: { es: 'Los récords y las grandes marcas de la historia del tenis.' },
+  tournaments: { es: 'Guías de los torneos y Grand Slams del tenis.' },
+};
+const HOME_LABEL: Record<string, string> = { es: 'Inicio', fr: 'Accueil', zh: '首页' };
+
+const { locale, category } = Astro.props as { locale: Locale; category: string };
+
+const enArts = await getArticles({ category, limit: 300 });
+const ids = enArts.map((a: any) => a.id);
+let transMap = new Map<number, { title: string; excerpt: string | null }>();
+if (ids.length) {
+  const { data: trans } = await supabase
+    .from('article_translations')
+    .select('article_id, title, excerpt')
+    .eq('lang', locale)
+    .eq('status', 'published')
+    .in('article_id', ids);
+  transMap = new Map((trans || []).map((t: any) => [t.article_id, { title: t.title, excerpt: t.excerpt }]));
+}
+const translated = enArts.filter((a: any) => transMap.has(a.id));
+const photoEntries = await Promise.all(
+  translated.map(async (a: any) => [a.slug, (await getArticlePhotoUrl(a.slug, category)) || a.image_url || null]),
+);
+const photos = Object.fromEntries(photoEntries);
+
+const items = translated.map((a: any) => ({
+  slug: a.slug,
+  title: transMap.get(a.id)!.title,
+  image: photos[a.slug] as string | null,
+}));
+
+const catLabel = CAT_LABEL[category]?.[locale] ?? category;
+const intro = HUB_INTRO[category]?.[locale] ?? '';
+const alternates = buildAlternates(`/${category}/`, [locale]);
+---
+
+<BaseLayout
+  title={`${catLabel} | SUPER.TENNIS`}
+  description={intro || catLabel}
+  locale={locale}
+  alternates={alternates}
+>
+  <div class="es-hub" lang={locale}>
+    <nav class="es-hub-crumbs">
+      <a href="/">{HOME_LABEL[locale] ?? 'Inicio'}</a> <span>/</span> <span>{catLabel}</span>
+    </nav>
+    <header class="es-hub-head">
+      <h1>{catLabel}</h1>
+      {intro && <p>{intro}</p>}
+    </header>
+    <div class="es-hub-grid">
+      {items.map((it) => (
+        <a class="es-hub-card" href={`/${locale}/${category}/${it.slug}/`}>
+          {it.image && <img src={it.image} alt={it.title} loading="lazy" decoding="async" width="320" height="180" />}
+          <h3>{it.title}</h3>
+        </a>
+      ))}
+    </div>
+    {items.length === 0 && <p class="es-hub-empty">—</p>}
+  </div>
+
+  <style>
+    .es-hub { max-width: 1100px; margin: 0 auto; padding: 24px 24px 64px; }
+    .es-hub-crumbs { font-size: 0.82rem; color: var(--gray-500); padding: 8px 0 16px; }
+    .es-hub-crumbs a { color: var(--gray-600); text-decoration: none; }
+    .es-hub-crumbs a:hover { color: var(--court-green); }
+    .es-hub-crumbs span { margin: 0 6px; }
+    .es-hub-head { border-bottom: 3px solid var(--court-green); padding-bottom: 18px; margin-bottom: 28px; }
+    .es-hub-head h1 { font-family: var(--font-heading); font-size: 2.2rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--gray-900); margin: 0 0 8px; }
+    .es-hub-head p { color: var(--gray-600); font-size: 1.02rem; margin: 0; max-width: 640px; }
+    .es-hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+    .es-hub-card { display: flex; flex-direction: column; background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius); overflow: hidden; text-decoration: none; color: inherit; transition: var(--transition); }
+    .es-hub-card:hover { border-color: var(--court-green); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.07); }
+    .es-hub-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: var(--gray-100); }
+    .es-hub-card h3 { font-size: 0.98rem; line-height: 1.4; margin: 0; padding: 14px 16px 18px; color: var(--gray-900); }
+    @media (max-width: 600px) { .es-hub-head h1 { font-size: 1.7rem; } }
+  </style>
+</BaseLayout>
