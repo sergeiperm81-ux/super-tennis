@@ -15,6 +15,7 @@ import {
 } from '../../lib/related-content';
 import { tournamentVideos } from '../../data/youtube-channels';
 import { marked } from 'marked';
+import { getArticleAlternates } from '../../lib/i18n';
 
 export async function getStaticPaths() {
   let slugs: string[] = [];
@@ -49,6 +50,7 @@ if (!article) {
 }
 
 const heroImage = await getArticlePhotoUrl(slug as string, 'tournaments') || article.image_url || null;
+const alternates = await getArticleAlternates(article.id, `/tournaments/${slug}/`);
 
 const rawHtml = article.body ? marked.parse(article.body) : '';
 const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/tournaments/${slug}/`) : '';
@@ -129,6 +131,7 @@ for (const l of [...tournamentNews, ...tournamentArticles, ...evergreenTournamen
   category="tournaments"
   categoryLabel="Tournament Guide"
   categoryHref="/tournaments/"
+  alternates={alternates}
 >
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   {faqJsonLd && <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />}

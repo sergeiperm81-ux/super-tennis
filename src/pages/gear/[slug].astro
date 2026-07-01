@@ -7,6 +7,7 @@ import { addInterlinks } from '../../lib/interlinks';
 import { getArticlePhotoUrl } from '../../lib/player-photos';
 import { buildHowToSchema } from '../../lib/howto-schema';
 import { marked } from 'marked';
+import { getArticleAlternates } from '../../lib/i18n';
 
 export async function getStaticPaths() {
   let slugs: string[] = [];
@@ -43,6 +44,7 @@ if (!article) {
 }
 
 const heroImage = await getArticlePhotoUrl(slug as string, 'gear') || article.image_url || null;
+const alternates = await getArticleAlternates(article.id, `/gear/${slug}/`);
 
 const rawHtml = article.body ? marked.parse(article.body) : '';
 const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/gear/${slug}/`) : '';
@@ -142,6 +144,7 @@ const itemListJsonLd = gearProducts.length >= 2 ? {
   category="gear"
   categoryLabel="Gear Guide"
   categoryHref="/gear/"
+  alternates={alternates}
 >
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   {howToJsonLd && <script type="application/ld+json" set:html={JSON.stringify(howToJsonLd)} />}

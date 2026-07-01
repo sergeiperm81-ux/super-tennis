@@ -8,6 +8,7 @@ import { addInterlinks } from '../../lib/interlinks';
 import { getVsPhotos, vsPlayerSlugs, slugToName } from '../../lib/player-photos';
 import { getVsGear } from '../../lib/player-gear';
 import { marked } from 'marked';
+import { getArticleAlternates } from '../../lib/i18n';
 
 export async function getStaticPaths() {
   let slugs: string[] = [];
@@ -53,6 +54,7 @@ const pair = vsPlayerSlugs[slug as string];
 const name1 = pair ? slugToName(pair[0]) : '';
 const name2 = pair ? slugToName(pair[1]) : '';
 const [gear1, gear2] = pair ? getVsGear(pair[0], pair[1]) : [null, null];
+const alternates = await getArticleAlternates(article.id, `/vs/${slug}/`);
 
 const rawHtml = article.body ? marked.parse(article.body) : '';
 const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/vs/${slug}/`) : '';
@@ -179,6 +181,7 @@ const faqJsonLd = article.faqs && Array.isArray(article.faqs) && article.faqs.le
   category="vs"
   categoryLabel="Head to Head"
   categoryHref="/vs/"
+  alternates={alternates}
 >
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   {faqJsonLd && <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />}
