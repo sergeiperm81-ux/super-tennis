@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import ArticleSidebar from '../components/ArticleSidebar.astro';
+import { type Locale, type Alternate } from '../lib/i18n';
 
 interface Props {
   title: string;
@@ -12,9 +13,20 @@ interface Props {
   category?: string;
   categoryLabel?: string;
   categoryHref?: string;
+  /** i18n: default 'en' reproduces the current English output 1:1. */
+  locale?: Locale;
+  alternates?: Alternate[];
 }
 
-const { title, description, breadcrumbs, image, publishedDate, updatedDate, category, categoryLabel, categoryHref } = Astro.props;
+const { title, description, breadcrumbs, image, publishedDate, updatedDate, category, categoryLabel, categoryHref, locale = 'en', alternates = [] } = Astro.props;
+
+// Localized chrome strings. locale='en' → identical to the previous hardcoded English.
+const CHROME: Record<string, Record<string, string>> = {
+  en: { by: 'By', team: 'Editorial Team', published: 'Published:', updated: 'Updated:', updatedInline: 'Updated', sources: 'Sources:', method: 'ATP Tour · WTA Tour · ITF · Wikipedia · official press conferences. Statistical claims cross-checked against ATPtour.com, WTAtennis.com, and tournament-official records before publication.', disclosure: 'This article contains affiliate links. If you purchase through these links, we may earn a small commission at no extra cost to you.', contents: 'Contents' },
+  es: { by: 'Por', team: 'Equipo editorial', published: 'Publicado:', updated: 'Actualizado:', updatedInline: 'Actualizado', sources: 'Fuentes:', method: 'ATP Tour · WTA Tour · ITF · Wikipedia · ruedas de prensa oficiales. Las afirmaciones estadísticas se contrastan con ATPtour.com, WTAtennis.com y los registros oficiales de los torneos antes de publicar.', disclosure: 'Este artículo contiene enlaces de afiliados. Si compras a través de ellos, podemos ganar una pequeña comisión sin coste adicional para ti.', contents: 'Contenido' },
+};
+const t = CHROME[locale] ?? CHROME.en;
+const dateLocale = locale === 'en' ? 'en-US' : locale;
 
 // Ensure image URL is absolute for schema validity
 const absoluteImage = image
@@ -72,7 +84,8 @@ const categoryColors: Record<string, string> = {
   news: '#16a34a',
 };
 const accentColor = categoryColors[category || ''] || 'var(--court-green)';
-const hasSidebar = ['vs', 'gear', 'lifestyle', 'tournaments', 'news'].includes(category || '');
+// Sidebar carries English related-content — hide it on non-English pages for the pilot.
+const hasSidebar = locale === 'en' && ['vs', 'gear', 'lifestyle', 'tournaments', 'news'].includes(category || '');
 
 // OG image per category
 const categoryOgImages: Record<string, string> = {
@@ -85,7 +98,7 @@ const categoryOgImages: Record<string, string> = {
 const ogImage = categoryOgImages[category || ''] || '/og/default.png';
 ---
 
-<BaseLayout title={title} description={description} ogImage={absoluteImage || ogImage} ogType="article" publishedTime={publishedDate}>
+<BaseLayout title={title} description={description} ogImage={absoluteImage || ogImage} ogType="article" publishedTime={publishedDate} locale={locale} alternates={alternates}>
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
 
   <!-- Reading Progress Bar -->
@@ -125,10 +138,10 @@ const ogImage = categoryOgImages[category || ''] || '/og/default.png';
         {description && <p class="hero-description">{description}</p>}
         <div class="hero-meta">
           {publishedDate && (
-            <time class="article-date">{new Date(publishedDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</time>
+            <time class="article-date">{new Date(publishedDate).toLocaleDateString(dateLocale, { month: 'long', day: 'numeric', year: 'numeric' })}</time>
           )}
           {updatedDate && (
-            <span class="article-updated">Updated {new Date(updatedDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+            <span class="article-updated">{t.updatedInline} {new Date(updatedDate).toLocaleDateString(dateLocale, { month: 'long', day: 'numeric', year: 'numeric' })}</span>
           )}
           <span class="reading-time" id="reading-time"></span>
         </div>
@@ -137,7 +150,7 @@ const ogImage = categoryOgImages[category || ''] || '/og/default.png';
 
     <!-- Table of Contents (auto-generated via JS) -->
     <nav class="toc" id="toc" aria-label="Table of Contents" style="display:none;">
-      <h2 class="toc__title">Contents</h2>
+      <h2 class="toc__title">{t.contents}</h2>
       <ol class="toc__list" id="toc-list"></ol>
     </nav>
 
@@ -147,28 +160,27 @@ const ogImage = categoryOgImages[category || ''] || '/og/default.png';
          wrote a piece and how facts were verified. -->
     <aside class="trust-block">
       <div class="trust-author">
-        <span class="trust-by">By</span>
+        <span class="trust-by">{t.by}</span>
         <a href={articleAuthor.url} rel="author" class="trust-author-name">{articleAuthor.name}</a>
-        <span class="trust-author-title">— {articleAuthor.title}</span>
+        <span class="trust-author-title">— {t.team}</span>
       </div>
       <div class="trust-dates">
         {publishedDate && (
-          <span><span class="trust-label">Published:</span> {new Date(publishedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+          <span><span class="trust-label">{t.published}</span> {new Date(publishedDate).toLocaleDateString(dateLocale, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
         )}
         {updatedDate && updatedDate !== publishedDate && (
-          <span><span class="trust-label">Updated:</span> {new Date(updatedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+          <span><span class="trust-label">{t.updated}</span> {new Date(updatedDate).toLocaleDateString(dateLocale, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
         )}
       </div>
       <div class="trust-method">
-        <span class="trust-label">Sources:</span>
-        ATP Tour · WTA Tour · ITF · Wikipedia · official press conferences.
-        Statistical claims cross-checked against ATPtour.com, WTAtennis.com, and tournament-official records before publication.
+        <span class="trust-label">{t.sources}</span>
+        {t.method}
       </div>
     </aside>
 
     <!-- Affiliate Disclosure (shown on gear/lifestyle articles with affiliate links) -->
     {(category === 'gear' || category === 'lifestyle') && (
-      <p class="affiliate-disclosure">This article contains affiliate links. If you purchase through these links, we may earn a small commission at no extra cost to you.</p>
+      <p class="affiliate-disclosure">{t.disclosure}</p>
     )}
 
     <!-- Article Content -->

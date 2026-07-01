@@ -10,6 +10,7 @@ import { getArticlePhotoUrl } from '../../lib/player-photos';
 import { buildHowToSchema } from '../../lib/howto-schema';
 import { findGearForArticle } from '../../lib/player-gear';
 import { marked } from 'marked';
+import { getArticleAlternates } from '../../lib/i18n';
 
 export async function getStaticPaths() {
   let slugs: string[] = [];
@@ -45,6 +46,9 @@ if (!article) {
 }
 
 const heroImage = await getArticlePhotoUrl(slug as string, 'lifestyle') || article.image_url || null;
+
+// hreflang + EN/ES switcher when a translation exists ([] otherwise → English unchanged).
+const alternates = await getArticleAlternates(article.id, `/lifestyle/${slug}/`);
 
 const rawHtml = article.body ? marked.parse(article.body) : '';
 const bodyHtml = rawHtml ? await addInterlinks(rawHtml as string, `/lifestyle/${slug}/`) : '';
@@ -130,6 +134,7 @@ const fallbackCfg = isTravelGuide
   category="lifestyle"
   categoryLabel="Lifestyle"
   categoryHref="/lifestyle/"
+  alternates={alternates}
 >
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   {faqJsonLd && <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />}

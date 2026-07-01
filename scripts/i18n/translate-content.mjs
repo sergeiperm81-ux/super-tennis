@@ -41,6 +41,7 @@ function parseArgs(argv) {
     else if (k === '--lang') a.lang = argv[++i];
     else if (k === '--limit') a.limit = parseInt(argv[++i], 10);
     else if (k === '--ids') a.ids = argv[++i].split(',').map((s) => s.trim()).filter(Boolean);
+    else if (k === '--category') a.category = argv[++i];
     else if (k === '--model') a.model = argv[++i];
     else if (k === '--max-cost') a.maxCost = parseFloat(argv[++i]);
   }
@@ -101,7 +102,7 @@ async function loadGlossary(sb, lang) {
 
 /** Возвращает кандидатов: [{ key, sourceFields }] без существующего перевода для (type,lang).
  *  force=true → НЕ пропускает уже переведённые (для точечного переперевода, обычно с ids). */
-async function getCandidates(sb, type, lang, ids, force = false) {
+async function getCandidates(sb, type, lang, ids, force = false, category = null) {
   if (type === 'page') {
     // Источник статических страниц — реестр scripts/i18n/page-sources/*.json (Phase 2 наполнит).
     const dir = join(__dirname, 'page-sources');
@@ -136,7 +137,11 @@ async function getCandidates(sb, type, lang, ids, force = false) {
   const fields = FIELD_MAP[type];
 
   const baseFilter = (q) => {
-    if (type === 'article') return q.eq('status', 'published');
+    if (type === 'article') {
+      let qq = q.eq('status', 'published');
+      if (category) qq = qq.eq('category', category);
+      return qq;
+    }
     if (type === 'news') return q.eq('is_active', true);
     return q; // players
   };
@@ -252,7 +257,7 @@ async function main() {
       `${args.type}/${args.lang} rows (cost guard still applies). Add --ids to target specific rows.`);
   }
 
-  let candidates = await getCandidates(sb, args.type, args.lang, args.ids, args.force);
+  let candidates = await getCandidates(sb, args.type, args.lang, args.ids, args.force, args.category);
   if (args.limit != null) candidates = candidates.slice(0, args.limit);
   const glossary = await loadGlossary(sb, args.lang);
   const chars = sumChars(candidates);

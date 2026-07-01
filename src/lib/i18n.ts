@@ -210,6 +210,21 @@ export async function getPageAlternates(pageKey: string, enPath: string): Promis
   return buildAlternates(enPath, avail);
 }
 
+/** Alternates for an English article page: en + any published locale translations of it.
+ *  [] when no active locales / no translations → English output unchanged. */
+export async function getArticleAlternates(articleId: number, enPath: string): Promise<Alternate[]> {
+  const active = getActiveLocales();
+  if (active.length === 0) return [];
+  const { data, error } = await supabase
+    .from('article_translations')
+    .select('lang')
+    .eq('article_id', articleId)
+    .eq('status', 'published')
+    .in('lang', active as string[]);
+  if (error || !data || data.length === 0) return [];
+  return buildAlternates(enPath, data.map((r) => r.lang as Locale));
+}
+
 export async function getPlayerTranslation(
   playerId: string,
   locale: Locale,
