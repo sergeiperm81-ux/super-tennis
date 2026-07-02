@@ -24,7 +24,7 @@ import { marked } from 'marked';
 export async function getStaticPaths() {
   // Declared inside — Astro's getStaticPaths runs in an isolated scope and can't see
   // module-level frontmatter consts.
-  const ARTICLE_CATEGORIES = ['lifestyle', 'gear', 'vs', 'records', 'tournaments'];
+  const ARTICLE_CATEGORIES = ['lifestyle', 'gear', 'vs', 'records', 'tournaments', 'players'];
   const locales = getActiveLocales();
   if (locales.length === 0) return [];
 
@@ -61,6 +61,7 @@ const CAT_LABEL: Record<string, Record<string, string>> = {
   vs: { es: 'Cara a cara', fr: 'Face à face', zh: '对阵' },
   records: { es: 'Récords', fr: 'Records', zh: '纪录' },
   tournaments: { es: 'Torneos', fr: 'Tournois', zh: '赛事' },
+  players: { es: 'Jugadores', fr: 'Joueurs', zh: '球员' },
 };
 const HOME_LABEL: Record<string, string> = { es: 'Inicio', fr: 'Accueil', zh: '首页' };
 

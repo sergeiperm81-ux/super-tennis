@@ -10,7 +10,7 @@ import { getArticles, supabase } from '../../../lib/supabase';
 import { getArticlePhotoUrl } from '../../../lib/player-photos';
 
 export async function getStaticPaths() {
-  const CATS = ['lifestyle', 'gear', 'vs', 'records', 'tournaments'];
+  const CATS = ['lifestyle', 'gear', 'vs', 'records', 'tournaments', 'players'];
   const locales = getActiveLocales();
   if (locales.length === 0) return [];
   const paths: Array<{ params: { lang: string; category: string }; props: { locale: Locale; category: string } }> = [];
@@ -24,13 +24,15 @@ const CAT_LABEL: Record<string, Record<string, string>> = {
   vs: { es: 'Cara a cara', fr: 'Face à face', zh: '对阵' },
   records: { es: 'Récords', fr: 'Records', zh: '纪录' },
   tournaments: { es: 'Torneos', fr: 'Tournois', zh: '赛事' },
+  players: { es: 'Jugadores', fr: 'Joueurs', zh: '球员' },
 };
 const HUB_INTRO: Record<string, Record<string, string>> = {
-  lifestyle: { es: 'Historias, cultura y la vida del tenis más allá de la pista.' },
-  gear: { es: 'Guías de raquetas, calzado, cuerdas y accesorios de tenis.' },
-  vs: { es: 'Los grandes duelos y rivalidades del tenis, cara a cara.' },
-  records: { es: 'Los récords y las grandes marcas de la historia del tenis.' },
-  tournaments: { es: 'Guías de los torneos y Grand Slams del tenis.' },
+  lifestyle: { es: 'Historias, cultura y la vida del tenis más allá de la pista.', fr: 'Récits, culture et la vie du tennis au-delà du court.' },
+  gear: { es: 'Guías de raquetas, calzado, cuerdas y accesorios de tenis.', fr: 'Guides de raquettes, chaussures, cordages et accessoires de tennis.' },
+  vs: { es: 'Los grandes duelos y rivalidades del tenis, cara a cara.', fr: 'Les grands duels et rivalités du tennis, face à face.' },
+  records: { es: 'Los récords y las grandes marcas de la historia del tenis.', fr: 'Les records et les grandes marques de l\'histoire du tennis.' },
+  tournaments: { es: 'Guías de los torneos y Grand Slams del tenis.', fr: 'Guides des tournois et Grands Chelems du tennis.' },
+  players: { es: 'Perfiles, estadísticas y carreras de los tenistas.', fr: 'Profils, statistiques et carrières des joueurs de tennis.' },
 };
 const HOME_LABEL: Record<string, string> = { es: 'Inicio', fr: 'Accueil', zh: '首页' };
 
