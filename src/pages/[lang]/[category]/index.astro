@@ -38,7 +38,7 @@ const HOME_LABEL: Record<string, string> = { es: 'Inicio', fr: 'Accueil', zh: 'é
 
 const { locale, category } = Astro.props as { locale: Locale; category: string };
 
-const enArts = await getArticles({ category, limit: 300 });
+const enArts = await getArticles({ category, limit: 500 });
 const ids = enArts.map((a: any) => a.id);
 let transMap = new Map<number, { title: string; excerpt: string | null }>();
 if (ids.length) {
