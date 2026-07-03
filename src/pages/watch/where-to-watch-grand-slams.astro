@@ -5,11 +5,13 @@
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FaqBlock from '../../components/FaqBlock.astro';
+import { getPageAlternates } from '../../lib/i18n';
 
 const title = 'Where to Watch Each Grand Slam in 2026 — Full Broadcaster Guide | SUPER.TENNIS';
 const h1 = 'Where to Watch Each Grand Slam';
 const metaDescription = 'Where every 2026 Grand Slam streams: Australian Open broadcasters (Channel 9, ESPN, Eurosport), Roland Garros (France TV, NBC/Peacock, Discovery+), Wimbledon (BBC, ESPN, Stan Sport), US Open (ESPN, Sky Sport). Region-by-region prices and free options.';
 const publishedDate = '2026-05-18';
+const alternates = await getPageAlternates('watch/where-to-watch-grand-slams', Astro.url.pathname);
 
 const quickAnswer = "Every Grand Slam has its own regional broadcasters. In the US: Australian Open on ESPN/ESPN+, Roland Garros on NBC + Peacock, Wimbledon on ESPN/ABC, US Open on ESPN/ESPN+ (12-year $2B deal). In the UK: Australian Open on Eurosport/Discovery+, Roland Garros on Eurosport/Discovery+, Wimbledon FREE on BBC, US Open on Sky Sport. In Australia: Australian Open FREE on Channel 9, Roland Garros on Stan Sport, Wimbledon on Stan Sport, US Open on Stan Sport. In France: Australian Open on Eurosport, Roland Garros FREE on France Télévisions + Amazon Prime, Wimbledon on beIN Sports, US Open on Eurosport.";
 
@@ -122,7 +124,7 @@ const breadcrumbJsonLd = {
 };
 ---
 
-<BaseLayout title={title} description={metaDescription} ogType="article">
+<BaseLayout title={title} description={metaDescription} ogType="article" alternates={alternates}>
   <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
 

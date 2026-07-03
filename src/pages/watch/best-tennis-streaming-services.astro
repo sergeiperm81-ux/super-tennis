@@ -5,11 +5,13 @@
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FaqBlock from '../../components/FaqBlock.astro';
+import { getPageAlternates } from '../../lib/i18n';
 
 const title = 'Best Tennis Streaming Services 2026 — Compared | SUPER.TENNIS';
 const h1 = 'Best Tennis Streaming Services';
 const metaDescription = 'Best tennis streaming services compared in 2026: Tennis Channel ($9.99/mo), ESPN+ ($10.99/mo), Tennis TV ($120/yr), WTA TV ($100/yr), Eurosport/Discovery+ (€7-12/mo), Stan Sport ($15/mo). Coverage, exclusive matches, and what each service is missing.';
 const publishedDate = '2026-05-18';
+const alternates = await getPageAlternates('watch/best-tennis-streaming-services', Astro.url.pathname);
 
 const quickAnswer = "The best tennis streaming services depend on what you want to watch. Tennis Channel ($9.99/month, US) and ESPN+ ($10.99/month, US) cover most ATP/WTA events plus Grand Slams in the US. Tennis TV (~$120/year) streams every ATP match globally but no Grand Slams. WTA TV (~$100/year) is the women's equivalent. Eurosport/Discovery+ (€7-12/mo regional, Europe) is the European hub. Stan Sport ($15/month, Australia) is the only way to watch most non-AO tennis in Australia. For complete coverage, most fans combine 2-3 services.";
 
@@ -114,7 +116,7 @@ const breadcrumbJsonLd = {
 };
 ---
 
-<BaseLayout title={title} description={metaDescription} ogType="article">
+<BaseLayout title={title} description={metaDescription} ogType="article" alternates={alternates}>
   <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
 

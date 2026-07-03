@@ -5,11 +5,13 @@
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FaqBlock from '../../components/FaqBlock.astro';
+import { getPageAlternates } from '../../lib/i18n';
 
 const title = 'Tennis TV Rights by Country 2026 — Complete Reference | SUPER.TENNIS';
 const h1 = 'Tennis TV Rights by Country';
 const metaDescription = 'Tennis broadcast rights by country in 2026: where to watch ATP Tour, WTA Tour, Australian Open, Roland Garros, Wimbledon, US Open, Davis Cup, and Billie Jean King Cup in the US, UK, Australia, Canada, Spain, France, Germany, Italy, and more.';
 const publishedDate = '2026-05-18';
+const alternates = await getPageAlternates('watch/tennis-tv-rights-by-country', Astro.url.pathname);
 
 const quickAnswer = "Tennis broadcast rights vary by country. The four Grand Slams have separate broadcasters in each region: Australian Open (Channel 9 in AU, ESPN in US, Eurosport across Europe), Roland Garros (France TV + Amazon Prime in France, NBC + Peacock in US, Eurosport elsewhere), Wimbledon (BBC free in UK, ESPN in US, Stan Sport in AU), US Open (ESPN exclusive in US through 2037, Sky Sport in UK). The ATP and WTA tours also sell their own rights — Tennis TV (atptour.com) is global for ATP, WTA TV is global for WTA. This page is the complete country reference.";
 
@@ -167,7 +169,7 @@ const breadcrumbJsonLd = {
 };
 ---
 
-<BaseLayout title={title} description={metaDescription} ogType="article">
+<BaseLayout title={title} description={metaDescription} ogType="article" alternates={alternates}>
   <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
 

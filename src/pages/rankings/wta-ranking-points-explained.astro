@@ -9,11 +9,13 @@
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FaqBlock from '../../components/FaqBlock.astro';
+import { getPageAlternates } from '../../lib/i18n';
 
 const title = 'WTA Ranking Points Explained — 2026 Point Distribution | SUPER.TENNIS';
 const h1 = 'WTA Ranking Points Explained';
 const metaDescription = "WTA ranking points 2026: full point distribution tables for Grand Slams, WTA 1000 (mandatory and non-mandatory), WTA 500, WTA 250, WTA Finals, and ITF events. How the best-16 rule works, the 2024 mandatory-tournament reform, and special rankings for maternity returns.";
 const publishedDate = '2026-05-17';
+const alternates = await getPageAlternates('rankings/wta-ranking-points-explained', Astro.url.pathname);
 
 const quickAnswer = "WTA rankings are based on a player's best 16 results over a 52-week rolling window. Grand Slam champions earn 2,000 points; WTA 1000 winners earn 1,000 (with a slightly higher figure at the 'mandatory' 1000 events under the 2024 reform); WTA 500 winners earn 470-500; WTA 250 winners earn 250-280. The WTA Finals year-end championship awards up to 1,500 points to an undefeated champion. Mandatory event status changed in 2024 with the WTA's strategic restructure; skipping a mandatory event counts as a zero-point result.";
 
@@ -126,7 +128,7 @@ const breadcrumbJsonLd = {
 };
 ---
 
-<BaseLayout title={title} description={metaDescription} ogType="article">
+<BaseLayout title={title} description={metaDescription} ogType="article" alternates={alternates}>
   <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
 

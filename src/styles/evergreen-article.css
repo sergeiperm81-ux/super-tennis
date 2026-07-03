@@ -127,3 +127,42 @@
   font-weight: 700;
 }
 .points-table .ctx, .tb-cell { color: var(--gray-600); font-size: 0.86rem; }
+.article-body em { font-style: italic; color: var(--gray-700); }
+
+/* Live-rankings scenario cards (frozen example-block <div> blocks) */
+.article-body .example-block {
+  margin: 0 0 20px;
+  padding: 14px 18px;
+  background: #f0fdf4;
+  border-left: 3px solid var(--court-green);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.article-body .example-block h3 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--gray-900);
+}
+.article-body .example-block p { margin: 0; font-size: 0.94rem; line-height: 1.65; color: var(--gray-800); }
+
+/* Where-to-watch broadcaster blocks (frozen slam-block <section> + format-table) */
+.article-body .slam-block { margin-bottom: 28px; }
+.article-body .slam-meta { font-size: 0.88rem; color: var(--gray-600); margin: -4px 0 12px; }
+.article-body .format-table .note { color: var(--gray-500); font-size: 0.85rem; }
+.article-body .format-table .price-free { color: var(--court-green); font-weight: 700; }
+.article-body .format-table .price-paid { color: var(--gray-800); }
+.article-body .country-block { margin-bottom: 28px; }
+
+/* Best-streaming-services provider cards (frozen service-block <section>) */
+.article-body .service-block { padding: 18px 22px; background: var(--gray-50); border-radius: var(--radius); margin-bottom: 24px; }
+.article-body .service-block h2 { margin: 0 0 8px !important; font-size: 1.2rem !important; }
+.article-body .service-price { margin: 0 0 14px !important; font-size: 0.95rem !important; color: var(--gray-700); }
+.article-body .service-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 12px; }
+.article-body .service-detail h3 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-500); margin: 0 0 8px; font-family: var(--font-heading); }
+.article-body .service-detail ul { margin: 0 !important; padding-left: 18px !important; font-size: 0.92rem !important; line-height: 1.6 !important; }
+.article-body .service-detail li { margin-bottom: 4px !important; }
+.article-body .service-best, .article-body .service-verdict { margin: 8px 0 0 !important; font-size: 0.92rem !important; line-height: 1.55 !important; }
+.article-body .service-verdict { color: var(--gray-700); font-style: italic; }
+@media (max-width: 720px) { .article-body .service-detail { grid-template-columns: 1fr; } }

@@ -9,11 +9,13 @@
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FaqBlock from '../../components/FaqBlock.astro';
+import { getPageAlternates } from '../../lib/i18n';
 
 const title = 'Live Rankings vs Official Rankings — What\'s the Difference? | SUPER.TENNIS';
 const h1 = 'Live Rankings vs Official Rankings';
 const metaDescription = 'Live rankings vs official rankings explained: how live rankings are calculated in real time during a tournament, why they differ from the Monday official rankings, when live becomes official, and how to interpret "if she wins this match, she becomes No. 1" scenarios.';
 const publishedDate = '2026-05-17';
+const alternates = await getPageAlternates('rankings/live-rankings-vs-official-rankings', Astro.url.pathname);
 
 const quickAnswer = "Official rankings are published every Monday by the ATP and WTA. Live rankings are an unofficial real-time projection of where a player would rank if their current tournament points were applied immediately and the prior year's expiring points dropped off now. During a tournament week, a player's live ranking changes after every match — a winning streak can take them past higher-ranked players who haven't played that week. Live becomes official the Monday after the tournament's last match. Live rankings are tracked by third-party sites (LiveTennis, ATPLiveRankings, TennisLiveRanking.com) — the ATP and WTA themselves only publish the weekly official version.";
 
@@ -96,7 +98,7 @@ const breadcrumbJsonLd = {
 };
 ---
 
-<BaseLayout title={title} description={metaDescription} ogType="article">
+<BaseLayout title={title} description={metaDescription} ogType="article" alternates={alternates}>
   <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
 

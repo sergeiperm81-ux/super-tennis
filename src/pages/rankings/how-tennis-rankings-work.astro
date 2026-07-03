@@ -9,6 +9,9 @@
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FaqBlock from '../../components/FaqBlock.astro';
+import { getPageAlternates } from '../../lib/i18n';
+
+const alternates = await getPageAlternates('rankings/how-tennis-rankings-work', Astro.url.pathname);
 
 const title = 'How Tennis Rankings Work — ATP and WTA Explained (2026) | SUPER.TENNIS';
 const h1 = 'How Tennis Rankings Work';
@@ -81,7 +84,7 @@ const breadcrumbJsonLd = {
 };
 ---
 
-<BaseLayout title={title} description={metaDescription} ogType="article">
+<BaseLayout title={title} description={metaDescription} ogType="article" alternates={alternates}>
   <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
 
