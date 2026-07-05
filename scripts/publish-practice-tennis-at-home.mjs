@@ -54,7 +54,7 @@ It costs almost nothing to set up. Chalk a box on the wall to aim your groundstr
 
 ## When you are ready to invest: the ball machine
 
-For the player who catches the bug properly and wants to practise full-speed hitting alone, there is one serious upgrade: a ball machine. It is the ultimate solo partner — it fires ball after ball at whatever pace, spin and placement you set, letting you groove your groundstrokes for as long as your legs last, with no one on the other side of the net. It is not cheap, and it is overkill for a casual improver, but for a committed one it is the closest thing to having a coach feed you balls on demand. If you have reached that point, our rundown of [the best tennis ball machines](/gear/best-tennis-ball-machines-2026) is the place to start.
+For the player who catches the bug properly and wants to practise full-speed hitting alone, there is one serious upgrade: a ball machine. It is the ultimate solo partner — it fires ball after ball at whatever pace, spin and placement you set, letting you groove your groundstrokes for as long as your legs last, with no one on the other side of the net. It is not cheap, and it is overkill for a casual improver, but for a committed one it is the closest thing to having a coach feed you balls on demand. If you have reached that point, our rundown of [the best tennis ball machines](/gear/best-tennis-ball-machines) is the place to start.
 
 For most people, though, the machine is a someday purchase, and the wall, the ladder, the phone and the bucket of balls will deliver the great majority of the improvement for a tiny fraction of the cost. Start cheap, build the habit, and let your progress — not your enthusiasm on a Wimbledon high — decide whether the bigger kit is worth it.
 
