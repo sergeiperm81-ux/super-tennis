@@ -3,6 +3,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import LiteYouTube from '../../components/LiteYouTube.astro';
 import { getLatestRankings, getArticles } from '../../lib/supabase';
 import { countryFlags, getFlagUrl } from '../../lib/fallback-data';
+import { buildAlternates } from '../../lib/i18n';
+
+// /es/calendar/ exists (localized calendar) → expose reciprocal switcher + hreflang.
+const calendarAlternates = buildAlternates('/calendar/', ['es']);
 
 // Tournament calendar data (2026 season)
 const months = [
@@ -279,6 +283,7 @@ const eventsJsonLd = allTournaments.map(t => {
   description="Complete 2026 tennis tournament calendar. Grand Slams, Masters 1000, ATP and WTA tour dates, locations, and surfaces."
   ogImage="/og/calendar.png"
   dynamicContent={true}
+  alternates={calendarAlternates}
 >
   {eventsJsonLd.map(event => (
     <script type="application/ld+json" set:html={JSON.stringify(event)} />
