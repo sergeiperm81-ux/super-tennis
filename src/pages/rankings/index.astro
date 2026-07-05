@@ -3,6 +3,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import LiteYouTube from '../../components/LiteYouTube.astro';
 import { getLatestRankings, getArticles } from '../../lib/supabase';
 import { countryFlags, countryNames, getFlagUrl } from '../../lib/fallback-data';
+import { buildAlternates } from '../../lib/i18n';
+
+// /es/rankings/ exists (localized live table) → expose reciprocal switcher + hreflang.
+const alternates = buildAlternates('/rankings/', ['es']);
 
 // Fetch real data from Supabase
 let atpRankings = await getLatestRankings('atp', 200);
@@ -107,6 +111,7 @@ const sbCatLabels: Record<string, string> = {
   ogImage="/og/rankings.png"
   jsonLd={rankingsJsonLd}
   dynamicContent={true}
+  alternates={alternates}
 >
   <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
   <div class="rankings-page">

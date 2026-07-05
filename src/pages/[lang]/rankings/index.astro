@@ -1,0 +1,289 @@
+---
+/**
+ * Localized live rankings table (/es/rankings/, future fr/zh).
+ * Reuses the same Supabase ranking data (names/flags/points are language-neutral);
+ * only the chrome (headers, tabs, FAQ, dates) is localized. Single-column — the English
+ * sidebar loads news/videos client-side, so it's omitted here for a clean localized page
+ * (same pilot approach as [lang]/[category]/[slug]).
+ *
+ * Coexists with [lang]/[...page].astro (which owns /es/rankings/<explainer>/) — this file
+ * owns only the bare /es/rankings/ index; the two emit disjoint paths.
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getActiveLocales, buildAlternates, type Locale } from '../../../lib/i18n';
+import { getLatestRankings } from '../../../lib/supabase';
+import { countryFlags, getFlagUrl } from '../../../lib/fallback-data';
+
+export async function getStaticPaths() {
+  const locales = getActiveLocales();
+  if (locales.length === 0) return [];
+  return locales.map((locale) => ({ params: { lang: locale }, props: { locale } }));
+}
+
+const { locale } = Astro.props as { locale: Locale };
+
+const DATE_LOCALE: Record<string, string> = { es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN' };
+const atpRankings = await getLatestRankings('atp', 200);
+const wtaRankings = await getLatestRankings('wta', 200);
+
+const rankingDate = atpRankings[0]?.ranking_date
+  ? new Date(atpRankings[0].ranking_date).toLocaleDateString(DATE_LOCALE[locale] ?? 'es-ES', { month: 'long', day: 'numeric', year: 'numeric' })
+  : 'Latest';
+
+// Localized chrome (es pilot; fr/zh fall back to es keys being absent → English-safe defaults).
+type Chrome = {
+  metaTitle: string; metaDesc: string; home: string; crumb: string; h1: string;
+  subtitle: (d: string) => string; source: string; updated: string;
+  qaLabel: string; qa: string; qaHow: string; qaBasics: string; qaMoney: string;
+  menBadge: string; womenBadge: string; colPlayer: string; colCountry: string; colPoints: string;
+  showMore: string; faqTitle: string;
+};
+const CHROME: Record<string, Chrome> = {
+  es: {
+    metaTitle: 'Ranking ATP y WTA — Clasificación de tenis en directo',
+    metaDesc: 'Ranking ATP y WTA actualizado cada semana, con puntos, país y enlaces a los perfiles de los jugadores.',
+    home: 'Inicio', crumb: 'Ranking', h1: 'Ranking de Tenis',
+    subtitle: (d) => `Ranking ATP y WTA a fecha de ${d}`,
+    source: 'Fuente', updated: 'Actualizado cada lunes',
+    qaLabel: 'Respuesta rápida',
+    qa: 'El ranking ATP y WTA son totales de puntos móviles de 52 semanas que determinan los cabezas de serie y la clasificación para cada torneo del circuito. A fecha de {date}, Jannik Sinner ocupa el No. 1 de la ATP con Carlos Alcaraz muy cerca; en el lado WTA, Aryna Sabalenka e Iga Swiatek son las principales aspirantes. Cada semana, los jugadores defienden los puntos conseguidos 52 semanas antes, y solo cuentan los 19 mejores resultados en la ATP masculina (16 en la WTA). Las actualizaciones se publican cada lunes.',
+    qaHow: 'Cómo funciona el ranking:', qaBasics: 'Lo básico del partido:', qaMoney: 'El dinero:',
+    menBadge: 'Masculino', womenBadge: 'Femenino',
+    colPlayer: 'Jugador', colCountry: 'País', colPoints: 'Puntos',
+    showMore: 'Ver más posiciones', faqTitle: 'Preguntas frecuentes',
+  },
+};
+const t = CHROME[locale] ?? CHROME.es;
+const atpNo1 = atpRankings[0]?.players ? `${atpRankings[0].players.first_name} ${atpRankings[0].players.last_name}` : '';
+const wtaNo1 = wtaRankings[0]?.players ? `${wtaRankings[0].players.first_name} ${wtaRankings[0].players.last_name}` : '';
+
+const faqItems = [
+  { q: '¿Cómo se calcula el ranking ATP?', a: 'El ranking ATP se basa en un sistema de puntos que cuenta los 19 mejores resultados de un jugador en un periodo móvil de 52 semanas. Los puntos se otorgan según lo lejos que llegue el jugador en cada torneo; los Grand Slam y los Masters 1000 son los que más puntos reparten.' },
+  { q: '¿Cómo se calcula el ranking WTA?', a: 'El ranking WTA usa un sistema de puntos basado en los 16 mejores resultados de una jugadora en un periodo móvil de 52 semanas. Los Grand Slam y los WTA 1000 tienen los valores de puntos más altos, premiando las rondas profundas en los torneos más prestigiosos.' },
+  { q: '¿Con qué frecuencia se actualiza el ranking de tenis?', a: 'Tanto la ATP como la WTA actualizan su ranking cada lunes tras la conclusión de cada semana de torneos. Los puntos de los torneos jugados exactamente 52 semanas antes caducan, mientras que se añaden los nuevos puntos de la semana más reciente.' },
+  { q: '¿Quién es el actual No. 1 del mundo en el tenis masculino?', a: `A fecha de ${rankingDate}, ${atpNo1} ocupa el No. 1 del ranking mundial ATP. El No. 1 se determina acumulando la mayor cantidad de puntos de ranking en un periodo de 52 semanas.` },
+  { q: '¿Quién es la actual No. 1 del mundo en el tenis femenino?', a: `A fecha de ${rankingDate}, ${wtaNo1} ocupa el No. 1 del ranking mundial WTA. El No. 1 se basa en el total más alto de puntos de ranking acumulados en las últimas 52 semanas.` },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  inLanguage: locale,
+  mainEntity: faqItems.map((item) => ({ '@type': 'Question', name: item.q, acceptedAnswer: { '@type': 'Answer', text: item.a } })),
+};
+
+const alternates = buildAlternates('/rankings/', [locale]);
+const qaText = t.qa.replace('{date}', rankingDate);
+const p = (loc: string) => `/${loc}`; // localized path prefix helper
+---
+
+<BaseLayout
+  title={t.metaTitle}
+  description={t.metaDesc}
+  ogImage="/og/rankings.png"
+  locale={locale}
+  alternates={alternates}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div class="rankings-page" lang={locale}>
+    <div class="container">
+      <nav class="breadcrumbs"><a href="/">{t.home}</a> <span class="sep">/</span> <span class="current">{t.crumb}</span></nav>
+      <section class="page-hero">
+        <h1>{t.h1}</h1>
+        <p class="subtitle">{t.subtitle(rankingDate)}</p>
+        <p class="data-source">
+          {t.source}: <a href="https://tennisliveranking.com" target="_blank" rel="noopener nofollow">TennisLiveRanking.com</a>
+          {' · '}{t.updated}
+        </p>
+      </section>
+
+      <section class="quick-answer">
+        <h2 class="qa-label">{t.qaLabel}</h2>
+        <p class="qa-text">{qaText}</p>
+        <p class="qa-followup">
+          <strong>{t.qaHow}</strong>
+          <a href={`${p(locale)}/rankings/how-tennis-rankings-work/`}>el sistema completo</a> ·
+          <a href={`${p(locale)}/rankings/atp-ranking-points-explained/`}>puntos ATP</a> ·
+          <a href={`${p(locale)}/rankings/wta-ranking-points-explained/`}>puntos WTA</a> ·
+          <a href={`${p(locale)}/rankings/live-rankings-vs-official-rankings/`}>en directo vs oficial</a>
+          <br />
+          <strong>{t.qaBasics}</strong>
+          <a href={`${p(locale)}/rules/tennis-scoring-explained/`}>puntuación</a> ·
+          <a href={`${p(locale)}/rules/how-many-sets-in-tennis/`}>sets por partido</a>
+          <br />
+          <strong>{t.qaMoney}</strong>
+          <a href={`${p(locale)}/money/how-much-tennis-players-earn/`}>cuánto ganan</a> ·
+          <a href={`${p(locale)}/money/grand-slam-prize-money-breakdown/`}>premios de los Grand Slam</a>
+        </p>
+      </section>
+
+      <main class="rankings-main">
+        <div class="tour-tabs" id="tour-tabs">
+          <button class="tab active" data-tour="atp" onclick="switchTour('atp')">ATP <span class="tab-badge atp">{t.menBadge}</span></button>
+          <button class="tab" data-tour="wta" onclick="switchTour('wta')">WTA <span class="tab-badge wta">{t.womenBadge}</span></button>
+        </div>
+
+        {[
+          { id: 'atp', rows: atpRankings, hidden: false },
+          { id: 'wta', rows: wtaRankings, hidden: true },
+        ].map((tbl) => (
+          <div class="rankings-table-wrap" id={`${tbl.id}-table`} style={tbl.hidden ? 'display: none;' : ''}>
+            {tbl.rows.length > 0 ? (
+              <>
+                <table class="rankings-table">
+                  <thead>
+                    <tr>
+                      <th class="col-rank">#</th>
+                      <th class="col-player">{t.colPlayer}</th>
+                      <th class="col-country">{t.colCountry}</th>
+                      <th class="col-points">{t.colPoints}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tbl.rows.map((r: any) => {
+                      const pl = r.players;
+                      const slug = pl?.slug || '';
+                      const cc = pl?.country_code || '';
+                      const flagSrc = getFlagUrl(cc, 20);
+                      const trClass = (r.ranking <= 10 ? 'top-ten' : '') + (r.ranking > 50 ? ' rank-hidden' : '');
+                      return (
+                        <tr class={trClass} data-rank={r.ranking}>
+                          <td class="col-rank"><span class="rank-num">{r.ranking}</span></td>
+                          <td class="col-player">
+                            <a href={`/players/${slug}/`} class="player-link">
+                              {flagSrc ? (<img src={flagSrc} alt={cc} class="player-flag-img" width="20" height="15" loading="lazy" decoding="async" />) : (<span class="player-flag">{countryFlags[cc] || ''}</span>)}
+                              <span class="player-name">{pl?.first_name} <strong>{pl?.last_name?.toUpperCase()}</strong></span>
+                            </a>
+                          </td>
+                          <td class="col-country">{cc}</td>
+                          <td class="col-points"><strong>{r.points?.toLocaleString(DATE_LOCALE[locale] ?? 'es-ES')}</strong></td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                {tbl.rows.length > 50 && (
+                  <button class="show-more-btn" id={`${tbl.id}-show-more`} data-tour={tbl.id}>{t.showMore}</button>
+                )}
+              </>
+            ) : (
+              <div class="empty-state"><p>—</p></div>
+            )}
+          </div>
+        ))}
+      </main>
+
+      <section class="faq-section">
+        <h2>{t.faqTitle}</h2>
+        <div class="faq-list">
+          {faqItems.map((item) => (
+            <details class="faq-item">
+              <summary class="faq-question">{item.q}</summary>
+              <p class="faq-answer">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ showMoreLabel: t.showMore }}>
+    function switchTour(tour) {
+      document.getElementById('atp-table').style.display = tour === 'atp' ? '' : 'none';
+      document.getElementById('wta-table').style.display = tour === 'wta' ? '' : 'none';
+      document.querySelectorAll('.tour-tabs .tab').forEach(function (btn) {
+        btn.classList.toggle('active', btn.dataset.tour === tour);
+      });
+    }
+    var showState = { atp: 50, wta: 50 };
+    document.querySelectorAll('.show-more-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var tour = btn.dataset.tour;
+        var table = document.getElementById(tour + '-table');
+        var next = showState[tour] + 50;
+        var rows = table.querySelectorAll('tr[data-rank]');
+        rows.forEach(function (row) {
+          if (parseInt(row.dataset.rank) <= next) row.classList.remove('rank-hidden');
+        });
+        showState[tour] = next;
+        if (next >= rows.length) btn.style.display = 'none';
+        else btn.textContent = showMoreLabel + ' (' + next + ' / ' + rows.length + ')';
+      });
+    });
+  </script>
+</BaseLayout>
+
+<style>
+  .rankings-page { padding: 0 24px 60px; }
+  .container { max-width: 1000px; margin: 0 auto; }
+  .breadcrumbs { padding: 20px 0 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .page-hero { padding: 24px 0 32px; border-bottom: 3px solid var(--court-green); margin-bottom: 32px; }
+  .page-hero h1 { font-family: var(--font-heading); font-size: 2.8rem; text-transform: uppercase; color: var(--gray-900); margin: 0; }
+  .subtitle { color: var(--gray-600); font-size: 1.05rem; margin: 8px 0 0; }
+  .data-source { color: var(--gray-500); font-size: 0.8rem; margin: 6px 0 0; }
+  .data-source a { color: var(--gray-500); text-decoration: underline; }
+
+  .quick-answer { margin: 0 0 32px; padding: 16px 20px; background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%); border-left: 3px solid var(--court-green); border-radius: 0 var(--radius) var(--radius) 0; }
+  .qa-label { font-family: var(--font-heading); font-size: 0.78rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--court-green); margin: 0 0 8px; }
+  .qa-text { margin: 0; font-size: 0.98rem; line-height: 1.6; color: var(--gray-800); }
+  .qa-followup { margin: 10px 0 0; font-size: 0.88rem; line-height: 1.55; color: var(--gray-600); padding-top: 10px; border-top: 1px dashed var(--gray-200); }
+  .qa-followup a { color: var(--court-green); }
+
+  .rankings-main { min-width: 0; }
+  .tour-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+  .tab { padding: 10px 24px; font-family: var(--font-heading); font-size: 1rem; text-transform: uppercase; background: var(--gray-100); border: 2px solid var(--gray-200); border-radius: 8px; color: var(--gray-600); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+  .tab:hover { border-color: var(--gray-400); color: var(--gray-800); }
+  .tab.active { background: var(--gray-900); border-color: var(--gray-900); color: white; }
+  .tab-badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 4px; font-family: var(--font-body); letter-spacing: 0.04em; }
+  .tab-badge.atp { background: #003580; color: white; }
+  .tab-badge.wta { background: #7b2d8e; color: white; }
+
+  .rankings-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--gray-200); border-radius: var(--radius); }
+  .rankings-table { width: 100%; display: table; border-collapse: collapse; }
+  .rankings-table thead th { background: var(--gray-100); padding: 12px 16px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-500); font-weight: 600; text-align: left; border-bottom: 2px solid var(--gray-200); }
+  .rankings-table tbody tr { border-bottom: 1px solid var(--gray-100); transition: background 0.15s; }
+  .rankings-table tbody tr:hover { background: var(--gray-50); }
+  .rankings-table tbody tr.top-ten { background: #fffbeb; }
+  .rankings-table tbody tr.top-ten:hover { background: #fff3c4; }
+  .rankings-table td { padding: 10px 16px; font-size: 0.9rem; }
+  .col-rank { width: 60px; text-align: center; }
+  .col-country { width: 80px; text-align: center; font-size: 0.8rem; color: var(--gray-500); font-weight: 500; }
+  .col-points { width: 120px; text-align: right; }
+  .rank-num { font-family: var(--font-heading); font-size: 1rem; font-weight: 700; color: var(--gray-500); }
+  .top-ten .rank-num { color: var(--court-green); }
+  .player-link { display: flex; align-items: center; gap: 10px; color: inherit; transition: color 0.2s; text-decoration: none; }
+  .player-link:hover { color: var(--court-green); }
+  .player-flag { font-size: 1.2rem; }
+  .player-flag-img { border-radius: 1px; vertical-align: middle; }
+  .player-name { font-size: 0.9rem; }
+  .player-name strong { font-family: var(--font-heading); font-size: 0.85rem; }
+  .col-points strong { font-family: var(--font-heading); font-size: 1rem; color: var(--gray-900); }
+  .top-ten .col-points strong { color: var(--court-green); }
+  .empty-state { text-align: center; padding: 48px; color: var(--gray-500); }
+  .rank-hidden { display: none; }
+  .show-more-btn { display: block; width: 100%; padding: 14px; margin-top: 8px; background: var(--court-green, #16a34a); border: 2px solid var(--court-green, #16a34a); border-radius: var(--radius); font-family: var(--font-heading); font-size: 0.95rem; font-weight: 600; color: white; cursor: pointer; transition: opacity 0.2s; text-transform: uppercase; letter-spacing: 0.03em; }
+  .show-more-btn:hover { opacity: 0.85; }
+
+  .faq-section { margin: 48px auto 0; padding-top: 48px; border-top: 1px solid var(--gray-200); }
+  .faq-section h2 { font-family: var(--font-heading); font-size: 1.6rem; text-transform: uppercase; color: var(--gray-900); margin: 0 0 24px; }
+  .faq-list { display: flex; flex-direction: column; gap: 12px; }
+  .faq-item { border: 1px solid var(--gray-200); border-radius: var(--radius); overflow: hidden; }
+  .faq-question { padding: 16px 20px; font-weight: 600; font-size: 0.95rem; cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--gray-50); transition: background 0.15s; }
+  .faq-question::-webkit-details-marker { display: none; }
+  .faq-question::after { content: '+'; font-size: 1.2rem; font-weight: 700; color: var(--gray-400); flex-shrink: 0; }
+  .faq-item[open] .faq-question::after { content: '-'; }
+  .faq-question:hover { background: var(--gray-100); }
+  .faq-answer { padding: 16px 20px; margin: 0; font-size: 0.9rem; line-height: 1.7; color: var(--gray-600); border-top: 1px solid var(--gray-200); }
+
+  @media (max-width: 640px) {
+    .page-hero h1 { font-size: 2rem; }
+    .col-country { display: none; }
+    .rankings-table td { padding: 8px 10px; }
+    .tab { padding: 8px 16px; font-size: 0.9rem; }
+  }
+</style>
