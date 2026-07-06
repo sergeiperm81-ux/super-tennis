@@ -91,7 +91,7 @@ const meta = {
   body,
   category: 'lifestyle',
   status: 'published',
-  meta_title: 'How to Practice Tennis at Home and Get Better',
+  meta_title: 'How to Get Better at Tennis at Home, Without a Court or a Coach',
   meta_description: 'Wimbledon got you itching to play. Here is how to genuinely improve your tennis at home, alone, without a court, a partner or expensive lessons, using a few cheap tools.',
   image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Tennis_forehand_by_random_dave.jpeg/500px-Tennis_forehand_by_random_dave.jpeg',
   image_alt: 'An amateur player hitting a forehand on a park tennis court',
