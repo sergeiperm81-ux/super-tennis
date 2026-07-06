@@ -82,7 +82,7 @@ So the next time Wimbledon lights the fire, do not let it go out when the tourna
 - Reviewed and Banana Tennis Academy: how to practise tennis at home without a court, and the value of recording yourself for feedback
 - General coaching guidance on the split-step, footwork drills and the ball toss as the foundation of a reliable serve
 
-Photo: A tennis practice wall / Bidgee / Wikimedia Commons / CC BY-SA 3.0 AU`;
+Photo: A club player hitting a forehand / Ben Lancaster / Wikimedia Commons / CC BY 2.0`;
 
 const meta = {
   slug,
@@ -93,8 +93,8 @@ const meta = {
   status: 'published',
   meta_title: 'How to Practice Tennis at Home and Get Better',
   meta_description: 'Wimbledon got you itching to play. Here is how to genuinely improve your tennis at home, alone, without a court, a partner or expensive lessons, using a few cheap tools.',
-  image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Tennis_practice_wall_at_Central_Park_in_Leeton.jpg/500px-Tennis_practice_wall_at_Central_Park_in_Leeton.jpg',
-  image_alt: 'A tennis practice wall in a park',
+  image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Tennis_forehand_by_random_dave.jpeg/500px-Tennis_forehand_by_random_dave.jpeg',
+  image_alt: 'An amateur player hitting a forehand on a park tennis court',
   published_at: now,
   updated_at: now,
   ai_model: 'claude-opus-4.8-1m',
