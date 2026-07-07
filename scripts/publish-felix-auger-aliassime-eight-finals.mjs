@@ -90,7 +90,7 @@ const meta = {
   body,
   category: 'lifestyle',
   status: 'published',
-  meta_title: 'Felix Auger-Aliassime Lost His First Eight Finals',
+  meta_title: 'Felix Auger-Aliassime Lost His First Eight Finals. Then He Learned How to Win.',
   meta_description: 'Felix Auger-Aliassime, son of a Togolese immigrant coach, was the prodigy who lost his first eight finals before learning how to win. Now he is in the Wimbledon quarters.',
   image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/F%C3%A9lix_Auger-Aliassime_%282023_DC_Open%29_01_%28cropped%29.jpg/500px-F%C3%A9lix_Auger-Aliassime_%282023_DC_Open%29_01_%28cropped%29.jpg',
   image_alt: 'Felix Auger-Aliassime smiling in a portrait at a tournament',
