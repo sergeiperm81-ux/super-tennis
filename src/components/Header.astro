@@ -1,28 +1,51 @@
 ---
-const navLinks = [
-  { href: '/video/', label: 'Videos' },
-  { href: '/news/', label: 'News' },
-  { href: '/players/', label: 'Players' },
-  { href: '/rankings/', label: 'Rankings' },
-  { href: '/vs/', label: 'H2H' },
-  { href: '/records/', label: 'Records' },
-  { href: '/tournaments/', label: 'Tournaments' },
-  { href: '/calendar/', label: 'Calendar' },
-  { href: '/gear/', label: 'Gear' },
-  { href: '/lifestyle/', label: 'Lifestyle' },
+import { localizedPath, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale?: Locale;
+}
+const { locale = 'en' } = Astro.props as Props;
+
+// `localized` marks sections that have a published /es/ (etc.) version. News/Videos are not
+// localized yet → they keep their English URL even on localized pages (label still translates).
+const NAV = [
+  { key: 'video', href: '/video/', localized: false },
+  { key: 'news', href: '/news/', localized: false },
+  { key: 'players', href: '/players/', localized: true },
+  { key: 'rankings', href: '/rankings/', localized: true },
+  { key: 'vs', href: '/vs/', localized: true },
+  { key: 'records', href: '/records/', localized: true },
+  { key: 'tournaments', href: '/tournaments/', localized: true },
+  { key: 'calendar', href: '/calendar/', localized: true },
+  { key: 'gear', href: '/gear/', localized: true },
+  { key: 'lifestyle', href: '/lifestyle/', localized: true },
 ];
+
+const LABELS: Record<string, Record<string, string>> = {
+  en: { video: 'Videos', news: 'News', players: 'Players', rankings: 'Rankings', vs: 'H2H', records: 'Records', tournaments: 'Tournaments', calendar: 'Calendar', gear: 'Gear', lifestyle: 'Lifestyle' },
+  es: { video: 'Vídeos', news: 'Noticias', players: 'Jugadores', rankings: 'Ranking', vs: 'H2H', records: 'Récords', tournaments: 'Torneos', calendar: 'Calendario', gear: 'Equipamiento', lifestyle: 'Estilo de vida' },
+  fr: { video: 'Vidéos', news: 'Actualités', players: 'Joueurs', rankings: 'Classement', vs: 'H2H', records: 'Records', tournaments: 'Tournois', calendar: 'Calendrier', gear: 'Équipement', lifestyle: 'Style de vie' },
+  zh: { video: '视频', news: '新闻', players: '球员', rankings: '排名', vs: 'H2H', records: '纪录', tournaments: '赛事', calendar: '赛程', gear: '装备', lifestyle: '生活方式' },
+};
+const labels = LABELS[locale] ?? LABELS.en;
+
+const navLinks = NAV.map((n) => ({
+  href: n.localized ? localizedPath(locale, n.href) : n.href,
+  label: labels[n.key] ?? n.key,
+}));
+const homeHref = localizedPath(locale, '/');
 
 // Determine which nav link is active based on current URL
 const currentPath = Astro.url.pathname;
 function isActive(href: string): boolean {
-  if (href === '/') return currentPath === '/';
+  if (href === '/' || href === '/es/' || href === '/fr/' || href === '/zh/') return currentPath === href;
   return currentPath.startsWith(href);
 }
 ---
 
 <header class="header" id="header">
   <div class="container header__inner">
-    <a href="/" class="logo">
+    <a href={homeHref} class="logo">
       <span class="logo__text">
         SUPER
         <svg class="logo__ball" width="18" height="18" viewBox="0 0 64 64" aria-hidden="true">

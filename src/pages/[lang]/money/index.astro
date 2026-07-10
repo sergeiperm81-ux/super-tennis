@@ -1,0 +1,13 @@
+---
+import EvergreenHub from '../../../components/EvergreenHub.astro';
+import { getActiveLocales, type Locale } from '../../../lib/i18n';
+import { getHubMeta } from '../../../lib/evergreen-hubs';
+
+export async function getStaticPaths() {
+  return getActiveLocales()
+    .filter((locale) => getHubMeta('money', locale))
+    .map((locale) => ({ params: { lang: locale }, props: { locale } }));
+}
+const { locale } = Astro.props as { locale: Locale };
+---
+<EvergreenHub locale={locale} section="money" />

@@ -1,53 +1,90 @@
 ---
 import Newsletter from './Newsletter.astro';
+import { localizedPath, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale?: Locale;
+}
+const { locale = 'en' } = Astro.props as Props;
 const currentYear = new Date().getFullYear();
 
-const sections = [
+// `loc: true` → a localized (/es/…) version exists; otherwise the English URL is kept.
+type FLink = { href: string; label: string; loc: boolean };
+const SECTIONS: { titleKey: string; links: (FLink & { key?: string })[] }[] = [
   {
-    title: 'Explore',
+    titleKey: 'explore',
     links: [
-      { href: '/players/', label: 'Players' },
-      { href: '/records/', label: 'Records' },
-      { href: '/tournaments/', label: 'Tournaments' },
-      { href: '/gear/', label: 'Gear' },
-      { href: '/lifestyle/', label: 'Lifestyle' },
-      { href: '/video/', label: 'Videos' },
+      { key: 'players', href: '/players/', label: 'Players', loc: true },
+      { key: 'records', href: '/records/', label: 'Records', loc: true },
+      { key: 'tournaments', href: '/tournaments/', label: 'Tournaments', loc: true },
+      { key: 'gear', href: '/gear/', label: 'Gear', loc: true },
+      { key: 'lifestyle', href: '/lifestyle/', label: 'Lifestyle', loc: true },
+      { key: 'video', href: '/video/', label: 'Videos', loc: false },
     ],
   },
   {
-    title: 'Tools',
+    titleKey: 'tools',
     links: [
-      { href: '/rankings/', label: 'Rankings' },
-      { href: '/calendar/', label: 'Calendar' },
-      { href: '/vs/', label: 'Head to Head' },
-      { href: '/rules/', label: 'Tennis Rules' },
-      { href: '/money/', label: 'Tennis Money' },
-      { href: '/watch/', label: 'How to Watch' },
-      { href: '/stats/', label: 'Site Stats' },
-      { href: '/about/', label: 'About' },
-      { href: '/editorial-standards/', label: 'Editorial Standards' },
-      { href: '/contact/', label: 'Contact' },
-      { href: '/faq/', label: 'FAQ' },
+      { key: 'rankings', href: '/rankings/', label: 'Rankings', loc: true },
+      { key: 'calendar', href: '/calendar/', label: 'Calendar', loc: true },
+      { key: 'vs', href: '/vs/', label: 'Head to Head', loc: true },
+      { key: 'rules', href: '/rules/', label: 'Tennis Rules', loc: true },
+      { key: 'money', href: '/money/', label: 'Tennis Money', loc: true },
+      { key: 'watch', href: '/watch/', label: 'How to Watch', loc: true },
+      { key: 'stats', href: '/stats/', label: 'Site Stats', loc: false },
+      { key: 'about', href: '/about/', label: 'About', loc: true },
+      { key: 'editorial', href: '/editorial-standards/', label: 'Editorial Standards', loc: false },
+      { key: 'contact', href: '/contact/', label: 'Contact', loc: false },
+      { key: 'faq', href: '/faq/', label: 'FAQ', loc: false },
     ],
   },
   {
-    title: 'Popular Players',
+    titleKey: 'popular',
     links: [
-      { href: '/players/novak-djokovic/', label: 'Novak Djokovic' },
-      { href: '/players/carlos-alcaraz/', label: 'Carlos Alcaraz' },
-      { href: '/players/jannik-sinner/', label: 'Jannik Sinner' },
-      { href: '/players/iga-swiatek/', label: 'Iga Swiatek' },
-      { href: '/players/aryna-sabalenka/', label: 'Aryna Sabalenka' },
-      { href: '/players/coco-gauff/', label: 'Coco Gauff' },
+      { href: '/players/novak-djokovic/', label: 'Novak Djokovic', loc: true },
+      { href: '/players/carlos-alcaraz/', label: 'Carlos Alcaraz', loc: true },
+      { href: '/players/jannik-sinner/', label: 'Jannik Sinner', loc: true },
+      { href: '/players/iga-swiatek/', label: 'Iga Swiatek', loc: true },
+      { href: '/players/aryna-sabalenka/', label: 'Aryna Sabalenka', loc: true },
+      { href: '/players/coco-gauff/', label: 'Coco Gauff', loc: true },
     ],
   },
 ];
+
+const HEADINGS: Record<string, Record<string, string>> = {
+  en: { explore: 'Explore', tools: 'Tools', popular: 'Popular Players' },
+  es: { explore: 'Explorar', tools: 'Herramientas', popular: 'Jugadores populares' },
+  fr: { explore: 'Explorer', tools: 'Outils', popular: 'Joueurs populaires' },
+  zh: { explore: '探索', tools: '工具', popular: '热门球员' },
+};
+const LINK_LABELS: Record<string, Record<string, string>> = {
+  es: { players: 'Jugadores', records: 'Récords', tournaments: 'Torneos', gear: 'Equipamiento', lifestyle: 'Estilo de vida', video: 'Vídeos', rankings: 'Ranking', calendar: 'Calendario', vs: 'Cara a cara', rules: 'Reglas del tenis', money: 'Dinero en el tenis', watch: 'Cómo ver tenis', stats: 'Estadísticas', about: 'Acerca de', editorial: 'Normas editoriales', contact: 'Contacto', faq: 'Preguntas frecuentes' },
+  fr: { players: 'Joueurs', records: 'Records', tournaments: 'Tournois', gear: 'Équipement', lifestyle: 'Style de vie', video: 'Vidéos', rankings: 'Classement', calendar: 'Calendrier', vs: 'Face à face', rules: 'Règles du tennis', money: 'Argent du tennis', watch: 'Comment regarder', stats: 'Statistiques', about: 'À propos', editorial: 'Normes éditoriales', contact: 'Contact', faq: 'FAQ' },
+};
+const STRINGS: Record<string, { tagline: string; rights: string; privacy: string; terms: string; disclaimer: string }> = {
+  en: { tagline: 'Tennis for everyone. The world of tennis beyond the court.', rights: 'All rights reserved.', privacy: 'Privacy Policy', terms: 'Terms of Service', disclaimer: 'Player stats sourced from public records. Not affiliated with ATP, WTA, or ITF.' },
+  es: { tagline: 'Tenis para todos. El mundo del tenis más allá de la pista.', rights: 'Todos los derechos reservados.', privacy: 'Política de privacidad', terms: 'Términos del servicio', disclaimer: 'Estadísticas de jugadores obtenidas de registros públicos. No afiliado a la ATP, la WTA ni la ITF.' },
+  fr: { tagline: 'Le tennis pour tous. Le monde du tennis au-delà du court.', rights: 'Tous droits réservés.', privacy: 'Politique de confidentialité', terms: 'Conditions d\'utilisation', disclaimer: 'Statistiques des joueurs issues de registres publics. Non affilié à l\'ATP, la WTA ou l\'ITF.' },
+};
+
+const headings = HEADINGS[locale] ?? HEADINGS.en;
+const linkLabels = LINK_LABELS[locale] ?? {};
+const str = STRINGS[locale] ?? STRINGS.en;
+const homeHref = localizedPath(locale, '/');
+
+const sections = SECTIONS.map((s) => ({
+  title: headings[s.titleKey] ?? s.titleKey,
+  links: s.links.map((l) => ({
+    href: l.loc ? localizedPath(locale, l.href) : l.href,
+    label: (l.key && linkLabels[l.key]) ? linkLabels[l.key] : l.label,
+  })),
+}));
 ---
 
 <footer class="footer">
   <div class="container footer__inner">
     <div class="footer__brand">
-      <a href="/" class="footer__logo">
+      <a href={homeHref} class="footer__logo">
         SUPER
         <svg class="footer__ball" width="14" height="14" viewBox="0 0 64 64" aria-hidden="true">
           <circle cx="32" cy="32" r="30" fill="#ccff00" stroke="#8B9A2B" stroke-width="2"/>
@@ -56,7 +93,7 @@ const sections = [
         </svg>
         TENNIS
       </a>
-      <p class="footer__tagline">Tennis for everyone. The world of tennis beyond the court.</p>
+      <p class="footer__tagline">{str.tagline}</p>
       <div class="footer__social">
         <a href="https://www.youtube.com/@SuperTennisNews" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="YouTube">
           <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
@@ -87,12 +124,12 @@ const sections = [
   </div>
   <div class="footer__bottom">
     <div class="container footer__bottom-inner">
-      <p>&copy; {currentYear} SUPER.TENNIS. All rights reserved.</p>
+      <p>&copy; {currentYear} SUPER.TENNIS. {str.rights}</p>
       <nav class="footer__legal">
-        <a href="/privacy/" class="footer__legal-link">Privacy Policy</a>
-        <a href="/terms/" class="footer__legal-link">Terms of Service</a>
+        <a href="/privacy/" class="footer__legal-link">{str.privacy}</a>
+        <a href="/terms/" class="footer__legal-link">{str.terms}</a>
       </nav>
-      <p class="footer__disclaimer">Player stats sourced from public records. Not affiliated with ATP, WTA, or ITF.</p>
+      <p class="footer__disclaimer">{str.disclaimer}</p>
     </div>
   </div>
 </footer>

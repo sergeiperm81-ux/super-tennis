@@ -1,0 +1,58 @@
+---
+/**
+ * Localized evergreen-hub body (rules/money/watch). Renders a titled card grid linking
+ * to the section's translated pages. Used by [lang]/rules|money|watch/index.astro.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { buildAlternates, type Locale } from '../lib/i18n';
+import { getHubMeta, getHubItems } from '../lib/evergreen-hubs';
+
+interface Props {
+  locale: Locale;
+  section: string;
+}
+const { locale, section } = Astro.props as Props;
+
+const meta = getHubMeta(section, locale);
+const items = await getHubItems(section, locale);
+const alternates = buildAlternates(`/${section}/`, [locale]);
+const title = meta?.title ?? section;
+const intro = meta?.intro ?? '';
+const home = meta?.home ?? 'Inicio';
+---
+
+<BaseLayout title={`${title} | SUPER.TENNIS`} description={intro || title} locale={locale} alternates={alternates}>
+  <div class="ev-hub" lang={locale}>
+    <nav class="ev-hub-crumbs"><a href={`/${locale}/`}>{home}</a> <span>/</span> <span>{title}</span></nav>
+    <header class="ev-hub-head">
+      <h1>{title}</h1>
+      {intro && <p>{intro}</p>}
+    </header>
+    <div class="ev-hub-grid">
+      {items.map((it) => (
+        <a class="ev-hub-card" href={it.path}>
+          <h3>{it.title}</h3>
+          {it.excerpt && <p>{it.excerpt}…</p>}
+        </a>
+      ))}
+    </div>
+    {items.length === 0 && <p class="ev-hub-empty">—</p>}
+  </div>
+
+  <style>
+    .ev-hub { max-width: 900px; margin: 0 auto; padding: 24px 24px 64px; }
+    .ev-hub-crumbs { font-size: 0.82rem; color: var(--gray-500); padding: 8px 0 16px; }
+    .ev-hub-crumbs a { color: var(--gray-600); text-decoration: none; }
+    .ev-hub-crumbs a:hover { color: var(--court-green); }
+    .ev-hub-crumbs span { margin: 0 6px; }
+    .ev-hub-head { border-bottom: 3px solid var(--court-green); padding-bottom: 18px; margin-bottom: 28px; }
+    .ev-hub-head h1 { font-family: var(--font-heading); font-size: 2.2rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--gray-900); margin: 0 0 8px; }
+    .ev-hub-head p { color: var(--gray-600); font-size: 1.02rem; margin: 0; max-width: 640px; }
+    .ev-hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+    .ev-hub-card { display: block; background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 18px 20px; text-decoration: none; color: inherit; transition: var(--transition); }
+    .ev-hub-card:hover { border-color: var(--court-green); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.07); }
+    .ev-hub-card h3 { font-size: 1.02rem; line-height: 1.35; margin: 0 0 8px; color: var(--gray-900); }
+    .ev-hub-card p { font-size: 0.86rem; line-height: 1.5; color: var(--gray-600); margin: 0; }
+    @media (max-width: 600px) { .ev-hub-head h1 { font-size: 1.7rem; } }
+  </style>
+</BaseLayout>

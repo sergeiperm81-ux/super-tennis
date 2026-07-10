@@ -1,0 +1,155 @@
+---
+/**
+ * Localized About page (/es/about/, future fr/zh). Mirrors src/pages/about.astro with
+ * localized copy; coverage-card links point to /es/ sections (news kept English until translated).
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getActiveLocales, localizedPath, buildAlternates, type Locale } from '../../../lib/i18n';
+
+export async function getStaticPaths() {
+  const SUPPORTED = ['es'];
+  return getActiveLocales()
+    .filter((locale) => SUPPORTED.includes(locale))
+    .map((locale) => ({ params: { lang: locale }, props: { locale } }));
+}
+const { locale } = Astro.props as { locale: Locale };
+
+type Copy = {
+  metaTitle: string; metaDesc: string; home: string; crumb: string; h1: string; subtitle: string;
+  missionH: string; mission1: string; mission2: string; coverH: string;
+  dataH: string; data1: string; data2: string; data3Pre: string; data3Link: string; data3Post: string;
+  touchH: string; touchPre: string; touchLink: string; touchPost: string;
+};
+const COPY: Record<string, Copy> = {
+  es: {
+    metaTitle: 'Acerca de SUPER.TENNIS — Tenis para todos',
+    metaDesc: 'Lo mejor del tenis para todos: récords, rivalidades, equipamiento y estilo de vida. Todo lo genial del mundo del tenis, aunque nunca hayas cogido una raqueta.',
+    home: 'Inicio', crumb: 'Acerca de', h1: 'Acerca de SUPER.TENNIS',
+    subtitle: 'Tenis para todos, aunque nunca hayas cogido una raqueta',
+    missionH: 'Nuestra misión',
+    mission1: 'SUPER.TENNIS está hecho para todo el que encuentra fascinante el tenis, tanto si sigues cada Grand Slam como si acabas de descubrir el deporte. Desglosamos los récords, las rivalidades, el equipamiento y el estilo de vida del tenis profesional en contenido accesible, ameno y realmente útil.',
+    mission2: 'Sin muros de jerga. Sin secretismo de expertos. Solo lo mejor del tenis, explicado con claridad.',
+    coverH: 'Qué cubrimos',
+    dataH: 'Nuestros datos',
+    data1: 'Las estadísticas de los jugadores, el ranking y los récords de carrera proceden de datos públicos de la ATP, la WTA y la ITF, junto con bases de datos de tenis consolidadas. Actualizamos el ranking y los perfiles con regularidad para mantener la información al día.',
+    data2: 'SUPER.TENNIS no está afiliado a la ATP, la WTA ni la ITF. Todas las marcas pertenecen a sus respectivos propietarios.',
+    data3Pre: 'Para conocer al detalle cómo informamos, citamos fuentes, verificamos y corregimos nuestro contenido, lee nuestras ',
+    data3Link: 'normas editoriales', data3Post: '.',
+    touchH: 'Contacto',
+    touchPre: '¿Tienes una pregunta, sugerencia o corrección? Escríbenos a través de nuestra ',
+    touchLink: 'página de contacto', touchPost: '.',
+  },
+};
+const t = COPY[locale] ?? COPY.es;
+
+const SECTIONS: { icon: string; key: string; href: string; loc: boolean }[] = [
+  { icon: '🎾', key: 'players', href: '/players/', loc: true },
+  { icon: '📊', key: 'rankings', href: '/rankings/', loc: true },
+  { icon: '🏆', key: 'records', href: '/records/', loc: true },
+  { icon: '⚔️', key: 'vs', href: '/vs/', loc: true },
+  { icon: '🏟️', key: 'tournaments', href: '/tournaments/', loc: true },
+  { icon: '📅', key: 'calendar', href: '/calendar/', loc: true },
+  { icon: '🎒', key: 'gear', href: '/gear/', loc: true },
+  { icon: '💡', key: 'lifestyle', href: '/lifestyle/', loc: true },
+  { icon: '📰', key: 'news', href: '/news/', loc: false },
+];
+const CARD: Record<string, Record<string, { title: string; desc: string }>> = {
+  es: {
+    players: { title: 'Jugadores', desc: 'Más de 200 perfiles detallados con estadísticas, patrimonio, equipamiento y momentos clave de sus carreras' },
+    rankings: { title: 'Ranking', desc: 'Ranking ATP y WTA actual, actualizado con regularidad' },
+    records: { title: 'Récords', desc: 'Récords históricos, clasificaciones y grandes hitos' },
+    vs: { title: 'Cara a cara', desc: 'Rivalidades clásicas y comparativas entre jugadores' },
+    tournaments: { title: 'Torneos', desc: 'Guías de los Grand Slam y los grandes torneos' },
+    calendar: { title: 'Calendario', desc: 'Programa 2026 de los circuitos ATP y WTA' },
+    gear: { title: 'Equipamiento', desc: 'Análisis y guías de raquetas, zapatillas y accesorios' },
+    lifestyle: { title: 'Estilo de vida', desc: 'Patrimonio, cultura, rivalidades e historias más allá de la pista' },
+    news: { title: 'Noticias', desc: 'Las últimas noticias del tenis, actualizadas a diario' },
+  },
+};
+const card = CARD[locale] ?? CARD.es;
+const cards = SECTIONS.map((s) => ({
+  icon: s.icon,
+  href: s.loc ? localizedPath(locale, s.href) : s.href,
+  title: card[s.key]?.title ?? s.key,
+  desc: card[s.key]?.desc ?? '',
+}));
+
+const alternates = buildAlternates('/about/', [locale]);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'SUPER.TENNIS',
+  url: 'https://super.tennis',
+  description: t.metaDesc,
+  sameAs: ['https://www.youtube.com/@SuperTennisNews', 'https://bsky.app/profile/supertennisnews.bsky.social'],
+};
+---
+
+<BaseLayout title={t.metaTitle} description={t.metaDesc} jsonLd={jsonLd} locale={locale} alternates={alternates}>
+  <div class="about-page" lang={locale}>
+    <nav class="breadcrumbs"><a href={`/${locale}/`}>{t.home}</a> <span class="sep">/</span> <span class="current">{t.crumb}</span></nav>
+
+    <header class="page-hero">
+      <h1>{t.h1}</h1>
+      <p class="subtitle">{t.subtitle}</p>
+    </header>
+
+    <section class="about-section">
+      <h2>{t.missionH}</h2>
+      <p>{t.mission1}</p>
+      <p>{t.mission2}</p>
+    </section>
+
+    <section class="about-section">
+      <h2>{t.coverH}</h2>
+      <div class="coverage-grid">
+        {cards.map((s) => (
+          <a href={s.href} class="coverage-card">
+            <span class="coverage-icon">{s.icon}</span>
+            <div>
+              <h3>{s.title}</h3>
+              <p>{s.desc}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="about-section">
+      <h2>{t.dataH}</h2>
+      <p>{t.data1}</p>
+      <p>{t.data2}</p>
+      <p>{t.data3Pre}<a href="/editorial-standards/">{t.data3Link}</a>{t.data3Post}</p>
+    </section>
+
+    <section class="about-section">
+      <h2>{t.touchH}</h2>
+      <p>{t.touchPre}<a href="/contact/">{t.touchLink}</a>{t.touchPost}</p>
+    </section>
+  </div>
+
+  <style>
+    .about-page { max-width: 800px; margin: 0 auto; padding: 0 24px 60px; }
+    .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+    .breadcrumbs a { color: var(--gray-600); transition: color 0.2s; text-decoration: none; }
+    .breadcrumbs a:hover { color: var(--court-green); }
+    .sep { margin: 0 8px; }
+    .current { color: var(--gray-800); font-weight: 500; }
+    .page-hero { padding: 48px 0 32px; border-bottom: 3px solid var(--court-green); margin-bottom: 36px; }
+    .page-hero h1 { font-family: var(--font-heading); font-size: 2.4rem; text-transform: uppercase; color: var(--gray-900); margin: 0; }
+    .subtitle { color: var(--gray-600); font-size: 1.1rem; margin: 8px 0 0; }
+    .about-section { margin-bottom: 40px; }
+    .about-section h2 { font-family: var(--font-heading); font-size: 1.3rem; text-transform: uppercase; color: var(--gray-900); margin: 0 0 16px; padding-bottom: 10px; border-bottom: 2px solid var(--gray-200); }
+    .about-section p { color: var(--gray-700); font-size: 1.02rem; line-height: 1.8; margin: 0 0 16px; }
+    .about-section a { color: var(--court-green); font-weight: 500; transition: color 0.2s; }
+    .about-section a:hover { text-decoration: underline; }
+    .coverage-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 8px; }
+    .coverage-card { display: flex; align-items: flex-start; gap: 12px; padding: 16px; background: var(--gray-50); border-radius: var(--radius-sm); border: 1px solid var(--gray-200); text-decoration: none; color: inherit; transition: all 0.2s; }
+    .coverage-card:hover { border-color: var(--court-green); box-shadow: var(--shadow); transform: translateY(-1px); }
+    .coverage-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 2px; }
+    .coverage-card h3 { font-family: var(--font-body); font-size: 0.92rem; font-weight: 700; margin: 0 0 4px; color: var(--gray-900); }
+    .coverage-card p { font-size: 0.8rem; line-height: 1.5; color: var(--gray-600); margin: 0; }
+    @media (max-width: 768px) { .page-hero h1 { font-size: 1.8rem; } .coverage-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .coverage-grid { grid-template-columns: 1fr; } }
+  </style>
+</BaseLayout>

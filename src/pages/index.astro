@@ -3,6 +3,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import LiteYouTube from '../components/LiteYouTube.astro';
 import { getLatestRankings, getPlayerBySlug, getArticles } from '../lib/supabase';
 import { countryFlags, fallbackPlayers, getFlagUrl } from '../lib/fallback-data';
+import { buildAlternates } from '../lib/i18n';
+
+// /es/ homepage exists → expose reciprocal switcher + hreflang.
+const homeAlternates = buildAlternates('/', ['es']);
 
 // Helper to get player photo by slug
 async function getPlayerPhoto(slug: string): Promise<string> {
@@ -317,7 +321,7 @@ const playerProfile = profilePlayer ? {
 };
 ---
 
-<BaseLayout title="Home" dynamicContent={true}>
+<BaseLayout title="Home" dynamicContent={true} alternates={homeAlternates}>
   <!-- TRENDING NOW ticker bar -->
   <div class="trending-bar" id="trending-bar">
     <div class="trending-bar__label">TRENDING</div>

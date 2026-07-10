@@ -202,7 +202,7 @@ const websiteSchema = {
   <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "58c55eb389e74cd9a957df82216424eb"}' is:inline></script>
 </head>
 <body>
-  <Header />
+  <Header locale={locale} />
   <main style={`padding-top: var(--header-height);`}>
     {switcherLangs.length > 1 && (
       <div data-pagefind-ignore style="max-width:800px;margin:0 auto;padding:14px 24px 0;display:flex;justify-content:flex-end;align-items:center;gap:8px;font-size:0.9rem;">
@@ -216,7 +216,7 @@ const websiteSchema = {
     )}
     <slot />
   </main>
-  <Footer />
+  <Footer locale={locale} />
 
   <!-- Back to top button -->
   <button class="back-to-top" id="back-to-top" aria-label="Back to top" title="Back to top">

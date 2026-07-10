@@ -1,0 +1,148 @@
+---
+/**
+ * Localized homepage (/es/, future fr/zh). A clean localized landing — hero, section grid
+ * and the latest translated articles — rather than a port of the large English homepage.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getActiveLocales, localizedPath, buildAlternates, type Locale } from '../../lib/i18n';
+import { supabase } from '../../lib/supabase';
+import { getArticlePhotoUrl } from '../../lib/player-photos';
+
+export async function getStaticPaths() {
+  const SUPPORTED = ['es'];
+  return getActiveLocales()
+    .filter((locale) => SUPPORTED.includes(locale))
+    .map((locale) => ({ params: { lang: locale }, props: { locale } }));
+}
+const { locale } = Astro.props as { locale: Locale };
+
+type Copy = {
+  metaTitle: string; metaDesc: string; heroTitle: string; heroSub: string;
+  ctaRankings: string; ctaCalendar: string; exploreH: string; latestH: string;
+};
+const COPY: Record<string, Copy> = {
+  es: {
+    metaTitle: 'SUPER.TENNIS — El mundo del tenis, para todos',
+    metaDesc: 'Récords, rivalidades, equipamiento y estilo de vida del tenis profesional. Todo lo genial del mundo del tenis, aunque nunca hayas cogido una raqueta.',
+    heroTitle: 'El mundo del tenis, para todos',
+    heroSub: 'Récords, rivalidades, equipamiento y estilo de vida — todo lo genial del tenis, aunque nunca hayas cogido una raqueta.',
+    ctaRankings: 'Ver el ranking', ctaCalendar: 'Calendario 2026',
+    exploreH: 'Explora', latestH: 'Lo último',
+  },
+};
+const t = COPY[locale] ?? COPY.es;
+
+const SECTIONS: { icon: string; key: string; href: string }[] = [
+  { icon: '🎾', key: 'players', href: '/players/' },
+  { icon: '📊', key: 'rankings', href: '/rankings/' },
+  { icon: '🏆', key: 'records', href: '/records/' },
+  { icon: '⚔️', key: 'vs', href: '/vs/' },
+  { icon: '🏟️', key: 'tournaments', href: '/tournaments/' },
+  { icon: '📅', key: 'calendar', href: '/calendar/' },
+  { icon: '🎒', key: 'gear', href: '/gear/' },
+  { icon: '💡', key: 'lifestyle', href: '/lifestyle/' },
+];
+const CARD: Record<string, Record<string, string>> = {
+  es: { players: 'Jugadores', rankings: 'Ranking', records: 'Récords', vs: 'Cara a cara', tournaments: 'Torneos', calendar: 'Calendario', gear: 'Equipamiento', lifestyle: 'Estilo de vida' },
+};
+const card = CARD[locale] ?? CARD.es;
+const sections = SECTIONS.map((s) => ({ icon: s.icon, href: localizedPath(locale, s.href), label: card[s.key] ?? s.key }));
+
+// Latest translated articles.
+const { data: trans } = await supabase
+  .from('article_translations')
+  .select('article_id, title, updated_at')
+  .eq('lang', locale)
+  .eq('status', 'published')
+  .order('updated_at', { ascending: false })
+  .limit(18);
+const ids = (trans || []).map((r: any) => r.article_id);
+let artMap = new Map<number, { slug: string; category: string; image_url: string | null }>();
+if (ids.length) {
+  const { data: arts } = await supabase.from('articles').select('id, slug, category, image_url').in('id', ids);
+  artMap = new Map((arts || []).map((a: any) => [a.id, { slug: a.slug, category: a.category, image_url: a.image_url }]));
+}
+const ARTICLE_CATS = new Set(['lifestyle', 'gear', 'vs', 'records', 'tournaments', 'players']);
+const latestRaw = (trans || [])
+  .map((r: any) => ({ title: r.title, art: artMap.get(r.article_id) }))
+  .filter((x: any) => x.art && ARTICLE_CATS.has(x.art.category))
+  .slice(0, 9);
+const latest = await Promise.all(
+  latestRaw.map(async (x: any) => ({
+    title: x.title,
+    href: `/${locale}/${x.art.category}/${x.art.slug}/`,
+    image: (await getArticlePhotoUrl(x.art.slug, x.art.category)) || x.art.image_url || null,
+  })),
+);
+
+const alternates = buildAlternates('/', [locale]);
+---
+
+<BaseLayout title={t.metaTitle} description={t.metaDesc} locale={locale} alternates={alternates}>
+  <div class="es-home" lang={locale}>
+    <section class="es-hero">
+      <h1>{t.heroTitle}</h1>
+      <p>{t.heroSub}</p>
+      <div class="es-hero-cta">
+        <a class="btn btn--primary" href={localizedPath(locale, '/rankings/')}>{t.ctaRankings}</a>
+        <a class="btn btn--ghost" href={localizedPath(locale, '/calendar/')}>{t.ctaCalendar}</a>
+      </div>
+    </section>
+
+    <section class="es-block">
+      <h2>{t.exploreH}</h2>
+      <div class="es-sections">
+        {sections.map((s) => (
+          <a class="es-section" href={s.href}>
+            <span class="es-section-icon">{s.icon}</span>
+            <span class="es-section-label">{s.label}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    {latest.length > 0 && (
+      <section class="es-block">
+        <h2>{t.latestH}</h2>
+        <div class="es-cards">
+          {latest.map((a) => (
+            <a class="es-card" href={a.href}>
+              {a.image && <img src={a.image} alt={a.title} loading="lazy" decoding="async" width="320" height="180" />}
+              <h3>{a.title}</h3>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+
+  <style>
+    .es-home { max-width: 1100px; margin: 0 auto; padding: 0 24px 64px; }
+    .es-hero { text-align: center; padding: 48px 0 40px; border-bottom: 3px solid var(--court-green); margin-bottom: 40px; }
+    .es-hero h1 { font-family: var(--font-heading); font-size: 2.8rem; text-transform: uppercase; letter-spacing: 0.02em; color: var(--gray-900); margin: 0 0 14px; line-height: 1.1; }
+    .es-hero p { color: var(--gray-600); font-size: 1.12rem; line-height: 1.6; max-width: 640px; margin: 0 auto 24px; }
+    .es-hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-block; padding: 12px 26px; border-radius: var(--radius); font-family: var(--font-heading); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.03em; text-decoration: none; transition: var(--transition); }
+    .btn--primary { background: var(--court-green); color: #fff; border: 2px solid var(--court-green); }
+    .btn--primary:hover { opacity: 0.88; }
+    .btn--ghost { background: transparent; color: var(--gray-800); border: 2px solid var(--gray-300); }
+    .btn--ghost:hover { border-color: var(--court-green); color: var(--court-green); }
+
+    .es-block { margin-bottom: 44px; }
+    .es-block h2 { font-family: var(--font-heading); font-size: 1.4rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--gray-900); margin: 0 0 20px; }
+
+    .es-sections { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .es-section { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 22px 12px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius); text-decoration: none; color: var(--gray-800); transition: var(--transition); }
+    .es-section:hover { border-color: var(--court-green); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
+    .es-section-icon { font-size: 1.7rem; }
+    .es-section-label { font-family: var(--font-heading); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.03em; }
+
+    .es-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+    .es-card { display: flex; flex-direction: column; background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius); overflow: hidden; text-decoration: none; color: inherit; transition: var(--transition); }
+    .es-card:hover { border-color: var(--court-green); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.07); }
+    .es-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: var(--gray-100); }
+    .es-card h3 { font-size: 0.98rem; line-height: 1.4; margin: 0; padding: 14px 16px 18px; color: var(--gray-900); }
+
+    @media (max-width: 700px) { .es-sections { grid-template-columns: repeat(2, 1fr); } .es-hero h1 { font-size: 2rem; } }
+  </style>
+</BaseLayout>
