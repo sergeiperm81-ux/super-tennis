@@ -1,0 +1,32 @@
+{
+  "page_key": "terms",
+  "source_lang": "en",
+  "source_astro": "src/pages/terms.astro",
+  "note": "Legal page. First bodyBlock is the 'Last updated' line.",
+  "fields": {
+    "title": "Terms of Service | SUPER.TENNIS",
+    "h1": "Terms of Service",
+    "metaDescription": "SUPER.TENNIS Terms of Service: acceptance of terms, description of service, content use, user conduct, and disclaimers.",
+    "bodyBlocks": [
+      "<p><em>Last updated: March 17, 2026</em></p>",
+      "<h2>1. Acceptance of Terms</h2>",
+      "<p>By accessing and using SUPER.TENNIS (\"the Website\"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the Website.</p>",
+      "<h2>2. Description of Service</h2>",
+      "<p>SUPER.TENNIS is a tennis news and entertainment website that provides articles, player profiles, rankings, statistics, and video content about professional tennis.</p>",
+      "<h2>3. Content</h2>",
+      "<p>All content on this Website, including text, images, videos, and graphics, is for informational and entertainment purposes only. Player statistics are sourced from public records. We are not affiliated with ATP, WTA, or ITF.</p>",
+      "<h2>4. User Conduct</h2>",
+      "<p>You agree not to misuse the Website or help anyone else do so. You may not use automated systems to access the Website in a manner that sends more requests than a human can reasonably produce.</p>",
+      "<h2>5. Intellectual Property</h2>",
+      "<p>The content, design, and code of this Website are protected by copyright. You may not reproduce, distribute, or create derivative works without written permission.</p>",
+      "<h2>6. Third-Party Services</h2>",
+      "<p>The Website may integrate with third-party services including YouTube for video distribution and Bluesky for social updates. Use of these services is subject to their respective terms of service.</p>",
+      "<h2>7. Disclaimer</h2>",
+      "<p>The Website is provided \"as is\" without warranties of any kind. We do not guarantee the accuracy or completeness of any information on the Website.</p>",
+      "<h2>8. Changes to Terms</h2>",
+      "<p>We reserve the right to modify these terms at any time. Continued use of the Website constitutes acceptance of modified terms.</p>",
+      "<h2>9. Contact</h2>",
+      "<p>For questions about these Terms of Service, please visit <a href=\"https://super.tennis\">super.tennis</a>.</p>"
+    ]
+  }
+}

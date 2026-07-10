@@ -33,9 +33,9 @@ const SECTIONS: { titleKey: string; links: (FLink & { key?: string })[] }[] = [
       { key: 'watch', href: '/watch/', label: 'How to Watch', loc: true },
       { key: 'stats', href: '/stats/', label: 'Site Stats', loc: false },
       { key: 'about', href: '/about/', label: 'About', loc: true },
-      { key: 'editorial', href: '/editorial-standards/', label: 'Editorial Standards', loc: false },
-      { key: 'contact', href: '/contact/', label: 'Contact', loc: false },
-      { key: 'faq', href: '/faq/', label: 'FAQ', loc: false },
+      { key: 'editorial', href: '/editorial-standards/', label: 'Editorial Standards', loc: true },
+      { key: 'contact', href: '/contact/', label: 'Contact', loc: true },
+      { key: 'faq', href: '/faq/', label: 'FAQ', loc: true },
     ],
   },
   {
@@ -126,8 +126,8 @@ const sections = SECTIONS.map((s) => ({
     <div class="container footer__bottom-inner">
       <p>&copy; {currentYear} SUPER.TENNIS. {str.rights}</p>
       <nav class="footer__legal">
-        <a href="/privacy/" class="footer__legal-link">{str.privacy}</a>
-        <a href="/terms/" class="footer__legal-link">{str.terms}</a>
+        <a href={localizedPath(locale, '/privacy/')} class="footer__legal-link">{str.privacy}</a>
+        <a href={localizedPath(locale, '/terms/')} class="footer__legal-link">{str.terms}</a>
       </nav>
       <p class="footer__disclaimer">{str.disclaimer}</p>
     </div>

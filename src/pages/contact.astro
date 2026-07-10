@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { buildAlternates } from '../lib/i18n';
+const alternates = buildAlternates('/contact/', ['es']);
 
 const breadcrumbJsonLd = {
   '@context': 'https://schema.org',
@@ -14,6 +16,7 @@ const breadcrumbJsonLd = {
 <BaseLayout
   title="Contact SUPER.TENNIS"
   description="Get in touch with the SUPER.TENNIS team. Questions, suggestions, corrections, or partnership inquiries — we'd love to hear from you."
+  alternates={alternates}
 >
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
 

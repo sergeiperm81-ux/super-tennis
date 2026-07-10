@@ -1,8 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { buildAlternates } from '../lib/i18n';
+const alternates = buildAlternates('/terms/', ['es']);
 ---
 
-<BaseLayout title="Terms of Service" description="SUPER.TENNIS Terms of Service">
+<BaseLayout title="Terms of Service" description="SUPER.TENNIS Terms of Service" alternates={alternates}>
 <section class="legal-page">
   <div class="container">
     <h1>Terms of Service</h1>

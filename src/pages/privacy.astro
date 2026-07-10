@@ -1,8 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { buildAlternates } from '../lib/i18n';
+const alternates = buildAlternates('/privacy/', ['es']);
 ---
 
-<BaseLayout title="Privacy Policy" description="SUPER.TENNIS Privacy Policy">
+<BaseLayout title="Privacy Policy" description="SUPER.TENNIS Privacy Policy" alternates={alternates}>
 <section class="legal-page">
   <div class="container">
     <h1>Privacy Policy</h1>

@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getLatestRankings } from '../lib/supabase';
 import { grandSlams, allTimeMensLeaders, allTimeWomensLeaders } from '../data/grand-slam-champions';
+import { buildAlternates } from '../lib/i18n';
 
 // Get current #1 players for dynamic FAQ answers
 let atpNo1 = 'Jannik Sinner';
@@ -112,9 +113,10 @@ const breadcrumbSchema = JSON.stringify({
 
 const title = 'Tennis FAQ — Rules, Rankings, Grand Slams & Gear';
 const description = 'Answers to the most common tennis questions. Learn about rankings, Grand Slam tournaments, scoring rules, gear recommendations, and where to watch tennis.';
+const alternates = buildAlternates('/faq/', ['es']);
 ---
 
-<BaseLayout {title} {description} ogImage="/og/default.png">
+<BaseLayout {title} {description} ogImage="/og/default.png" alternates={alternates}>
   <script type="application/ld+json" set:html={faqSchema} />
   <script type="application/ld+json" set:html={breadcrumbSchema} />
 

@@ -1,0 +1,31 @@
+{
+  "page_key": "editorial-standards",
+  "source_lang": "en",
+  "source_astro": "src/pages/editorial-standards.astro",
+  "note": "E-E-A-T page. Prose only. Internal links kept as English paths.",
+  "fields": {
+    "title": "Editorial Standards — How SUPER.TENNIS Reports Tennis",
+    "h1": "Editorial Standards",
+    "metaDescription": "Our editorial process: faithful-rewrite-only news from named sources, fact-checked stats, a clear corrections policy, and honest transparency about where automation is and isn't used.",
+    "quickAnswer": "How we report tennis — and how we keep it honest.",
+    "bodyBlocks": [
+      "<h2>Who writes SUPER.TENNIS</h2>",
+      "<p>SUPER.TENNIS is an independent tennis publisher. Our content is produced and reviewed by the <strong>SUPER.TENNIS Editorial</strong> team. We do not invent author personas or fake bylines — articles are attributed honestly to our editorial team rather than to fictional writers. We are not affiliated with the ATP, WTA, or ITF; all trademarks belong to their respective owners.</p>",
+      "<h2>How we report the news</h2>",
+      "<p>Our daily news items are <strong>faithful rewrites</strong> of stories first reported by established outlets. That means we summarise a real, already-published event in our own words — we never invent quotes, scores, transfers, injuries, or relationships, and we never add drama that wasn't in the original reporting.</p>",
+      "<ul><li><strong>Every news item links to its original source</strong>, named in plain text (e.g. ESPN, BBC Sport).</li><li>We don't break news or claim first-hand reporting — we summarise and point you to the source.</li><li>Headlines avoid tabloid sensationalism; an automated filter rejects clickbait and fabrication keywords before publication.</li></ul>",
+      "<h2>Where our data comes from</h2>",
+      "<p>Player statistics, rankings, head-to-head records, and all-time records are sourced from publicly available <strong>ATP Tour</strong>, <strong>WTA Tour</strong>, and <strong>ITF</strong> data, along with established reference databases and Wikipedia. News is summarised from outlets including ESPN, BBC Sport, Tennis World USA, Daily Mail Sport, and Bleacher Report.</p>",
+      "<p>Statistical claims on our evergreen pages (records, rankings, prize money) are cross-checked against official tour and tournament sources before publication.</p>",
+      "<h2>Transparency about automation</h2>",
+      "<p>We believe in being honest about how content is made. News summaries are drafted with the help of automation from source RSS feeds, then passed through a fidelity filter that rejects anything that deviates from the source. A weekly quality check removes any item that fails a source-faithfulness review.</p>",
+      "<p>Our long-form work — gear guides, lifestyle features, records explainers, head-to-head analyses, and tournament guides — is written and reviewed manually before it goes live.</p>",
+      "<h2>Corrections</h2>",
+      "<p>We fix mistakes. If you spot a factual error, a broken stat, or a mis-stated record, please tell us via our <a href=\"/contact/\">contact page</a> and we'll review and correct it. When we materially update an article, the page's \"Updated\" date reflects the change.</p>",
+      "<h2>Affiliate disclosure</h2>",
+      "<p>Some pages — mainly gear guides and certain lifestyle articles — contain affiliate links. If you buy through one, we may earn a small commission at no extra cost to you. Affiliate relationships never influence our editorial recommendations or rankings; we flag affiliate content with a visible disclosure on the page.</p>",
+      "<h2>More</h2>",
+      "<p>Learn more <a href=\"/about/\">about SUPER.TENNIS</a> or <a href=\"/contact/\">get in touch</a>.</p>"
+    ]
+  }
+}

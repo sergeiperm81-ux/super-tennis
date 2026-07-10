@@ -1,0 +1,160 @@
+---
+/**
+ * Localized contact page (/es/contact/, future fr/zh). Mirrors src/pages/contact.astro —
+ * same form posting to the Worker /api/contact endpoint, with localized labels & messages.
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getActiveLocales, buildAlternates, type Locale } from '../../../lib/i18n';
+
+export async function getStaticPaths() {
+  const SUPPORTED = ['es'];
+  return getActiveLocales()
+    .filter((locale) => SUPPORTED.includes(locale))
+    .map((locale) => ({ params: { lang: locale }, props: { locale } }));
+}
+const { locale } = Astro.props as { locale: Locale };
+
+type Copy = {
+  metaTitle: string; metaDesc: string; home: string; crumb: string; h1: string; subtitle: string;
+  sendH: string; intro: string; name: string; namePh: string; email: string; subject: string;
+  message: string; msgPh: string; send: string;
+  optGeneral: string; optCorrection: string; optSuggestion: string; optPartnership: string; optOther: string;
+  followH: string; followP: string;
+};
+const COPY: Record<string, Copy> = {
+  es: {
+    metaTitle: 'Contacto | SUPER.TENNIS',
+    metaDesc: 'Ponte en contacto con el equipo de SUPER.TENNIS. Preguntas, sugerencias, correcciones o propuestas de colaboración: nos encantaría saber de ti.',
+    home: 'Inicio', crumb: 'Contacto', h1: 'Contáctanos', subtitle: 'Nos encantaría saber de ti',
+    sendH: 'Envíanos un mensaje',
+    intro: '¿Tienes una pregunta sobre nuestro contenido? ¿Has detectado un error en nuestras estadísticas? ¿Quieres sugerir una función o el perfil de un jugador? Toda opinión es bienvenida.',
+    name: 'Tu nombre', namePh: 'Juan Pérez', email: 'Tu correo electrónico', subject: 'Asunto',
+    message: 'Mensaje', msgPh: 'Tu mensaje...', send: 'Enviar mensaje',
+    optGeneral: 'Pregunta general', optCorrection: 'Corrección de contenido', optSuggestion: 'Sugerencia de función', optPartnership: 'Propuesta de colaboración', optOther: 'Otro',
+    followH: 'Síguenos', followP: 'Mantente al día con el mejor contenido de tenis en nuestras redes sociales.',
+  },
+};
+const t = COPY[locale] ?? COPY.es;
+const alternates = buildAlternates('/contact/', [locale]);
+const MSG = {
+  sending: locale === 'es' ? 'Enviando...' : 'Sending...',
+  ok: locale === 'es' ? '¡Mensaje enviado! Te responderemos pronto.' : "Message sent! We'll get back to you soon.",
+  err: locale === 'es' ? 'Algo salió mal. Inténtalo de nuevo más tarde.' : 'Something went wrong. Please try again later.',
+};
+---
+
+<BaseLayout title={t.metaTitle} description={t.metaDesc} locale={locale} alternates={alternates}>
+  <div class="contact-page" lang={locale}>
+    <nav class="breadcrumbs"><a href={`/${locale}/`}>{t.home}</a> <span class="sep">/</span> <span class="current">{t.crumb}</span></nav>
+
+    <header class="page-hero">
+      <h1>{t.h1}</h1>
+      <p class="subtitle">{t.subtitle}</p>
+    </header>
+
+    <section class="contact-section">
+      <h2>{t.sendH}</h2>
+      <p>{t.intro}</p>
+      <form id="contact-form" class="contact-form">
+        <div class="form-group">
+          <label for="name">{t.name}</label>
+          <input type="text" id="name" name="name" required placeholder={t.namePh} />
+        </div>
+        <div class="form-group">
+          <label for="email">{t.email}</label>
+          <input type="email" id="email" name="email" required placeholder="tucorreo@ejemplo.com" />
+        </div>
+        <div class="form-group">
+          <label for="subject">{t.subject}</label>
+          <select id="subject" name="subject">
+            <option value="general">{t.optGeneral}</option>
+            <option value="correction">{t.optCorrection}</option>
+            <option value="suggestion">{t.optSuggestion}</option>
+            <option value="partnership">{t.optPartnership}</option>
+            <option value="other">{t.optOther}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="message">{t.message}</label>
+          <textarea id="message" name="message" required rows="5" placeholder={t.msgPh}></textarea>
+        </div>
+        <button type="submit" class="submit-btn" id="submit-btn">{t.send}</button>
+        <div id="form-status" class="form-status"></div>
+      </form>
+    </section>
+
+    <section class="contact-section">
+      <h2>{t.followH}</h2>
+      <p>{t.followP}</p>
+      <div class="social-links">
+        <a href="https://www.youtube.com/@SuperTennisNews" target="_blank" rel="noopener noreferrer" class="social-link">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          YouTube
+        </a>
+        <a href="https://bsky.app/profile/supertennisnews.bsky.social" target="_blank" rel="noopener noreferrer" class="social-link">
+          <svg viewBox="0 0 568 501" fill="currentColor" width="22" height="22"><path d="M123.121 33.664C188.241 82.553 258.281 181.68 284 234.873c25.719-53.192 95.759-152.32 160.879-201.21C491.866-1.611 568-28.906 568 49.851c0 17.346-9.945 145.713-15.778 166.555-20.275 72.453-94.155 90.933-159.875 79.748C507.222 316.236 568 349.292 568 397.083c0 67.503-77.226 116.879-120.53 83.847C381.222 431.328 317.486 311.377 284 273.703c-33.486 37.674-97.222 157.625-163.47 207.227C77.226 513.962 0 464.586 0 397.083c0-47.791 60.778-80.847 175.653-100.929C109.933 307.334 36.053 288.859 15.778 216.406 9.945 195.564 0 67.197 0 49.851 0-28.906 76.134-1.611 123.121 33.664z"/></svg>
+          Bluesky
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <script is:inline define:vars={{ MSG }}>
+    const form = document.getElementById('contact-form');
+    const btn = document.getElementById('submit-btn');
+    const status = document.getElementById('form-status');
+    const label = btn?.textContent;
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      btn.disabled = true;
+      btn.textContent = MSG.sending;
+      status.textContent = '';
+      status.className = 'form-status';
+      const data = {
+        name: form.elements.namedItem('name').value,
+        email: form.elements.namedItem('email').value,
+        subject: form.elements.namedItem('subject').value,
+        message: form.elements.namedItem('message').value,
+      };
+      try {
+        const res = await fetch('https://supertennis-cron.sfedoroff.workers.dev/api/contact', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data),
+        });
+        if (res.ok) { status.textContent = MSG.ok; status.className = 'form-status success'; form.reset(); }
+        else throw new Error('Failed');
+      } catch { status.textContent = MSG.err; status.className = 'form-status error'; }
+      btn.disabled = false;
+      btn.textContent = label;
+    });
+  </script>
+
+  <style>
+    .contact-page { max-width: 700px; margin: 0 auto; padding: 0 24px 60px; }
+    .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+    .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+    .breadcrumbs a:hover { color: var(--court-green); }
+    .sep { margin: 0 8px; }
+    .current { color: var(--gray-800); font-weight: 500; }
+    .page-hero { padding: 48px 0 32px; border-bottom: 3px solid var(--court-green); margin-bottom: 36px; }
+    .page-hero h1 { font-family: var(--font-heading); font-size: 2.4rem; text-transform: uppercase; color: var(--gray-900); margin: 0; }
+    .subtitle { color: var(--gray-600); font-size: 1.1rem; margin: 8px 0 0; }
+    .contact-section { margin-bottom: 40px; }
+    .contact-section h2 { font-family: var(--font-heading); font-size: 1.3rem; text-transform: uppercase; color: var(--gray-900); margin: 0 0 12px; padding-bottom: 10px; border-bottom: 2px solid var(--gray-200); }
+    .contact-section p { color: var(--gray-700); font-size: 1.02rem; line-height: 1.8; margin: 0 0 16px; }
+    .contact-form { display: flex; flex-direction: column; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 0.88rem; font-weight: 600; color: var(--gray-800); }
+    .form-group input, .form-group select, .form-group textarea { padding: 10px 14px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 0.95rem; font-family: inherit; color: var(--gray-900); background: var(--white); }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--court-green); }
+    .submit-btn { align-self: flex-start; padding: 12px 28px; background: var(--court-green); color: #fff; border: 2px solid var(--court-green); border-radius: var(--radius); font-family: var(--font-heading); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.03em; cursor: pointer; transition: opacity 0.2s; }
+    .submit-btn:hover { opacity: 0.88; }
+    .submit-btn:disabled { opacity: 0.6; cursor: default; }
+    .form-status { font-size: 0.9rem; }
+    .form-status.success { color: var(--court-green); font-weight: 600; }
+    .form-status.error { color: #dc2626; font-weight: 600; }
+    .social-links { display: flex; gap: 12px; flex-wrap: wrap; }
+    .social-link { display: flex; align-items: center; gap: 8px; padding: 10px 18px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius); color: var(--gray-800); text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: var(--transition); }
+    .social-link:hover { border-color: var(--court-green); color: var(--court-green); }
+    @media (max-width: 768px) { .page-hero h1 { font-size: 1.8rem; } }
+  </style>
+</BaseLayout>
