@@ -1,6 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FaqBlock from '../../components/FaqBlock.astro';
+import { buildAlternates } from '../../lib/i18n';
+
+const hubAlternates = buildAlternates('/vs/', ['es']);
 import { getArticles } from '../../lib/supabase';
 import { stripMarkdown } from '../../lib/fallback-data';
 import { vsPlayerSlugs, getAllVsPlayerSlugs, getPlayerPhotosBatch, slugToName } from '../../lib/player-photos';
@@ -115,6 +118,7 @@ const vsFaqs = [
 ---
 
 <BaseLayout
+  alternates={hubAlternates}
   title="Tennis Head to Head — Greatest Rivalries & Comparisons"
   description="Head-to-head records and rivalry histories of the greatest tennis matchups. Djokovic vs Nadal, Federer vs Nadal, Alcaraz vs Sinner, and more."
   ogImage="/og/vs.png"

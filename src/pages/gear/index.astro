@@ -1,6 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getArticles } from '../../lib/supabase';
+import { buildAlternates } from '../../lib/i18n';
+
+const hubAlternates = buildAlternates('/gear/', ['es']);
 import { stripMarkdown } from '../../lib/fallback-data';
 import { getArticlePhotosForCategory } from '../../lib/player-photos';
 
@@ -134,6 +137,7 @@ const gearFaqJsonLd = {
 ---
 
 <BaseLayout
+  alternates={hubAlternates}
   title="Tennis Gear — Rackets, Shoes & Equipment Reviews"
   description="Expert tennis gear reviews and guides. Find the best rackets, shoes, strings, and equipment for your game. Pro player setups and recommendations."
   ogImage="/og/gear.png"

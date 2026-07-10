@@ -1,6 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import LiteYouTube from '../../components/LiteYouTube.astro';
+import { buildAlternates } from '../../lib/i18n';
+
+const hubAlternates = buildAlternates('/records/', ['es']);
 import { getLeaderboard, getArticles, getPlayerBySlug } from '../../lib/supabase';
 import { countryFlags, fallbackPlayers, getFlagUrl, stripMarkdown } from '../../lib/fallback-data';
 
@@ -412,6 +415,7 @@ function pickRecordImage(article: { slug: string; image_url?: string }, subcateg
 ---
 
 <BaseLayout
+  alternates={hubAlternates}
   title="Tennis Records — All-Time Stats & Achievements"
   description="Complete list of tennis records. Grand Slam records, ranking milestones, serve speed records, and all-time achievements in men's and women's tennis."
   ogImage="/og/records.png"

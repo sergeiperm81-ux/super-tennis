@@ -1,6 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FaqBlock from '../../components/FaqBlock.astro';
+import { buildAlternates } from '../../lib/i18n';
+
+const hubAlternates = buildAlternates('/tournaments/', ['es']);
 import { getArticles } from '../../lib/supabase';
 import { stripMarkdown } from '../../lib/fallback-data';
 
@@ -215,6 +218,7 @@ const tournamentFaqs = [
 ---
 
 <BaseLayout
+  alternates={hubAlternates}
   title="Tennis Tournaments — Grand Slams, Masters & More | 2026 Guide"
   description="Complete guides to every major tennis tournament. Grand Slam history, Masters 1000 events, ATP & WTA Finals, team competitions — plus the 2026 calendar."
   ogImage="/og/tournaments.png"

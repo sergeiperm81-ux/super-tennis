@@ -1,6 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FaqBlock from '../../components/FaqBlock.astro';
+import { buildAlternates } from '../../lib/i18n';
+
+const hubAlternates = buildAlternates('/players/', ['es']);
 import { getLatestRankings, getPlayerBySlug, getDirectoryPlayers } from '../../lib/supabase';
 import { fallbackPlayers, countryFlags, getFlagUrl } from '../../lib/fallback-data';
 
@@ -126,6 +129,7 @@ const playerFaqs = [
 ---
 
 <BaseLayout
+  alternates={hubAlternates}
   title="Tennis Players — Profiles, Rankings & Stats"
   description="Explore profiles of top ATP and WTA tennis players. Career stats, Grand Slam titles, rankings, net worth, and equipment."
   ogImage="/og/players.png"

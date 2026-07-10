@@ -202,18 +202,8 @@ const websiteSchema = {
   <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "58c55eb389e74cd9a957df82216424eb"}' is:inline></script>
 </head>
 <body>
-  <Header locale={locale} />
+  <Header locale={locale} switcherLangs={switcherLangs} />
   <main style={`padding-top: var(--header-height);`}>
-    {switcherLangs.length > 1 && (
-      <div data-pagefind-ignore style="max-width:800px;margin:0 auto;padding:14px 24px 0;display:flex;justify-content:flex-end;align-items:center;gap:8px;font-size:0.9rem;">
-        <span aria-hidden="true" style="opacity:0.55;">🌐</span>
-        {switcherLangs.map((l) => (
-          l.code === locale
-            ? <span style="color:#2d8c3c;font-weight:700;padding:5px 14px;border:1px solid #2d8c3c;border-radius:16px;background:rgba(45,140,60,0.08);">{LANG_LABELS[l.code] ?? l.code}</span>
-            : <a href={l.href} hreflang={l.code} style="color:#4b5563;text-decoration:none;padding:5px 14px;border:1px solid #d1d5db;border-radius:16px;">{LANG_LABELS[l.code] ?? l.code}</a>
-        ))}
-      </div>
-    )}
     <slot />
   </main>
   <Footer locale={locale} />
