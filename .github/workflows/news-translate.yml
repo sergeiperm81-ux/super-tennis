@@ -1,0 +1,58 @@
+name: News Translate — Spanish (forward-only)
+
+# Translates the day's fresh news into Spanish so /es/news/ stays current.
+# Forward-only: --since a recent date, so the ~1300 old English news items are
+# NEVER back-translated (they keep their English URLs). Idempotent — the
+# translator skips items already in news_translations.
+#
+# Timing: 04:20 UTC — after the CF news cron (04:00) + backup (04:10), and
+# BEFORE the deploy (04:30) so the new translations are picked up in that build.
+#
+# Cost: ~8 news/day × ~$0.0002 ≈ well under 1 cent/day (gpt-4o-mini).
+
+on:
+  schedule:
+    - cron: '20 4 * * *'   # 04:20 UTC = 07:20 Sofia
+  workflow_dispatch:        # manual run / backfill a specific window via inputs
+    inputs:
+      since:
+        description: 'ISO date (YYYY-MM-DD); translate news published on/after it'
+        required: false
+        default: ''
+
+jobs:
+  translate-news:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Translate fresh news → Spanish
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TG_BOT: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          set -uo pipefail
+          # Default window: last 2 days (catches today + yesterday if a deploy was missed).
+          SINCE="${{ github.event.inputs.since }}"
+          if [ -z "$SINCE" ]; then SINCE=$(date -u -d '1 day ago' +%Y-%m-%d); fi
+          echo "Translating news published on/after $SINCE → es"
+
+          node scripts/i18n/translate-content.mjs --type news --lang es --since "$SINCE" --confirm
+          CODE=$?
+
+          if [ "$CODE" != "0" ]; then
+            [ -n "${TG_BOT:-}" ] && [ -n "${TG_CHAT:-}" ] && \
+              curl -s -X POST "https://api.telegram.org/bot${TG_BOT}/sendMessage" \
+                -d chat_id="${TG_CHAT}" --data-urlencode "text=⚠️ News ES translation failed (exit $CODE)" >/dev/null || true
+            exit "$CODE"
+          fi

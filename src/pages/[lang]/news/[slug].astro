@@ -1,0 +1,158 @@
+---
+/**
+ * Localized news article (/es/news/[slug], future fr/zh). Forward-only: only news items
+ * that have a published translation in news_translations are emitted — old English news
+ * keeps its English URL. Source of truth for news data is the Worker API (same as the
+ * English route); the translated title/summary/body come from Supabase.
+ */
+import ArticleLayout from '../../../layouts/ArticleLayout.astro';
+import { getActiveLocales, buildAlternates, type Locale } from '../../../lib/i18n';
+import { supabase } from '../../../lib/supabase';
+import { sanitizeArticleHtml } from '../../../lib/sanitize-core.mjs';
+
+export async function getStaticPaths() {
+  const locales = getActiveLocales();
+  if (locales.length === 0) return [];
+
+  // Worker is the source of truth for the news items themselves.
+  let allNews: any[] = [];
+  try {
+    const res = await fetch('https://supertennis-cron.sfedoroff.workers.dev/api/news?limit=2000');
+    if (res.ok) {
+      const data = await res.json();
+      allNews = (Array.isArray(data) ? data : []).filter((n: any) => n.slug && n.id);
+    }
+  } catch {
+    return [];
+  }
+  const byId = new Map(allNews.map((n: any) => [n.id, n]));
+
+  const paths: Array<{ params: { lang: string; slug: string }; props: any }> = [];
+  for (const locale of locales) {
+    const { data: trans } = await supabase
+      .from('news_translations')
+      .select('news_id, title, summary, body')
+      .eq('lang', locale)
+      .eq('status', 'published');
+    const tById = new Map((trans || []).map((t: any) => [t.news_id, t]));
+    // Newest-first list of this locale's translated items (for "related").
+    const localized = allNews
+      .filter((n: any) => tById.has(n.id))
+      .sort((a: any, b: any) => new Date(b.published_at || 0).getTime() - new Date(a.published_at || 0).getTime());
+
+    for (const n of localized) {
+      const t = tById.get(n.id);
+      const related = localized.filter((o: any) => o.id !== n.id).slice(0, 3).map((o: any) => ({
+        slug: o.slug, title: tById.get(o.id).title, published_at: o.published_at,
+      }));
+      paths.push({ params: { lang: locale, slug: n.slug }, props: { locale, article: n, t, related } });
+    }
+  }
+  return paths;
+}
+
+const { locale, article, t, related } = Astro.props as { locale: Locale; article: any; t: any; related: any[] };
+
+const DATE_LOCALE: Record<string, string> = { es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN' };
+const UI: Record<string, { by: string; team: string; source: string; players: string; related: string; news: string; home: string }> = {
+  es: { by: 'Por', team: 'Equipo editorial', source: 'Fuente', players: 'Jugadores en esta historia', related: 'Noticias relacionadas', news: 'Noticias', home: 'Inicio' },
+};
+const ui = UI[locale] ?? UI.es;
+const CAT: Record<string, Record<string, string>> = {
+  es: { scandal: 'Escándalo', love: 'Amor', money: 'Dinero', fashion: 'Moda', viral: 'Viral', buzz: 'Actualidad' },
+};
+const catLabels = CAT[locale] ?? CAT.es;
+
+const cat = article.category || 'buzz';
+const publishedDate = article.published_at || new Date().toISOString();
+const summary = t.summary || (t.body ? t.body.replace(/<[^>]*>/g, '').trim().slice(0, 160) + '…' : '');
+const bodyHtml = t.body ? sanitizeArticleHtml(t.body) : '';
+const dateStr = new Date(publishedDate).toLocaleDateString(DATE_LOCALE[locale] ?? 'es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+const alternates = buildAlternates(`/news/${article.slug}/`, [locale]);
+
+const newsJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'NewsArticle',
+  headline: t.title,
+  description: summary,
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  inLanguage: locale,
+  author: { '@type': 'Organization', '@id': 'https://super.tennis/#organization', name: 'SUPER.TENNIS Editorial', url: 'https://super.tennis/about/' },
+  publisher: { '@type': 'Organization', '@id': 'https://super.tennis/#organization', name: 'SUPER.TENNIS', url: 'https://super.tennis', logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png', width: 1200, height: 630 } },
+  ...(article.image_url && { image: { '@type': 'ImageObject', url: article.image_url } }),
+  mainEntityOfPage: `https://super.tennis/${locale}/news/${article.slug}/`,
+  ...(article.source_url && { isBasedOn: { '@type': 'NewsArticle', url: article.source_url, ...(article.source_name && { publisher: { '@type': 'Organization', name: article.source_name } }) } }),
+};
+---
+
+<ArticleLayout
+  title={t.title}
+  description={summary}
+  breadcrumbs={[
+    { label: ui.home, href: `/${locale}/` },
+    { label: ui.news, href: `/${locale}/news/` },
+    { label: catLabels[cat] || ui.news },
+  ]}
+  image={article.image_url || undefined}
+  publishedDate={publishedDate}
+  category="news"
+  categoryLabel={ui.news}
+  categoryHref={`/${locale}/news/`}
+  locale={locale}
+  alternates={alternates}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(newsJsonLd)} />
+
+  <div class="article-byline" lang={locale}>
+    <span class="byline-label">{ui.by}</span>
+    <a href="/about/" rel="author" class="byline-name">SUPER.TENNIS Editorial</a>
+    <span class="byline-title">— {ui.team}</span>
+    <time class="byline-date" datetime={publishedDate}>{dateStr}</time>
+  </div>
+
+  {article.source_url?.startsWith('https://') && (
+    <div class="news-source">
+      <span class="news-source-label">{ui.source}:</span>
+      <a href={article.source_url} target="_blank" rel="noopener noreferrer">{article.source_name || 'Original'}</a>
+    </div>
+  )}
+
+  <div class="news-body" set:html={bodyHtml} />
+
+  {Array.isArray(article.player_slugs) && article.player_slugs.length > 0 && (
+    <aside class="player-cta">
+      <strong>{ui.players}:</strong>
+      {article.player_slugs.slice(0, 4).map((s: string) => (
+        <a href={`/${locale}/players/${s}/`} class="player-chip">{s.split('-').map((w) => w[0].toUpperCase() + w.slice(1)).join(' ')}</a>
+      ))}
+    </aside>
+  )}
+
+  {related.length > 0 && (
+    <section class="related-news">
+      <h2>{ui.related}</h2>
+      <ul>
+        {related.map((r) => (
+          <li><a href={`/${locale}/news/${r.slug}/`}>{r.title}</a></li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <style>
+    .article-byline { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--gray-500); margin: 0 0 18px; }
+    .byline-name { color: var(--court-green); text-decoration: none; font-weight: 600; }
+    .byline-date { margin-left: auto; }
+    .news-source { font-size: 0.85rem; color: var(--gray-600); margin: 0 0 18px; padding: 8px 12px; background: var(--gray-50); border-radius: var(--radius); }
+    .news-source a { color: var(--court-green); }
+    .player-cta { margin: 28px 0; padding: 14px 16px; background: var(--gray-50); border-radius: var(--radius); display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .player-chip { padding: 4px 12px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 14px; font-size: 0.85rem; color: var(--gray-800); text-decoration: none; }
+    .player-chip:hover { border-color: var(--court-green); color: var(--court-green); }
+    .related-news { margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--gray-200); }
+    .related-news h2 { font-family: var(--font-heading); font-size: 1.2rem; text-transform: uppercase; margin: 0 0 14px; }
+    .related-news ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+    .related-news a { color: var(--gray-800); text-decoration: none; }
+    .related-news a:hover { color: var(--court-green); }
+  </style>
+</ArticleLayout>

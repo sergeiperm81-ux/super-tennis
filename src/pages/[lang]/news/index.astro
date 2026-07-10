@@ -1,0 +1,107 @@
+---
+/**
+ * Localized news index (/es/news/, future fr/zh). Lists the news items that have a
+ * published translation, newest first. Forward-only — old untranslated news is not listed.
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getActiveLocales, buildAlternates, type Locale } from '../../../lib/i18n';
+import { supabase } from '../../../lib/supabase';
+
+export async function getStaticPaths() {
+  const locales = getActiveLocales();
+  if (locales.length === 0) return [];
+  return locales.map((locale) => ({ params: { lang: locale }, props: { locale } }));
+}
+const { locale } = Astro.props as { locale: Locale };
+
+const DATE_LOCALE: Record<string, string> = { es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN' };
+const UI: Record<string, { metaTitle: string; metaDesc: string; home: string; crumb: string; h1: string; subtitle: string; empty: string }> = {
+  es: {
+    metaTitle: 'Noticias de tenis — SUPER.TENNIS',
+    metaDesc: 'Las últimas noticias del tenis: ATP, WTA, Grand Slams, jugadores y más, en español.',
+    home: 'Inicio', crumb: 'Noticias', h1: 'Noticias de Tenis',
+    subtitle: 'Lo último del mundo del tenis, en español.',
+    empty: 'Todavía no hay noticias traducidas.',
+  },
+};
+const ui = UI[locale] ?? UI.es;
+const CAT: Record<string, Record<string, string>> = {
+  es: { scandal: 'Escándalo', love: 'Amor', money: 'Dinero', fashion: 'Moda', viral: 'Viral', buzz: 'Actualidad' },
+};
+const catLabels = CAT[locale] ?? CAT.es;
+
+let allNews: any[] = [];
+try {
+  const res = await fetch('https://supertennis-cron.sfedoroff.workers.dev/api/news?limit=2000');
+  if (res.ok) {
+    const data = await res.json();
+    allNews = (Array.isArray(data) ? data : []).filter((n: any) => n.slug && n.id);
+  }
+} catch {}
+const byId = new Map(allNews.map((n: any) => [n.id, n]));
+
+const { data: trans } = await supabase
+  .from('news_translations')
+  .select('news_id, title')
+  .eq('lang', locale)
+  .eq('status', 'published');
+const items = (trans || [])
+  .map((t: any) => {
+    const n = byId.get(t.news_id);
+    return n ? { slug: n.slug, title: t.title, category: n.category || 'buzz', image: n.image_url || null, date: n.published_at } : null;
+  })
+  .filter(Boolean)
+  .sort((a: any, b: any) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
+
+const fmt = (d: string) => new Date(d).toLocaleDateString(DATE_LOCALE[locale] ?? 'es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+const alternates = buildAlternates('/news/', [locale]);
+---
+
+<BaseLayout title={ui.metaTitle} description={ui.metaDesc} ogImage="/og/default.png" locale={locale} alternates={alternates}>
+  <div class="es-news" lang={locale}>
+    <nav class="es-news-crumbs"><a href={`/${locale}/`}>{ui.home}</a> <span>/</span> <span>{ui.crumb}</span></nav>
+    <header class="es-news-head">
+      <h1>{ui.h1}</h1>
+      <p>{ui.subtitle}</p>
+    </header>
+
+    {items.length === 0 ? (
+      <p class="es-news-empty">{ui.empty}</p>
+    ) : (
+      <div class="es-news-grid">
+        {items.map((it: any) => (
+          <a class="es-news-card" href={`/${locale}/news/${it.slug}/`}>
+            {it.image && <img src={it.image} alt={it.title} loading="lazy" decoding="async" width="320" height="180" />}
+            <div class="es-news-body">
+              <span class="es-news-cat">{catLabels[it.category] || it.category}</span>
+              <h3>{it.title}</h3>
+              <time datetime={it.date}>{fmt(it.date)}</time>
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+
+  <style>
+    .es-news { max-width: 1100px; margin: 0 auto; padding: 24px 24px 64px; }
+    .es-news-crumbs { font-size: 0.82rem; color: var(--gray-500); padding: 8px 0 16px; }
+    .es-news-crumbs a { color: var(--gray-600); text-decoration: none; }
+    .es-news-crumbs a:hover { color: var(--court-green); }
+    .es-news-crumbs span { margin: 0 6px; }
+    .es-news-head { border-bottom: 3px solid var(--court-green); padding-bottom: 18px; margin-bottom: 28px; }
+    .es-news-head h1 { font-family: var(--font-heading); font-size: 2.2rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--gray-900); margin: 0 0 8px; }
+    .es-news-head p { color: var(--gray-600); font-size: 1.02rem; margin: 0; }
+    .es-news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .es-news-card { display: flex; flex-direction: column; background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius); overflow: hidden; text-decoration: none; color: inherit; transition: var(--transition); }
+    .es-news-card:hover { border-color: var(--court-green); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.07); }
+    .es-news-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: var(--gray-100); }
+    .es-news-body { padding: 14px 16px 16px; }
+    .es-news-cat { display: inline-block; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--court-green); margin-bottom: 6px; }
+    .es-news-card h3 { font-size: 0.98rem; line-height: 1.4; margin: 0 0 8px; color: var(--gray-900); }
+    .es-news-card time { font-size: 0.78rem; color: var(--gray-500); }
+    .es-news-empty { color: var(--gray-500); }
+    @media (max-width: 860px) { .es-news-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .es-news-grid { grid-template-columns: 1fr; } .es-news-head h1 { font-size: 1.7rem; } }
+  </style>
+</BaseLayout>

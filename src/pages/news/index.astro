@@ -3,6 +3,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import LiteYouTube from '../../components/LiteYouTube.astro';
 import { getArticles, getLatestRankings, getPlayerBySlug } from '../../lib/supabase';
 import { countryFlags, fallbackPlayers, getFlagUrl } from '../../lib/fallback-data';
+import { buildAlternates } from '../../lib/i18n';
+
+// /es/news/ exists (forward-only translated feed) → reciprocal switcher + hreflang.
+const newsAlternates = buildAlternates('/news/', ['es']);
 
 // Fetch news at build time for SSG (Google can see content).
 // 2026-05-19: removed category filter tabs (owner decision) — news is now
@@ -114,7 +118,7 @@ const sbCatLabels: Record<string, string> = {
 };
 ---
 
-<BaseLayout title="Tennis News" description="Latest tennis news, scandals, fashion, and off-court stories for casual fans." jsonLd={jsonLd} dynamicContent={true}>
+<BaseLayout title="Tennis News" description="Latest tennis news, scandals, fashion, and off-court stories for casual fans." jsonLd={jsonLd} dynamicContent={true} alternates={newsAlternates}>
   <div class="news-page-wrap">
     <div class="container">
 

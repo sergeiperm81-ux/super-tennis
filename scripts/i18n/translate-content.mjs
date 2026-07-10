@@ -32,7 +32,7 @@ const PRICE_OUT = 0.6 / 1e6;
 const OUT_RATIO = { es: 1.1, fr: 1.1, zh: 0.7 };
 
 function parseArgs(argv) {
-  const a = { limit: null, ids: null, model: 'gpt-4o-mini', confirm: false, maxCost: 25, force: false };
+  const a = { limit: null, ids: null, model: 'gpt-4o-mini', confirm: false, maxCost: 25, force: false, since: null };
   for (let i = 0; i < argv.length; i++) {
     const k = argv[i];
     if (k === '--confirm') a.confirm = true;
@@ -44,6 +44,7 @@ function parseArgs(argv) {
     else if (k === '--category') a.category = argv[++i];
     else if (k === '--model') a.model = argv[++i];
     else if (k === '--max-cost') a.maxCost = parseFloat(argv[++i]);
+    else if (k === '--since') a.since = argv[++i]; // news forward-only: only published_at >= this ISO date
   }
   return a;
 }
@@ -102,7 +103,7 @@ async function loadGlossary(sb, lang) {
 
 /** Возвращает кандидатов: [{ key, sourceFields }] без существующего перевода для (type,lang).
  *  force=true → НЕ пропускает уже переведённые (для точечного переперевода, обычно с ids). */
-async function getCandidates(sb, type, lang, ids, force = false, category = null) {
+async function getCandidates(sb, type, lang, ids, force = false, category = null, since = null) {
   if (type === 'page') {
     // Источник статических страниц — реестр scripts/i18n/page-sources/*.json (Phase 2 наполнит).
     const dir = join(__dirname, 'page-sources');
@@ -142,7 +143,11 @@ async function getCandidates(sb, type, lang, ids, force = false, category = null
       if (category) qq = qq.eq('category', category);
       return qq;
     }
-    if (type === 'news') return q.eq('is_active', true);
+    if (type === 'news') {
+      let qq = q.eq('is_active', true);
+      if (since) qq = qq.gte('published_at', since); // forward-only translation window
+      return qq;
+    }
     return q; // players
   };
 
@@ -257,7 +262,7 @@ async function main() {
       `${args.type}/${args.lang} rows (cost guard still applies). Add --ids to target specific rows.`);
   }
 
-  let candidates = await getCandidates(sb, args.type, args.lang, args.ids, args.force, args.category);
+  let candidates = await getCandidates(sb, args.type, args.lang, args.ids, args.force, args.category, args.since);
   if (args.limit != null) candidates = candidates.slice(0, args.limit);
   const glossary = await loadGlossary(sb, args.lang);
   const chars = sumChars(candidates);

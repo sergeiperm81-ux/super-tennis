@@ -2,6 +2,8 @@
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
 import ArticleFooter from '../../components/ArticleFooter.astro';
 import { addInterlinks } from '../../lib/interlinks';
+import { supabase } from '../../lib/supabase';
+import { buildAlternates } from '../../lib/i18n';
 
 export async function getStaticPaths() {
   let allNews: any[] = [];
@@ -21,6 +23,13 @@ export async function getStaticPaths() {
     seen.add(n.slug);
     return true;
   });
+
+  // Which items have a published Spanish translation → show the reciprocal switcher only there.
+  let esIds = new Set<number>();
+  try {
+    const { data } = await supabase.from('news_translations').select('news_id').eq('lang', 'es').eq('status', 'published');
+    esIds = new Set((data || []).map((r: any) => r.news_id));
+  } catch {}
 
   // Pre-compute related news for each article based on overlapping player_slugs.
   // This adds ~2700 internal links across 890 news pages without N+1 DB queries.
@@ -56,7 +65,7 @@ export async function getStaticPaths() {
     }
     return {
       params: { slug: n.slug },
-      props: { article: n, relatedNews: related },
+      props: { article: n, relatedNews: related, hasEs: esIds.has(n.id) },
     };
   });
 }
@@ -65,13 +74,14 @@ function makeSlug(title: string): string {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').substring(0, 80);
 }
 
-const { article, relatedNews = [] } = Astro.props;
+const { article, relatedNews = [], hasEs = false } = Astro.props;
 
 if (!article) {
   return Astro.redirect('/news/');
 }
 
 const slug = makeSlug(article.title);
+const newsAlternates = buildAlternates(`/news/${article.slug || slug}/`, hasEs ? ['es'] : []);
 const cat = article.category || 'buzz';
 const publishedDate = article.published_at || new Date().toISOString();
 const summary = article.excerpt || (article.body ? article.body.replace(/<[^>]*>/g, '').trim().substring(0, 160) + '...' : '');
@@ -145,6 +155,7 @@ const newsJsonLd = {
   category="news"
   categoryLabel="News"
   categoryHref="/news/"
+  alternates={newsAlternates}
 >
   <script type="application/ld+json" set:html={JSON.stringify(newsJsonLd)} />
 
