@@ -75,6 +75,22 @@ function locUrl(category: string, slug: string): string {
   return esSlugs.has(slug) ? `${lp}/${category}/${slug}/` : `/${category}/${slug}/`;
 }
 
+// Map of news_id → localized {title, summary, slug} so the client-side dynamic
+// news blocks (buzz / trending) can render in Spanish (see dynamic-content.js).
+const newsMap: Record<string, { t: string; s: string; slug: string }> = {};
+try {
+  const { data: nt } = await supabase.from('news_translations').select('news_id, title, summary').eq('lang', locale).eq('status', 'published');
+  const nids = (nt || []).map((r: any) => r.news_id);
+  if (nids.length) {
+    const { data: nrows } = await supabase.from('news').select('id, slug').in('id', nids);
+    const slugById = new Map((nrows || []).map((n: any) => [n.id, n.slug]));
+    for (const r of nt || []) {
+      const slug = slugById.get(r.news_id);
+      if (slug) newsMap[String(r.news_id)] = { t: r.title, s: r.summary || '', slug };
+    }
+  }
+} catch {}
+
 const badgeColors: Record<string, string> = {
   PLAYERS: '#4CAF50', RECORDS: '#FF9800', GEAR: '#2196F3', LIFESTYLE: '#E91E63',
   MONEY: '#FFD700', RANKINGS: '#9C27B0', TOURNAMENTS: '#00BCD4', H2H: '#FF5722',
@@ -185,6 +201,7 @@ const S = {
 ---
 
 <BaseLayout title="Inicio" dynamicContent={true} locale={locale} alternates={homeAlternates}>
+  <script type="application/json" id="es-news-map" set:html={JSON.stringify(newsMap)}></script>
   <div class="trending-bar" id="trending-bar">
     <div class="trending-bar__label">{S.trending}</div>
     <div class="trending-bar__track">

@@ -9,6 +9,25 @@
 
   const API = 'https://supertennis-cron.sfedoroff.workers.dev';
 
+  // ── Locale awareness (English behaviour unchanged when lang is en) ──
+  var LOCALE = document.documentElement.getAttribute('lang') || 'en';
+  var ES_NEWS = null;
+  if (LOCALE !== 'en') {
+    try {
+      var _mapEl = document.getElementById('es-news-map');
+      if (_mapEl) ES_NEWS = JSON.parse(_mapEl.textContent || '{}');
+    } catch (e) {}
+  }
+  function _t(en, es) { return LOCALE === 'es' ? es : en; }
+  // Returns localized {title, summary, href} for a news item, or null (→ keep English).
+  function locNews(item) {
+    if (ES_NEWS && item && ES_NEWS[item.id]) {
+      var tr = ES_NEWS[item.id];
+      return { title: tr.t, summary: tr.s, href: '/' + LOCALE + '/news/' + tr.slug + '/' };
+    }
+    return null;
+  }
+
   // ── Cache for API responses ──
   let _newsCache = null;
   let _videosCache = null;
@@ -46,13 +65,13 @@
     if (!dateStr) return '';
     const diff = Date.now() - new Date(dateStr).getTime();
     const mins = Math.floor(diff / 60000);
-    if (mins < 1) return 'Just now';
-    if (mins < 60) return mins + 'm ago';
+    if (mins < 1) return _t('Just now', 'ahora');
+    if (mins < 60) return mins + _t('m ago', ' min');
     const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return hrs + 'h ago';
+    if (hrs < 24) return hrs + _t('h ago', ' h');
     const days = Math.floor(hrs / 24);
-    if (days < 7) return days + 'd ago';
-    return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    if (days < 7) return days + _t('d ago', ' d');
+    return new Date(dateStr).toLocaleDateString(LOCALE === 'es' ? 'es-ES' : 'en-US', { month: 'short', day: 'numeric' });
   }
 
   // ── Escape HTML ──
@@ -69,8 +88,11 @@
   // 2026-05-19: category badge removed for consistency with /news/ page,
   // which no longer surfaces categories (single chronological feed).
   function renderBuzzCard(item) {
-    var href = item.body ? '/news/#' + item.slug : (item.source_url || '#');
-    var target = item.body ? '' : ' target="_blank" rel="noopener"';
+    var L = locNews(item);
+    var href = L ? L.href : (item.body ? '/news/#' + item.slug : (item.source_url || '#'));
+    var target = (L || item.body) ? '' : ' target="_blank" rel="noopener"';
+    var title = L ? L.title : item.title;
+    var summary = L ? L.summary : item.summary;
     var img = item.image_url || '/images/news/court-01.webp';
 
     return '<a href="' + esc(href) + '"' + target + ' class="buzz-card">' +
@@ -78,10 +100,10 @@
         '<img src="' + esc(img) + '" alt="" loading="lazy" onerror="this.src=\'/images/news/court-01.webp\'" />' +
       '</div>' +
       '<div class="buzz-card__body">' +
-        '<h3 class="buzz-card__title">' + esc(item.title) + '</h3>' +
-        '<p class="buzz-card__summary">' + esc(item.summary) + '</p>' +
+        '<h3 class="buzz-card__title">' + esc(title) + '</h3>' +
+        '<p class="buzz-card__summary">' + esc(summary) + '</p>' +
         '<div class="buzz-card__footer">' +
-          '<span class="buzz-card__source">Read more &rarr;</span>' +
+          '<span class="buzz-card__source">' + _t('Read more &rarr;', 'Leer más &rarr;') + '</span>' +
           '<span class="buzz-card__time">' + timeAgo(item.published_at) + '</span>' +
         '</div>' +
       '</div>' +
@@ -171,11 +193,12 @@
   // 2026-05-19: removed category badge — single-feed model on /news/ page
   // makes per-card category labels misleading (most are buzz anyway).
   function renderSidebarNews(item) {
-    var href = item.body ? '/news/#' + item.slug : (item.source_url || '#');
-    var target = item.body ? '' : ' target="_blank" rel="noopener"';
+    var L = locNews(item);
+    var href = L ? L.href : (item.body ? '/news/#' + item.slug : (item.source_url || '#'));
+    var target = (L || item.body) ? '' : ' target="_blank" rel="noopener"';
 
     return '<a href="' + esc(href) + '"' + target + ' class="sb-news-item">' +
-      '<span class="sb-news-title">' + esc(item.title) + '</span>' +
+      '<span class="sb-news-title">' + esc(L ? L.title : item.title) + '</span>' +
       '<span class="sb-news-time">' + timeAgo(item.published_at) + '</span>' +
     '</a>';
   }
@@ -360,11 +383,12 @@
     var items = news.slice(0, 10);
     var html = items.map(function (n) {
       var color = catColors[n.category] || '#16a34a';
-      var href = n.body ? '/news/#' + esc(n.slug) : (n.source_url || '#');
-      var target = n.body ? '' : ' target="_blank" rel="noopener"';
+      var L = locNews(n);
+      var href = L ? L.href : (n.body ? '/news/#' + esc(n.slug) : (n.source_url || '#'));
+      var target = (L || n.body) ? '' : ' target="_blank" rel="noopener"';
       return '<a class="trending-item" href="' + href + '"' + target + '>' +
         '<span class="trending-dot" style="background:' + color + '"></span>' +
-        esc(n.title) + '</a>';
+        esc(L ? L.title : n.title) + '</a>';
     }).join('');
     // Duplicate for seamless loop
     scroll.innerHTML = html + html;
