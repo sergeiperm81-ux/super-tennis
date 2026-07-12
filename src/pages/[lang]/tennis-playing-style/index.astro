@@ -1,0 +1,260 @@
+---
+/**
+ * Localized "What's your tennis style?" quiz (/es/tennis-playing-style/).
+ * Mirrors src/pages/tennis-playing-style.astro with translated copy; player names, ids,
+ * scoring and the share-card images (English templates) are unchanged.
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getActiveLocales, buildAlternates, type Locale } from '../../../lib/i18n';
+
+export async function getStaticPaths() {
+  const SUPPORTED = ['es'];
+  return getActiveLocales()
+    .filter((locale) => SUPPORTED.includes(locale))
+    .map((locale) => ({ params: { lang: locale }, props: { locale } }));
+}
+const { locale } = Astro.props as { locale: Locale };
+const alternates = buildAlternates('/tennis-playing-style/', [locale]);
+---
+
+<BaseLayout
+  title="¿Cuál es tu estilo de tenis? — Test"
+  description="Responde 4 preguntas y descubre qué leyenda del tenis juega como tú. ¿Carlos Alcaraz? ¿Novak Djokovic? ¿Rafael Nadal? Descúbrelo ahora."
+  ogImage="/images/style-card-template.png"
+  locale={locale}
+  alternates={alternates}
+>
+
+<style is:global>
+  .quiz-section { background: var(--gray-50, #f8f9fa); padding: 3rem 1rem 5rem; }
+  .quiz-wrap { max-width: 640px; margin: 0 auto; }
+  .quiz-header { text-align: center; margin-bottom: 2rem; }
+  .quiz-badge { background: #3aaa35; border-radius: 4px; color: #fff; display: inline-block; font-family: var(--font-heading, 'Oswald', sans-serif); font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 1rem; padding: 0.3rem 0.9rem; text-transform: uppercase; }
+  .quiz-header h1 { font-family: var(--font-heading, 'Oswald', sans-serif); font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 700; color: var(--gray-900, #212529); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 1px; }
+  .quiz-header p { color: var(--gray-600, #868e96); font-size: 0.95rem; }
+  .quiz-progress { margin-bottom: 1.5rem; }
+  .quiz-progress-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: #868e96; margin-bottom: 0.4rem; }
+  .quiz-progress-bar { height: 6px; background: #dee2e6; border-radius: 3px; overflow: hidden; }
+  .quiz-progress-fill { height: 100%; background: #3aaa35; border-radius: 3px; transition: width 0.3s ease; }
+  .quiz-question { background: #fff; border-radius: 16px; padding: 1.75rem 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); border: 1px solid #e9ecef; }
+  .quiz-question h2 { font-family: var(--font-heading, 'Oswald', sans-serif); font-size: clamp(1.1rem, 3vw, 1.5rem); font-weight: 700; color: #212529; margin-bottom: 1.25rem; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.25; }
+  .quiz-options { display: flex; flex-direction: column; gap: 0.6rem; }
+  .quiz-option { background: #f8f9fa; border: 2px solid #dee2e6; border-radius: 12px; cursor: pointer; font-size: 0.95rem; font-weight: 500; padding: 0.9rem 1.1rem; text-align: left; transition: all 0.15s ease; color: #343a40; display: flex; align-items: center; gap: 0.6rem; }
+  .quiz-option:hover { border-color: #3aaa35; background: #f4fdf4; color: #1e6b2b; transform: translateX(4px); }
+  .quiz-option.selected { border-color: #3aaa35; background: #eaf7ec; color: #1e6b2b; font-weight: 700; }
+  #quiz-result { display: none; margin-top: 0; }
+  .result-card-img { display: block; max-width: 360px; width: 100%; height: auto; margin: 0 auto 1rem; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+  .result-label { text-align: center; font-family: var(--font-heading, 'Oswald', sans-serif); font-size: 1rem; color: #868e96; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.25rem; }
+  .result-player { text-align: center; font-family: var(--font-heading, 'Oswald', sans-serif); font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 700; color: #212529; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .result-desc { text-align: center; font-size: 0.88rem; color: #868e96; margin-bottom: 1.25rem; line-height: 1.5; }
+  .result-actions { display: flex; flex-direction: column; gap: 0.65rem; }
+  .btn-share { background: #3aaa35; border: none; border-radius: 10px; color: #fff; cursor: pointer; font-size: 0.95rem; font-weight: 700; padding: 0.9rem; transition: background 0.2s; }
+  .btn-share:hover { background: #2d8c2a; }
+  .btn-dl { background: #fff; border: 2px solid #dee2e6; border-radius: 10px; color: #495057; cursor: pointer; font-size: 0.9rem; font-weight: 700; padding: 0.85rem; transition: border-color 0.2s; }
+  .btn-dl:hover { border-color: #3aaa35; color: #2d8c2a; }
+  .btn-retry { background: transparent; border: none; color: #adb5bd; cursor: pointer; font-size: 0.82rem; padding: 0.5rem; transition: color 0.2s; }
+  .btn-retry:hover { color: #495057; }
+</style>
+
+<div class="quiz-section">
+  <div class="quiz-wrap">
+    <div class="quiz-header">
+      <span class="quiz-badge">Test de estilo de tenis</span>
+      <h1>¿Cuál es tu estilo de tenis?</h1>
+      <p>4 preguntas — descubre qué leyenda juega como tú</p>
+    </div>
+
+    <div id="quiz-body">
+      <div class="quiz-progress">
+        <div class="quiz-progress-label">
+          <span id="q-label">Pregunta 1 de 4</span>
+          <span id="q-pct">0%</span>
+        </div>
+        <div class="quiz-progress-bar">
+          <div class="quiz-progress-fill" id="q-fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="quiz-question">
+        <h2 id="q-text"></h2>
+        <div class="quiz-options" id="q-options"></div>
+      </div>
+    </div>
+
+    <div id="quiz-result">
+      <p class="result-label">Tu estilo de tenis se parece a</p>
+      <p class="result-player" id="res-player"></p>
+      <p class="result-desc" id="res-desc"></p>
+      <img id="res-img" class="result-card-img" src="" alt="" width="1080" height="1350" loading="eager" />
+      <div class="result-actions">
+        <button class="btn-share" onclick="shareResult()">🔗 Compartir mi estilo</button>
+        <button class="btn-dl" onclick="downloadResult()">💾 Guardar como imagen</button>
+        <button class="btn-retry" onclick="restartQuiz()">↺ Repetir el test</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+const PLAYERS = {
+  alcaraz: { name: 'Carlos Alcaraz',  id: 'carlos-alcaraz',  desc: 'Explosivo, atlético y sin miedo: atacas desde cualquier situación y no paras de moverte.' },
+  djokovic: { name: 'Novak Djokovic', id: 'novak-djokovic',  desc: 'Frío bajo presión, inquebrantable desde el fondo: el jugador más completo de la era moderna.' },
+  nadal:    { name: 'Rafael Nadal',   id: 'rafael-nadal',    desc: 'Topspin implacable y una voluntad de hierro: desgastas a cada rival hasta que se rinde.' },
+  federer:  { name: 'Roger Federer',  id: 'roger-federer',   desc: 'Elegancia sin esfuerzo, un toque mágico y todos los golpes: verdadero arte en toda la pista.' },
+  murray:   { name: 'Andy Murray',    id: 'andy-murray',     desc: 'Inteligente, aguerrido y nunca vencido: conviertes la defensa en ataque como nadie.' },
+  isner:    { name: 'John Isner',     id: 'john-isner',      desc: 'Tu saque es un arma como ninguna: cuando funciona, los rivales no pueden hacer nada.' },
+  edberg:   { name: 'Stefan Edberg',  id: 'stefan-edberg',   desc: 'Suave, ofensivo y siempre hacia adelante: te encanta cerrar los puntos en la red.' },
+  agassi:   { name: 'Andre Agassi',   id: 'andre-agassi',    desc: 'Pura capacidad de golpeo y brillantez táctica: restas y rediriges el ritmo como un maestro.' },
+};
+
+const QUESTIONS = [
+  {
+    text: 'Cuando tienes ocasión de atacar…',
+    options: [
+      { text: '💥 Lanzo un golpe ganador paralelo',            scores: { alcaraz:3, agassi:2 } },
+      { text: '🎯 Subo a la red y la cierro',                  scores: { edberg:3, federer:2 } },
+      { text: '🔄 Reinicio con seguridad, mantengo el peloteo', scores: { djokovic:2, murray:2, nadal:1 } },
+      { text: '🌀 Cargo mucho topspin y los echo atrás',       scores: { nadal:3, murray:1 } },
+    ],
+  },
+  {
+    text: '¿Tu mayor arma en la pista?',
+    options: [
+      { text: '🔥 Una derecha ganadora atronadora',            scores: { alcaraz:3, agassi:2 } },
+      { text: '🎾 Un revés preciso y penetrante',              scores: { djokovic:3, murray:2 } },
+      { text: '🚀 Un saque potente: ¡que sea un ace!',         scores: { isner:3, edberg:2 } },
+      { text: '🎩 Toque y variedad: dejadas, cortadas',        scores: { federer:3, agassi:1 } },
+    ],
+  },
+  {
+    text: 'Cuando el partido está en juego…',
+    options: [
+      { text: '💪 Subo mi nivel y voy a por todas',            scores: { alcaraz:3, federer:1, agassi:1 } },
+      { text: '🧊 Me mantengo frío, que se ganen cada punto',  scores: { djokovic:3, murray:1 } },
+      { text: '🏃 Corro cada bola: nunca me rindo',            scores: { nadal:3, murray:2 } },
+      { text: '💣 Confío en mi saque para salir del apuro',    scores: { isner:3, edberg:1 } },
+    ],
+  },
+  {
+    text: '¿Tu superficie soñada?',
+    options: [
+      { text: '🏖️ Tierra batida: peloteos largos, batalla mental pura', scores: { nadal:3, murray:1 } },
+      { text: '🌿 Hierba: rápida y explosiva, saca fuerte',    scores: { edberg:3, isner:2, federer:1 } },
+      { text: '🏟️ Pista dura: neutral, gana el mejor',        scores: { djokovic:2, agassi:3, alcaraz:1 } },
+      { text: '🏠 Cualquier superficie: me adapto a todo',     scores: { federer:3, murray:2, djokovic:1 } },
+    ],
+  },
+];
+
+let current = 0;
+let scores = {};
+let resultPlayer = null;
+
+function initScores() {
+  scores = {};
+  Object.keys(PLAYERS).forEach(k => scores[k] = 0);
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[current];
+  const pct = Math.round((current / QUESTIONS.length) * 100);
+  document.getElementById('q-label').textContent = `Pregunta ${current + 1} de ${QUESTIONS.length}`;
+  document.getElementById('q-pct').textContent = pct + '%';
+  document.getElementById('q-fill').style.width = pct + '%';
+  document.getElementById('q-text').textContent = q.text;
+
+  const opts = document.getElementById('q-options');
+  opts.innerHTML = q.options.map((o, i) => `
+    <button class="quiz-option" onclick="answer(${i})">${o.text}</button>
+  `).join('');
+}
+
+function answer(optIdx) {
+  const q = QUESTIONS[current];
+  const chosen = q.options[optIdx];
+
+  document.querySelectorAll('.quiz-option').forEach((b, i) => {
+    if (i === optIdx) b.classList.add('selected');
+    b.disabled = true;
+  });
+
+  Object.entries(chosen.scores).forEach(([k, v]) => {
+    scores[k] = (scores[k] || 0) + v;
+  });
+
+  setTimeout(() => {
+    current++;
+    if (current < QUESTIONS.length) {
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  }, 380);
+}
+
+function showResult() {
+  const winner = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+  resultPlayer = PLAYERS[winner];
+
+  document.getElementById('quiz-body').style.display = 'none';
+  const result = document.getElementById('quiz-result');
+  result.style.display = 'block';
+
+  document.getElementById('res-player').textContent = resultPlayer.name;
+  document.getElementById('res-desc').textContent = resultPlayer.desc;
+  const img = document.getElementById('res-img');
+  img.src = `/images/style-cards/${resultPlayer.id}.png`;
+  img.alt = `Mi estilo de tenis: ${resultPlayer.name}`;
+
+  result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function restartQuiz() {
+  current = 0;
+  initScores();
+  resultPlayer = null;
+  document.getElementById('quiz-result').style.display = 'none';
+  document.getElementById('quiz-body').style.display = 'block';
+  renderQuestion();
+}
+
+async function getBlob() {
+  const res = await fetch(`/images/style-cards/${resultPlayer.id}.png`);
+  return res.blob();
+}
+
+async function shareResult() {
+  if (!resultPlayer) return;
+  const blob = await getBlob();
+  const file = new File([blob], `mi-estilo-de-tenis-${resultPlayer.id}.png`, { type: 'image/png' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({
+        files: [file],
+        title: `Mi estilo de tenis: ${resultPlayer.name}`,
+        text: `Mi estilo de tenis se parece más al de ${resultPlayer.name} 🎾\n¿Y el tuyo? super.tennis/es/tennis-playing-style`,
+      });
+      return;
+    } catch (e) {
+      if (e.name === 'AbortError') return;
+    }
+  }
+  downloadResult();
+}
+
+async function downloadResult() {
+  if (!resultPlayer) return;
+  const blob = await getBlob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `mi-estilo-de-tenis-${resultPlayer.id}.png`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+initScores();
+renderQuestion();
+</script>
+
+</BaseLayout>

@@ -1,11 +1,14 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { buildAlternates } from '../lib/i18n';
+const alternates = buildAlternates('/tennis-playing-style/', ['es']);
 ---
 
 <BaseLayout
   title="What's Your Tennis Playing Style? — Quiz"
   description="Answer 4 questions and find out which tennis legend plays like you. Carlos Alcaraz? Novak Djokovic? Rafael Nadal? Find out now."
   ogImage="/images/style-card-template.png"
+  alternates={alternates}
 >
 
 <style is:global>

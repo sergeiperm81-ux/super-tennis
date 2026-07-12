@@ -1,0 +1,322 @@
+---
+/**
+ * Localized "Which tennis legend are you?" quiz (/es/tennis-legend-quiz/).
+ * Mirrors src/pages/tennis-legend-quiz.astro with translated copy; legend names, emojis,
+ * scoring and the html2canvas share-card logic are unchanged.
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getActiveLocales, buildAlternates, type Locale } from '../../../lib/i18n';
+
+export async function getStaticPaths() {
+  const SUPPORTED = ['es'];
+  return getActiveLocales()
+    .filter((locale) => SUPPORTED.includes(locale))
+    .map((locale) => ({ params: { lang: locale }, props: { locale } }));
+}
+const { locale } = Astro.props as { locale: Locale };
+const alternates = buildAlternates('/tennis-legend-quiz/', [locale]);
+---
+
+<BaseLayout
+  title="¿Qué leyenda del tenis eres? | Test"
+  description="Responde 6 preguntas y descubre qué leyenda del tenis coincide con tu personalidad y estilo de juego. ¡Comparte tu resultado!"
+  locale={locale}
+  alternates={alternates}
+>
+
+<style>
+  .quiz-wrap { max-width: 680px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+  .quiz-header { text-align: center; margin-bottom: 2.5rem; }
+  .quiz-header h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 800; color: var(--text-primary, #fff); margin-bottom: 0.5rem; }
+  .quiz-header p { color: var(--text-secondary, #aaa); font-size: 1rem; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+  .progress-bar { background: rgba(255,255,255,0.1); border-radius: 4px; height: 6px; margin-bottom: 2rem; overflow: hidden; }
+  .progress-fill { background: #e8c547; height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+  .progress-label { text-align: right; font-size: 0.8rem; color: var(--text-secondary, #aaa); margin-bottom: 0.4rem; }
+  .question-text { font-size: 1.3rem; font-weight: 700; color: var(--text-primary, #fff); margin-bottom: 1.5rem; line-height: 1.4; }
+  .options { display: flex; flex-direction: column; gap: 0.75rem; }
+  .option-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: var(--text-primary, #fff); cursor: pointer; font-size: 0.95rem; padding: 1rem 1.25rem; text-align: left; transition: all 0.2s; }
+  .option-btn:hover { background: rgba(232,197,71,0.12); border-color: #e8c547; transform: translateX(4px); }
+  .option-btn.selected { background: rgba(232,197,71,0.18); border-color: #e8c547; color: #e8c547; }
+  #result-card { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); border: 1px solid rgba(232,197,71,0.3); border-radius: 20px; overflow: hidden; margin-bottom: 1.5rem; }
+  .result-card-inner { padding: 2rem; text-align: center; }
+  .result-emoji { font-size: 3.5rem; display: block; margin-bottom: 0.5rem; }
+  .result-label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; color: #e8c547; margin-bottom: 0.25rem; }
+  .result-name { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem; }
+  .result-years { font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 1rem; }
+  .result-traits { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 1.25rem; }
+  .trait-tag { background: rgba(232,197,71,0.15); border: 1px solid rgba(232,197,71,0.3); border-radius: 20px; color: #e8c547; font-size: 0.78rem; font-weight: 600; padding: 0.3rem 0.75rem; }
+  .result-desc { color: rgba(255,255,255,0.8); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.25rem; }
+  .result-stat { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 0.75rem; font-size: 0.85rem; color: rgba(255,255,255,0.7); }
+  .result-stat strong { color: #e8c547; }
+  .result-branding { font-size: 0.75rem; color: rgba(255,255,255,0.3); margin-top: 1rem; letter-spacing: 1px; }
+  .action-btns { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+  .btn-share { background: #1da1f2; border: none; border-radius: 12px; color: #fff; cursor: pointer; font-size: 0.95rem; font-weight: 700; padding: 0.9rem; text-decoration: none; text-align: center; display: block; transition: opacity 0.2s; }
+  .btn-share:hover { opacity: 0.85; }
+  .btn-download { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; color: #fff; cursor: pointer; font-size: 0.95rem; font-weight: 600; padding: 0.9rem; transition: background 0.2s; }
+  .btn-download:hover { background: rgba(255,255,255,0.14); }
+  .btn-retake { background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; color: rgba(255,255,255,0.5); cursor: pointer; font-size: 0.85rem; padding: 0.75rem; transition: all 0.2s; }
+  .btn-retake:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
+  .start-screen { text-align: center; padding: 1rem 0 2rem; }
+  .start-icon { font-size: 4rem; display: block; margin-bottom: 1rem; }
+  .start-screen h2 { font-size: 1.5rem; color: var(--text-primary, #fff); margin-bottom: 0.75rem; }
+  .start-screen p { color: var(--text-secondary, #aaa); margin-bottom: 2rem; line-height: 1.6; }
+  .btn-start { background: #e8c547; border: none; border-radius: 12px; color: #111; cursor: pointer; font-size: 1.1rem; font-weight: 800; padding: 1rem 3rem; transition: transform 0.2s, opacity 0.2s; }
+  .btn-start:hover { transform: scale(1.04); opacity: 0.9; }
+  .legend-previews { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; }
+  .legend-preview { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; font-size: 0.8rem; padding: 0.35rem 0.85rem; color: var(--text-secondary, #aaa); }
+</style>
+
+<div class="quiz-wrap" lang={locale}>
+  <div class="quiz-header">
+    <h1>🎾 ¿Qué leyenda del tenis eres?</h1>
+    <p>6 preguntas para encontrar tu leyenda del tenis</p>
+  </div>
+
+  <div id="screen-start" class="screen active">
+    <div class="start-screen">
+      <span class="start-icon">🏆</span>
+      <h2>Descubre tu leyenda interior del tenis</h2>
+      <p>¿Eres el genio elegante de Federer, el luchador incansable de Nadal o la potencia táctica de Djokovic? Responde 6 preguntas rápidas y descúbrelo.</p>
+      <div class="legend-previews">
+        <span class="legend-preview">Roger Federer</span>
+        <span class="legend-preview">Rafael Nadal</span>
+        <span class="legend-preview">Novak Djokovic</span>
+        <span class="legend-preview">Serena Williams</span>
+        <span class="legend-preview">Carlos Alcaraz</span>
+        <span class="legend-preview">Pete Sampras</span>
+        <span class="legend-preview">Andre Agassi</span>
+        <span class="legend-preview">Iga Swiatek</span>
+      </div>
+      <button class="btn-start" onclick="startQuiz()">Empezar test →</button>
+    </div>
+  </div>
+
+  <div id="screen-question" class="screen">
+    <div class="progress-label" id="progress-label">Pregunta 1 de 6</div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="question-text" id="question-text"></div>
+    <div class="options" id="options-container"></div>
+  </div>
+
+  <div id="screen-result" class="screen">
+    <div id="result-card">
+      <div class="result-card-inner">
+        <span class="result-emoji" id="result-emoji">🏆</span>
+        <div class="result-label">Juegas como</div>
+        <div class="result-name" id="result-name">Roger Federer</div>
+        <div class="result-years" id="result-years">20 Grand Slams · 2003–2022</div>
+        <div class="result-traits" id="result-traits"></div>
+        <div class="result-desc" id="result-desc"></div>
+        <div class="result-stat" id="result-stat"></div>
+        <div class="result-branding">super.tennis/es/tennis-legend-quiz</div>
+      </div>
+    </div>
+    <div class="action-btns">
+      <a id="btn-twitter" class="btn-share" target="_blank" rel="noopener">Compartir en X / Twitter</a>
+      <button class="btn-download" onclick="downloadCard()">💾 Guardar como imagen</button>
+      <button class="btn-retake" onclick="retakeQuiz()">↺ Repetir el test</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script is:inline>
+const QUESTIONS = [
+  {
+    q: "En la pista, ¿qué describe mejor tu juego?",
+    options: [
+      { text: "Elegancia sin esfuerzo: hago que parezca fácil", scores: { federer: 3, agassi: 1 } },
+      { text: "Pura intensidad: cada punto es una batalla", scores: { nadal: 3, serena: 2 } },
+      { text: "Maestría táctica: pienso más que mi rival", scores: { djokovic: 3, swiatek: 2 } },
+      { text: "Creatividad pura: improviso y entretengo", scores: { alcaraz: 3, agassi: 2 } },
+    ],
+  },
+  {
+    q: "¿Tu superficie soñada?",
+    options: [
+      { text: "🌿 Hierba: velocidad, saque, pura magia de Wimbledon", scores: { federer: 3, sampras: 3 } },
+      { text: "🧱 Tierra: peloteos largos, topspin pesado, aguanto todo el día", scores: { nadal: 3, swiatek: 3 } },
+      { text: "🔵 Pista dura: soy constante en todas partes, la dura es mi base", scores: { djokovic: 2, serena: 2, sinner: 2 } },
+      { text: "🎾 Da igual: gano en todas", scores: { federer: 2, djokovic: 2, alcaraz: 2 } },
+    ],
+  },
+  {
+    q: "Punto de partido. ¿Cómo te sientes?",
+    options: [
+      { text: "Tranquilo. He estado aquí mil veces.", scores: { federer: 2, sampras: 3, sinner: 2 } },
+      { text: "El corazón me late a mil, y ahí es cuando mejor juego", scores: { nadal: 3, serena: 2 } },
+      { text: "Concentrado. Frío como el hielo. Mi rival debería tener miedo.", scores: { djokovic: 3, swiatek: 2 } },
+      { text: "Emocionado: vivo para estos momentos. ¡Vamos!", scores: { alcaraz: 3, agassi: 2 } },
+    ],
+  },
+  {
+    q: "¿Tu arma más peligrosa?",
+    options: [
+      { text: "El saque: los aces lo cambian todo", scores: { sampras: 3, serena: 2 } },
+      { text: "La derecha: pesada, rápida, implacable", scores: { nadal: 3, federer: 2 } },
+      { text: "El resto: le rompo el saque a cualquiera", scores: { djokovic: 3, agassi: 2 } },
+      { text: "Mis piernas: no doy una bola por perdida", scores: { nadal: 2, djokovic: 2, swiatek: 2, alcaraz: 3 } },
+    ],
+  },
+  {
+    q: "¿Cómo te describirían los aficionados fuera de la pista?",
+    options: [
+      { text: "Elegante e inspirador: un verdadero embajador", scores: { federer: 3, nadal: 1 } },
+      { text: "Apasionado y auténtico: llevas el corazón en la mano", scores: { nadal: 3, serena: 2 } },
+      { text: "Intenso y ambicioso: siempre quieres más", scores: { djokovic: 3, swiatek: 2 } },
+      { text: "Carismático y divertido: la gente viene a verme A MÍ", scores: { agassi: 3, alcaraz: 2 } },
+    ],
+  },
+  {
+    q: "Elige el título de Grand Slam de tus sueños:",
+    options: [
+      { text: "🍓 Wimbledon: la catedral del tenis", scores: { federer: 3, sampras: 3 } },
+      { text: "🏺 Roland Garros: la prueba definitiva de un campeón", scores: { nadal: 3, swiatek: 3 } },
+      { text: "🏆 Abierto de Australia: llego en mi mejor momento cada enero", scores: { djokovic: 3, sinner: 2 } },
+      { text: "🗽 US Open: sesiones nocturnas, el público, pura electricidad", scores: { serena: 2, agassi: 3, alcaraz: 2 } },
+    ],
+  },
+];
+
+const LEGENDS = {
+  federer: {
+    name: 'Roger Federer', emoji: '✨', years: '20 Grand Slams · 2003–2018',
+    traits: ['Elegancia', 'Rey de la hierba', 'Todas las pistas', 'Debate GOAT'],
+    desc: "Juegas con una gracia sin esfuerzo: el tenis como arte. Haces que los golpes más difíciles parezcan rutina, nunca pierdes la calma y crees que la pista es un escenario. Wimbledon se hizo para ti.",
+    stat: '🏆 8× campeón de Wimbledon · 5 años consecutivos desde 2003',
+  },
+  nadal: {
+    name: 'Rafael Nadal', emoji: '🔥', years: '22 Grand Slams · 2005–2024',
+    traits: ['Rey de la tierra', 'Nunca rendirse', 'Luchador', 'Pasión'],
+    desc: "Puro espíritu de lucha. Te niegas a aceptar la derrota hasta el último punto, tu pasión se ve en cada bola y los rivales temen tu intensidad. El Rey de la Tierra, y más allá.",
+    stat: '🏺 14× campeón de Roland Garros — un récord que quizá nunca caiga',
+  },
+  djokovic: {
+    name: 'Novak Djokovic', emoji: '🧊', years: '24 Grand Slams · 2008–2023',
+    traits: ['Gigante mental', 'Táctico', 'Todas las superficies', 'Ganador absoluto'],
+    desc: "El campeón completo. Combinas una fortaleza mental inigualable con precisión táctica y excelencia física. Mejoras cuanto más difícil se pone el partido, y tus rivales lo saben.",
+    stat: '🏆 Más títulos de Grand Slam de la historia — 24 y subiendo',
+  },
+  serena: {
+    name: 'Serena Williams', emoji: '👑', years: '23 Grand Slams · 1999–2022',
+    traits: ['Dominante', 'Potencia', 'Campeona', 'Icono'],
+    desc: "La potencia se une a la mentalidad de campeona. Intimidas a las rivales antes del primer punto. Cuando estás fina, nadie puede pararte, y tu legado va mucho más allá del tenis.",
+    stat: '👑 23 Grand Slams · Más que ningún jugador en la Era Abierta',
+  },
+  sampras: {
+    name: 'Pete Sampras', emoji: '🎯', years: '14 Grand Slams · 1990–2002',
+    traits: ['Saque y volea', 'Leyenda de la hierba', 'Decisivo', 'Asesino silencioso'],
+    desc: "Dejas que tu tenis hable. Frío bajo presión, un saque que es un arma y un récord en Wimbledon que resistió 32 años. Los campeones no necesitan focos, solo resultados.",
+    stat: '🌿 7× campeón de Wimbledon · No.1 de fin de año 6 años seguidos',
+  },
+  agassi: {
+    name: 'Andre Agassi', emoji: '⚡', years: '8 Grand Slams · 1992–2003',
+    traits: ['Rey del resto', 'Regreso', 'Personalidad', 'Espectáculo'],
+    desc: "La imagen lo es todo… hasta que tu tenis habla más alto. Eres el showman definitivo, con un resto demoledor, una remontada de carrera increíble y una personalidad que llena cualquier estadio.",
+    stat: '⚡ Golden Slam de carrera · Los 4 Grand Slams + oro olímpico',
+  },
+  swiatek: {
+    name: 'Iga Swiatek', emoji: '🌪️', years: '4+ Grand Slams · 2020–presente',
+    traits: ['Reina de la tierra', 'Dominante', 'Concentrada', 'GOAT moderna'],
+    desc: "La precisión se une a la potencia. Dominas con topspin pesado y una constancia implacable, tu juego mental es extraordinario y tu reinado en Roland Garros ya es legendario.",
+    stat: '🏺 4× Roland Garros · La racha como No.1 de la WTA más larga desde Serena',
+  },
+  alcaraz: {
+    name: 'Carlos Alcaraz', emoji: '🚀', years: '4+ Grand Slams · 2022–presente',
+    traits: ['Explosivo', 'Todas las pistas', 'Showman', '¿Futuro GOAT?'],
+    desc: "El futuro es ahora. Tu juego es pura electricidad: cada golpe es un highlight, cada partido un acontecimiento. Tienes el talento para ganar en cualquier superficie y el hambre para seguir ganando.",
+    stat: '🏆 4 Grand Slams distintos con 21 años — un récord que nadie más ha igualado',
+  },
+  sinner: {
+    name: 'Jannik Sinner', emoji: '❄️', years: '2+ Grand Slams · 2024–presente',
+    traits: ['Decisivo', 'Constante', 'Frío como el hielo', 'No. 1'],
+    desc: "Tranquilo, eficiente, letal. Nunca te pones nervioso, nunca muestras emoción y simplemente sigues acertando el golpe correcto en el momento correcto. Los rivales se rompen antes que tú, siempre.",
+    stat: '❄️ No.1 del mundo · Ganó el Abierto de Australia 2024 remontando 2 sets',
+  },
+};
+
+let currentQ = 0;
+let scores = {};
+let answers = [];
+
+function startQuiz() {
+  Object.keys(LEGENDS).forEach(k => scores[k] = 0);
+  currentQ = 0;
+  answers = [];
+  showQuestion();
+  document.getElementById('screen-start').classList.remove('active');
+  document.getElementById('screen-question').classList.add('active');
+}
+
+function showQuestion() {
+  const q = QUESTIONS[currentQ];
+  document.getElementById('progress-label').textContent = `Pregunta ${currentQ + 1} de ${QUESTIONS.length}`;
+  document.getElementById('progress-fill').style.width = `${(currentQ / QUESTIONS.length) * 100}%`;
+  document.getElementById('question-text').textContent = q.q;
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = opt.text;
+    btn.onclick = () => pickAnswer(i, opt.scores);
+    container.appendChild(btn);
+  });
+}
+
+function pickAnswer(idx, scoreMap) {
+  document.querySelectorAll('.option-btn').forEach((b, i) => {
+    b.classList.toggle('selected', i === idx);
+    b.style.pointerEvents = 'none';
+  });
+  Object.entries(scoreMap).forEach(([k, v]) => { scores[k] = (scores[k] || 0) + v; });
+  answers.push(idx);
+  setTimeout(() => {
+    currentQ++;
+    if (currentQ < QUESTIONS.length) {
+      showQuestion();
+    } else {
+      showResult();
+    }
+  }, 500);
+}
+
+function showResult() {
+  document.getElementById('screen-question').classList.remove('active');
+  document.getElementById('screen-result').classList.add('active');
+  const winner = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+  const legend = LEGENDS[winner];
+  document.getElementById('result-emoji').textContent = legend.emoji;
+  document.getElementById('result-name').textContent = legend.name;
+  document.getElementById('result-years').textContent = legend.years;
+  document.getElementById('result-desc').textContent = legend.desc;
+  document.getElementById('result-stat').innerHTML = legend.stat;
+  const traitsEl = document.getElementById('result-traits');
+  traitsEl.innerHTML = legend.traits.map(t => `<span class="trait-tag">${t}</span>`).join('');
+  const tweet = `Acabo de hacer el test de leyendas del tenis en @SuperTennis y juego como ${legend.name} ${legend.emoji}\n\n¿Qué leyenda eres tú? 🎾\nsuper.tennis/es/tennis-legend-quiz`;
+  document.getElementById('btn-twitter').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}`;
+}
+
+function downloadCard() {
+  const card = document.getElementById('result-card');
+  html2canvas(card, { backgroundColor: null, scale: 2, useCORS: true, logging: false }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'mi-leyenda-del-tenis.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+}
+
+function retakeQuiz() {
+  scores = {};
+  Object.keys(LEGENDS).forEach(k => scores[k] = 0);
+  currentQ = 0;
+  answers = [];
+  document.getElementById('screen-result').classList.remove('active');
+  document.getElementById('screen-start').classList.add('active');
+}
+</script>
+
+</BaseLayout>

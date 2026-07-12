@@ -1,10 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { buildAlternates } from '../lib/i18n';
+const alternates = buildAlternates('/tennis-legend-quiz/', ['es']);
 ---
 
 <BaseLayout
   title="Which Tennis Legend Are You? | Quiz"
   description="Answer 6 questions and discover which tennis legend matches your personality and playing style. Share your result!"
+  alternates={alternates}
 >
 
 <style>
