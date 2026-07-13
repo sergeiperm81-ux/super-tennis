@@ -1,0 +1,319 @@
+---
+/**
+ * Localized Tournaments hub (/es/tournaments/) — faithful 1:1 copy of
+ * src/pages/tournaments/index.astro: quick-answer, 2026 calendar strip, Grand Slam cards,
+ * editorial feature groups, Masters/Finals/Team cards, related, FAQ. Only translated
+ * articles listed; chrome + surface/level labels translated; links localized.
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import FaqBlock from '../../../components/FaqBlock.astro';
+import { getActiveLocales, buildAlternates, type Locale } from '../../../lib/i18n';
+import { getArticles, supabase } from '../../../lib/supabase';
+import { stripMarkdown } from '../../../lib/fallback-data';
+
+export async function getStaticPaths() {
+  const SUPPORTED = ['es'];
+  return getActiveLocales().filter((l) => SUPPORTED.includes(l)).map((locale) => ({ params: { lang: locale }, props: { locale } }));
+}
+const { locale } = Astro.props as { locale: Locale };
+const lp = `/${locale}`;
+
+let enArts: any[] = [];
+try { enArts = await getArticles({ category: 'tournaments', limit: 100, status: ['published'] }); } catch {}
+const ids = enArts.map((a: any) => a.id);
+const tmap = new Map<number, { title: string; excerpt: string | null }>();
+if (ids.length) {
+  const { data } = await supabase.from('article_translations').select('article_id, title, excerpt').eq('lang', locale).eq('status', 'published').in('article_id', ids);
+  for (const t of data || []) tmap.set(t.article_id, { title: t.title, excerpt: t.excerpt });
+}
+const esSlugs = new Set<string>();
+try {
+  const { data: trans } = await supabase.from('article_translations').select('article_id').eq('lang', locale).eq('status', 'published');
+  const tids = (trans || []).map((t: any) => t.article_id);
+  if (tids.length) { const { data: arts } = await supabase.from('articles').select('slug').in('id', tids); for (const a of arts || []) esSlugs.add(a.slug); }
+} catch {}
+const tHref = (slug: string) => esSlugs.has(slug) ? `${lp}/tournaments/${slug}/` : `/tournaments/${slug}/`;
+const tournamentArticles = enArts.filter((a: any) => tmap.has(a.id)).map((a: any) => ({ slug: a.slug, image_url: a.image_url, image_alt: a.image_alt, title: tmap.get(a.id)!.title, excerpt: tmap.get(a.id)!.excerpt || '' }));
+
+const gsPhotos: Record<string, string> = { 'australian-open': '/images/tournaments/melbourne-park.webp', 'roland-garros': '/images/tournaments/roland-garros.webp', 'wimbledon': '/images/tournaments/wimbledon.webp', 'us-open': '/images/tournaments/us-open.webp' };
+const surfaceMap: Record<string, string> = { 'australian-open': 'hard', 'roland-garros': 'clay', 'french-open': 'clay', 'wimbledon': 'grass', 'us-open': 'hard', 'indian-wells': 'hard', 'miami-open': 'hard', 'monte-carlo': 'clay', 'madrid-open': 'clay', 'rome': 'clay', 'italian-open': 'clay', 'barcelona': 'clay', 'shanghai': 'hard', 'cincinnati': 'hard', 'western-southern': 'hard', 'canadian': 'hard', 'rogers-cup': 'hard', 'paris': 'hard', 'vienna': 'hard', 'toronto': 'hard' };
+function getSurface(slug: string): string { for (const [k, s] of Object.entries(surfaceMap)) if (slug.includes(k)) return s; return 'hard'; }
+const SURF_ES: Record<string, string> = { clay: 'Tierra batida', grass: 'Hierba', hard: 'Pista dura' };
+const surfaceLabel = (s: string) => SURF_ES[s] ?? 'Pista dura';
+function getLevel(slug: string): string { if (/australian-open|roland-garros|wimbledon|us-open/.test(slug)) return 'Grand Slam'; if (/atp-finals|wta-finals|next-gen/.test(slug)) return 'Finals'; if (/davis-cup|laver-cup|billie-jean|bjk/.test(slug)) return 'Team Event'; if (/olympic/.test(slug)) return 'Olympic'; return 'Masters 1000'; }
+const LEVEL_ES: Record<string, string> = { 'Grand Slam': 'Grand Slam', 'Finals': 'Finales', 'Team Event': 'Evento por equipos', 'Olympic': 'Olímpico', 'Masters 1000': 'Masters 1000' };
+const levelLabel = (slug: string) => LEVEL_ES[getLevel(slug)] ?? getLevel(slug);
+function getLevelClass(slug: string): string { const l = getLevel(slug); if (l === 'Grand Slam') return 'gs'; if (l === 'Finals') return 'finals'; if (l === 'Team Event' || l === 'Olympic') return 'team'; return 'masters'; }
+function getIcon(slug: string): string { if (/australian-open/.test(slug)) return '🇦🇺'; if (/roland-garros|french-open/.test(slug)) return '🇫🇷'; if (/wimbledon/.test(slug)) return '🇬🇧'; if (/us-open/.test(slug)) return '🇺🇸'; if (/indian-wells/.test(slug)) return '🌴'; if (/miami-open/.test(slug)) return '🌊'; if (/madrid-open/.test(slug)) return '🇪🇸'; if (/rome|italian-open/.test(slug)) return '🇮🇹'; if (/monte-carlo/.test(slug)) return '🇲🇨'; if (/shanghai/.test(slug)) return '🇨🇳'; if (/cincinnati|western-southern/.test(slug)) return '🏟️'; if (/canadian|rogers-cup|toronto/.test(slug)) return '🇨🇦'; if (/paris/.test(slug)) return '🗼'; if (/atp-finals|wta-finals|davis-cup|billie-jean|bjk/.test(slug)) return '🏆'; if (/next-gen/.test(slug)) return '⭐'; if (/laver-cup/.test(slug)) return '🌍'; if (/olympic/.test(slug)) return '🥇'; return '🎾'; }
+function getVenuePhoto(slug: string): string | null { for (const [k, p] of Object.entries(gsPhotos)) if (slug.includes(k)) return p; return null; }
+function isTournamentGuide(slug: string): boolean { return slug.endsWith('-guide') || slug.endsWith('-complete-guide'); }
+function getFeatureLabel(slug: string): string { if (/roland-garros|french-open/.test(slug)) return 'Roland Garros'; if (/madrid-open/.test(slug)) return 'Madrid Open'; if (/wimbledon/.test(slug)) return 'Wimbledon'; if (/us-open/.test(slug)) return 'US Open'; if (/australian-open/.test(slug)) return 'Australian Open'; if (/indian-wells/.test(slug)) return 'Indian Wells'; if (/miami-open/.test(slug)) return 'Miami Open'; if (/rome|italian-open/.test(slug)) return 'Rome'; if (/monte-carlo/.test(slug)) return 'Monte Carlo'; if (/shanghai/.test(slug)) return 'Shanghai'; if (/cincinnati/.test(slug)) return 'Cincinnati'; if (/atp-finals/.test(slug)) return 'ATP Finals'; if (/wta-finals/.test(slug)) return 'WTA Finals'; return 'Tennis'; }
+function getFeatureLevelClass(slug: string): string { const l = getFeatureLabel(slug); if (['Roland Garros','Wimbledon','US Open','Australian Open'].includes(l)) return 'gs'; if (['ATP Finals','WTA Finals'].includes(l)) return 'finals'; return 'masters'; }
+
+const tournamentGuides = tournamentArticles.filter((a) => isTournamentGuide(a.slug));
+const featureArticles = tournamentArticles.filter((a) => !isTournamentGuide(a.slug));
+const grandSlams = tournamentGuides.filter((a) => getLevel(a.slug) === 'Grand Slam');
+const otherTournaments = tournamentGuides.filter((a) => getLevel(a.slug) !== 'Grand Slam');
+const levelOrder: Record<string, number> = { 'Finals': 0, 'Masters 1000': 1, 'Team Event': 2, 'Olympic': 3 };
+const sortedOthers = [...otherTournaments].sort((a, b) => (levelOrder[getLevel(a.slug)] ?? 9) - (levelOrder[getLevel(b.slug)] ?? 9));
+const groupMap = new Map<string, any[]>();
+for (const art of featureArticles) { const label = getFeatureLabel(art.slug); if (!groupMap.has(label)) groupMap.set(label, []); groupMap.get(label)!.push(art); }
+const featureGroups: { label: string; icon: string; levelClass: string; articles: any[] }[] = [];
+for (const [label, arts] of groupMap) featureGroups.push({ label, icon: getIcon(arts[0].slug), levelClass: getFeatureLevelClass(arts[0].slug), articles: arts });
+const gsLabels = new Set(['Roland Garros','Wimbledon','US Open','Australian Open']);
+featureGroups.sort((a, b) => { const ag = gsLabels.has(a.label) ? 0 : 1, bg = gsLabels.has(b.label) ? 0 : 1; if (ag !== bg) return ag - bg; return b.articles.length - a.articles.length; });
+
+const LOC_ES: Record<string, string> = { Rome: 'Roma', Paris: 'París', London: 'Londres', 'New York': 'Nueva York', Shanghai: 'Shanghái', Turin: 'Turín' };
+const upcomingEvents = [
+  { name: 'Italian Open', location: 'Rome', dates: 'May 6–18', surface: 'clay', slug: 'rome-masters-guide' },
+  { name: 'Roland Garros', location: 'Paris', dates: 'May 24 – Jun 7', surface: 'clay', slug: 'roland-garros-guide' },
+  { name: 'Wimbledon', location: 'London', dates: 'Jun 29 – Jul 12', surface: 'grass', slug: 'wimbledon-guide' },
+  { name: 'US Open', location: 'New York', dates: 'Aug 24 – Sep 6', surface: 'hard', slug: 'us-open-guide' },
+  { name: 'Shanghai Masters', location: 'Shanghai', dates: 'Sep 28 – Oct 11', surface: 'hard', slug: 'shanghai-masters-complete-guide' },
+  { name: 'ATP Finals', location: 'Turin', dates: 'Nov 8–15', surface: 'hard', slug: 'atp-finals-complete-guide' },
+];
+
+const faqs = [
+  { q: '¿Cuáles son los 4 torneos de Grand Slam de tenis?', a: 'Los cuatro torneos de Grand Slam son el Abierto de Australia (enero, pista dura, Melbourne), Roland Garros / Abierto de Francia (mayo-junio, tierra batida, París), Wimbledon (junio-julio, hierba, Londres) y el US Open (agosto-septiembre, pista dura, Nueva York). Son los cuatro torneos más prestigiosos del tenis profesional.' },
+  { q: '¿Cuándo es Wimbledon 2026?', a: 'Wimbledon 2026 se disputa del 29 de junio al 12 de julio en el All England Lawn Tennis Club de Londres. La final masculina se juega tradicionalmente el segundo domingo; la femenina, el segundo sábado.' },
+  { q: '¿Cuándo es Roland Garros (Abierto de Francia) 2026?', a: 'Roland Garros 2026 se disputa del 24 de mayo al 7 de junio en el Stade Roland Garros de París. Es el único Grand Slam que se juega sobre tierra batida roja y sigue al Madrid Open y al Italian Open en la gira europea de tierra.' },
+  { q: '¿Qué diferencia hay entre un ATP Masters 1000 y un Grand Slam?', a: 'Los Grand Slam (Abierto de Australia, Roland Garros, Wimbledon, US Open) son los cuatro torneos de máxima categoría: al mejor de cinco sets en los hombres, formato de dos semanas y 2000 puntos de ranking para el campeón. Los Masters 1000 son la segunda categoría: 9 eventos al año (Indian Wells, Miami, Montecarlo, Madrid, Roma, Canadá, Cincinnati, Shanghái, París), formato de una semana y 1000 puntos para el campeón.' },
+  { q: '¿Cuánto premio reparten los torneos de Grand Slam?', a: 'Cada Grand Slam en 2026 paga aproximadamente 3,5-3,8 millones de dólares al campeón individual. El bote total por Slam ronda los 60-70 millones, repartidos entre individuales, dobles, dobles mixtos, silla de ruedas y clasificación. El US Open tiene históricamente el mayor bote.' },
+  { q: '¿Qué es la ATP Finals?', a: 'La ATP Finals es el campeonato de fin de temporada para los 8 mejores jugadores del circuito ATP. Se celebra en Turín, Italia, en 2026 (8-15 de noviembre), con formato de round-robin y los 4 mejores de cada grupo pasando a semifinales de eliminación directa. La WTA Finals es el evento equivalente del circuito femenino.' },
+];
+const alternates = buildAlternates('/tournaments/', [locale]);
+---
+
+<BaseLayout
+  alternates={alternates}
+  locale={locale}
+  title="Torneos de tenis — Grand Slams, Masters y más | Guía 2026"
+  description="Guías completas de todos los grandes torneos de tenis. Historia de los Grand Slam, Masters 1000, Finales ATP y WTA, competiciones por equipos — más el calendario 2026."
+  ogImage="/og/tournaments.png"
+>
+  <div class="tournaments-page" lang={locale}>
+    <div class="container">
+      <nav class="breadcrumbs"><a href={`${lp}/`}>Inicio</a> <span class="sep">/</span> <span class="current">Torneos</span></nav>
+      <section class="page-hero">
+        <h1>Torneos de tenis</h1>
+        <p class="subtitle">Guías completas de los Grand Slam, Masters 1000 y los mayores eventos del tenis{tournamentGuides.length > 0 && ` — ${tournamentGuides.length} guías de torneos`}</p>
+      </section>
+
+      <section class="quick-answer">
+        <h2 class="qa-label">Respuesta rápida</h2>
+        <p class="qa-text">Los cuatro torneos de Grand Slam son el Abierto de Australia (enero, Melbourne, pista dura), Roland Garros (mayo-junio, París, tierra batida), Wimbledon (junio-julio, Londres, hierba) y el US Open (agosto-septiembre, Nueva York, pista dura). Por debajo de los Slam, los nueve ATP Masters 1000 y los diez WTA 1000 son los torneos anuales más importantes; la temporada culmina con la ATP Finals (Turín) y la WTA Finals (Riad) para los ocho mejores en individuales y dobles. El premio total de los cuatro Slam en 2026 es de aproximadamente 230 millones de euros.</p>
+        <p class="qa-followup">
+          <strong>Lo básico del formato:</strong> los hombres juegan <a href={`${lp}/rules/how-many-sets-in-tennis/`}>al mejor de 5 sets</a> en los Grand Slam (el resto, al mejor de 3); consulta las <a href={`${lp}/rules/tie-break-rules-explained/`}>reglas del tie-break decisivo</a> y el <a href={`${lp}/rules/`}>hub de reglas del tenis</a>.
+          <br />
+          <strong>Premios:</strong> <a href={`${lp}/money/grand-slam-prize-money-breakdown/`}>tablas de premios de los Slam 2026</a> · <a href={`${lp}/money/tennis-prize-money-explained/`}>cómo funcionan los premios</a> · <a href={`${lp}/money/`}>hub del dinero</a>.
+          <br />
+          <strong>Dónde ver:</strong> <a href={`${lp}/watch/where-to-watch-grand-slams/`}>emisoras de los Grand Slam por región</a> · <a href={`${lp}/watch/best-tennis-streaming-services/`}>mejores plataformas</a> · <a href={`${lp}/watch/`}>hub de cómo ver tenis</a>.
+        </p>
+      </section>
+
+      <section class="calendar-section">
+        <h2 class="section-title">📅 Calendario de torneos 2026</h2>
+        <div class="calendar-scroll">
+          {upcomingEvents.map((ev) => {
+            const guideExists = tournamentGuides.some((a) => a.slug === ev.slug);
+            const href = guideExists ? tHref(ev.slug) : `${lp}/tournaments/`;
+            return (
+              <a href={href} class={`cal-card surface-${ev.surface}`}>
+                <div class="cal-surface-dot"></div>
+                <div class="cal-dates">{ev.dates}</div>
+                <div class="cal-name">{ev.name}</div>
+                <div class="cal-location">📍 {LOC_ES[ev.location] ?? ev.location}</div>
+                <span class={`cal-surface-label surface-label-${ev.surface}`}>{surfaceLabel(ev.surface)}</span>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+
+      {grandSlams.length > 0 && (
+        <section class="gs-section">
+          <h2 class="section-title">Torneos de Grand Slam</h2>
+          <div class="gs-grid">
+            {grandSlams.map((article) => {
+              const photo = getVenuePhoto(article.slug) || article.image_url;
+              const surface = getSurface(article.slug);
+              return (
+                <div class={`gs-card surface-${surface}`}>
+                  <a href={tHref(article.slug)} class="gs-card-link">
+                    {photo && (<div class="gs-card-img"><img src={photo} alt={article.title} loading="eager" decoding="async" width="600" height="400" onerror="this.parentElement.style.display='none'" /><span class="level-badge gs">Grand Slam</span></div>)}
+                    <div class="gs-card-body">
+                      <span class="gs-icon">{getIcon(article.slug)}</span>
+                      <h3>{article.title}</h3>
+                      <p>{stripMarkdown(article.excerpt || '')}</p>
+                      <div class="gs-actions"><span class="read-more">Leer guía →</span><span class={`surface-chip surface-chip-${surface}`}>{surfaceLabel(surface)}</span></div>
+                    </div>
+                  </a>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {featureGroups.map((group) => (
+        <section class="features-section">
+          <h2 class="section-title"><span class="group-icon">{group.icon}</span>{group.label} — En profundidad</h2>
+          <div class="features-grid">
+            {group.articles.map((article: any) => (
+              <a href={tHref(article.slug)} class="feature-article-card">
+                {article.image_url && (<div class="feature-article-img"><img src={article.image_url} alt={article.image_alt || article.title} loading="lazy" width="400" height="267" onerror="this.parentElement.style.display='none'" /></div>)}
+                <div class="feature-article-body">
+                  <span class={`level-badge ${group.levelClass}`}>{group.icon} {group.label}</span>
+                  <h3>{article.title}</h3>
+                  <p>{stripMarkdown(article.excerpt || '')}</p>
+                  <span class="read-more">Leer artículo →</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      {sortedOthers.length > 0 && (
+        <section class="others-section">
+          <h2 class="section-title">Masters, Finales y eventos por equipos</h2>
+          <div class="tournaments-grid">
+            {sortedOthers.map((article) => {
+              const surface = getSurface(article.slug);
+              return (
+                <a href={tHref(article.slug)} class={`tournament-card ${getLevelClass(article.slug)} surface-${surface}`}>
+                  <div class="card-header">
+                    <span class="tournament-icon">{getIcon(article.slug)}</span>
+                    <div class="card-header-badges">
+                      <span class={`level-badge ${getLevelClass(article.slug)}`}>{levelLabel(article.slug)}</span>
+                      <span class={`surface-chip surface-chip-${surface}`}>{surfaceLabel(surface)}</span>
+                    </div>
+                  </div>
+                  <h2>{article.title}</h2>
+                  <p>{stripMarkdown(article.excerpt || '')}</p>
+                  <span class="read-more">Leer guía →</span>
+                </a>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      <section class="related-section">
+        <div class="related-links">
+          <a href={`${lp}/calendar/`} class="related-card"><div><h3>Calendario de torneos</h3><p>Consulta el programa completo 2026 de ATP y WTA</p></div></a>
+          <a href={`${lp}/rankings/`} class="related-card"><div><h3>Ranking en directo</h3><p>Tablas de ranking ATP y WTA actuales</p></div></a>
+          <a href={`${lp}/players/`} class="related-card"><div><h3>Perfiles de jugadores</h3><p>Estadísticas, biografías y momentos destacados</p></div></a>
+        </div>
+      </section>
+
+      <FaqBlock faqs={faqs} title="Preguntas frecuentes" />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .tournaments-page { max-width: 1200px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+  .page-hero { padding: 48px 0 32px; border-bottom: 3px solid var(--court-green); margin-bottom: 32px; }
+  .page-hero h1 { font-family: var(--font-heading); font-size: 2.8rem; text-transform: uppercase; color: var(--gray-900); margin: 0; }
+  .subtitle { color: var(--gray-600); font-size: 1.1rem; margin: 8px 0 0; }
+  .quick-answer { margin: 0 0 32px; padding: 16px 20px; background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%); border-left: 3px solid var(--court-green); border-radius: 0 var(--radius) var(--radius) 0; }
+  .qa-label { font-family: var(--font-heading); font-size: 0.78rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--court-green); margin: 0 0 8px; }
+  .qa-text { margin: 0; font-size: 0.98rem; line-height: 1.6; color: var(--gray-800); }
+  .qa-followup { margin: 10px 0 0; font-size: 0.88rem; line-height: 1.55; color: var(--gray-600); padding-top: 10px; border-top: 1px dashed var(--gray-200); }
+  .qa-followup a { color: var(--court-green); }
+  .section-title { font-family: var(--font-heading); font-size: 1.3rem; text-transform: uppercase; color: var(--gray-800); margin: 0 0 20px; padding-bottom: 10px; border-bottom: 2px solid var(--gray-200); display: flex; align-items: center; gap: 8px; }
+  .group-icon { font-size: 1.1rem; }
+  .calendar-section { margin-bottom: 48px; }
+  .calendar-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: thin; }
+  .calendar-scroll::-webkit-scrollbar { height: 4px; }
+  .calendar-scroll::-webkit-scrollbar-track { background: #f3f4f6; border-radius: 2px; }
+  .calendar-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 2px; }
+  .cal-card { flex: 0 0 160px; padding: 16px; border-radius: 10px; background: white; border: 1px solid var(--gray-200); text-decoration: none; color: inherit; transition: all 0.2s; position: relative; overflow: hidden; }
+  .cal-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+  .cal-card.surface-clay { border-top: 3px solid #d97706; }
+  .cal-card.surface-grass { border-top: 3px solid #16a34a; }
+  .cal-card.surface-hard { border-top: 3px solid #2563eb; }
+  .cal-surface-dot { width: 8px; height: 8px; border-radius: 50%; position: absolute; top: 8px; right: 8px; }
+  .surface-clay .cal-surface-dot { background: #d97706; }
+  .surface-grass .cal-surface-dot { background: #16a34a; }
+  .surface-hard .cal-surface-dot { background: #2563eb; }
+  .cal-dates { font-size: 0.7rem; font-weight: 700; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .cal-name { font-size: 0.95rem; font-weight: 700; color: var(--gray-900); line-height: 1.25; margin-bottom: 4px; }
+  .cal-location { font-size: 0.75rem; color: var(--gray-500); margin-bottom: 10px; }
+  .cal-surface-label { display: inline-block; font-size: 0.62rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .surface-label-clay { background: #fef3c7; color: #92400e; }
+  .surface-label-grass { background: #dcfce7; color: #166534; }
+  .surface-label-hard { background: #dbeafe; color: #1e40af; }
+  .surface-chip { display: inline-block; font-size: 0.62rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .surface-chip-clay { background: #fef3c7; color: #92400e; }
+  .surface-chip-grass { background: #dcfce7; color: #166534; }
+  .surface-chip-hard { background: #dbeafe; color: #1e40af; }
+  .gs-icon { font-size: 1.4rem; margin-bottom: 8px; }
+  .features-section { margin-bottom: 48px; }
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .feature-article-card { display: flex; flex-direction: column; text-decoration: none; color: inherit; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius); overflow: hidden; border-top: 3px solid #d97706; transition: all 0.2s; }
+  .feature-article-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .feature-article-img { aspect-ratio: 16/10; overflow: hidden; }
+  .feature-article-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+  .feature-article-card:hover .feature-article-img img { transform: scale(1.05); }
+  .feature-article-body { padding: 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .feature-article-body .level-badge { width: fit-content; }
+  .feature-article-body h3 { font-size: 1rem; font-weight: 700; margin: 0; line-height: 1.35; }
+  .feature-article-body p { color: var(--gray-600); font-size: 0.82rem; line-height: 1.6; margin: 0; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .others-section { margin-bottom: 48px; }
+  .tournaments-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .tournament-card { text-decoration: none; color: inherit; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 24px; display: flex; flex-direction: column; transition: all 0.2s; }
+  .tournament-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .tournament-card.gs { border-left: 4px solid #d4a017; }
+  .tournament-card.finals { border-left: 4px solid #8b5cf6; }
+  .tournament-card.masters { border-left: 4px solid var(--court-green); }
+  .tournament-card.team { border-left: 4px solid #3b82f6; }
+  .tournament-card.surface-clay { border-top: 2px solid #d97706; }
+  .tournament-card.surface-grass { border-top: 2px solid #16a34a; }
+  .tournament-card.surface-hard { border-top: 2px solid #2563eb; }
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .card-header-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .tournament-icon { font-size: 2rem; }
+  .level-badge { font-family: var(--font-heading); font-size: 0.6rem; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; letter-spacing: 0.05em; }
+  .level-badge.gs { background: #fef3c7; color: #92400e; }
+  .level-badge.finals { background: #ede9fe; color: #6d28d9; }
+  .level-badge.masters { background: #dcfce7; color: #166534; }
+  .level-badge.team { background: #dbeafe; color: #1e40af; }
+  .tournament-card h2 { font-family: var(--font-body); font-size: 1.05rem; font-weight: 700; margin: 0 0 8px; line-height: 1.35; }
+  .tournament-card p { color: var(--gray-600); font-size: 0.85rem; line-height: 1.6; margin: 0; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .read-more { color: var(--court-green); font-weight: 600; font-size: 0.85rem; margin-top: 16px; }
+  .gs-actions { display: flex; gap: 12px; align-items: center; margin-top: 16px; }
+  .gs-actions .read-more { margin-top: 0; }
+  .related-section { margin-top: 16px; }
+  .related-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .related-card { display: flex; gap: 14px; align-items: flex-start; padding: 20px; background: var(--gray-50); border-radius: var(--radius); text-decoration: none; color: inherit; transition: all 0.2s; }
+  .related-card:hover { background: #f0fdf4; }
+  .related-card h3 { font-family: var(--font-heading); font-size: 0.9rem; text-transform: uppercase; margin: 0 0 4px; }
+  .related-card p { color: var(--gray-600); font-size: 0.8rem; margin: 0; line-height: 1.4; }
+  @media (max-width: 1024px) { .tournaments-grid { grid-template-columns: repeat(2, 1fr); } .features-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 768px) { .gs-grid { grid-template-columns: 1fr; } .tournaments-grid { grid-template-columns: 1fr; } .features-grid { grid-template-columns: 1fr; } .related-links { grid-template-columns: 1fr; } .page-hero h1 { font-size: 2rem; } .cal-card { flex: 0 0 140px; } }
+</style>
+
+<style is:global>
+  .gs-section { margin-bottom: 48px; }
+  .gs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .gs-card { background: white; border: 1px solid var(--gray-200, #e5e7eb); border-radius: 12px; overflow: hidden; transition: all 0.2s; }
+  .gs-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+  .gs-card-link { display: flex; flex-direction: column; text-decoration: none; color: inherit; }
+  .gs-card-img { aspect-ratio: 16 / 9; overflow: hidden; position: relative; max-height: 220px; }
+  .gs-card-img img { width: 100%; height: 100%; object-fit: cover; }
+  .gs-card-img .level-badge { position: absolute; top: 12px; right: 12px; }
+  .gs-card-body { padding: 20px; }
+  .gs-card-body h3 { font-size: 1.1rem; font-weight: 700; margin: 0 0 8px; line-height: 1.3; }
+  .gs-card-body p { color: #6b7280; font-size: 0.85rem; line-height: 1.6; margin: 0 0 12px; }
+  .gs-card.surface-clay { border-top: 3px solid #d97706; }
+  .gs-card.surface-grass { border-top: 3px solid #16a34a; }
+  .gs-card.surface-hard { border-top: 3px solid #2563eb; }
+  @media (max-width: 768px) { .gs-grid { grid-template-columns: 1fr; } .gs-card-img { aspect-ratio: 16 / 10; max-height: none; } }
+</style>
