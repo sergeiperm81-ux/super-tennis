@@ -84,8 +84,9 @@ const categoryColors: Record<string, string> = {
   news: '#16a34a',
 };
 const accentColor = categoryColors[category || ''] || 'var(--court-green)';
-// Sidebar carries English related-content — hide it on non-English pages for the pilot.
-const hasSidebar = locale === 'en' && ['vs', 'gear', 'lifestyle', 'tournaments', 'news'].includes(category || '');
+// Sidebar is localized (ArticleSidebar takes `locale`) → shown for all languages
+// so the /es/ article design matches English 1:1.
+const hasSidebar = ['vs', 'gear', 'lifestyle', 'tournaments', 'news'].includes(category || '');
 
 // OG image per category
 const categoryOgImages: Record<string, string> = {
@@ -188,7 +189,7 @@ const ogImage = categoryOgImages[category || ''] || '/og/default.png';
       <slot />
     </div>
   </article>
-  {hasSidebar && <ArticleSidebar category={category || ''} accentColor={accentColor} />}
+  {hasSidebar && <ArticleSidebar category={category || ''} accentColor={accentColor} locale={locale} />}
   </div>
 
   <script>
