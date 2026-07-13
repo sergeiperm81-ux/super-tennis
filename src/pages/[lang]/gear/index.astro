@@ -1,0 +1,244 @@
+---
+/**
+ * Localized Gear hub (/es/gear/) — faithful 1:1 copy of src/pages/gear/index.astro:
+ * hero banner, search, subcategory filters, gear-card grid, load-more, FAQ, related.
+ * Self-contained client-side search/filter/load-more. Only translated articles listed.
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getActiveLocales, buildAlternates, type Locale } from '../../../lib/i18n';
+import { getArticles, supabase } from '../../../lib/supabase';
+import { stripMarkdown } from '../../../lib/fallback-data';
+import { getArticlePhotosForCategory } from '../../../lib/player-photos';
+
+export async function getStaticPaths() {
+  const SUPPORTED = ['es'];
+  return getActiveLocales().filter((l) => SUPPORTED.includes(l)).map((locale) => ({ params: { lang: locale }, props: { locale } }));
+}
+const { locale } = Astro.props as { locale: Locale };
+const lp = `/${locale}`;
+
+let enArts: any[] = [];
+try { enArts = await getArticles({ category: 'gear', limit: 100 }); } catch {}
+const ids = enArts.map((a: any) => a.id);
+const tmap = new Map<number, { title: string; excerpt: string | null }>();
+if (ids.length) {
+  const { data } = await supabase.from('article_translations').select('article_id, title, excerpt').eq('lang', locale).eq('status', 'published').in('article_id', ids);
+  for (const t of data || []) tmap.set(t.article_id, { title: t.title, excerpt: t.excerpt });
+}
+const articles = enArts.filter((a: any) => tmap.has(a.id)).map((a: any) => ({
+  slug: a.slug, subcategory: a.subcategory || 'guides', title: tmap.get(a.id)!.title, excerpt: tmap.get(a.id)!.excerpt || '',
+}));
+const articlePhotos = await getArticlePhotosForCategory(articles, 'gear');
+
+const iconMap: Record<string, string> = {
+  'best-tennis-rackets-2026': '🎾', 'best-tennis-strings-guide': '🔧', 'best-tennis-shoes-2026': '👟', 'best-tennis-bags-2026': '🎒',
+  'best-tennis-overgrips': '🤲', 'head-vs-wilson-vs-babolat': '⚔️', 'best-tennis-balls-2026': '🟡', 'best-tennis-dampeners': '🔇',
+  'tennis-racket-weight-guide': '⚖️', 'best-tennis-sunglasses': '🕶️', 'tennis-court-surfaces-equipment': '🏟️', 'best-tennis-gadgets-tech': '📱',
+  'best-junior-tennis-rackets': '👶', 'natural-gut-vs-synthetic-strings': '🧵', 'tennis-apparel-brands-2026': '👕',
+};
+const SUBCATS = [
+  { key: 'all', label: 'Todos', color: '' },
+  { key: 'rackets', label: 'Raquetas', color: '#dc2626' },
+  { key: 'strings', label: 'Cuerdas', color: '#2563eb' },
+  { key: 'shoes', label: 'Zapatillas', color: '#059669' },
+  { key: 'accessories', label: 'Accesorios', color: '#f97316' },
+  { key: 'guides', label: 'Guías', color: '#7c3aed' },
+];
+const SUBLABEL: Record<string, string> = { rackets: 'Raquetas', strings: 'Cuerdas', shoes: 'Zapatillas', accessories: 'Accesorios', guides: 'Guías' };
+const initialVisible = 12;
+
+const faqs = [
+  { q: '¿Qué raqueta de tenis debería usar un principiante?', a: 'Los principiantes deberían buscar una raqueta ligera de 260-280 gramos con un cabezal grande de 100-110 pulgadas cuadradas. Un cabezal más grande ofrece un punto dulce mayor, más indulgente con los golpes descentrados. Las raquetas ya encordadas de marcas como Wilson, Head o Babolat en el rango de 50-120 $ son excelentes para empezar.' },
+  { q: '¿Con qué frecuencia hay que reencordar una raqueta de tenis?', a: 'Como regla general, deberías reencordar la raqueta cada 40-50 horas de juego, o al menos dos veces al año aunque juegues poco. Las cuerdas pierden tensión y elasticidad con el tiempo, lo que reduce el control y la potencia. Los jugadores frecuentes (3+ veces por semana) pueden necesitar reencordar mensualmente. Una guía común es reencordar tantas veces al año como veces juegas por semana.' },
+  { q: '¿Cuáles son las mejores zapatillas de tenis para tierra batida?', a: 'Las mejores zapatillas para tierra batida tienen una suela con dibujo de espiga, que ofrece una tracción excelente en la superficie suelta permitiendo un deslizamiento controlado. Busca suelas resistentes diseñadas para aguantar la superficie abrasiva de la tierra. Entre las mejores opciones hay modelos de Nike, Asics y Adidas específicos para tierra, a menudo con «Clay» o «CLY» en el nombre.' },
+  { q: '¿Qué raqueta usa Jannik Sinner?', a: 'Jannik Sinner juega con la Head Speed Pro (300 g, cabezal de 100 pulgadas cuadradas). Su montaje de cuerdas combina Head Lynx Tour en las verticales y Hawk Touch en las horizontales, encordadas a unos 23-24 kg. Es una raqueta orientada al control, preferida por jugadores ATP que buscan precisión antes que potencia bruta.' },
+  { q: '¿Cuánto cuestan las raquetas de tenis profesionales?', a: 'Las raquetas de nivel profesional suelen costar 200-280 $ sin encordar. Con cuerdas premium (poliéster o tripa natural) y la mano de obra del encordado, cuenta con pagar 250-350 $ por raqueta lista para jugar. Las cuerdas de gama tour como Luxilon Alu Power o Babolat RPM Blast añaden 20-40 $ por encordado.' },
+  { q: '¿Qué diferencia hay entre las cuerdas de poliéster y las de tripa sintética?', a: 'Las cuerdas de poliéster (como Luxilon, Solinco o Babolat RPM Blast) son rígidas y duraderas, y ofrecen un excelente efecto y control, preferidas por jugadores avanzados que pegan fuerte. Las cuerdas de tripa sintética son multifilamentos más blandos que dan más potencia, comodidad y tacto, ideales para principiantes y jugadores con sensibilidad en el brazo. El poliéster es más duro con el codo; la tripa sintética es más suave.' },
+];
+
+const itemListJsonLd = articles.length > 0 ? {
+  '@context': 'https://schema.org', '@type': 'ItemList',
+  itemListElement: articles.slice(0, 10).map((a, i) => ({ '@type': 'ListItem', position: i + 1, name: a.title, url: `https://super.tennis/${locale}/gear/${a.slug}/` })),
+} : null;
+const alternates = buildAlternates('/gear/', [locale]);
+---
+
+<BaseLayout
+  alternates={alternates}
+  locale={locale}
+  title="Equipamiento de tenis — Análisis de raquetas, zapatillas y material"
+  description="Análisis y guías de equipamiento de tenis. Encuentra las mejores raquetas, zapatillas, cuerdas y material para tu juego. Configuraciones de los profesionales."
+  ogImage="/og/gear.png"
+>
+  {itemListJsonLd && <script type="application/ld+json" set:html={JSON.stringify(itemListJsonLd)} />}
+  <div class="gear-page" lang={locale}>
+    <div class="container">
+      <nav class="breadcrumbs"><a href={`${lp}/`}>Inicio</a> <span class="sep">/</span> <span class="current">Equipamiento</span></nav>
+      <section class="page-hero">
+        <h1>Equipamiento de tenis</h1>
+        <p class="subtitle">Análisis de expertos, configuraciones de profesionales y guías de compra para todos los niveles{articles.length > 0 && ` — ${articles.length} guías`}</p>
+      </section>
+
+      <div class="gear-hero">
+        <img src="/images/gear/tennis-rackets.webp" alt="Raquetas y equipamiento de tenis" loading="eager" decoding="async" width="1200" height="400" onerror="this.parentElement.style.display='none'" />
+        <div class="gear-hero-overlay">
+          <h2>Encuentra tu configuración perfecta</h2>
+          <p>Raquetas, cuerdas, zapatillas y accesorios — analizados por expertos en tenis</p>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <input type="text" class="search-input" id="search-input" placeholder="🔍 Buscar guías de equipamiento..." />
+      </div>
+
+      <div class="cat-filters" id="cat-filters">
+        {SUBCATS.map((s) => (
+          <button class={`cat-btn ${s.key === 'all' ? 'active' : ''}`} data-subcat={s.key} style={s.color ? `--cat-color: ${s.color}` : ''}>{s.label}</button>
+        ))}
+      </div>
+
+      <div class="empty-state" id="empty-state" style="display:none;"><p>No se han encontrado guías. Prueba otra búsqueda o categoría.</p></div>
+
+      {articles.length > 0 && (
+        <div class="articles-grid" id="articles-grid">
+          {articles.map((article, i) => (
+            <a href={`${lp}/gear/${article.slug}/`} class="gear-card" data-subcat={article.subcategory} data-title={article.title.toLowerCase()} style={i >= initialVisible ? 'display:none;' : ''}>
+              {articlePhotos.get(article.slug) ? (
+                <div class="gear-card-img"><img src={articlePhotos.get(article.slug)!} alt={article.title} loading="lazy" decoding="async" width="400" height="267" onerror="this.parentElement.classList.add('no-img')" /></div>
+              ) : (
+                <div class="gear-card-icon">{iconMap[article.slug] || '🎾'}</div>
+              )}
+              <div class="card-content">
+                <span class="card-category">{SUBLABEL[article.subcategory] || 'Guías'}</span>
+                <h2>{article.title}</h2>
+                <p>{stripMarkdown(article.excerpt || '')}</p>
+                <span class="read-more">Leer guía →</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
+
+      {articles.length > initialVisible && (
+        <div class="load-more-section" id="load-more-section">
+          <button class="load-more-btn" id="load-more-btn">Ver más ({articles.length - initialVisible} más)</button>
+        </div>
+      )}
+
+      <section class="faq-section">
+        <h2>Preguntas frecuentes</h2>
+        <div class="faq-list">
+          {faqs.map((item) => (
+            <details class="faq-item">
+              <summary class="faq-question">{item.q}</summary>
+              <p class="faq-answer">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section class="related-section">
+        <h2>Equipo de los profesionales</h2>
+        <p>Descubre qué raquetas, cuerdas y zapatillas usan tus profesionales favoritos</p>
+        <div class="cta-links">
+          <a href={`${lp}/players/`}>Ver jugadores →</a>
+          <a href={`${lp}/rankings/`}>Ver ranking →</a>
+          <a href={`${lp}/records/`}>Récords del tenis →</a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ initialVisible }}>
+    (function () {
+      var search = document.getElementById('search-input');
+      var pills = Array.from(document.querySelectorAll('.cat-btn'));
+      var grid = document.getElementById('articles-grid');
+      var loadSection = document.getElementById('load-more-section');
+      var loadBtn = document.getElementById('load-more-btn');
+      var empty = document.getElementById('empty-state');
+      var activeCat = 'all', query = '', revealed = initialVisible;
+      function matches(el) {
+        var okCat = activeCat === 'all' || el.getAttribute('data-subcat') === activeCat;
+        var okQ = !query || (el.getAttribute('data-title') || '').indexOf(query) !== -1;
+        return okCat && okQ;
+      }
+      function apply() {
+        var cards = grid ? Array.from(grid.querySelectorAll('.gear-card')) : [];
+        var total = 0;
+        cards.forEach(function (c) {
+          if (matches(c)) { total++; c.style.display = (total <= revealed) ? '' : 'none'; }
+          else c.style.display = 'none';
+        });
+        if (loadSection) {
+          var remaining = total - revealed;
+          if (remaining > 0) { loadSection.style.display = ''; loadBtn.textContent = 'Ver más (' + remaining + ' más)'; }
+          else loadSection.style.display = 'none';
+        }
+        if (empty) empty.style.display = (total === 0) ? '' : 'none';
+      }
+      if (search) search.addEventListener('input', function () { query = this.value.trim().toLowerCase(); revealed = initialVisible; apply(); });
+      pills.forEach(function (p) { p.addEventListener('click', function () { pills.forEach(function (x) { x.classList.remove('active'); }); p.classList.add('active'); activeCat = p.getAttribute('data-subcat'); revealed = initialVisible; apply(); }); });
+      if (loadBtn) loadBtn.addEventListener('click', function () { revealed += 12; apply(); });
+    })();
+  </script>
+</BaseLayout>
+
+<style>
+  .gear-page { max-width: 1200px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+  .page-hero { padding: 48px 0 32px; border-bottom: 3px solid var(--court-green); margin-bottom: 32px; }
+  .page-hero h1 { font-family: var(--font-heading); font-size: 2.8rem; text-transform: uppercase; color: var(--gray-900); margin: 0; }
+  .subtitle { color: var(--gray-600); font-size: 1.1rem; margin: 8px 0 0; }
+  .gear-hero { position: relative; border-radius: var(--radius); overflow: hidden; margin-bottom: 32px; height: 180px; }
+  .gear-hero img { width: 100%; height: 100%; object-fit: cover; }
+  .gear-hero-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 100%); display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 32px; }
+  .gear-hero-overlay h2 { color: white; font-family: var(--font-heading); font-size: 1.6rem; text-transform: uppercase; margin: 0 0 8px; }
+  .gear-hero-overlay p { color: rgba(255,255,255,0.85); font-size: 0.95rem; margin: 0; }
+  .filter-section { margin-bottom: 24px; }
+  .search-input { width: 100%; padding: 12px 16px; font-size: 0.95rem; border: 1px solid #d1d5db; border-radius: var(--radius); background: white; color: #111827; transition: all 0.2s; }
+  .search-input:focus { outline: none; border-color: var(--court-green); box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1); }
+  .search-input::placeholder { color: #9ca3af; }
+  .cat-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb; }
+  .cat-btn { display: inline-block; padding: 6px 16px; border-radius: 20px; border: 1px solid #d1d5db; background: transparent; font-size: 0.85rem; font-weight: 600; cursor: pointer; color: #374151; transition: all 0.2s; }
+  .cat-btn:hover { border-color: var(--cat-color, #6b7280); color: var(--cat-color, #6b7280); }
+  .cat-btn.active { background: var(--cat-color, #111827); color: #fff; border-color: var(--cat-color, #111827); }
+  .articles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 48px; }
+  .gear-card { text-decoration: none; color: inherit; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; transition: all 0.2s; }
+  .gear-card:hover { border-color: var(--court-green); box-shadow: var(--shadow); transform: translateY(-2px); }
+  .gear-card-img { aspect-ratio: 1 / 1; overflow: hidden; border-radius: var(--radius); }
+  .gear-card-img img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; border-radius: var(--radius); display: block; }
+  .gear-card-img.no-img { display: none; }
+  .gear-card-icon { aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; font-size: 3rem; background: var(--gray-50); }
+  .card-content { padding: 16px 20px 20px; flex: 1; display: flex; flex-direction: column; }
+  .card-category { font-family: var(--font-heading); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; display: block; }
+  .card-content h2 { font-family: var(--font-body); font-size: 1rem; font-weight: 700; margin: 0 0 8px; line-height: 1.35; }
+  .card-content p { color: var(--gray-600); font-size: 0.82rem; line-height: 1.6; margin: 0; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .read-more { color: var(--court-green); font-weight: 600; font-size: 0.85rem; margin-top: 14px; }
+  .empty-state { text-align: center; padding: 60px 24px; color: var(--gray-500); background: var(--gray-50); border-radius: var(--radius); margin-bottom: 48px; }
+  .load-more-section { display: flex; justify-content: center; margin: 48px 0; }
+  .load-more-btn { padding: 12px 32px; font-size: 0.95rem; font-weight: 600; color: white; background: var(--court-green); border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.2s; }
+  .load-more-btn:hover { background: #16a34a; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); }
+  .faq-section { margin-bottom: 48px; padding-top: 16px; }
+  .faq-section h2 { font-family: var(--font-heading); font-size: 1.6rem; text-transform: uppercase; color: var(--gray-900); margin: 0 0 24px; }
+  .faq-list { display: flex; flex-direction: column; gap: 12px; }
+  .faq-item { border: 1px solid var(--gray-200); border-radius: var(--radius); overflow: hidden; }
+  .faq-question { padding: 16px 20px; font-weight: 600; font-size: 0.95rem; cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--gray-50); transition: background 0.15s; }
+  .faq-question::-webkit-details-marker { display: none; }
+  .faq-question::after { content: '+'; font-size: 1.2rem; font-weight: 700; color: var(--gray-400); flex-shrink: 0; }
+  .faq-item[open] .faq-question::after { content: '-'; }
+  .faq-question:hover { background: var(--gray-100); }
+  .faq-answer { padding: 16px 20px; margin: 0; font-size: 0.9rem; line-height: 1.7; color: var(--gray-600); border-top: 1px solid var(--gray-200); }
+  .related-section { text-align: center; padding: 40px; background: var(--gray-50); border-radius: var(--radius); }
+  .related-section h2 { font-family: var(--font-heading); font-size: 1.4rem; text-transform: uppercase; margin: 0 0 8px; }
+  .related-section p { color: var(--gray-600); margin: 0 0 20px; }
+  .cta-links { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .cta-links a { color: var(--court-green); font-weight: 600; font-size: 0.95rem; text-decoration: none; }
+  .cta-links a:hover { text-decoration: underline; }
+  @media (max-width: 1024px) { .articles-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 768px) { .articles-grid { grid-template-columns: 1fr; } .page-hero h1 { font-size: 2rem; } }
+</style>
