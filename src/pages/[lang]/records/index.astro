@@ -1,0 +1,521 @@
+---
+/**
+ * Localized Records hub (/es/records/) — faithful 1:1 copy of src/pages/records/index.astro:
+ * hero + stat banner, category nav, 24 curated record cards (4 categories) with photo
+ * breaks, Deep Dive article grid (filter tabs + search + load-more), 3 dynamic leaderboards
+ * (career titles ATP/WTA, Grand Slams, win%), related + 2-column sidebar. Leaderboard data is
+ * language-neutral; curated records / chrome translated; deep-dive is self-contained client-side.
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getActiveLocales, buildAlternates, type Locale } from '../../../lib/i18n';
+import { getLeaderboard, getArticles, getPlayerBySlug, supabase } from '../../../lib/supabase';
+import { countryFlags, fallbackPlayers, getFlagUrl, stripMarkdown } from '../../../lib/fallback-data';
+
+export async function getStaticPaths() {
+  const SUPPORTED = ['es'];
+  return getActiveLocales().filter((l) => SUPPORTED.includes(l)).map((locale) => ({ params: { lang: locale }, props: { locale } }));
+}
+const { locale } = Astro.props as { locale: Locale };
+const lp = `/${locale}`;
+
+// ── Dynamic leaderboards (language-neutral data) ──
+let mostTitlesATP: any[] = [], mostTitlesWTA: any[] = [], mostGrandSlams: any[] = [], highestWinPct: any[] = [];
+try {
+  [mostTitlesATP, mostTitlesWTA, mostGrandSlams] = await Promise.all([
+    getLeaderboard('career_titles', 'atp', 10), getLeaderboard('career_titles', 'wta', 10), getLeaderboard('grand_slam_titles', null, 10),
+  ]);
+  const allPlayers = await getLeaderboard('career_win', null, 50);
+  highestWinPct = allPlayers.filter((p: any) => (p.career_win + p.career_loss) >= 200)
+    .map((p: any) => ({ ...p, win_pct: ((p.career_win / (p.career_win + p.career_loss)) * 100).toFixed(1) }))
+    .sort((a: any, b: any) => parseFloat(b.win_pct) - parseFloat(a.win_pct)).slice(0, 10);
+} catch {}
+
+// ── Translated record articles (deep-dive) ──
+let enArts: any[] = [];
+try { enArts = await getArticles({ category: 'records', limit: 100 }); } catch {}
+const artIds = enArts.map((a: any) => a.id);
+const artTmap = new Map<number, { title: string; excerpt: string | null }>();
+if (artIds.length) {
+  const { data } = await supabase.from('article_translations').select('article_id, title, excerpt').eq('lang', locale).eq('status', 'published').in('article_id', artIds);
+  for (const t of data || []) artTmap.set(t.article_id, { title: t.title, excerpt: t.excerpt });
+}
+const recordArticles = enArts.filter((a: any) => artTmap.has(a.id)).map((a: any) => ({ slug: a.slug, image_url: a.image_url, title: artTmap.get(a.id)!.title, excerpt: artTmap.get(a.id)!.excerpt || '' }));
+
+const esSlugs = new Set<string>();
+try {
+  const { data: trans } = await supabase.from('article_translations').select('article_id').eq('lang', locale).eq('status', 'published');
+  const tids = (trans || []).map((t: any) => t.article_id);
+  if (tids.length) { const { data: arts } = await supabase.from('articles').select('slug').in('id', tids); for (const a of arts || []) esSlugs.add(a.slug); }
+} catch {}
+const ph = (slug: string) => esSlugs.has(slug) ? `${lp}/players/${slug}/` : `/players/${slug}/`;
+const recHref = (slug: string) => esSlugs.has(slug) ? `${lp}/records/${slug}/` : `/records/${slug}/`;
+
+const sectionPhotos = [
+  { image: '/images/tournaments/wimbledon.webp', caption: 'El All England Club — donde se hace la historia' },
+  { image: '/images/records/tennis-court-aerial.webp', caption: 'El camino al No. 1 empieza aquí' },
+  { image: '/images/tournaments/roland-garros.webp', caption: 'Roland Garros — la prueba definitiva de resistencia' },
+];
+
+const records = [
+  { category: 'Récords de Grand Slam', icon: '🏆', items: [
+    { title: 'Más títulos de Grand Slam (individual masculino)', holder: 'Novak Djokovic', value: '24', slug: 'novak-djokovic', detail: 'Abierto de Australia (10), Roland Garros (3), Wimbledon (7), US Open (4)', articleSlug: 'most-grand-slam-titles-mens' },
+    { title: 'Más títulos de Grand Slam (individual femenino)', holder: 'Margaret Court', value: '24', slug: null, detail: 'Abierto de Australia (11), Roland Garros (5), Wimbledon (3), US Open (5)', articleSlug: 'most-grand-slam-titles-womens' },
+    { title: 'Más títulos de Grand Slam (Era Abierta, femenino)', holder: 'Serena Williams', value: '23', slug: null, detail: 'Abierto de Australia (7), Roland Garros (3), Wimbledon (7), US Open (6)', articleSlug: 'serena-williams-grand-slam-record' },
+    { title: 'Más títulos de Grand Slam consecutivos', holder: 'Novak Djokovic', value: '4', slug: 'novak-djokovic', detail: '2015-16: Wimbledon, US Open, Abierto de Australia, Roland Garros', articleSlug: 'most-consecutive-grand-slam-titles' },
+    { title: 'Campeón de Grand Slam más joven (masculino)', holder: 'Michael Chang', value: '17a 3m', slug: null, detail: 'Roland Garros 1989', articleSlug: 'youngest-grand-slam-champions' },
+    { title: 'Campeona de Grand Slam más joven (femenino)', holder: 'Martina Hingis', value: '16a 3m', slug: null, detail: 'Abierto de Australia 1997', articleSlug: 'youngest-grand-slam-champions' },
+  ] },
+  { category: 'Récords de ranking', icon: '📊', items: [
+    { title: 'Más semanas como No. 1 (masculino)', holder: 'Novak Djokovic', value: '428', slug: 'novak-djokovic', detail: 'Superó las 310 semanas de Roger Federer en marzo de 2023', articleSlug: 'most-weeks-at-number-one' },
+    { title: 'Más semanas como No. 1 (femenino)', holder: 'Steffi Graf', value: '377', slug: null, detail: 'Posee el récord desde 1997', articleSlug: 'most-weeks-at-number-one' },
+    { title: 'No. 1 más joven (masculino)', holder: 'Carlos Alcaraz', value: '19a 4m', slug: 'carlos-alcaraz', detail: '12 de septiembre de 2022, tras ganar el US Open', articleSlug: 'youngest-world-number-one' },
+    { title: 'No. 1 más joven (femenino)', holder: 'Martina Hingis', value: '16a 6m', slug: null, detail: '31 de marzo de 1997', articleSlug: 'youngest-world-number-one' },
+    { title: 'Más veces No. 1 de fin de año (masculino)', holder: 'Novak Djokovic', value: '8', slug: 'novak-djokovic', detail: '2011, 2012, 2014, 2015, 2018, 2020, 2021, 2023', articleSlug: 'year-end-number-one-records' },
+    { title: 'Más veces No. 1 de fin de año (femenino)', holder: 'Steffi Graf', value: '8', slug: null, detail: '1987, 1988, 1989, 1990, 1993, 1995, 1996', articleSlug: 'year-end-number-one-records' },
+  ] },
+  { category: 'Récords de partidos y saque', icon: '⚡', items: [
+    { title: 'Saque más rápido jamás registrado', holder: 'Sam Groth', value: '263.4 km/h', slug: null, detail: 'Busan Challenger 2012 (no reconocido por la ATP)', articleSlug: 'fastest-tennis-serves-ever' },
+    { title: 'Saque más rápido (reconocido por la ATP)', holder: 'John Isner', value: '253.0 km/h', slug: null, detail: 'Copa Davis 2016', articleSlug: 'fastest-tennis-serves-ever' },
+    { title: 'Partido más largo de la historia', holder: 'Isner vs. Mahut', value: '11h 5m', slug: null, detail: 'Wimbledon 2010, marcador final 70-68 en el 5º set', articleSlug: 'longest-tennis-match-in-history' },
+    { title: 'Más títulos de carrera (masculino, Era Abierta)', holder: 'Jimmy Connors', value: '109', slug: null, detail: 'Récord masculino de todos los tiempos. Le siguen Roger Federer (103) y Novak Djokovic (99+)', articleSlug: 'most-career-titles-mens' },
+    { title: 'Más títulos de carrera (femenino, Era Abierta)', holder: 'Martina Navratilova', value: '167', slug: null, detail: 'Incluidos 59 títulos de Grand Slam (individual + dobles)', articleSlug: 'most-career-titles-womens' },
+    { title: 'Más premios de carrera (masculino)', holder: 'Novak Djokovic', value: '$185M+', slug: 'novak-djokovic', detail: 'Primer jugador en superar los 180 millones de dólares en premios', articleSlug: 'highest-tennis-prize-money-earners' },
+  ] },
+  { category: 'Récords por superficie', icon: '🎾', items: [
+    { title: 'Más títulos de Roland Garros (masculino)', holder: 'Rafael Nadal', value: '14', slug: null, detail: 'Ganados entre 2005-2022, perdió solo 4 partidos en total', articleSlug: 'rafael-nadal-roland-garros-record' },
+    { title: 'Más títulos de Wimbledon (masculino)', holder: 'Roger Federer', value: '8', slug: null, detail: 'Ganados entre 2003-2017, incluidos 5 consecutivos (2003-07)', articleSlug: 'most-wimbledon-titles-mens' },
+    { title: 'Más títulos del Abierto de Australia (masculino)', holder: 'Novak Djokovic', value: '10', slug: 'novak-djokovic', detail: '2008, 2011, 2012, 2013, 2015, 2016, 2019, 2020, 2023', articleSlug: 'most-australian-open-titles' },
+    { title: 'Más títulos del US Open (Era Abierta, masculino)', holder: 'Jimmy Connors / Pete Sampras / Roger Federer', value: '5', slug: null, detail: 'Récord compartido entre tres leyendas', articleSlug: 'most-us-open-titles-mens' },
+    { title: 'Racha de victorias más larga en tierra', holder: 'Rafael Nadal', value: '81 partidos', slug: null, detail: 'De abril de 2005 a mayo de 2007', articleSlug: 'longest-winning-streaks-tennis' },
+    { title: 'Racha de victorias más larga en hierba', holder: 'Roger Federer', value: '65 partidos', slug: null, detail: 'De 2003 a 2008', articleSlug: 'longest-winning-streaks-tennis' },
+  ] },
+];
+
+// Sidebar featured player
+let sidebarPlayer: any = null;
+try { sidebarPlayer = await getPlayerBySlug('novak-djokovic'); } catch {}
+if (!sidebarPlayer) sidebarPlayer = fallbackPlayers['novak-djokovic'] || { first_name: 'Novak', last_name: 'Djokovic', country_code: 'SRB', career_titles: 99, grand_slam_titles: 24, slug: 'novak-djokovic', image_url: '' };
+
+let sidebarArticles: any[] = [];
+try {
+  const [playersArts, vsArts] = await Promise.all([getArticles({ category: 'players', limit: 6 }), getArticles({ category: 'vs', limit: 6 })]);
+  let combined = [...playersArts, ...vsArts].filter((a: any) => a.title);
+  for (let i = combined.length - 1; i > 0; i--) { const j = ((i + 3) * 17) % (i + 1); [combined[i], combined[j]] = [combined[j], combined[i]]; }
+  combined = combined.slice(0, 4);
+  const ids = combined.map((a: any) => a.id);
+  const tm = new Map<number, string>();
+  if (ids.length) { const { data } = await supabase.from('article_translations').select('article_id, title').eq('lang', locale).eq('status', 'published').in('article_id', ids); for (const t of data || []) tm.set(t.article_id, t.title); }
+  sidebarArticles = combined.map((a: any) => ({ ...a, title: tm.get(a.id) ?? a.title }));
+} catch {}
+const sbCatColors: Record<string, string> = { players: '#4CAF50', records: '#FF9800', gear: '#2196F3', lifestyle: '#E91E63', tournaments: '#00BCD4', vs: '#FF5722' };
+const sbCatLabels: Record<string, string> = locale === 'es' ? { players: 'Jugadores', records: 'Récords', gear: 'Equipo', lifestyle: 'Estilo', tournaments: 'Torneos', vs: 'H2H' } : { players: 'Players', records: 'Records', gear: 'Gear', lifestyle: 'Lifestyle', tournaments: 'Tournaments', vs: 'H2H' };
+function sbArticleUrl(art: { category: string; slug: string }): string {
+  if (art.category === 'players') { const sfx = ['-racket', '-net-worth', '-stats', '-grand-slams', '-career-timeline', '-partner', '-age']; const base = sfx.reduce((s, x) => s.endsWith(x) ? s.slice(0, -x.length) : s, art.slug); return ph(base); }
+  return esSlugs.has(art.slug) ? `${lp}/${art.category}/${art.slug}/` : `/${art.category}/${art.slug}/`;
+}
+
+// es news map for the client-loaded sidebar news
+const newsMap: Record<string, { t: string; s: string; slug: string }> = {};
+try {
+  const { data: nt } = await supabase.from('news_translations').select('news_id, title, summary').eq('lang', locale).eq('status', 'published');
+  const nids = (nt || []).map((r: any) => r.news_id);
+  if (nids.length) { const { data: nrows } = await supabase.from('news').select('id, slug').in('id', nids); const slugById = new Map((nrows || []).map((n: any) => [n.id, n.slug])); for (const r of nt || []) { const slug = slugById.get(r.news_id); if (slug) newsMap[String(r.news_id)] = { t: r.title, s: r.summary || '', slug }; } }
+} catch {}
+
+// Deep-dive: classify + image diversifier (self-contained; all cards pre-rendered)
+function classifyArticle(art: { title: string; slug: string }): string {
+  const text = (art.title + ' ' + art.slug).toLowerCase();
+  if (/\b(grand-slam|grand-slams|slam|slams|wimbledon|roland|french-open|australian-open|us-open|hat-trick|hat-tricks|olympic|davis-cup)\b/.test(text)) return 'slams';
+  if (/\b(ranking|rankings|ranked|no-1|number-one|year-end|weeks|world-number-one|world-no)\b/.test(text)) return 'rankings';
+  if (/\b(serve|serves|ace|aces|fastest|tiebreak|tiebreaks|double-fault|double-faults|longest-match|longest-matches)\b/.test(text)) return 'serves';
+  if (/\b(streak|streaks|consecutive|undefeated|surface|surfaces|comeback|comebacks|winning-streak|winning-streaks)\b/.test(text)) return 'streaks';
+  return 'career';
+}
+const filterTabs = [
+  { id: 'all', label: 'Todos', icon: '📚' }, { id: 'slams', label: 'Grand Slams', icon: '🏆' }, { id: 'rankings', label: 'Ranking', icon: '📊' },
+  { id: 'serves', label: 'Saque y partidos', icon: '⚡' }, { id: 'streaks', label: 'Rachas', icon: '🔥' }, { id: 'career', label: 'Carrera', icon: '👑' },
+];
+const RECORD_IMAGE_POOL: Record<string, string[]> = {
+  slams: ['/images/tournaments/melbourne-park.webp', '/images/tournaments/roland-garros.webp', '/images/tournaments/wimbledon.webp', '/images/tournaments/us-open.webp', '/images/records/tennis-trophy-gold.webp', '/images/records/titles-single-year.webp', '/images/lifestyle/tennis-trophy.webp', '/images/lifestyle/tennis-fans-crowd.webp', '/images/lifestyle/tennis-court-sunset.webp'],
+  rankings: ['/images/records/tennis-court-aerial.webp', '/images/records/titles-single-year.webp', '/images/lifestyle/tennis-fans-crowd.webp', '/images/lifestyle/tennis-fan-culture.webp', '/images/lifestyle/tennis-court-sunset.webp', '/images/lifestyle/tennis-watching-guide.webp', '/images/lifestyle/tennis-podcasts.webp', '/images/tournaments/atp-finals.webp', '/images/tournaments/wta-finals.webp'],
+  serves: ['/images/records/fastest-serves.webp', '/images/records/most-aces.webp', '/images/records/tennis-aces.webp', '/images/records/double-faults.webp', '/images/records/longest-matches.webp', '/images/lifestyle/tennis-training.webp', '/images/lifestyle/tennis-coaching.webp', '/images/lifestyle/tennis-rituals.webp'],
+  streaks: ['/images/lifestyle/tennis-court-sunset.webp', '/images/lifestyle/tennis-academy.webp', '/images/lifestyle/tennis-training.webp', '/images/lifestyle/tennis-superstitions.webp', '/images/records/titles-single-year.webp', '/images/records/tennis-trophy-gold.webp', '/images/tournaments/monte-carlo.webp', '/images/tournaments/indian-wells.webp'],
+  career: ['/images/lifestyle/tennis-prize-money.webp', '/images/lifestyle/tennis-trophy.webp', '/images/lifestyle/tennis-after-50.webp', '/images/lifestyle/tennis-retirement-tour.webp', '/images/lifestyle/tennis-academy.webp', '/images/lifestyle/tennis-become-pro.webp', '/images/lifestyle/tennis-fashion.webp', '/images/lifestyle/tennis-tattoos.webp', '/images/records/titles-single-year.webp', '/images/records/prize-money-check.webp', '/images/tournaments/laver-cup.webp', '/images/tournaments/davis-cup.webp'],
+};
+const GENERIC_IMAGES = new Set(['/images/records/tennis-court-aerial.webp', '/images/records/tennis-trophy-gold.webp']);
+function visualKey(img: string): string { if (img.includes('bagels')) return 'bagels'; if (img.includes('prize-money')) return 'prize-money'; if (img.includes('fastest-serve')) return 'fastest-serve'; if (img.includes('longest-match')) return 'longest-match'; return img; }
+const usedImageCounts = new Map<string, number>();
+function pickRecordImage(article: { image_url?: string }, subcategory: string): string {
+  if (article.image_url && !GENERIC_IMAGES.has(article.image_url)) { const k = visualKey(article.image_url); usedImageCounts.set(k, (usedImageCounts.get(k) || 0) + 1); return article.image_url; }
+  const pool = RECORD_IMAGE_POOL[subcategory] || RECORD_IMAGE_POOL.career;
+  let best = pool[0], bestN = usedImageCounts.get(visualKey(best)) ?? 0;
+  for (const img of pool) { const c = usedImageCounts.get(visualKey(img)) ?? 0; if (c < bestN) { best = img; bestN = c; } }
+  usedImageCounts.set(visualKey(best), bestN + 1); return best;
+}
+const articleSlugSet = new Set(recordArticles.map((a) => a.slug));
+const findRecordArticle = (rec: { articleSlug?: string }) => rec.articleSlug && articleSlugSet.has(rec.articleSlug) ? recHref(rec.articleSlug) : null;
+const initialVisible = 12;
+
+const faqJsonLd = {
+  '@context': 'https://schema.org', '@type': 'FAQPage', inLanguage: locale,
+  mainEntity: [
+    { '@type': 'Question', name: '¿Quién ha ganado más títulos de Grand Slam en el tenis masculino?', acceptedAnswer: { '@type': 'Answer', text: 'Novak Djokovic tiene el récord con 24 títulos individuales de Grand Slam — Abierto de Australia (10), Roland Garros (3), Wimbledon (7) y US Open (4). Superó los 22 de Rafael Nadal y los 20 de Roger Federer para lograr el récord masculino de todos los tiempos.' } },
+    { '@type': 'Question', name: '¿Quién ha ganado más títulos de Grand Slam en el tenis femenino?', acceptedAnswer: { '@type': 'Answer', text: 'Margaret Court tiene el récord de todos los tiempos con 24 títulos individuales de Grand Slam. En la Era Abierta (desde 1968), Serena Williams lidera con 23 títulos individuales de Grand Slam.' } },
+    { '@type': 'Question', name: '¿Cuál es el saque más rápido jamás registrado en el tenis?', acceptedAnswer: { '@type': 'Answer', text: 'Sam Groth tiene el récord no oficial con un saque de 263,4 km/h en el Busan Challenger de 2012. El saque más rápido reconocido por la ATP es el de John Isner, de 253,0 km/h, en la Copa Davis de 2016.' } },
+    { '@type': 'Question', name: '¿Cuál es el partido de tenis más largo de la historia?', acceptedAnswer: { '@type': 'Answer', text: 'John Isner venció a Nicolas Mahut por 70-68 en el quinto set en Wimbledon 2010 — un partido que duró 11 horas y 5 minutos a lo largo de tres días. Es el partido de tenis profesional más largo jamás disputado.' } },
+    { '@type': 'Question', name: '¿Quién tiene el récord de más semanas como No. 1 del mundo?', acceptedAnswer: { '@type': 'Answer', text: 'Novak Djokovic tiene el récord masculino con 428 semanas como No. 1, superando las 310 de Roger Federer en marzo de 2023. En el circuito femenino, Steffi Graf posee el récord con 377 semanas como No. 1.' } },
+    { '@type': 'Question', name: '¿Quién ha ganado más títulos de Roland Garros?', acceptedAnswer: { '@type': 'Answer', text: 'Rafael Nadal domina Roland Garros con 14 títulos individuales masculinos, ganados entre 2005 y 2022. Perdió solo 4 partidos en el torneo en toda su carrera — el récord de Grand Slam más dominante de la historia del tenis.' } },
+    { '@type': 'Question', name: '¿Quién es el campeón de Grand Slam más joven de la historia del tenis?', acceptedAnswer: { '@type': 'Answer', text: 'Michael Chang es el campeón de Grand Slam masculino más joven, con 17 años y 3 meses cuando ganó Roland Garros en 1989. Martina Hingis es la campeona femenina más joven, con 16 años y 3 meses en el Abierto de Australia de 1997.' } },
+    { '@type': 'Question', name: '¿Cuál es la racha de victorias más larga de la historia del tenis?', acceptedAnswer: { '@type': 'Answer', text: 'La racha de 81 victorias de Rafael Nadal en tierra batida (abril de 2005 a mayo de 2007) es la más larga en una sola superficie de la Era Abierta. En hierba, Roger Federer tiene el récord con 65 victorias consecutivas (2003-2008).' } },
+    { '@type': 'Question', name: '¿Quién ha ganado más premios en el tenis?', acceptedAnswer: { '@type': 'Answer', text: 'Novak Djokovic es el jugador con más ganancias de la historia, con más de 185 millones de dólares en premios de carrera — el primero en superar los 180 millones en el circuito ATP o WTA.' } },
+  ],
+};
+
+const S = { home: 'Inicio', crumb: 'Récords', h1: 'Récords del tenis', subtitle: 'Los mayores logros e hitos de la historia del tenis', qaLabel: 'Respuesta rápida', qa: 'Novak Djokovic tiene el récord masculino de Grand Slam de todos los tiempos (24 títulos) y de más semanas como No. 1 (428). Margaret Court lidera la lista general femenina de Grand Slam (24 títulos), y Serena Williams posee el récord femenino de la Era Abierta (23). Otros récords destacados: el saque más rápido de la historia de Sam Groth (263,4 km/h, 2012), el partido más largo (Isner vs. Mahut, 11h 5m en Wimbledon 2010) y las 377 semanas de Steffi Graf como No. 1 femenina.', heroStatLabel: 'títulos de Grand Slam — el récord masculino de todos los tiempos de Novak Djokovic', navTitles: 'Clasificación de títulos', navGs: 'Líderes GS', navWin: '% victorias', deepDive: 'Análisis en profundidad', searchPh: 'Buscar artículos...', readMore: 'Leer más →', loadMore: 'Cargar más artículos', remaining: 'restantes', lbTitles: 'Clasificación de títulos de carrera', lbAtp: 'ATP — Más títulos de carrera', lbWta: 'WTA — Más títulos de carrera', lbGs: 'Títulos de Grand Slam — Líderes de todos los tiempos', lbWin: 'Mayor porcentaje de victorias (200+ partidos)', colPlayer: 'Jugador', colTitles: 'Títulos', colTour: 'Circuito', colTotal: 'Títulos totales', colWinPct: '% victorias', exploreMore: 'Explora más', featured: 'Jugador destacado', viewAll: 'Ver todos →', gsStat: 'Grand Slams', careerTitles: 'Títulos de carrera', explore: 'Explorar', empty: 'No hay artículos en esta categoría todavía. Prueba otro filtro.' };
+const alternates = buildAlternates('/records/', [locale]);
+---
+
+<BaseLayout alternates={alternates} locale={locale} title="Récords del tenis — Estadísticas y logros de todos los tiempos" description="Lista completa de récords del tenis. Récords de Grand Slam, hitos de ranking, récords de velocidad de saque y logros de todos los tiempos en el tenis masculino y femenino." ogImage="/og/records.png" dynamicContent={true}>
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script type="application/json" id="es-news-map" set:html={JSON.stringify(newsMap)}></script>
+
+  <div class="records-page" lang={locale}>
+    <div class="container">
+      <nav class="breadcrumbs"><a href={`${lp}/`}>{S.home}</a> <span class="sep">/</span> <span class="current">{S.crumb}</span></nav>
+      <section class="page-hero"><h1>{S.h1}</h1><p class="subtitle">{S.subtitle}</p></section>
+
+      <section class="quick-answer"><h2 class="qa-label">{S.qaLabel}</h2><p class="qa-text">{S.qa}</p></section>
+
+      <div class="records-hero">
+        <img src="/images/records/tennis-trophy-gold.webp" alt="Trofeo de campeón de tenis" class="records-hero-img" loading="eager" decoding="async" width="1200" height="400" onerror="this.parentElement.style.display='none'" />
+        <div class="records-hero-overlay"><div class="records-hero-stat"><span class="hero-stat-value">24</span><span class="hero-stat-label">{S.heroStatLabel}</span></div></div>
+      </div>
+
+      <div class="records-layout">
+        <main class="records-main">
+          <nav class="category-nav">
+            {records.map((cat) => (<a href={`#${cat.category.toLowerCase().replace(/\s+/g, '-')}`} class="cat-link"><span class="cat-icon">{cat.icon}</span>{cat.category}</a>))}
+            {mostTitlesATP.length > 0 && (<a href="#career-titles-leaderboard" class="cat-link live-data"><span class="cat-icon">👑</span>{S.navTitles}</a>)}
+            {mostGrandSlams.length > 0 && (<a href="#grand-slam-leaderboard" class="cat-link live-data"><span class="cat-icon">🏆</span>{S.navGs}</a>)}
+            {highestWinPct.length > 0 && (<a href="#win-percentage-leaderboard" class="cat-link live-data"><span class="cat-icon">📈</span>{S.navWin}</a>)}
+          </nav>
+
+          {records.map((cat, catIdx) => (
+            <>
+              {catIdx > 0 && sectionPhotos[catIdx - 1] && (<div class="section-photo-break"><img src={sectionPhotos[catIdx - 1].image} alt={sectionPhotos[catIdx - 1].caption} loading="lazy" decoding="async" width="800" height="300" /><div class="section-photo-caption">{sectionPhotos[catIdx - 1].caption}</div></div>)}
+              <section class="records-section" id={cat.category.toLowerCase().replace(/\s+/g, '-')}>
+                <h2><span class="section-icon">{cat.icon}</span>{cat.category}</h2>
+                <div class="records-list">
+                  {cat.items.map((rec, i) => {
+                    const recArticleUrl = findRecordArticle(rec);
+                    return (
+                      <div class="record-card">
+                        <div class="record-rank">#{i + 1}</div>
+                        <div class="record-content">
+                          <h3>{recArticleUrl ? (<a href={recArticleUrl} class="record-title-link">{rec.title} <span class="record-arrow">→</span></a>) : rec.title}</h3>
+                          <div class="record-holder">{rec.slug ? (<a href={ph(rec.slug)} class="holder-link">{rec.holder}</a>) : (<span class="holder-name">{rec.holder}</span>)}</div>
+                          <p class="record-detail">{rec.detail}</p>
+                        </div>
+                        <div class="record-value">{rec.value}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            </>
+          ))}
+
+          {recordArticles.length > 0 && (
+            <section class="records-section" id="deep-dive">
+              <div class="articles-header">
+                <h2><span class="section-icon">📖</span>{S.deepDive} <span class="articles-count">({recordArticles.length})</span></h2>
+                <div class="search-box"><input type="text" id="recordSearch" placeholder={S.searchPh} class="search-input" /></div>
+              </div>
+              <div class="article-filters" role="tablist">
+                {filterTabs.map((tab) => (<button type="button" class={`filter-tab ${tab.id === 'all' ? 'active' : ''}`} data-filter={tab.id}><span class="filter-icon">{tab.icon}</span>{tab.label}</button>))}
+              </div>
+              <div class="articles-grid" id="articlesGrid">
+                {recordArticles.map((art, idx) => {
+                  const subcategory = classifyArticle(art);
+                  const img = pickRecordImage(art, subcategory);
+                  const meta = filterTabs.find((t) => t.id === subcategory) || filterTabs[5];
+                  return (
+                    <a href={recHref(art.slug)} class="article-card" data-category={subcategory} data-title={art.title.toLowerCase()} style={idx >= initialVisible ? 'display:none;' : ''}>
+                      <div class="article-card__img"><img src={img} alt={art.title} loading="lazy" decoding="async" width="400" height="225" onerror="this.src='/images/records/tennis-trophy-gold.webp'" /><span class="article-card__badge">{meta.icon} {meta.label}</span></div>
+                      <div class="article-card__body"><h3>{art.title}</h3><p>{stripMarkdown(art.excerpt || '')}</p><span class="article-card__cta">{S.readMore}</span></div>
+                    </a>
+                  );
+                })}
+              </div>
+              {recordArticles.length > initialVisible && (<button class="load-more-btn" id="recordsLoadMoreBtn">{S.loadMore} ({recordArticles.length - initialVisible} {S.remaining})</button>)}
+            </section>
+          )}
+
+          {mostTitlesATP.length > 0 && (
+            <section class="records-section leaderboard-section" id="career-titles-leaderboard">
+              <h2><span class="section-icon">👑</span>{S.lbTitles}</h2>
+              <div class="leaderboard-grid">
+                {[{ h: S.lbAtp, rows: mostTitlesATP }, { h: S.lbWta, rows: mostTitlesWTA }].map((tbl) => (
+                  <div class="leaderboard-table">
+                    <h3 class="lb-title">{tbl.h}</h3>
+                    <table>
+                      <thead><tr><th>#</th><th>{S.colPlayer}</th><th>{S.colTitles}</th><th>GS</th><th>V-D</th></tr></thead>
+                      <tbody>
+                        {tbl.rows.map((p: any, i: number) => (
+                          <tr class={i < 3 ? 'top-3' : ''}>
+                            <td class="lb-rank">{i + 1}</td>
+                            <td class="lb-player"><a href={ph(p.slug)}>{p.image_url ? (<img src={p.image_url} alt={`${p.first_name} ${p.last_name}`} class="lb-avatar" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display='none'" />) : null}{getFlagUrl(p.country_code || '') ? (<img src={getFlagUrl(p.country_code || '', 20)} alt={p.country_code || ''} class="lb-flag-img" width="20" height="15" loading="lazy" decoding="async" />) : (<span class="lb-flag">{countryFlags[p.country_code || ''] || ''}</span>)}{p.first_name} <strong>{p.last_name}</strong></a></td>
+                            <td class="lb-value">{p.career_titles}</td>
+                            <td class="lb-gs">{p.grand_slam_titles || 0}</td>
+                            <td class="lb-wl">{p.career_win}-{p.career_loss}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {mostGrandSlams.length > 0 && (
+            <section class="records-section leaderboard-section" id="grand-slam-leaderboard">
+              <h2><span class="section-icon">🏆</span>{S.lbGs}</h2>
+              <div class="leaderboard-single">
+                <table>
+                  <thead><tr><th>#</th><th>{S.colPlayer}</th><th>{S.colTour}</th><th>Grand Slams</th><th>{S.colTotal}</th><th>V-D</th></tr></thead>
+                  <tbody>
+                    {mostGrandSlams.map((p: any, i: number) => (
+                      <tr class={i < 3 ? 'top-3' : ''}>
+                        <td class="lb-rank">{i + 1}</td>
+                        <td class="lb-player"><a href={ph(p.slug)}>{getFlagUrl(p.country_code || '') ? (<img src={getFlagUrl(p.country_code || '', 20)} alt={p.country_code || ''} class="lb-flag-img" width="20" height="15" loading="lazy" decoding="async" />) : (<span class="lb-flag">{countryFlags[p.country_code || ''] || ''}</span>)}{p.first_name} <strong>{p.last_name}</strong></a></td>
+                        <td><span class={`tour-mini ${p.tour}`}>{p.tour?.toUpperCase()}</span></td>
+                        <td class="lb-value gs-val">{p.grand_slam_titles}</td>
+                        <td>{p.career_titles}</td>
+                        <td class="lb-wl">{p.career_win}-{p.career_loss}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
+
+          {highestWinPct.length > 0 && (
+            <section class="records-section leaderboard-section" id="win-percentage-leaderboard">
+              <h2><span class="section-icon">📈</span>{S.lbWin}</h2>
+              <div class="leaderboard-single">
+                <table>
+                  <thead><tr><th>#</th><th>{S.colPlayer}</th><th>{S.colTour}</th><th>{S.colWinPct}</th><th>V-D</th><th>{S.colTitles}</th></tr></thead>
+                  <tbody>
+                    {highestWinPct.map((p: any, i: number) => (
+                      <tr class={i < 3 ? 'top-3' : ''}>
+                        <td class="lb-rank">{i + 1}</td>
+                        <td class="lb-player"><a href={ph(p.slug)}>{getFlagUrl(p.country_code || '') ? (<img src={getFlagUrl(p.country_code || '', 20)} alt={p.country_code || ''} class="lb-flag-img" width="20" height="15" loading="lazy" decoding="async" />) : (<span class="lb-flag">{countryFlags[p.country_code || ''] || ''}</span>)}{p.first_name} <strong>{p.last_name}</strong></a></td>
+                        <td><span class={`tour-mini ${p.tour}`}>{p.tour?.toUpperCase()}</span></td>
+                        <td class="lb-value">{p.win_pct}%</td>
+                        <td class="lb-wl">{p.career_win}-{p.career_loss}</td>
+                        <td>{p.career_titles}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
+
+          <section class="related-content">
+            <h2>{S.exploreMore}</h2>
+            <div class="explore-grid">
+              <a href={`${lp}/players/`} class="explore-card"><span class="explore-icon">👥</span><h3>Perfiles de jugadores</h3><p>Estadísticas, biografías y ranking de los mejores jugadores ATP y WTA</p></a>
+              <a href={`${lp}/rankings/`} class="explore-card"><span class="explore-icon">📈</span><h3>Ranking en directo</h3><p>Ranking ATP y WTA actual, actualizado cada semana</p></a>
+              <a href={`${lp}/gear/`} class="explore-card"><span class="explore-icon">🎾</span><h3>Equipamiento</h3><p>Raquetas, zapatillas y material que usan los profesionales</p></a>
+            </div>
+          </section>
+        </main>
+
+        <aside class="sb">
+          <div class="sb-profile">
+            <div class="sb-profile__header"><span class="sb-profile__label">{S.featured}</span><a href={`${lp}/players/`} class="sb-link">{S.viewAll}</a></div>
+            <a href={ph(sidebarPlayer.slug)} class="sb-profile__card">
+              <div class="sb-profile__img">
+                {sidebarPlayer.image_url && (<img src={sidebarPlayer.image_url} alt={`${sidebarPlayer.first_name} ${sidebarPlayer.last_name}`} loading="lazy" decoding="async" width="320" height="160" />)}
+                <div class="sb-profile__name">{getFlagUrl(sidebarPlayer.country_code) ? (<img src={getFlagUrl(sidebarPlayer.country_code, 40)} alt={sidebarPlayer.country_code} class="sb-flag" width="20" height="15" loading="lazy" decoding="async" />) : null}{sidebarPlayer.first_name} {sidebarPlayer.last_name}</div>
+              </div>
+              <div class="sb-profile__stats"><div class="sb-profile__row"><span>{S.gsStat}</span><span>{sidebarPlayer.grand_slam_titles || 0}</span></div><div class="sb-profile__row"><span>{S.careerTitles}</span><span>{sidebarPlayer.career_titles || 0}</span></div></div>
+            </a>
+          </div>
+          <div class="sb-block" data-dynamic="sidebar-videos" data-slots="2,3"></div>
+          <div class="sb-block" data-dynamic="sidebar-news" data-limit="2" data-locale={locale}></div>
+          {sidebarArticles.length > 0 && (
+            <div class="sb-articles">
+              <div class="sb-articles__header"><span class="sb-articles__label">{S.explore}</span></div>
+              <div class="sb-articles__list">
+                {sidebarArticles.map((art: any) => (<a href={sbArticleUrl(art)} class="sb-articles__item"><span class="sb-articles__cat" style={`background: ${sbCatColors[art.category] || '#666'}`}>{sbCatLabels[art.category] || art.category}</span><span class="sb-articles__link">{art.title}</span></a>))}
+              </div>
+            </div>
+          )}
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ initialVisible, emptyLabel: S.empty, loadMoreLabel: S.loadMore, remainingLabel: S.remaining }}>
+    (function () {
+      var search = document.getElementById('recordSearch');
+      var tabs = Array.from(document.querySelectorAll('.filter-tab'));
+      var grid = document.getElementById('articlesGrid');
+      var loadBtn = document.getElementById('recordsLoadMoreBtn');
+      var activeFilter = 'all', query = '', revealed = initialVisible;
+      function matches(c) {
+        var okCat = activeFilter === 'all' || (c.getAttribute('data-category') || 'career') === activeFilter;
+        var okQ = !query || (c.getAttribute('data-title') || '').indexOf(query) !== -1;
+        return okCat && okQ;
+      }
+      function apply() {
+        if (!grid) return;
+        var cards = Array.from(grid.querySelectorAll('.article-card'));
+        var total = 0;
+        cards.forEach(function (c) { if (matches(c)) { total++; c.style.display = (total <= revealed) ? '' : 'none'; } else c.style.display = 'none'; });
+        var empty = grid.querySelector('.articles-empty');
+        if (total === 0) { if (!empty) { empty = document.createElement('div'); empty.className = 'articles-empty'; empty.textContent = emptyLabel; grid.appendChild(empty); } }
+        else if (empty) empty.remove();
+        if (loadBtn) { var rem = total - revealed; if (rem > 0) { loadBtn.style.display = ''; loadBtn.textContent = loadMoreLabel + ' (' + rem + ' ' + remainingLabel + ')'; } else loadBtn.style.display = 'none'; }
+      }
+      if (search) search.addEventListener('input', function () { query = this.value.trim().toLowerCase(); revealed = initialVisible; apply(); });
+      tabs.forEach(function (t) { t.addEventListener('click', function () { tabs.forEach(function (x) { x.classList.remove('active'); }); t.classList.add('active'); activeFilter = t.getAttribute('data-filter') || 'all'; revealed = initialVisible; apply(); }); });
+      if (loadBtn) loadBtn.addEventListener('click', function () { revealed += 12; apply(); });
+    })();
+  </script>
+
+  <style>
+    .records-page { padding: 0 24px 60px; }
+    .breadcrumbs { padding: 20px 0 0; font-size: 0.82rem; color: var(--gray-500); }
+    .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+    .breadcrumbs a:hover { color: var(--court-green); }
+    .sep { margin: 0 8px; }
+    .current { color: var(--gray-800); font-weight: 500; }
+    .page-hero { padding: 48px 0 32px; border-bottom: 3px solid var(--court-green); margin-bottom: 32px; }
+    .page-hero h1 { font-family: var(--font-heading); font-size: 2.8rem; text-transform: uppercase; color: var(--gray-900); margin: 0; }
+    .subtitle { color: var(--gray-600); font-size: 1.1rem; margin: 8px 0 0; }
+    .quick-answer { margin: 0 0 32px; padding: 16px 20px; background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%); border-left: 3px solid var(--court-green); border-radius: 0 var(--radius) var(--radius) 0; }
+    .qa-label { font-family: var(--font-heading); font-size: 0.78rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--court-green); margin: 0 0 8px; }
+    .qa-text { margin: 0; font-size: 0.98rem; line-height: 1.6; color: var(--gray-800); }
+    .records-hero { position: relative; border-radius: var(--radius); overflow: hidden; margin-bottom: 32px; height: 200px; }
+    .records-hero-img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
+    .records-hero-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%); display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .records-hero-stat { text-align: center; color: white; }
+    .hero-stat-value { display: block; font-family: var(--font-heading); font-size: 4rem; font-weight: 700; color: var(--ball-yellow); line-height: 1; margin-bottom: 8px; }
+    .hero-stat-label { font-size: 1rem; color: rgba(255,255,255,0.9); max-width: 400px; display: block; }
+    .records-layout { display: grid; grid-template-columns: 1fr 320px; gap: 32px; max-width: 1300px; margin: 0 auto; align-items: start; }
+    .records-main { min-width: 0; }
+    .lb-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; object-position: top; margin-right: 6px; vertical-align: middle; border: 1px solid var(--gray-200); }
+    .category-nav { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; position: sticky; top: var(--header-height); background: white; padding: 12px 0; z-index: 10; border-bottom: 1px solid var(--gray-200); }
+    .cat-link { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 20px; font-size: 0.85rem; font-weight: 500; color: var(--gray-700); transition: all 0.2s; white-space: nowrap; text-decoration: none; }
+    .cat-link:hover { border-color: var(--court-green); color: var(--court-green); background: white; }
+    .cat-link.live-data { border-color: var(--court-green); background: #f0fdf4; color: var(--court-green); }
+    .cat-icon { font-size: 1rem; }
+    .section-photo-break { position: relative; border-radius: var(--radius); overflow: hidden; margin-bottom: 48px; aspect-ratio: 21 / 7; }
+    .section-photo-break img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .section-photo-caption { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px 24px; background: linear-gradient(transparent, rgba(0,0,0,0.7)); color: #fff; font-size: 0.85rem; font-style: italic; opacity: 0.9; }
+    .records-section { margin-bottom: 48px; scroll-margin-top: calc(var(--header-height) + 60px); }
+    .records-section h2 { font-family: var(--font-heading); font-size: 1.5rem; text-transform: uppercase; display: flex; align-items: center; gap: 12px; margin: 0 0 24px; padding-bottom: 12px; border-bottom: 2px solid var(--gray-200); }
+    .section-icon { font-size: 1.4rem; }
+    .records-list { display: flex; flex-direction: column; gap: 12px; }
+    .record-card { display: grid; grid-template-columns: 48px 1fr auto; gap: 16px; align-items: center; padding: 20px 24px; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius); transition: all 0.2s; }
+    .record-card:hover { border-color: var(--court-green); box-shadow: var(--shadow); }
+    .record-rank { font-family: var(--font-heading); font-size: 1.1rem; color: var(--gray-400); text-align: center; font-weight: 600; }
+    .record-content h3 { font-family: var(--font-body); font-size: 1rem; font-weight: 600; color: var(--gray-900); margin: 0 0 4px; line-height: 1.3; }
+    .record-holder { margin-bottom: 4px; }
+    .holder-link { color: var(--court-green); font-weight: 600; font-size: 0.9rem; }
+    .holder-link:hover { text-decoration: underline; }
+    .holder-name { font-weight: 600; font-size: 0.9rem; color: var(--gray-700); }
+    .record-detail { font-size: 0.8rem; color: var(--gray-500); margin: 0; line-height: 1.4; }
+    .record-value { font-family: var(--font-heading); font-size: 1.6rem; font-weight: 700; color: var(--court-green); text-align: right; white-space: nowrap; min-width: 80px; }
+    .record-title-link { color: inherit; text-decoration: none; transition: color 0.2s; }
+    .record-title-link:hover { color: var(--court-green); }
+    .record-arrow { color: var(--court-green); font-weight: 700; margin-left: 4px; opacity: 0.7; }
+    .related-content { margin-top: 48px; padding-top: 32px; border-top: 2px solid var(--gray-200); }
+    .related-content h2 { font-family: var(--font-heading); font-size: 1.4rem; text-transform: uppercase; margin: 0 0 20px; }
+    .explore-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .explore-card { padding: 24px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius); transition: all 0.2s; text-decoration: none; color: inherit; }
+    .explore-card:hover { border-color: var(--court-green); background: white; box-shadow: var(--shadow); transform: translateY(-2px); }
+    .explore-icon { font-size: 2rem; display: block; margin-bottom: 12px; }
+    .explore-card h3 { font-family: var(--font-body); font-size: 1rem; font-weight: 600; margin: 0 0 6px; }
+    .explore-card p { font-size: 0.85rem; color: var(--gray-500); margin: 0; line-height: 1.4; }
+    .articles-header { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 24px; flex-wrap: wrap; }
+    .articles-header h2 { margin: 0; }
+    .articles-count { font-family: var(--font-body); font-size: 0.9rem; font-weight: 400; color: var(--gray-400); text-transform: none; margin-left: 4px; }
+    .search-box { flex: 1; min-width: 200px; }
+    .search-input { width: 100%; padding: 10px 16px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 0.95rem; font-family: var(--font-body); transition: all 0.2s; }
+    .search-input:focus { outline: none; border-color: var(--court-green); box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1); }
+    .article-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; }
+    .filter-tab { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: 20px; font-size: 0.82rem; font-weight: 600; color: var(--gray-600); cursor: pointer; transition: all 0.2s; font-family: var(--font-body); }
+    .filter-tab:hover { border-color: var(--court-green); color: var(--court-green); background: white; }
+    .filter-tab.active { background: var(--court-green); border-color: var(--court-green); color: #fff; }
+    .filter-icon { font-size: 1rem; }
+    .articles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .article-card { display: flex; flex-direction: column; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius); overflow: hidden; transition: all 0.2s; text-decoration: none; color: inherit; }
+    .article-card:hover { border-color: var(--court-green); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+    .article-card__img { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: var(--gray-100); }
+    .article-card__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+    .article-card:hover .article-card__img img { transform: scale(1.05); }
+    .article-card__badge { position: absolute; top: 10px; left: 10px; display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: rgba(0,0,0,0.75); color: #fff; font-size: 0.7rem; font-weight: 600; border-radius: 12px; }
+    .article-card__body { padding: 16px 18px 20px; display: flex; flex-direction: column; flex: 1; }
+    .article-card__body h3 { font-family: var(--font-body); font-size: 1rem; font-weight: 700; margin: 0 0 8px; color: var(--gray-900); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .article-card__body p { font-size: 0.85rem; color: var(--gray-500); margin: 0 0 12px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+    .article-card__cta { font-size: 0.82rem; font-weight: 600; color: var(--court-green); margin-top: auto; }
+    .articles-empty { text-align: center; padding: 40px 20px; color: var(--gray-500); background: var(--gray-50); border-radius: var(--radius); border: 1px dashed var(--gray-300); grid-column: 1 / -1; }
+    .load-more-btn { display: block; width: 100%; padding: 14px 24px; margin-top: 20px; background: var(--court-green); color: white; border: none; border-radius: var(--radius); font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: var(--font-body); }
+    .load-more-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .leaderboard-section { padding-top: 8px; }
+    .leaderboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .leaderboard-single, .leaderboard-table { overflow-x: auto; }
+    .lb-title { font-family: var(--font-heading); font-size: 1rem; text-transform: uppercase; color: var(--gray-700); margin: 0 0 12px; letter-spacing: 0.03em; }
+    .leaderboard-table table, .leaderboard-single table { width: 100%; border-collapse: collapse; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius); display: table; font-size: 0.9rem; }
+    .leaderboard-table th, .leaderboard-single th { background: var(--gray-100); padding: 10px 12px; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--gray-500); letter-spacing: 0.05em; font-weight: 600; }
+    .leaderboard-table td, .leaderboard-single td { padding: 10px 12px; border-top: 1px solid var(--gray-100); }
+    .leaderboard-table tr.top-3, .leaderboard-single tr.top-3 { background: #fefce8; }
+    .lb-rank { font-family: var(--font-heading); font-weight: 700; color: var(--gray-400); width: 32px; text-align: center; }
+    .top-3 .lb-rank { color: #d4a017; }
+    .lb-player a { color: var(--gray-900); font-size: 0.88rem; text-decoration: none; }
+    .lb-player a:hover { color: var(--court-green); }
+    .lb-player strong { font-family: var(--font-heading); text-transform: uppercase; font-size: 0.85rem; }
+    .lb-flag { margin-right: 4px; font-size: 0.9rem; }
+    .lb-flag-img { margin-right: 4px; vertical-align: middle; border-radius: 1px; }
+    .lb-value { font-family: var(--font-heading); font-weight: 700; color: var(--court-green); font-size: 1.1rem; }
+    .lb-value.gs-val { color: #d4a017; }
+    .lb-gs { color: #d4a017; font-weight: 600; }
+    .lb-wl { font-family: var(--font-heading); font-size: 0.85rem; color: var(--gray-600); white-space: nowrap; }
+    .tour-mini { font-size: 0.65rem; padding: 2px 6px; border-radius: 3px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; }
+    .tour-mini.atp { background: #003580; color: white; }
+    .tour-mini.wta { background: #7b2d8e; color: white; }
+    .sb { position: sticky; top: calc(var(--header-height) + 8px); display: flex; flex-direction: column; gap: 24px; }
+    .sb-link { font-size: 0.72rem; color: var(--court-green); font-weight: 600; }
+    .sb-link:hover { text-decoration: underline; }
+    .sb-flag { vertical-align: middle; margin-right: 4px; border-radius: 2px; }
+    .sb-block, .sb-profile, .sb-articles { background: var(--white); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--gray-200); }
+    .sb-profile__header, .sb-articles__header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: var(--gray-900); }
+    .sb-profile__label, .sb-articles__label { font-family: var(--font-heading); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #fff; }
+    .sb-profile__card { display: block; text-decoration: none; }
+    .sb-profile__img { position: relative; height: 160px; overflow: hidden; }
+    .sb-profile__img > img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+    .sb-profile__name { position: absolute; bottom: 0; left: 0; right: 0; padding: 12px 16px; background: linear-gradient(transparent, rgba(0,0,0,0.8)); font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+    .sb-profile__stats { padding: 4px 0; }
+    .sb-profile__row { display: flex; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--gray-100); font-size: 0.8rem; }
+    .sb-profile__row:last-child { border-bottom: none; }
+    .sb-profile__row span:first-child { color: var(--gray-500); }
+    .sb-profile__row span:last-child { font-weight: 700; color: var(--gray-900); }
+    .sb-articles__list { display: flex; flex-direction: column; }
+    .sb-articles__item { display: flex; align-items: flex-start; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--gray-100); text-decoration: none; transition: background 0.15s; }
+    .sb-articles__item:last-child { border-bottom: none; }
+    .sb-articles__item:hover { background: var(--gray-50); }
+    .sb-articles__cat { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #fff; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
+    .sb-articles__link { font-size: 0.82rem; font-weight: 600; line-height: 1.3; color: var(--gray-800); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .sb-articles__item:hover .sb-articles__link { color: var(--court-green); }
+    @media (max-width: 1024px) { .records-layout { grid-template-columns: 1fr 280px; gap: 24px; } .articles-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 900px) { .records-layout { grid-template-columns: 1fr; } .sb { position: static; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; } }
+    @media (max-width: 768px) { .page-hero h1 { font-size: 2rem; } .category-nav { gap: 8px; } .cat-link { padding: 6px 12px; font-size: 0.8rem; } .record-card { grid-template-columns: 36px 1fr; gap: 12px; } .record-value { grid-column: 2; text-align: left; font-size: 1.3rem; } .explore-grid { grid-template-columns: 1fr; } .leaderboard-grid { grid-template-columns: 1fr; } .section-photo-break { aspect-ratio: 16 / 7; margin-bottom: 32px; } }
+    @media (max-width: 640px) { .sb { grid-template-columns: 1fr; } .articles-grid { grid-template-columns: 1fr; } .articles-header { flex-direction: column; align-items: stretch; } .search-box { min-width: 100%; } }
+  </style>
+</BaseLayout>
