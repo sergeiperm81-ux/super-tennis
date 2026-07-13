@@ -1,0 +1,1767 @@
+---
+/**
+ * Localized player profile (/es/players/[slug]) — faithful 1:1 copy of
+ * src/pages/players/[slug].astro. Same layout / stats / sidebar; chrome translated to
+ * Spanish, bio + merged article bodies pulled from *_translations (es), internal links
+ * kept inside /es/. English route untouched.
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PlayerGearBlock from '../../../components/PlayerGearBlock.astro';
+import { getPlayerBySlug, getTopPlayerSlugs, getRelatedPlayers, getArticleBySlug, supabase } from '../../../lib/supabase';
+import { fallbackPlayers, countryFlags, countryNames, handLabels, getFlagUrl } from '../../../lib/fallback-data';
+import { addInterlinks } from '../../../lib/interlinks';
+import { sanitizeArticleHtml } from '../../../lib/sanitize-core.mjs';
+import {
+  getLatestNewsForPlayer,
+  getArticlesAboutPlayer,
+  getEvergreenPlayerLinks,
+  type RelatedLink,
+} from '../../../lib/related-content';
+import { getActiveLocales, buildAlternates, type Locale } from '../../../lib/i18n';
+import { marked } from 'marked';
+
+// SSG: same build set as the English route (top 500 + fallback) × active locales.
+export async function getStaticPaths() {
+  const SUPPORTED = ['es'];
+  const locales = getActiveLocales().filter((l) => SUPPORTED.includes(l));
+  if (locales.length === 0) return [];
+
+  let dbSlugs: string[] = [];
+  try {
+    const { getTopPlayerSlugs: getSlugs } = await import('../../../lib/supabase');
+    dbSlugs = await getSlugs(500);
+  } catch (e) {
+    console.warn('getStaticPaths(es players): Supabase unavailable, using fallback slugs');
+  }
+  const fbMod = await import('../../../lib/fallback-data');
+  const fallbackSlugs = Object.keys(fbMod.fallbackPlayers);
+  const allSlugs = [...new Set([...dbSlugs, ...fallbackSlugs])];
+
+  const paths: Array<{ params: { lang: string; slug: string }; props: { locale: Locale } }> = [];
+  for (const locale of locales) for (const slug of allSlugs) paths.push({ params: { lang: locale, slug }, props: { locale } });
+  return paths;
+}
+
+const { slug } = Astro.params;
+const { locale } = Astro.props as { locale: Locale };
+const lp = `/${locale}`;
+const dateLocale = locale === 'es' ? 'es-ES' : 'en-US';
+// All content is translated, so any internal link can safely live under /es/.
+const loc = (href: string | null | undefined): string => (href && href.startsWith('/') ? `${lp}${href}` : (href || '#'));
+// Spanish labels for DB fields that are stored in English.
+const handLabelLoc = (h: string | null): string => {
+  if (!h) return '';
+  const m: Record<string, string> = { right: 'Diestro', left: 'Zurdo', 'right-handed': 'Diestro', 'left-handed': 'Zurdo' };
+  return m[String(h).toLowerCase()] || handLabels[h] || h;
+};
+const backhandLoc = (b: string | null): string => {
+  if (!b) return '';
+  const m: Record<string, string> = { 'one-handed': 'A una mano', 'two-handed': 'A dos manos', 'one handed': 'A una mano', 'two handed': 'A dos manos' };
+  return m[String(b).toLowerCase()] || b;
+};
+
+// Try Supabase first, fall back to hardcoded data
+let player = await getPlayerBySlug(slug as string);
+if (!player) {
+  player = fallbackPlayers[slug as string] || null;
+}
+
+if (!player) {
+  return Astro.redirect(`${lp}/players/`);
+}
+
+// Localized bio: prefer the Spanish player_translations bio, else fall back to English.
+let bioText: string | null = player.bio_short || null;
+try {
+  const { data: pt } = await supabase
+    .from('player_translations')
+    .select('bio_short')
+    .eq('player_id', player.player_id)
+    .eq('lang', locale)
+    .eq('status', 'published')
+    .maybeSingle();
+  if (pt?.bio_short) bioText = pt.bio_short;
+} catch {}
+
+// Calculate age
+function getAge(birthDate: string | null): number | null {
+  if (!birthDate) return null;
+  const birth = new Date(birthDate);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const m = today.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+  return age;
+}
+
+const age = getAge(player.birth_date);
+const winPct = player.career_win && player.career_loss
+  ? ((player.career_win / (player.career_win + player.career_loss)) * 100).toFixed(1)
+  : null;
+const flag = countryFlags[player.country_code || ''] || '🏳️';
+const flagImg = getFlagUrl(player.country_code || '', 40);
+const country = countryNames[player.country_code || ''] || player.country_code || 'Unknown';
+const tourLabel = player.tour === 'atp' ? 'ATP' : 'WTA';
+const tourColor = player.tour === 'atp' ? '#003580' : '#7b2d8e';
+
+// Wikipedia sameAs links for top players (boosts AI entity recognition)
+const playerWikipediaUrls: Record<string, string[]> = {
+  'novak-djokovic': ['https://en.wikipedia.org/wiki/Novak_Djokovic', 'https://www.wikidata.org/wiki/Q588'],
+  'rafael-nadal': ['https://en.wikipedia.org/wiki/Rafael_Nadal', 'https://www.wikidata.org/wiki/Q10132'],
+  'roger-federer': ['https://en.wikipedia.org/wiki/Roger_Federer', 'https://www.wikidata.org/wiki/Q1426'],
+  'carlos-alcaraz': ['https://en.wikipedia.org/wiki/Carlos_Alcaraz', 'https://www.wikidata.org/wiki/Q78610099'],
+  'jannik-sinner': ['https://en.wikipedia.org/wiki/Jannik_Sinner', 'https://www.wikidata.org/wiki/Q55745013'],
+  'andy-murray': ['https://en.wikipedia.org/wiki/Andy_Murray', 'https://www.wikidata.org/wiki/Q17081'],
+  'stan-wawrinka': ['https://en.wikipedia.org/wiki/Stan_Wawrinka', 'https://www.wikidata.org/wiki/Q182071'],
+  'alexander-zverev': ['https://en.wikipedia.org/wiki/Alexander_Zverev', 'https://www.wikidata.org/wiki/Q18221705'],
+  'daniil-medvedev': ['https://en.wikipedia.org/wiki/Daniil_Medvedev', 'https://www.wikidata.org/wiki/Q37225413'],
+  'stefanos-tsitsipas': ['https://en.wikipedia.org/wiki/Stefanos_Tsitsipas', 'https://www.wikidata.org/wiki/Q37754014'],
+  'casper-ruud': ['https://en.wikipedia.org/wiki/Casper_Ruud', 'https://www.wikidata.org/wiki/Q30659302'],
+  'holger-rune': ['https://en.wikipedia.org/wiki/Holger_Rune', 'https://www.wikidata.org/wiki/Q95285614'],
+  'andrey-rublev': ['https://en.wikipedia.org/wiki/Andrey_Rublev_(tennis)', 'https://www.wikidata.org/wiki/Q21191819'],
+  'taylor-fritz': ['https://en.wikipedia.org/wiki/Taylor_Fritz', 'https://www.wikidata.org/wiki/Q20034209'],
+  'ben-shelton': ['https://en.wikipedia.org/wiki/Ben_Shelton', 'https://www.wikidata.org/wiki/Q117673831'],
+  'alex-de-minaur': ['https://en.wikipedia.org/wiki/Alex_de_Minaur', 'https://www.wikidata.org/wiki/Q37754070'],
+  'grigor-dimitrov': ['https://en.wikipedia.org/wiki/Grigor_Dimitrov', 'https://www.wikidata.org/wiki/Q1003498'],
+  'tommy-paul': ['https://en.wikipedia.org/wiki/Tommy_Paul', 'https://www.wikidata.org/wiki/Q17306697'],
+  'frances-tiafoe': ['https://en.wikipedia.org/wiki/Frances_Tiafoe', 'https://www.wikidata.org/wiki/Q17452023'],
+  'ugo-humbert': ['https://en.wikipedia.org/wiki/Ugo_Humbert', 'https://www.wikidata.org/wiki/Q30659322'],
+  'iga-swiatek': ['https://en.wikipedia.org/wiki/Iga_%C5%9Bwi%C4%85tek', 'https://www.wikidata.org/wiki/Q55745015'],
+  'aryna-sabalenka': ['https://en.wikipedia.org/wiki/Aryna_Sabalenka', 'https://www.wikidata.org/wiki/Q37751726'],
+  'coco-gauff': ['https://en.wikipedia.org/wiki/Coco_Gauff', 'https://www.wikidata.org/wiki/Q56061488'],
+  'elena-rybakina': ['https://en.wikipedia.org/wiki/Elena_Rybakina', 'https://www.wikidata.org/wiki/Q56062246'],
+  'jessica-pegula': ['https://en.wikipedia.org/wiki/Jessica_Pegula', 'https://www.wikidata.org/wiki/Q30659343'],
+  'mirra-andreeva': ['https://en.wikipedia.org/wiki/Mirra_Andreeva', 'https://www.wikidata.org/wiki/Q117906090'],
+  'barbora-krejcikova': ['https://en.wikipedia.org/wiki/Barbora_Krej%C4%8D%C3%ADkov%C3%A1', 'https://www.wikidata.org/wiki/Q21024671'],
+  'jasmine-paolini': ['https://en.wikipedia.org/wiki/Jasmine_Paolini', 'https://www.wikidata.org/wiki/Q30659360'],
+  'qinwen-zheng': ['https://en.wikipedia.org/wiki/Zheng_Qinwen', 'https://www.wikidata.org/wiki/Q92390791'],
+  'madison-keys': ['https://en.wikipedia.org/wiki/Madison_Keys', 'https://www.wikidata.org/wiki/Q476066'],
+  'serena-williams': ['https://en.wikipedia.org/wiki/Serena_Williams', 'https://www.wikidata.org/wiki/Q11459'],
+  'venus-williams': ['https://en.wikipedia.org/wiki/Venus_Williams', 'https://www.wikidata.org/wiki/Q11459'],
+  'maria-sharapova': ['https://en.wikipedia.org/wiki/Maria_Sharapova', 'https://www.wikidata.org/wiki/Q5862'],
+  'pete-sampras': ['https://en.wikipedia.org/wiki/Pete_Sampras', 'https://www.wikidata.org/wiki/Q18140'],
+  'andre-agassi': ['https://en.wikipedia.org/wiki/Andre_Agassi', 'https://www.wikidata.org/wiki/Q2212'],
+  'lleyton-hewitt': ['https://en.wikipedia.org/wiki/Lleyton_Hewitt', 'https://www.wikidata.org/wiki/Q25940'],
+  'marat-safin': ['https://en.wikipedia.org/wiki/Marat_Safin', 'https://www.wikidata.org/wiki/Q189965'],
+};
+const playerSameAs = playerWikipediaUrls[player.slug as string] || [];
+
+// Combine curated Wikipedia/Wikidata links with the player's own verified
+// social profiles from the DB — extends entity linking far beyond the ~37
+// hardcoded players to anyone with socials on file.
+const socialSameAs = [player.social_instagram, player.social_twitter, player.social_facebook].filter(Boolean);
+const allSameAs = [...new Set([...playerSameAs, ...socialSameAs])];
+const tourOrg = player.tour === 'wta'
+  ? { name: 'WTA Tour', url: 'https://www.wtatennis.com' }
+  : { name: 'ATP Tour', url: 'https://www.atptour.com' };
+const profileModified = player.stats_updated_at
+  ? new Date(player.stats_updated_at).toISOString()
+  : undefined;
+
+// JSON-LD: ProfilePage wrapping an Athlete entity.
+// Enriched 2026-06-17 (GEO audit): Athlete typing + jobTitle + tour
+// affiliation + expanded sameAs + machine-readable dateModified turn a thin
+// profile into a citable athlete entity at ~1,100-page scale — the #1
+// traffic template. Previously a bare Person with name/image/nationality.
+const personEntity = {
+  '@type': ['Person', 'Athlete'],
+  '@id': `https://super.tennis${lp}/players/${player.slug}/#person`,
+  name: `${player.first_name} ${player.last_name}`,
+  url: `https://super.tennis${lp}/players/${player.slug}/`,
+  image: player.image_url,
+  jobTitle: 'Jugador de tenis profesional',
+  ...(player.tour && { gender: player.tour === 'wta' ? 'Female' : 'Male' }),
+  nationality: { '@type': 'Country', name: country },
+  birthDate: player.birth_date || undefined,
+  height: player.height_cm ? { '@type': 'QuantitativeValue', value: player.height_cm, unitCode: 'CMT' } : undefined,
+  description: bioText || `Jugador de tenis profesional de ${country}`,
+  knowsAbout: 'Tennis',
+  affiliation: { '@type': 'SportsOrganization', name: tourOrg.name, url: tourOrg.url },
+  ...(allSameAs.length > 0 && { sameAs: allSameAs }),
+};
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  inLanguage: locale,
+  ...(profileModified && { dateModified: profileModified }),
+  mainEntity: personEntity,
+};
+const alternates = buildAlternates(`/players/${player.slug}/`, [locale]);
+
+// Format prize money
+function formatPrize(amount: number): string {
+  if (amount >= 1_000_000) return `$${(amount / 1_000_000).toFixed(1)}M`;
+  if (amount >= 1_000) return `$${(amount / 1_000).toFixed(0)}K`;
+  return `$${amount}`;
+}
+
+// Related players (same tour, for sidebar)
+let relatedSlugs: any[] = [];
+try {
+  relatedSlugs = await getRelatedPlayers(player.tour, player.slug, 4);
+} catch (e) {
+  // Fallback to hardcoded related players
+}
+if (relatedSlugs.length === 0) {
+  relatedSlugs = Object.values(fallbackPlayers)
+    .filter((p: any) => p.tour === player.tour && p.slug !== player.slug)
+    .slice(0, 4);
+}
+
+// H2H rivalry links
+const h2hMap: Record<string, { slug: string; vs: string }[]> = {
+  'novak-djokovic': [
+    { slug: 'djokovic-vs-nadal', vs: 'vs Nadal' },
+    { slug: 'djokovic-vs-federer', vs: 'vs Federer' },
+    { slug: 'djokovic-vs-alcaraz', vs: 'vs Alcaraz' },
+    { slug: 'djokovic-vs-murray', vs: 'vs Murray' },
+  ],
+  'rafael-nadal': [
+    { slug: 'djokovic-vs-nadal', vs: 'vs Djokovic' },
+    { slug: 'federer-vs-nadal', vs: 'vs Federer' },
+  ],
+  'roger-federer': [
+    { slug: 'federer-vs-nadal', vs: 'vs Nadal' },
+    { slug: 'djokovic-vs-federer', vs: 'vs Djokovic' },
+    { slug: 'federer-vs-murray', vs: 'vs Murray' },
+  ],
+  'carlos-alcaraz': [
+    { slug: 'alcaraz-vs-sinner', vs: 'vs Sinner' },
+    { slug: 'djokovic-vs-alcaraz', vs: 'vs Djokovic' },
+    { slug: 'zverev-vs-alcaraz', vs: 'vs Zverev' },
+  ],
+  'jannik-sinner': [
+    { slug: 'alcaraz-vs-sinner', vs: 'vs Alcaraz' },
+    { slug: 'medvedev-vs-sinner', vs: 'vs Medvedev' },
+  ],
+  'alexander-zverev': [{ slug: 'zverev-vs-alcaraz', vs: 'vs Alcaraz' }],
+  'daniil-medvedev': [
+    { slug: 'medvedev-vs-sinner', vs: 'vs Sinner' },
+    { slug: 'tsitsipas-vs-medvedev', vs: 'vs Tsitsipas' },
+  ],
+  'andy-murray': [
+    { slug: 'djokovic-vs-murray', vs: 'vs Djokovic' },
+    { slug: 'federer-vs-murray', vs: 'vs Federer' },
+  ],
+  'iga-swiatek': [
+    { slug: 'swiatek-vs-sabalenka', vs: 'vs Sabalenka' },
+    { slug: 'gauff-vs-swiatek', vs: 'vs Gauff' },
+  ],
+  'aryna-sabalenka': [{ slug: 'swiatek-vs-sabalenka', vs: 'vs Swiatek' }],
+  'coco-gauff': [{ slug: 'gauff-vs-swiatek', vs: 'vs Swiatek' }],
+  'serena-williams': [
+    { slug: 'williams-vs-williams', vs: 'vs Venus' },
+    { slug: 'sharapova-vs-williams', vs: 'vs Sharapova' },
+  ],
+  'nick-kyrgios': [{ slug: 'kyrgios-vs-djokovic', vs: 'vs Djokovic' }],
+};
+const playerH2h = h2hMap[slug as string] || [];
+
+// ── Smart internal linking (Codex audit Round 2 #8) ──
+// Build a "Player Universe" cluster of related content for this player.
+// Combines: latest news mentioning the player, articles featuring them,
+// curated evergreen links. Pure cache reads — no extra Supabase calls.
+const [latestNews, playerArticles] = await Promise.all([
+  getLatestNewsForPlayer(player.slug, 3),
+  getArticlesAboutPlayer(
+    { slug: player.slug, player_id: player.player_id, last_name: player.last_name },
+    6,
+  ),
+]);
+const evergreenLinks = getEvergreenPlayerLinks({ tour: player.tour });
+
+// Deduplicate by href so the same URL doesn't appear twice
+const seenHrefs = new Set<string>();
+const universeLinks: RelatedLink[] = [];
+for (const l of [...latestNews, ...playerArticles, ...evergreenLinks]) {
+  if (seenHrefs.has(l.href)) continue;
+  seenHrefs.add(l.href);
+  universeLinks.push(l);
+}
+
+// Load merged article sections — prefer the Spanish translation body, else omit (no half-English).
+const articleSlugs = ['profile', 'stats', 'grand-slams', 'career-timeline', 'net-worth', 'racket', 'partner', 'age'];
+const articles: Record<string, { html: string | null; exists: boolean }> = {};
+
+for (const articleType of articleSlugs) {
+  const artSlug = articleType === 'profile' ? player.slug : `${player.slug}-${articleType}`;
+  let html: string | null = null;
+  try {
+    const article = await getArticleBySlug(artSlug);
+    if (article?.id) {
+      const { data: tr } = await supabase
+        .from('article_translations')
+        .select('body')
+        .eq('article_id', article.id)
+        .eq('lang', locale)
+        .eq('status', 'published')
+        .maybeSingle();
+      if (tr?.body) html = sanitizeArticleHtml(marked.parse(tr.body) as string); // [P1] sanitize on read
+    }
+  } catch (e) {
+    // Translation not found — omit rather than show English
+  }
+  articles[articleType] = { html, exists: !!html };
+}
+
+const profileArticleHtml = articles['profile'].html;
+---
+
+<BaseLayout
+  title={`${player.first_name} ${player.last_name} — Estatura, edad, estadísticas y biografía${player.height_cm ? ` | ${player.height_cm} cm` : ''}`}
+  description={bioText || `${player.first_name} ${player.last_name}${age ? `, ${age} años` : ''}${player.height_cm ? `, estatura ${player.height_cm} cm (${Math.floor(player.height_cm / 30.48)}'${Math.round((player.height_cm % 30.48) / 2.54)}")` : ''} — jugador de tenis ${player.tour === 'atp' ? 'ATP' : 'WTA'} de ${country}. Estadísticas de carrera, ranking, patrimonio y raqueta en SUPER.TENNIS.`}
+  ogImage={player.image_url || '/og/players.png'}
+  locale={locale}
+  alternates={alternates}
+>
+  <!-- JSON-LD -->
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Inicio', item: `https://super.tennis${lp}/` },
+      { '@type': 'ListItem', position: 2, name: 'Jugadores', item: `https://super.tennis${lp}/players/` },
+      { '@type': 'ListItem', position: 3, name: `${player.first_name} ${player.last_name}` },
+    ]
+  })} />
+
+  <article class="player-profile">
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs">
+      <a href={`${lp}/`}>Inicio</a>
+      <span class="sep">/</span>
+      <a href={`${lp}/players/`}>Jugadores</a>
+      <span class="sep">/</span>
+      <span class="current">{player.first_name} {player.last_name}</span>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-photo">
+        <img
+          src={player.image_url || '/placeholder-player.svg'}
+          alt={`${player.first_name} ${player.last_name}`}
+          width="400"
+          height="400"
+          loading="eager"
+          decoding="async"
+        />
+        <span class="tour-badge" style={`background: ${tourColor}`}>{tourLabel}</span>
+      </div>
+
+      <div class="hero-info">
+        <div class="hero-name-row">
+          {flagImg ? (
+            <img src={flagImg} alt={country} class="hero-flag-img" width="40" height="30" loading="eager" decoding="async" />
+          ) : (
+            <span class="hero-flag">{flag}</span>
+          )}
+          <h1>
+            {player.first_name}
+            <strong>{player.last_name}</strong>
+          </h1>
+        </div>
+        <p class="hero-country">{country}</p>
+
+        <div class="hero-stats">
+          {(player.career_titles != null && player.career_titles > 0) && (
+            <div class="hero-stat">
+              <span class="hero-stat-value">{player.career_titles}</span>
+              <span class="hero-stat-label">Títulos de carrera</span>
+            </div>
+          )}
+          {(player.grand_slam_titles != null && player.grand_slam_titles > 0) && (
+            <div class="hero-stat gs">
+              <span class="hero-stat-value">{player.grand_slam_titles}</span>
+              <span class="hero-stat-label">Grand Slams</span>
+            </div>
+          )}
+          {(player.career_win != null && player.career_win > 0) && (
+            <div class="hero-stat">
+              <span class="hero-stat-value">{player.career_win}-{player.career_loss}</span>
+              <span class="hero-stat-label">Victorias-Derrotas{winPct ? ` (${winPct}%)` : ''}</span>
+            </div>
+          )}
+          {(player.career_prize_usd || 0) > 0 && (
+            <div class="hero-stat">
+              <span class="hero-stat-value">{formatPrize(player.career_prize_usd)}</span>
+              <span class="hero-stat-label">Premios</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+
+    <!-- Content Grid: Main + Sidebar -->
+    <div class="content-grid">
+      <div class="content-main">
+        {/* Quick Answer — AI-citable one-paragraph summary. Added 2026-05-17
+            per GEO audit: gives ChatGPT/Perplexity/Claude search a single
+            compact passage to extract as a direct answer to 'who is X'. */}
+        <section class="quick-answer" id="quick-answer" aria-label={`Datos rápidos sobre ${player.first_name} ${player.last_name}`}>
+          <h2 class="qa-label">Respuesta rápida</h2>
+          <p class="qa-text">
+            <strong>{player.first_name} {player.last_name}</strong> es {player.tour === 'wta' ? 'una jugadora' : 'un jugador'} de tenis {player.tour === 'atp' ? 'ATP' : 'WTA'} de {country}{age ? ` de ${age} años` : ''}
+            {player.height_cm ? `, mide ${player.height_cm} cm (${Math.floor(player.height_cm / 2.54 / 12)}'${Math.round(player.height_cm / 2.54 % 12)}")` : ''}
+            {player.hand ? ` y juega ${handLabelLoc(player.hand).toLowerCase()}` : ''}.
+            {player.career_titles ? ` Carrera: ${player.career_titles} título${player.career_titles === 1 ? '' : 's'} individual${player.career_titles === 1 ? '' : 'es'} ATP/WTA` : ''}
+            {player.grand_slam_titles ? ` (incluido${player.grand_slam_titles === 1 ? '' : 's'} ${player.grand_slam_titles} título${player.grand_slam_titles === 1 ? '' : 's'} de Grand Slam)` : ''}
+            {(player.career_win || player.career_loss) ? `, balance de carrera ${player.career_win || 0}-${player.career_loss || 0}${winPct ? ` (${winPct}%)` : ''}` : ''}.
+            {(player.career_prize_usd || 0) > 0 ? ` Premios en dinero: ${formatPrize(player.career_prize_usd)}.` : ''}
+            {player.turned_pro ? ` Se hizo profesional en ${player.turned_pro}.` : ''}
+          </p>
+        </section>
+
+        <!-- Quick Facts -->
+        <section class="quick-facts" id="facts">
+          <div class="section-header">
+            <span class="section-icon">📋</span>
+            <h2>Datos rápidos</h2>
+          </div>
+          <div class="facts-grid">
+            {age && (
+              <div class="fact">
+                <span class="fact-label">Edad</span>
+                <span class="fact-value">{age} años</span>
+              </div>
+            )}
+            {player.birth_date && (
+              <div class="fact">
+                <span class="fact-label">Nacimiento</span>
+                <span class="fact-value">{new Date(player.birth_date).toLocaleDateString(dateLocale, { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+              </div>
+            )}
+            {player.height_cm && (
+              <div class="fact">
+                <span class="fact-label">Estatura</span>
+                <span class="fact-value">{player.height_cm} cm ({Math.floor(player.height_cm / 2.54 / 12)}'{Math.round(player.height_cm / 2.54 % 12)}")</span>
+              </div>
+            )}
+            {player.hand && (
+              <div class="fact">
+                <span class="fact-label">Juega</span>
+                <span class="fact-value">{handLabelLoc(player.hand)}</span>
+              </div>
+            )}
+            <div class="fact">
+              <span class="fact-label">País</span>
+              <span class="fact-value">
+                {flagImg ? (
+                  <img src={getFlagUrl(player.country_code || '', 20)} alt={player.country_code || ''} style="vertical-align:middle;margin-right:4px;border-radius:2px;" width="20" height="15" loading="lazy" decoding="async" />
+                ) : null}
+                {country}
+              </span>
+            </div>
+            <div class="fact">
+              <span class="fact-label">Circuito</span>
+              <span class="fact-value"><span class="mini-badge" style={`background: ${tourColor}`}>{tourLabel}</span></span>
+            </div>
+            {player.weight_kg && (
+              <div class="fact">
+                <span class="fact-label">Peso</span>
+                <span class="fact-value">{player.weight_kg} kg ({Math.round(player.weight_kg * 2.205)} lbs)</span>
+              </div>
+            )}
+            {player.birthplace && (
+              <div class="fact">
+                <span class="fact-label">Lugar de nacimiento</span>
+                <span class="fact-value">{player.birthplace}</span>
+              </div>
+            )}
+            {player.coach && (
+              <div class="fact">
+                <span class="fact-label">Entrenador</span>
+                <span class="fact-value">{player.coach}</span>
+              </div>
+            )}
+            {player.backhand && (
+              <div class="fact">
+                <span class="fact-label">Revés</span>
+                <span class="fact-value">{backhandLoc(player.backhand)}</span>
+              </div>
+            )}
+            {player.turned_pro && (
+              <div class="fact">
+                <span class="fact-label">Se hizo profesional</span>
+                <span class="fact-value">{player.turned_pro}</span>
+              </div>
+            )}
+            {player.best_ranking && (
+              <div class="fact">
+                <span class="fact-label">Mejor ranking histórico</span>
+                <span class="fact-value">#{player.best_ranking}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Social Media Links */}
+          {(player.social_instagram || player.social_twitter || player.social_facebook) && (
+            <div class="social-links">
+              {player.social_instagram && (
+                <a href={player.social_instagram} target="_blank" rel="noopener" class="social-link instagram" title="Instagram">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                </a>
+              )}
+              {player.social_twitter && (
+                <a href={player.social_twitter} target="_blank" rel="noopener" class="social-link twitter" title="X / Twitter">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+              )}
+              {player.social_facebook && (
+                <a href={player.social_facebook} target="_blank" rel="noopener" class="social-link facebook" title="Facebook">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </a>
+              )}
+            </div>
+          )}
+        </section>
+
+        <!-- Achievements & Career Section -->
+        <section class="section-group achievements" id="achievements">
+          <div class="section-header">
+            <span class="section-icon">🏆</span>
+            <h2>Logros de carrera</h2>
+          </div>
+
+          <!-- Key Highlight -->
+          {player.grand_slam_titles > 0 && (
+            <div class="key-highlight">
+              <div class="highlight-value">{player.grand_slam_titles}</div>
+              <div class="highlight-label">Títulos de Grand Slam</div>
+              <div class="highlight-note">
+                {player.grand_slam_titles === 24 ? '2.º de todos los tiempos' : `a ${Math.max(0, 24 - player.grand_slam_titles)} del récord de Nadal`}
+              </div>
+            </div>
+          )}
+
+          <!-- Career Stats Table -->
+          <div class="stats-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Estadística</th>
+                  <th>Valor</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(player.career_titles != null && player.career_titles > 0) && (
+                  <tr>
+                    <td>Títulos de carrera</td>
+                    <td class="stat-val">{player.career_titles}</td>
+                  </tr>
+                )}
+                {(player.grand_slam_titles != null && player.grand_slam_titles > 0) && (
+                  <tr class="gs-row">
+                    <td>Títulos de Grand Slam</td>
+                    <td class="stat-val gs-val">{player.grand_slam_titles}</td>
+                  </tr>
+                )}
+                <tr>
+                  <td>Balance de victorias-derrotas</td>
+                  <td class="stat-val">{player.career_win} - {player.career_loss}</td>
+                </tr>
+                {winPct && (
+                  <tr>
+                    <td>Porcentaje de victorias</td>
+                    <td class="stat-val">{winPct}%</td>
+                  </tr>
+                )}
+                {(player.career_prize_usd || 0) > 0 && (
+                  <tr>
+                    <td>Premios en dinero (carrera)</td>
+                    <td class="stat-val">${player.career_prize_usd.toLocaleString()}</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* YTD Stats */}
+          {(player.ytd_win > 0 || player.ytd_titles > 0) && (
+            <div class="ytd-stats">
+              <h3>Temporada 2026</h3>
+              <div class="ytd-grid">
+                {player.ytd_titles > 0 && (
+                  <div class="ytd-item">
+                    <span class="ytd-val">{player.ytd_titles}</span>
+                    <span class="ytd-label">Títulos</span>
+                  </div>
+                )}
+                <div class="ytd-item">
+                  <span class="ytd-val">{player.ytd_win}-{player.ytd_loss}</span>
+                  <span class="ytd-label">V-D</span>
+                </div>
+                {(player.ytd_prize_usd || 0) > 0 && (
+                  <div class="ytd-item">
+                    <span class="ytd-val">{formatPrize(player.ytd_prize_usd)}</span>
+                    <span class="ytd-label">Premios</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Serving & Return Stats */}
+          {player.serve_1st_pct && (
+            <div class="serve-return-stats" id="serve-stats">
+              <h3>Estadísticas de saque y resto</h3>
+              <div class="sr-grid">
+                <div class="sr-col">
+                  <h4>Saque</h4>
+                  {player.serve_aces != null && (
+                    <div class="sr-row"><span class="sr-label">Aces</span><span class="sr-val">{player.serve_aces.toLocaleString()}</span></div>
+                  )}
+                  {player.serve_double_faults != null && (
+                    <div class="sr-row"><span class="sr-label">Dobles faltas</span><span class="sr-val">{player.serve_double_faults.toLocaleString()}</span></div>
+                  )}
+                  {player.serve_1st_pct != null && (
+                    <div class="sr-row"><span class="sr-label">1.er saque %</span><span class="sr-val">{player.serve_1st_pct}%</span></div>
+                  )}
+                  {player.serve_1st_won_pct != null && (
+                    <div class="sr-row"><span class="sr-label">1.er saque ganado</span><span class="sr-val">{player.serve_1st_won_pct}%</span></div>
+                  )}
+                  {player.serve_2nd_won_pct != null && (
+                    <div class="sr-row"><span class="sr-label">2.º saque ganado</span><span class="sr-val">{player.serve_2nd_won_pct}%</span></div>
+                  )}
+                  {player.serve_bp_saved_pct != null && (
+                    <div class="sr-row"><span class="sr-label">Puntos de quiebre salvados</span><span class="sr-val">{player.serve_bp_saved_pct}%</span></div>
+                  )}
+                  {player.serve_hold_pct != null && (
+                    <div class="sr-row"><span class="sr-label">Juegos de saque ganados</span><span class="sr-val">{player.serve_hold_pct}%</span></div>
+                  )}
+                </div>
+                <div class="sr-col">
+                  <h4>Resto</h4>
+                  {player.return_points_won_pct != null && (
+                    <div class="sr-row"><span class="sr-label">Puntos de resto ganados</span><span class="sr-val">{player.return_points_won_pct}%</span></div>
+                  )}
+                  {player.return_1st_won_pct != null && (
+                    <div class="sr-row"><span class="sr-label">1.er resto ganado</span><span class="sr-val">{player.return_1st_won_pct}%</span></div>
+                  )}
+                  {player.return_2nd_won_pct != null && (
+                    <div class="sr-row"><span class="sr-label">2.º resto ganado</span><span class="sr-val">{player.return_2nd_won_pct}%</span></div>
+                  )}
+                  {player.return_bp_converted_pct != null && (
+                    <div class="sr-row"><span class="sr-label">Puntos de quiebre convertidos</span><span class="sr-val">{player.return_bp_converted_pct}%</span></div>
+                  )}
+                  {player.return_games_won_pct != null && (
+                    <div class="sr-row"><span class="sr-label">Juegos de resto ganados</span><span class="sr-val">{player.return_games_won_pct}%</span></div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Data source attribution */}
+          {player.stats_updated_at && (
+            <p class="data-source">
+              Estadísticas: <a href="https://tennisliveranking.com" target="_blank" rel="noopener nofollow">TennisLiveRanking.com</a>
+              {' · '}Actualizado {new Date(player.stats_updated_at).toLocaleDateString(dateLocale, { month: 'short', day: 'numeric', year: 'numeric' })}
+            </p>
+          )}
+
+          <!-- Detailed Stats Article (merged) -->
+          {articles['stats'].exists && (
+            <div class="detailed-stats">
+              <h3>Estadísticas detalladas</h3>
+              <div class="article-content" set:html={articles['stats'].html} />
+            </div>
+          )}
+
+          <!-- Grand Slams -->
+          {articles['grand-slams'].exists && (
+            <div class="grand-slams-section">
+              <h3>Registro en Grand Slams</h3>
+              <div class="article-content" set:html={articles['grand-slams'].html} />
+            </div>
+          )}
+        </section>
+
+        <!-- Biography & Playing Style Section -->
+        <section class="section-group biography" id="biography">
+          <div class="section-header">
+            <span class="section-icon">🎾</span>
+            <h2>Biografía y estilo de juego</h2>
+          </div>
+
+          {bioText && (
+            <div class="bio-section">
+              <p class="bio-text">{bioText}</p>
+            </div>
+          )}
+
+          {profileArticleHtml && (
+            <div class="profile-article">
+              <div class="article-content" set:html={profileArticleHtml} />
+            </div>
+          )}
+
+          {articles['career-timeline'].exists && (
+            <div class="timeline-section">
+              <h3>Cronología de carrera</h3>
+              <div class="article-content" set:html={articles['career-timeline'].html} />
+            </div>
+          )}
+        </section>
+
+        <!-- Equipment & Gear Section -->
+        {articles['racket'].exists && (
+          <section class="section-group equipment" id="equipment">
+            <div class="section-header">
+              <span class="section-icon">🎾</span>
+              <h2>Equipamiento</h2>
+            </div>
+            <div class="article-content" set:html={articles['racket'].html} />
+          </section>
+        )}
+
+        <!-- Finance & Net Worth Section -->
+        {articles['net-worth'].exists && (
+          <section class="section-group finance" id="finance">
+            <div class="section-header">
+              <span class="section-icon">💰</span>
+              <h2>Patrimonio e ingresos</h2>
+            </div>
+            <div class="article-content" set:html={articles['net-worth'].html} />
+          </section>
+        )}
+
+        <!-- Personal Life Section -->
+        {articles['partner'].exists && (
+          <section class="section-group personal" id="personal">
+            <div class="section-header">
+              <span class="section-icon">👤</span>
+              <h2>Vida personal y trayectoria</h2>
+            </div>
+            <div class="article-content" set:html={articles['partner'].html} />
+          </section>
+        )}
+
+        {articles['age'].exists && (
+          <div class="age-section">
+            <h3>Edad y datos personales</h3>
+            <div class="article-content" set:html={articles['age'].html} />
+          </div>
+        )}
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <!-- Table of Contents -->
+        <div class="sidebar-widget toc-widget">
+          <h3>📑 Contenido</h3>
+          <nav class="toc-nav">
+            <a href="#facts" class="toc-link">Datos rápidos</a>
+            <a href="#achievements" class="toc-link">Logros</a>
+            <a href="#biography" class="toc-link">Biografía</a>
+            {articles['racket'].exists && <a href="#equipment" class="toc-link">Equipamiento</a>}
+            {articles['net-worth'].exists && <a href="#finance" class="toc-link">Ingresos</a>}
+            {articles['partner'].exists && <a href="#personal" class="toc-link">Vida personal</a>}
+          </nav>
+        </div>
+
+        <!-- Compare Player -->
+        <div class="sidebar-widget compare-widget">
+          <h3>⚖️ Comparar</h3>
+          <p class="compare-text">Compara estadísticas con otro jugador</p>
+          <a href={`${lp}/vs/${player.slug}-vs-${relatedSlugs[0]?.slug || 'nadal'}/`} class="compare-btn">
+            Comparar con {relatedSlugs[0]?.last_name || 'Nadal'} →
+          </a>
+        </div>
+
+        {/* Racket affiliate block — renders only for the 44 players in
+            playerGearMap. Added 2026-06-12: player pages were the largest
+            unmonetized traffic segment while the racket data already
+            existed in code (previously used only on /vs/ pages). */}
+        <PlayerGearBlock
+          playerSlug={player.slug}
+          playerName={`${player.first_name} ${player.last_name}`}
+        />
+
+        <!-- Share Buttons -->
+        <div class="sidebar-widget share-widget">
+          <h3>📤 Compartir</h3>
+          <div class="share-buttons">
+            <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Mira el perfil de ${player.first_name} ${player.last_name} en SUPER.TENNIS`)}&url=https://super.tennis${lp}/players/${player.slug}/`} target="_blank" rel="noopener noreferrer" class="share-btn twitter" title="Share on Twitter">𝕏</a>
+            <a href={`https://www.linkedin.com/sharing/share-offsite/?url=https://super.tennis${lp}/players/${player.slug}/`} target="_blank" rel="noopener noreferrer" class="share-btn linkedin" title="Share on LinkedIn">in</a>
+            <a href={`https://reddit.com/submit?url=https://super.tennis${lp}/players/${player.slug}/&title=${encodeURIComponent(player.first_name + ' ' + player.last_name)}`} target="_blank" rel="noopener noreferrer" class="share-btn reddit" title="Share on Reddit">🔗</a>
+          </div>
+        </div>
+
+        <!-- Similar Players -->
+        <div class="sidebar-widget">
+          <h3>👥 Jugadores similares</h3>
+          <div class="similar-players">
+            {relatedSlugs.map((p: any) => (
+              <a href={`${lp}/players/${p.slug}/`} class="similar-player">
+                <img
+                  src={p.image_url}
+                  alt={`${p.first_name} ${p.last_name}`}
+                  width="48"
+                  height="48"
+                  loading="lazy"
+                />
+                <div>
+                  <span class="sp-name">{p.first_name} <strong>{p.last_name}</strong></span>
+                  <span class="sp-country">
+                    {getFlagUrl(p.country_code || '') ? (
+                      <img src={getFlagUrl(p.country_code || '', 16)} alt={p.country_code || ''} class="sp-flag" width="16" height="12" loading="lazy" decoding="async" />
+                    ) : null}
+                    {countryNames[p.country_code || ''] || p.country_code || ''}
+                  </span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {playerH2h.length > 0 && (
+          <div class="sidebar-widget">
+            <h3>⚔️ Cara a cara</h3>
+            <div class="h2h-links">
+              {playerH2h.map(h => (
+                <a href={`${lp}/vs/${h.slug}/`} class="h2h-link">
+                  <span class="h2h-icon">vs</span>
+                  <span>{player.last_name} {h.vs}</span>
+                </a>
+              ))}
+              <a href={`${lp}/vs/`} class="h2h-link h2h-all">
+                <span>Todas las rivalidades →</span>
+              </a>
+            </div>
+          </div>
+        )}
+
+        {/* Smart Player Universe — data-driven internal links (Codex #8) */}
+        {universeLinks.length > 0 && (
+          <div class="sidebar-widget universe-widget">
+            <h3>🌐 Universo de {player.first_name}</h3>
+            <ul class="universe-links">
+              {universeLinks.slice(0, 8).map(link => (
+                <li class="universe-link">
+                  <a href={loc(link.href)}>
+                    {link.contextLabel && <span class="universe-context">{link.contextLabel}</span>}
+                    <span class="universe-title">{link.title}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <div class="sidebar-widget">
+          <h3>🔗 Enlaces rápidos</h3>
+          <ul class="quick-links">
+            <li><a href={`${lp}/rankings/`}>{tourLabel} Ranking</a></li>
+            <li><a href={`${lp}/records/`}>Récords de tenis</a></li>
+            <li><a href={`${lp}/vs/`}>Cara a cara</a></li>
+            <li><a href={`${lp}/gear/`}>Guías de equipamiento</a></li>
+            <li><a href={`${lp}/tournaments/`}>Torneos</a></li>
+            <li><a href={`${lp}/players/`}>Todos los jugadores</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    {/* In-flow "Inside [Player]'s World" section — wider visibility than sidebar */}
+    {universeLinks.length >= 3 && (
+      <section class="player-universe-inflow">
+        <h2 class="universe-h2">Dentro del mundo de {player.first_name} {player.last_name}</h2>
+        <p class="universe-intro">Últimas noticias, récords, equipamiento e historias sobre {player.first_name}.</p>
+        <div class="universe-grid">
+          {universeLinks.slice(0, 9).map(link => (
+            <a href={loc(link.href)} class="universe-card">
+              {link.contextLabel && <span class="universe-card-label">{link.contextLabel}</span>}
+              <span class="universe-card-title">{link.title}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </article>
+</BaseLayout>
+
+<style>
+  .player-profile {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  /* Breadcrumbs */
+  .breadcrumbs {
+    padding: 20px 0;
+    font-size: 0.85rem;
+    color: var(--gray-500);
+  }
+  .breadcrumbs a {
+    color: var(--gray-600);
+    transition: color 0.2s;
+  }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  /* Hero */
+  .hero {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 40px;
+    align-items: start;
+    padding: 32px 0 40px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 40px;
+  }
+
+  .hero-photo {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+  .hero-photo img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    object-position: top;
+  }
+  .tour-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: white;
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero-info {
+    padding-top: 8px;
+  }
+  .hero-name-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .hero-flag {
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+  .hero-flag-img {
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .hero-info h1 {
+    font-family: var(--font-body);
+    font-size: 1.6rem;
+    font-weight: 400;
+    line-height: 1.2;
+    margin: 0;
+  }
+  .hero-info h1 strong {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 1.05;
+  }
+  .hero-country {
+    color: var(--gray-600);
+    font-size: 1rem;
+    margin: 8px 0 0;
+    padding-left: 4px;
+  }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px;
+    margin-top: 28px;
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .hero-stat {
+    text-align: center;
+  }
+  .hero-stat-value {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .hero-stat.gs .hero-stat-value { color: #d4a017; }
+  .hero-stat-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+  }
+
+  /* Content Grid */
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 40px;
+    align-items: start;
+  }
+
+  /* Section Headers with Icons */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .section-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  /* Quick Facts */
+  /* Quick Answer — compact AI-citable summary block */
+  .quick-answer {
+    margin: 0 0 32px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--gray-800);
+  }
+  .qa-text strong { color: var(--gray-900); }
+
+  .quick-facts { margin-bottom: 40px; }
+  .quick-facts h2,
+  .bio-section h2,
+  .career-stats h2,
+  .related-articles h2 {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--gray-200);
+  }
+
+  .facts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .fact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: var(--gray-50);
+    border-radius: var(--radius-sm);
+  }
+  .fact-label {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    font-weight: 500;
+  }
+  .fact-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--gray-900);
+  }
+  .mini-badge {
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+
+  /* Biography */
+  .bio-section { margin-bottom: 40px; }
+  .bio-text {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--gray-700);
+  }
+
+  /* Section Groups */
+  .section-group {
+    padding: 28px;
+    border-radius: var(--radius);
+    margin-bottom: 28px;
+    border-left: 4px solid var(--court-green);
+  }
+  .section-group.achievements {
+    background: #f0fdf4;
+  }
+  .section-group.biography {
+    background: #f5f3ff;
+  }
+  .section-group.equipment {
+    background: #fef3c7;
+  }
+  .section-group.finance {
+    background: #fef2f2;
+  }
+  .section-group.personal {
+    background: #f0f9ff;
+  }
+  .section-group h2 {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 0;
+  }
+  .section-group h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin: 24px 0 12px;
+  }
+  .section-group h3:first-child {
+    margin-top: 0;
+  }
+
+  /* Key Highlight Callout */
+  .key-highlight {
+    background: white;
+    border: 2px solid var(--court-green);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .highlight-value {
+    font-family: var(--font-heading);
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--court-green);
+    line-height: 1.2;
+  }
+  .highlight-label {
+    font-size: 0.95rem;
+    color: var(--gray-700);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .highlight-note {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+    margin-top: 6px;
+  }
+
+  /* Profile Article & Extended Sections */
+  .profile-article { margin-bottom: 20px; }
+  .detailed-stats,
+  .grand-slams-section,
+  .timeline-section,
+  .age-section {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 2px solid rgba(0,0,0,0.1);
+  }
+  .article-content :global(h2) {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    text-transform: uppercase;
+    color: var(--gray-900);
+    margin: 32px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--gray-200);
+  }
+  .article-content :global(h3) {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin: 24px 0 8px;
+  }
+  .article-content :global(p) {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--gray-700);
+    margin: 0 0 16px;
+  }
+  .article-content :global(ul),
+  .article-content :global(ol) {
+    margin: 0 0 16px;
+    padding-left: 24px;
+  }
+  .article-content :global(li) {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--gray-700);
+    margin-bottom: 6px;
+  }
+  .article-content :global(strong) {
+    font-weight: 600;
+    color: var(--gray-900);
+  }
+
+  /* Career Stats Table */
+  .career-stats { margin-bottom: 40px; }
+  .stats-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .stats-table table {
+    border-radius: var(--radius-sm);
+    overflow: visible;
+    display: table;
+    border: 1px solid var(--gray-200);
+  }
+  .stats-table th {
+    background: var(--gray-100);
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--gray-600);
+    letter-spacing: 0.05em;
+    font-family: var(--font-body);
+    font-weight: 600;
+  }
+  .stats-table td {
+    padding: 12px 16px;
+    border-top: 1px solid var(--gray-100);
+    font-size: 0.95rem;
+  }
+  .stat-val {
+    font-weight: 700;
+    color: var(--gray-900);
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+  }
+  .gs-row { background: #fffbeb; }
+  .gs-val { color: #d4a017 !important; }
+
+  /* Related Articles */
+  .related-articles { margin-bottom: 40px; }
+  .articles-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .article-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    border: 1px solid var(--gray-200);
+    transition: all 0.2s;
+  }
+  .article-link:hover {
+    border-color: var(--court-green);
+    background: white;
+    box-shadow: var(--shadow);
+  }
+  .article-link-icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .article-link h3 {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .article-link p {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+    margin: 0;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    position: sticky;
+    top: calc(var(--header-height) + 24px);
+  }
+  .sidebar-widget {
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-top: 3px solid var(--court-green);
+  }
+  .sidebar-widget h3 {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin: 0 0 14px;
+    padding-bottom: 0;
+    border-bottom: none;
+    color: var(--gray-900);
+    letter-spacing: 0.05em;
+  }
+
+  /* Table of Contents */
+  .toc-widget {
+    background: linear-gradient(135deg, #f0fdf4 0%, #e8f5e9 100%);
+    border-top: 3px solid var(--court-green);
+  }
+  .toc-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .toc-link {
+    display: block;
+    padding: 8px 12px;
+    font-size: 0.88rem;
+    color: var(--gray-700);
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+    border-left: 2px solid transparent;
+    margin-left: -2px;
+  }
+  .toc-link:hover {
+    background: white;
+    color: var(--court-green);
+    border-left-color: var(--court-green);
+    font-weight: 600;
+  }
+
+  /* Compare Widget */
+  .compare-widget {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-top: 3px solid #f59e0b;
+  }
+  .compare-text {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    margin: 0 0 12px;
+  }
+  .compare-btn {
+    display: block;
+    padding: 10px 14px;
+    background: white;
+    border: 1px solid #f59e0b;
+    border-radius: var(--radius-sm);
+    color: #d97706;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .compare-btn:hover {
+    background: #f59e0b;
+    color: white;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+  }
+
+  /* Share Widget */
+  .share-widget {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-top: 3px solid #0284c7;
+  }
+  .share-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .share-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: white;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .share-btn.twitter {
+    background: #000;
+  }
+  .share-btn.twitter:hover {
+    background: #1d9bf0;
+    transform: scale(1.1);
+  }
+  .share-btn.linkedin {
+    background: #0a66c2;
+  }
+  .share-btn.linkedin:hover {
+    background: #084b9f;
+    transform: scale(1.1);
+  }
+  .share-btn.reddit {
+    background: #ff4500;
+  }
+  .share-btn.reddit:hover {
+    background: #cc3600;
+    transform: scale(1.1);
+  }
+
+  .similar-players {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .similar-player {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s;
+  }
+  .similar-player:hover { background: white; }
+  .similar-player img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top;
+  }
+  .sp-name {
+    display: block;
+    font-size: 0.9rem;
+  }
+  .sp-name strong {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+  }
+  .sp-country {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    margin-top: 2px;
+  }
+  .sp-flag {
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .h2h-links {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .h2h-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s;
+    color: var(--gray-800);
+  }
+  .h2h-link:hover { background: white; color: var(--court-green); }
+  .h2h-icon {
+    color: #d4a017;
+    font-size: 0.9rem;
+  }
+  .h2h-all {
+    font-size: 0.8rem;
+    color: var(--court-green);
+    margin-top: 4px;
+    justify-content: center;
+  }
+
+  .quick-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .quick-links a {
+    display: block;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s;
+  }
+  .quick-links a:hover { background: white; }
+
+  /* Player Universe sidebar widget — smart internal linking (Codex #8) */
+  .universe-widget { background: linear-gradient(135deg, #f0fdf4 0%, #fff 100%); }
+  .universe-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .universe-link a {
+    display: block;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: background 0.2s;
+  }
+  .universe-link a:hover { background: white; color: var(--court-green); }
+  .universe-context {
+    display: inline-block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .universe-title {
+    display: block;
+    font-size: 0.88rem;
+    line-height: 1.35;
+    font-weight: 500;
+  }
+
+  /* In-flow Player Universe section — full-width grid */
+  .player-universe-inflow {
+    margin: 56px 0 0;
+    padding: 32px 0 0;
+    border-top: 1px solid var(--gray-200);
+  }
+  .universe-h2 {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--gray-900);
+    margin: 0 0 8px;
+  }
+  .universe-intro {
+    color: var(--gray-600);
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+  }
+  .universe-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .universe-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+    min-height: 76px;
+  }
+  .universe-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  .universe-card-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .universe-card-title {
+    font-size: 0.92rem;
+    line-height: 1.4;
+    font-weight: 600;
+    color: var(--gray-900);
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+    .sidebar {
+      position: static;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .universe-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .hero-photo {
+      max-width: 280px;
+    }
+    .hero-info h1 strong {
+      font-size: 2.2rem;
+    }
+    .hero-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .facts-grid {
+      grid-template-columns: 1fr;
+    }
+    .sidebar {
+      grid-template-columns: 1fr;
+    }
+    .share-buttons {
+      justify-content: center;
+    }
+    .toc-widget {
+      grid-column: 1 / -1;
+    }
+    .universe-grid {
+      grid-template-columns: 1fr;
+    }
+    .player-universe-inflow {
+      margin-top: 40px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .player-profile {
+      padding: 0 16px 40px;
+    }
+    .hero-photo {
+      max-width: 200px;
+    }
+    .hero-flag { font-size: 2rem; }
+    .hero-info h1 { font-size: 1.2rem; }
+    .hero-info h1 strong { font-size: 1.8rem; }
+    .hero-stat-value { font-size: 1.4rem; }
+    .section-group {
+      padding: 20px 16px;
+      margin-bottom: 20px;
+    }
+    .section-group h2 {
+      font-size: 1.2rem;
+    }
+    .key-highlight {
+      padding: 16px;
+    }
+    .highlight-value {
+      font-size: 2rem;
+    }
+  }
+
+  /* Social links */
+  .social-links {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+  .social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    color: #555;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .social-link:hover { transform: scale(1.1); }
+  .social-link.instagram:hover { background: #E1306C; color: #fff; }
+  .social-link.twitter:hover { background: #000; color: #fff; }
+  .social-link.facebook:hover { background: #1877F2; color: #fff; }
+
+  /* YTD Stats */
+  .ytd-stats {
+    margin: 1.5rem 0;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, #f0f9ff, #e8f4fd);
+    border-radius: 12px;
+    border-left: 4px solid #0ea5e9;
+  }
+  .ytd-stats h3 { margin: 0 0 0.75rem; font-size: 1.1rem; color: #0369a1; }
+  .ytd-grid {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .ytd-item { text-align: center; }
+  .ytd-val { display: block; font-size: 1.5rem; font-weight: 700; color: #0c4a6e; }
+  .ytd-label { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* Serving & Return Stats */
+  .serve-return-stats {
+    margin: 1.5rem 0;
+    padding: 1.25rem;
+    background: #fafafa;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+  }
+  .serve-return-stats h3 { margin: 0 0 1rem; font-size: 1.1rem; }
+  .sr-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .sr-col h4 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+    margin: 0 0 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e5e7eb;
+  }
+  .sr-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.35rem 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .sr-label { color: #374151; }
+  .sr-val { font-weight: 600; color: #111827; }
+  .data-source {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    margin: 0.75rem 0 0;
+  }
+  .data-source a {
+    color: #9ca3af;
+    text-decoration: underline;
+    display: inline-block;
+    padding: 6px 2px;
+    margin: -6px -2px;
+  }
+
+  @media (max-width: 600px) {
+    .sr-grid { grid-template-columns: 1fr; gap: 1rem; }
+  }
+</style>

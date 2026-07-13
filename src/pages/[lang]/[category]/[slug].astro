@@ -24,7 +24,9 @@ import { marked } from 'marked';
 export async function getStaticPaths() {
   // Declared inside — Astro's getStaticPaths runs in an isolated scope and can't see
   // module-level frontmatter consts.
-  const ARTICLE_CATEGORIES = ['lifestyle', 'gear', 'vs', 'records', 'tournaments', 'players'];
+  // 'players' is intentionally excluded — /es/players/[slug] is served by the dedicated
+  // [lang]/players/[slug].astro profile route (full 1:1 profile with merged article bodies).
+  const ARTICLE_CATEGORIES = ['lifestyle', 'gear', 'vs', 'records', 'tournaments'];
   const locales = getActiveLocales();
   if (locales.length === 0) return [];
 
