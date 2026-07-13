@@ -1,0 +1,328 @@
+---
+/**
+ * Localized lifestyle subcategory landing (/es/lifestyle/{money,style,culture,health,
+ * media,travel,career}) — 1:1 copy of the English LifestyleSubhub. Content (title, intro,
+ * quickAnswer, FAQs) is pre-translated in src/data/lifestyle-subhubs-es.json; article
+ * title/excerpt localized from article_translations; links kept inside /es/.
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import FaqBlock from '../../../components/FaqBlock.astro';
+import { getArticles, supabase } from '../../../lib/supabase';
+import { stripMarkdown } from '../../../lib/fallback-data';
+import { getArticlePhotosForCategory } from '../../../lib/player-photos';
+import { getActiveLocales, buildAlternates, type Locale } from '../../../lib/i18n';
+import subhubData from '../../../data/lifestyle-subhubs-es.json';
+
+export async function getStaticPaths() {
+  const SUPPORTED = ['es'];
+  const locales = getActiveLocales().filter((l) => SUPPORTED.includes(l));
+  if (locales.length === 0) return [];
+  const SUBCATS = ['money', 'style', 'culture', 'health', 'media', 'travel', 'career'];
+  const paths: Array<{ params: { lang: string; subcat: string }; props: { locale: Locale; data: any } }> = [];
+  for (const locale of locales) {
+    for (const subcategory of SUBCATS) {
+      const data = (subhubData as Record<string, any>)[subcategory];
+      if (data) paths.push({ params: { lang: locale, subcat: subcategory }, props: { locale, data } });
+    }
+  }
+  return paths;
+}
+
+const { locale, data } = Astro.props as { locale: Locale; data: any };
+const lp = `/${locale}`;
+const { subcategory, title, h1, metaDescription, intro, quickAnswer, faqs, accentEmoji } = data;
+
+// Lifestyle articles for this subcategory, with Spanish title/excerpt.
+let articles: any[] = [];
+try {
+  const all = await getArticles({ category: 'lifestyle', limit: 200 });
+  articles = (all || []).filter((a: any) => a.subcategory === subcategory);
+} catch (e) { /* fallback to empty */ }
+
+if (articles.length) {
+  const ids = articles.map((a: any) => a.id).filter(Boolean);
+  const map = new Map<number, { title: string; excerpt: string | null }>();
+  const { data: tr } = await supabase
+    .from('article_translations')
+    .select('article_id, title, excerpt')
+    .eq('lang', locale)
+    .eq('status', 'published')
+    .in('article_id', ids);
+  for (const t of tr || []) map.set(t.article_id, { title: t.title, excerpt: t.excerpt });
+  articles = articles.map((a: any) => {
+    const t = map.get(a.id);
+    return t ? { ...a, title: t.title, excerpt: t.excerpt ?? a.excerpt } : a;
+  });
+}
+
+const photos = await getArticlePhotosForCategory(articles, 'lifestyle');
+
+const collectionJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: title,
+  description: metaDescription,
+  inLanguage: locale,
+  url: `https://super.tennis${lp}/lifestyle/${subcategory}/`,
+  isPartOf: { '@type': 'WebSite', '@id': 'https://super.tennis/#website', name: 'SUPER.TENNIS' },
+  about: { '@type': 'Thing', name: h1, description: intro },
+  mainEntity: articles.slice(0, 12).map((a: any, i: number) => ({
+    '@type': 'Article', headline: a.title, url: `https://super.tennis${lp}/lifestyle/${a.slug}/`, position: i + 1,
+  })),
+};
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: `https://super.tennis${lp}/` },
+    { '@type': 'ListItem', position: 2, name: 'Estilo de vida', item: `https://super.tennis${lp}/lifestyle/` },
+    { '@type': 'ListItem', position: 3, name: h1 },
+  ],
+};
+const alternates = buildAlternates(`/lifestyle/${subcategory}/`, [locale]);
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="website" locale={locale} alternates={alternates}>
+  <script type="application/ld+json" set:html={JSON.stringify(collectionJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <div class="subhub-page">
+    <nav class="breadcrumbs">
+      <a href={`${lp}/`}>Inicio</a> <span class="sep">/</span>
+      <a href={`${lp}/lifestyle/`}>Estilo de vida</a> <span class="sep">/</span>
+      <span class="current">{h1}</span>
+    </nav>
+
+    <header class="subhub-hero">
+      <div class="hero-emoji">{accentEmoji}</div>
+      <h1>{h1}</h1>
+      <p class="hero-intro">{intro}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Respuesta rápida</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    {articles.length === 0 ? (
+      <div class="empty">
+        <p>Todavía no hay artículos en esta categoría — próximamente.</p>
+        <a href={`${lp}/lifestyle/`} class="back-link">← Ver todos los artículos de Estilo de vida</a>
+      </div>
+    ) : (
+      <section class="article-grid">
+        <h2 class="section-title">{articles.length} artículos en {h1}</h2>
+        <div class="grid">
+          {articles.map((a: any) => {
+            const img = a.image_url || photos.get(a.slug) || '/og/lifestyle.png';
+            return (
+              <a href={`${lp}/lifestyle/${a.slug}/`} class="article-card">
+                <div class="card-img">
+                  <img src={img} alt={a.title} loading="lazy" decoding="async" width="400" height="225" onerror="this.parentElement.style.background='var(--gray-100)'" />
+                </div>
+                <div class="card-body">
+                  <h3>{a.title}</h3>
+                  <p>{stripMarkdown(a.excerpt || '').slice(0, 140)}{(a.excerpt || '').length > 140 ? '...' : ''}</p>
+                  <span class="card-cta">Leer más →</span>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    )}
+
+    <FaqBlock faqs={faqs} title="Preguntas frecuentes" />
+
+    <section class="related-cats">
+      <h2>Explora otros temas de Estilo de vida</h2>
+      <div class="cat-pills">
+        <a href={`${lp}/lifestyle/money/`} class="pill">💰 Dinero</a>
+        <a href={`${lp}/lifestyle/style/`} class="pill">👗 Estilo y moda</a>
+        <a href={`${lp}/lifestyle/culture/`} class="pill">🎭 Cultura</a>
+        <a href={`${lp}/lifestyle/health/`} class="pill">💪 Salud y fitness</a>
+        <a href={`${lp}/lifestyle/media/`} class="pill">📺 Medios</a>
+        <a href={`${lp}/lifestyle/travel/`} class="pill">✈️ Viajes</a>
+        <a href={`${lp}/lifestyle/career/`} class="pill">📊 Carrera</a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .subhub-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+  .breadcrumbs {
+    padding: 20px 0;
+    font-size: 0.82rem;
+    color: var(--gray-500);
+  }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .subhub-hero {
+    text-align: center;
+    padding: 32px 0 24px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 32px;
+  }
+  .hero-emoji { font-size: 3rem; margin-bottom: 12px; }
+  .subhub-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.4rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 12px;
+    color: var(--gray-900);
+  }
+  .hero-intro {
+    max-width: 720px;
+    margin: 0 auto;
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: var(--gray-600);
+  }
+
+  .quick-answer {
+    margin: 0 0 32px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--gray-800);
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 0 0 20px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 48px;
+  }
+  .article-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+  }
+  .article-card:hover {
+    border-color: var(--court-green);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  }
+  .card-img { aspect-ratio: 16/9; overflow: hidden; background: var(--gray-100); }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+  .article-card:hover .card-img img { transform: scale(1.04); }
+  .card-body { padding: 14px 16px 18px; display: flex; flex-direction: column; flex: 1; }
+  .card-body h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+    line-height: 1.35;
+    color: var(--gray-900);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card-body p {
+    font-size: 0.86rem;
+    color: var(--gray-500);
+    line-height: 1.5;
+    margin: 0 0 10px;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card-cta {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--court-green);
+  }
+
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    margin-bottom: 32px;
+  }
+  .empty p { color: var(--gray-600); margin: 0 0 16px; }
+  .back-link { color: var(--court-green); font-weight: 600; }
+
+  .related-cats {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--gray-200);
+  }
+  .related-cats h2 {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0 0 16px;
+    color: var(--gray-800);
+  }
+  .cat-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .pill {
+    display: inline-block;
+    padding: 8px 16px;
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 20px;
+    color: var(--gray-700);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: var(--transition);
+  }
+  .pill:hover {
+    border-color: var(--court-green);
+    color: var(--court-green);
+    background: white;
+  }
+
+  @media (max-width: 1024px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .grid { grid-template-columns: 1fr; }
+    .subhub-hero h1 { font-size: 1.8rem; }
+  }
+</style>
