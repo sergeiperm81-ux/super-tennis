@@ -26,7 +26,7 @@ if (ids.length) {
   for (const t of data || []) tmap.set(t.article_id, { title: t.title, excerpt: t.excerpt });
 }
 const articles = enArts.filter((a: any) => tmap.has(a.id)).map((a: any) => ({
-  slug: a.slug, subcategory: a.subcategory || 'guides', title: tmap.get(a.id)!.title, excerpt: tmap.get(a.id)!.excerpt || '',
+  slug: a.slug, subcategory: a.subcategory || 'guides', image_url: a.image_url, title: tmap.get(a.id)!.title, excerpt: tmap.get(a.id)!.excerpt || '',
 }));
 const articlePhotos = await getArticlePhotosForCategory(articles, 'gear');
 

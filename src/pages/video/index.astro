@@ -2,6 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import LiteYouTube from '../../components/LiteYouTube.astro';
 import { videoCategories, getChannelFeaturedVideos } from '../../data/youtube-channels';
+import { buildAlternates } from '../../lib/i18n';
+const videoAlternates = buildAlternates('/video/', ['es']);
 
 const collectionJsonLd = {
   '@context': 'https://schema.org',
@@ -52,6 +54,7 @@ for (const cat of videoCategories) {
 <BaseLayout
   title="Tennis Videos — Best YouTube Channels to Watch"
   description="Curated collection of the best tennis YouTube channels. Official tour highlights, coaching tips, player vlogs, analysis, and entertainment."
+  alternates={videoAlternates}
 >
   <script type="application/ld+json" set:html={JSON.stringify(collectionJsonLd)} />
   {videoJsonLd.map((schema, i) => (

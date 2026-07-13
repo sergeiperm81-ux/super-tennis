@@ -1,0 +1,131 @@
+---
+/**
+ * Localized Videos hub (/es/video/) — faithful 1:1 copy of src/pages/video/index.astro.
+ * Chrome + category labels/descriptions translated; channel names + video titles/descriptions
+ * are YouTube-authored content and stay as-is (same principle as news video titles).
+ * Exists so the header "Vídeos" nav link stays inside /es/ instead of leaking to English.
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import LiteYouTube from '../../../components/LiteYouTube.astro';
+import { videoCategories, getChannelFeaturedVideos } from '../../../data/youtube-channels';
+import { getActiveLocales, buildAlternates, type Locale } from '../../../lib/i18n';
+
+export async function getStaticPaths() {
+  const SUPPORTED = ['es'];
+  return getActiveLocales().filter((l) => SUPPORTED.includes(l)).map((locale) => ({ params: { lang: locale }, props: { locale } }));
+}
+const { locale } = Astro.props as { locale: Locale };
+const lp = `/${locale}`;
+
+const CAT_ES: Record<string, { label: string; description: string }> = {
+  highlights: { label: 'Lo mejor del circuito', description: 'Lo mejor de los partidos oficiales ATP y WTA, hot shots y los mejores momentos del circuito' },
+  'grand-slams': { label: 'Grand Slams', description: 'Canales oficiales de los cuatro torneos de Grand Slam: Abierto de Australia, Roland Garros, Wimbledon y US Open' },
+  analysis: { label: 'Noticias y análisis', description: 'Análisis del tenis en profundidad, comentarios, entrevistas y las historias detrás de los resultados' },
+  coaching: { label: 'Entrenamiento', description: 'Mejora tu juego con consejos, ejercicios, análisis técnico a cámara lenta y consejos de entrenadores' },
+  vlogs: { label: 'Vlogs de jugadores', description: 'Entre bastidores con los mejores jugadores de hoy: viajes, entrenamiento y la vida en el circuito ATP y WTA' },
+  entertainment: { label: 'Diversión y entretenimiento', description: 'El lado más ligero del tenis: momentos divertidos, clips virales y recopilaciones entretenidas' },
+};
+const catLabel = (id: string) => CAT_ES[id]?.label ?? id;
+const catDesc = (id: string, fallback: string) => CAT_ES[id]?.description ?? fallback;
+
+const collectionJsonLd = {
+  '@context': 'https://schema.org', '@type': 'CollectionPage', inLanguage: locale,
+  name: 'Vídeos de tenis — Los mejores canales de YouTube',
+  description: 'Colección de los mejores canales de tenis en YouTube. Torneos oficiales, consejos de entrenamiento, vlogs de jugadores y momentos destacados.',
+  url: `https://super.tennis/${locale}/video/`,
+  publisher: { '@type': 'Organization', name: 'SUPER.TENNIS', url: 'https://super.tennis' },
+};
+const alternates = buildAlternates('/video/', [locale]);
+---
+
+<BaseLayout
+  title="Vídeos de tenis — Los mejores canales de YouTube"
+  description="Colección de los mejores canales de tenis en YouTube. Lo mejor de los torneos oficiales, consejos de entrenamiento, vlogs de jugadores, análisis y entretenimiento."
+  locale={locale}
+  alternates={alternates}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(collectionJsonLd)} />
+
+  <div class="video-page container" lang={locale}>
+    <nav class="breadcrumbs"><a href={`${lp}/`}>Inicio</a> <span class="sep">/</span> <span class="current">Vídeos</span></nav>
+
+    <section class="page-hero">
+      <h1>Vídeos de tenis</h1>
+      <p class="subtitle">Los mejores canales de tenis en YouTube: resúmenes, entrenamiento, vlogs de jugadores y entretenimiento</p>
+    </section>
+
+    <nav class="cat-nav">
+      {videoCategories.map((cat) => (
+        <a href={`#${cat.id}`} class="cat-pill" style={`--cat-color: ${cat.accentColor}`}>{catLabel(cat.id)}</a>
+      ))}
+    </nav>
+
+    {videoCategories.map((cat) => (
+      <section class="video-category" id={cat.id}>
+        <div class="cat-header" style={`border-left-color: ${cat.accentColor}`}>
+          <h2 class="cat-header__title">{catLabel(cat.id)}</h2>
+          <p class="cat-header__desc">{catDesc(cat.id, cat.description)}</p>
+        </div>
+
+        <div class="channels-list">
+          {cat.channels.map((channel) => {
+            const featured = getChannelFeaturedVideos(channel.videos);
+            return (
+              <div class="channel-card">
+                <div class="channel-info">
+                  <div class="channel-info__top">
+                    <h3 class="channel-name">{channel.name}</h3>
+                    <span class="channel-subs">{channel.subscriberCount} suscriptores</span>
+                  </div>
+                  <p class="channel-desc">{channel.description}</p>
+                </div>
+
+                {featured.length > 0 && (
+                  <div class="channel-videos">
+                    {featured.map((video) => (
+                      <div class="channel-video">
+                        <LiteYouTube videoId={video.id} title={video.title} />
+                        {video.description && <p class="video-desc">{video.description}</p>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .video-page { padding-bottom: 60px; }
+  .breadcrumbs { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--gray-400); padding: 20px 0 0; }
+  .breadcrumbs a { color: var(--gray-500); transition: var(--transition); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { color: var(--gray-300); }
+  .current { color: var(--gray-600); }
+  .page-hero { padding: 48px 0 32px; border-bottom: 3px solid var(--court-green); margin-bottom: 32px; }
+  .page-hero h1 { font-family: var(--font-heading); font-size: 2.8rem; text-transform: uppercase; color: var(--gray-900); margin: 0; letter-spacing: 1px; }
+  .subtitle { font-size: 1rem; color: var(--gray-500); margin-top: 8px; line-height: 1.6; }
+  .cat-nav { display: flex; flex-wrap: wrap; gap: 10px; padding: 0 0 40px; }
+  .cat-pill { display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; color: var(--cat-color); border: 1.5px solid var(--cat-color); transition: var(--transition); text-decoration: none; }
+  .cat-pill:hover { background: var(--cat-color); color: #fff; }
+  .video-category { margin-bottom: 48px; }
+  .cat-header { border-left: 4px solid; padding-left: 16px; margin-bottom: 24px; }
+  .cat-header__title { font-family: var(--font-heading); font-size: 1.3rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gray-900); margin: 0 0 6px; }
+  .cat-header__desc { font-size: 0.88rem; color: var(--gray-500); margin: 0; line-height: 1.5; }
+  .channels-list { display: flex; flex-direction: column; gap: 32px; }
+  .channel-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--gray-200); overflow: hidden; padding: 24px; transition: var(--transition); }
+  .channel-card:hover { box-shadow: var(--shadow); }
+  .channel-info { margin-bottom: 16px; }
+  .channel-info__top { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+  .channel-name { font-family: var(--font-heading); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gray-900); margin: 0; }
+  .channel-subs { font-size: 0.72rem; color: var(--gray-400); background: var(--gray-100); padding: 2px 10px; border-radius: 10px; }
+  .channel-desc { font-size: 0.85rem; color: var(--gray-500); line-height: 1.5; margin: 0; }
+  .channel-videos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .video-desc { font-size: 0.78rem; color: var(--gray-500); margin: 6px 0 0; line-height: 1.4; }
+  @media (max-width: 1024px) { .channel-videos { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 768px) { .page-hero h1 { font-size: 2rem; } .channel-videos { grid-template-columns: 1fr; } .channel-card { padding: 16px; } }
+</style>

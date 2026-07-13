@@ -21,7 +21,7 @@ const currentShort = LANG_SHORT[locale] ?? String(locale).toUpperCase();
 // `localized` marks sections that have a published /es/ (etc.) version. News/Videos are not
 // localized yet → they keep their English URL even on localized pages (label still translates).
 const NAV = [
-  { key: 'video', href: '/video/', localized: false },
+  { key: 'video', href: '/video/', localized: true },
   { key: 'news', href: '/news/', localized: true },
   { key: 'players', href: '/players/', localized: true },
   { key: 'rankings', href: '/rankings/', localized: true },
