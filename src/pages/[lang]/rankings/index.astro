@@ -10,8 +10,9 @@
  * owns only the bare /es/rankings/ index; the two emit disjoint paths.
  */
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { getActiveLocales, buildAlternates, type Locale } from '../../../lib/i18n';
-import { getLatestRankings } from '../../../lib/supabase';
+import { getActiveLocales, localizedPath, buildAlternates, type Locale } from '../../../lib/i18n';
+import { getLatestRankings, getArticles, supabase } from '../../../lib/supabase';
+import { getArticlePhotoUrl } from '../../../lib/player-photos';
 import { countryFlags, getFlagUrl } from '../../../lib/fallback-data';
 
 export async function getStaticPaths() {
@@ -25,6 +26,53 @@ const { locale } = Astro.props as { locale: Locale };
 const DATE_LOCALE: Record<string, string> = { es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN' };
 const atpRankings = await getLatestRankings('atp', 200);
 const wtaRankings = await getLatestRankings('wta', 200);
+const lpx = (path: string) => localizedPath(locale, path);
+
+// Slugs with a published translation → localize player links (English fallback avoids 404s).
+const esSlugs = new Set<string>();
+try {
+  const { data: trans } = await supabase.from('article_translations').select('article_id').eq('lang', locale).eq('status', 'published');
+  const ids = (trans || []).map((t: any) => t.article_id);
+  if (ids.length) {
+    const { data: arts } = await supabase.from('articles').select('slug').in('id', ids);
+    for (const a of arts || []) esSlugs.add(a.slug);
+  }
+} catch {}
+const playerHref = (slug: string) => esSlugs.has(slug) ? `/${locale}/players/${slug}/` : `/players/${slug}/`;
+
+// Sidebar "Explore" — 5 random gear+lifestyle, translated where available (matches English rankings sidebar).
+let sidebarArticles: any[] = [];
+try {
+  const [gearArts, lifeArts] = await Promise.all([getArticles({ category: 'gear', limit: 10 }), getArticles({ category: 'lifestyle', limit: 10 })]);
+  let all = [...gearArts, ...lifeArts].filter((a: any) => a.title);
+  for (let i = all.length - 1; i > 0; i--) { const j = ((i + 7) * 13) % (i + 1); [all[i], all[j]] = [all[j], all[i]]; }
+  all = all.slice(0, 5);
+  const ids = all.map((a: any) => a.id);
+  const tmap = new Map<number, string>();
+  if (ids.length) {
+    const { data } = await supabase.from('article_translations').select('article_id, title').eq('lang', locale).eq('status', 'published').in('article_id', ids);
+    for (const t of data || []) tmap.set(t.article_id, t.title);
+  }
+  sidebarArticles = all.map((a: any) => ({ ...a, title: tmap.get(a.id) ?? a.title }));
+} catch {}
+const sbCatColors: Record<string, string> = { gear: '#2196F3', lifestyle: '#E91E63' };
+const sbCatLabels: Record<string, Record<string, string>> = { es: { gear: 'Equipo', lifestyle: 'Estilo' } };
+const sbCat = sbCatLabels[locale] ?? { gear: 'Gear', lifestyle: 'Lifestyle' };
+
+// Localized news map so the client-loaded sidebar news renders in Spanish.
+const newsMap: Record<string, { t: string; s: string; slug: string }> = {};
+try {
+  const { data: nt } = await supabase.from('news_translations').select('news_id, title, summary').eq('lang', locale).eq('status', 'published');
+  const nids = (nt || []).map((r: any) => r.news_id);
+  if (nids.length) {
+    const { data: nrows } = await supabase.from('news').select('id, slug').in('id', nids);
+    const slugById = new Map((nrows || []).map((n: any) => [n.id, n.slug]));
+    for (const r of nt || []) { const slug = slugById.get(r.news_id); if (slug) newsMap[String(r.news_id)] = { t: r.title, s: r.summary || '', slug }; }
+  }
+} catch {}
+
+const EXPLORE_LABEL: Record<string, string> = { es: 'Explorar', fr: 'Explorer' };
+const exploreTitle = EXPLORE_LABEL[locale] ?? 'Explore';
 
 const rankingDate = atpRankings[0]?.ranking_date
   ? new Date(atpRankings[0].ranking_date).toLocaleDateString(DATE_LOCALE[locale] ?? 'es-ES', { month: 'long', day: 'numeric', year: 'numeric' })
@@ -83,8 +131,10 @@ const p = (loc: string) => `/${loc}`; // localized path prefix helper
   ogImage="/og/rankings.png"
   locale={locale}
   alternates={alternates}
+  dynamicContent={true}
 >
   <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script type="application/json" id="es-news-map" set:html={JSON.stringify(newsMap)}></script>
   <div class="rankings-page" lang={locale}>
     <div class="container">
       <nav class="breadcrumbs"><a href="/">{t.home}</a> <span class="sep">/</span> <span class="current">{t.crumb}</span></nav>
@@ -117,6 +167,7 @@ const p = (loc: string) => `/${loc}`; // localized path prefix helper
         </p>
       </section>
 
+      <div class="rankings-layout">
       <main class="rankings-main">
         <div class="tour-tabs" id="tour-tabs">
           <button class="tab active" data-tour="atp" onclick="switchTour('atp')">ATP <span class="tab-badge atp">{t.menBadge}</span></button>
@@ -150,7 +201,7 @@ const p = (loc: string) => `/${loc}`; // localized path prefix helper
                         <tr class={trClass} data-rank={r.ranking}>
                           <td class="col-rank"><span class="rank-num">{r.ranking}</span></td>
                           <td class="col-player">
-                            <a href={`/players/${slug}/`} class="player-link">
+                            <a href={playerHref(slug)} class="player-link">
                               {flagSrc ? (<img src={flagSrc} alt={cc} class="player-flag-img" width="20" height="15" loading="lazy" decoding="async" />) : (<span class="player-flag">{countryFlags[cc] || ''}</span>)}
                               <span class="player-name">{pl?.first_name} <strong>{pl?.last_name?.toUpperCase()}</strong></span>
                             </a>
@@ -172,6 +223,25 @@ const p = (loc: string) => `/${loc}`; // localized path prefix helper
           </div>
         ))}
       </main>
+
+      <aside class="sb">
+        <div class="sb-block" data-dynamic="sidebar-news" data-limit="3" data-locale={locale}></div>
+        <div class="sb-block" data-dynamic="sidebar-videos" data-slots="0"></div>
+        {sidebarArticles.length > 0 && (
+          <div class="sb-articles">
+            <div class="sb-articles__header"><span class="sb-articles__label">{exploreTitle}</span></div>
+            <div class="sb-articles__list">
+              {sidebarArticles.map((art: any) => (
+                <a href={esSlugs.has(art.slug) ? `/${locale}/${art.category}/${art.slug}/` : `/${art.category}/${art.slug}/`} class="sb-articles__item">
+                  <span class="sb-articles__cat" style={`background: ${sbCatColors[art.category] || '#666'}`}>{sbCat[art.category] || art.category}</span>
+                  <span class="sb-articles__link">{art.title}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </aside>
+      </div>
 
       <section class="faq-section">
         <h2>{t.faqTitle}</h2>
@@ -215,7 +285,8 @@ const p = (loc: string) => `/${loc}`; // localized path prefix helper
 
 <style>
   .rankings-page { padding: 0 24px 60px; }
-  .container { max-width: 1000px; margin: 0 auto; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .rankings-layout { display: grid; grid-template-columns: 1fr 320px; gap: 32px; align-items: start; }
   .breadcrumbs { padding: 20px 0 0; font-size: 0.82rem; color: var(--gray-500); }
   .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
   .breadcrumbs a:hover { color: var(--court-green); }
@@ -235,6 +306,23 @@ const p = (loc: string) => `/${loc}`; // localized path prefix helper
   .qa-followup a { color: var(--court-green); }
 
   .rankings-main { min-width: 0; }
+
+  /* Sidebar (matches English rankings) */
+  .sb { position: sticky; top: calc(var(--header-height) + 8px); display: flex; flex-direction: column; gap: 24px; }
+  .sb-block { background: var(--white); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--gray-200); }
+  .sb-articles { background: #fff; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--gray-200); }
+  .sb-articles__header { padding: 14px 16px; background: var(--gray-900); }
+  .sb-articles__label { font-family: var(--font-heading); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #fff; }
+  .sb-articles__list { display: flex; flex-direction: column; }
+  .sb-articles__item { display: flex; align-items: flex-start; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--gray-100); text-decoration: none; transition: background 0.15s; }
+  .sb-articles__item:last-child { border-bottom: none; }
+  .sb-articles__item:hover { background: var(--gray-50); }
+  .sb-articles__cat { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #fff; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
+  .sb-articles__link { font-size: 0.82rem; font-weight: 600; line-height: 1.3; color: var(--gray-800); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .sb-articles__item:hover .sb-articles__link { color: var(--court-green); }
+
+  @media (max-width: 1024px) { .rankings-layout { grid-template-columns: 1fr 280px; gap: 24px; } }
+  @media (max-width: 900px) { .rankings-layout { grid-template-columns: 1fr; } .sb { position: static; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; } }
   .tour-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
   .tab { padding: 10px 24px; font-family: var(--font-heading); font-size: 1rem; text-transform: uppercase; background: var(--gray-100); border: 2px solid var(--gray-200); border-radius: 8px; color: var(--gray-600); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
   .tab:hover { border-color: var(--gray-400); color: var(--gray-800); }
@@ -285,5 +373,6 @@ const p = (loc: string) => `/${loc}`; // localized path prefix helper
     .col-country { display: none; }
     .rankings-table td { padding: 8px 10px; }
     .tab { padding: 8px 16px; font-size: 0.9rem; }
+    .sb { grid-template-columns: 1fr; }
   }
 </style>
