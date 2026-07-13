@@ -79,7 +79,7 @@ const alternates = buildAlternates('/news/', [locale]);
       <div class="es-news-grid">
         {items.map((it: any) => (
           <a class="es-news-card" href={`/${locale}/news/${it.slug}/`}>
-            {it.image && <img src={it.image} alt={it.title} loading="lazy" decoding="async" width="320" height="180" />}
+            <img src={it.image || '/images/news/court-01.webp'} alt={it.title} loading="lazy" decoding="async" width="320" height="180" onerror="this.src='/images/news/court-01.webp'" />
             <div class="es-news-body">
               <span class="es-news-cat">{catLabels[it.category] || it.category}</span>
               <h3>{it.title}</h3>
