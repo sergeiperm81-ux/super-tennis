@@ -1,0 +1,306 @@
+---
+/**
+ * Localized Players hub (/es/players/) — faithful 1:1 copy of src/pages/players/index.astro:
+ * search + tour filters, ATP/WTA player-card grids, popular-article rows, full player
+ * directory, FAQ. Player data (names/flags/stats/photos) is language-neutral; chrome +
+ * editorial card titles translated; links localized (/es/ where a translation exists).
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import FaqBlock from '../../../components/FaqBlock.astro';
+import { getActiveLocales, buildAlternates, type Locale } from '../../../lib/i18n';
+import { getLatestRankings, getPlayerBySlug, getDirectoryPlayers, supabase } from '../../../lib/supabase';
+import { fallbackPlayers, countryFlags, getFlagUrl } from '../../../lib/fallback-data';
+
+export async function getStaticPaths() {
+  const SUPPORTED = ['es'];
+  return getActiveLocales().filter((l) => SUPPORTED.includes(l)).map((locale) => ({ params: { lang: locale }, props: { locale } }));
+}
+const { locale } = Astro.props as { locale: Locale };
+const lp = `/${locale}`;
+const NUMLOC = locale === 'es' ? 'es-ES' : 'en-US';
+const PLACEHOLDER_IMG = '/placeholder-player.svg';
+
+const esSlugs = new Set<string>();
+try {
+  const { data: trans } = await supabase.from('article_translations').select('article_id').eq('lang', locale).eq('status', 'published');
+  const ids = (trans || []).map((t: any) => t.article_id);
+  if (ids.length) { const { data: arts } = await supabase.from('articles').select('slug').in('id', ids); for (const a of arts || []) esSlugs.add(a.slug); }
+} catch {}
+const ph = (slug: string) => esSlugs.has(slug) ? `${lp}/players/${slug}/` : `/players/${slug}/`;
+
+let djokovicPhoto = '', alcarazPhoto = '', swiatekPhoto = '', sinnerPhoto = '', sabalenkaPhoto = '', federerPhoto = '', nadalPhoto = '', gauffPhoto = '';
+try {
+  const [d, a, s, si, sab, f, n, g] = await Promise.all([
+    getPlayerBySlug('novak-djokovic'), getPlayerBySlug('carlos-alcaraz'), getPlayerBySlug('iga-swiatek'), getPlayerBySlug('jannik-sinner'),
+    getPlayerBySlug('aryna-sabalenka'), getPlayerBySlug('roger-federer'), getPlayerBySlug('rafael-nadal'), getPlayerBySlug('coco-gauff'),
+  ]);
+  djokovicPhoto = d?.image_url || ''; alcarazPhoto = a?.image_url || ''; swiatekPhoto = s?.image_url || ''; sinnerPhoto = si?.image_url || '';
+  sabalenkaPhoto = sab?.image_url || ''; federerPhoto = f?.image_url || ''; nadalPhoto = n?.image_url || ''; gauffPhoto = g?.image_url || '';
+} catch {}
+
+const atpRankings = await getLatestRankings('atp', 20);
+const wtaRankings = await getLatestRankings('wta', 20);
+let directoryPlayers: Awaited<ReturnType<typeof getDirectoryPlayers>> = [];
+try { directoryPlayers = await getDirectoryPlayers(); } catch {}
+const directoryAtp = directoryPlayers.filter((p) => p.tour === 'atp');
+const directoryWta = directoryPlayers.filter((p) => p.tour === 'wta');
+
+function mapRanking(r: any) {
+  const p = r.players; const slug = p?.slug || ''; const fb = fallbackPlayers[slug];
+  return {
+    first_name: p?.first_name || '', last_name: p?.last_name || '', slug, country_code: p?.country_code || '', tour: r.tour, ranking: r.ranking, points: r.points || 0,
+    career_titles: p?.career_titles || fb?.career_titles || 0, grand_slam_titles: p?.grand_slam_titles || fb?.grand_slam_titles || 0,
+    image_url: p?.image_url || fb?.image_url?.replace('w=800', 'w=400') || PLACEHOLDER_IMG,
+  };
+}
+function mapFallback(p: any, ranking: number) { return { ...p, ranking, points: 0, image_url: p.image_url?.replace('w=800', 'w=400') || PLACEHOLDER_IMG }; }
+const atpPlayers = atpRankings.length > 0 ? atpRankings.map(mapRanking) : Object.values(fallbackPlayers).filter((p: any) => p.tour === 'atp').map((p: any, i: number) => mapFallback(p, i + 1));
+const wtaPlayers = wtaRankings.length > 0 ? wtaRankings.map(mapRanking) : Object.values(fallbackPlayers).filter((p: any) => p.tour === 'wta').map((p: any, i: number) => mapFallback(p, i + 1));
+
+const S = { titles: 'Títulos', gs: 'GS', pts: 'pts', men: 'Masculino', women: 'Femenino', full: 'Ranking completo →', search: 'Buscar jugadores...', all: 'Todos', noResults: 'No se han encontrado jugadores' };
+
+// Editorial article rows (translated titles; links localized).
+const rows = [
+  { h: 'Artículos populares de jugadores', cards: [
+    { slug: 'novak-djokovic', img: djokovicPhoto, t: 'El patrimonio de Novak Djokovic en 2026' },
+    { slug: 'carlos-alcaraz', img: alcarazPhoto, t: '¿Qué raqueta usa Carlos Alcaraz?' },
+    { slug: 'iga-swiatek', img: swiatekPhoto, t: 'Iga Swiatek — Perfil completo de la jugadora' },
+  ] },
+  { h: 'Relaciones y vida personal', cards: [
+    { slug: 'jannik-sinner', img: sinnerPhoto, t: 'La novia de Jannik Sinner — ¿Con quién sale?' },
+    { slug: 'novak-djokovic', img: djokovicPhoto, t: 'La esposa de Novak Djokovic — Jelena Djokovic' },
+    { slug: 'aryna-sabalenka', img: sabalenkaPhoto, t: 'El novio de Aryna Sabalenka — Su situación sentimental' },
+    { slug: 'carlos-alcaraz', img: alcarazPhoto, t: 'La novia de Carlos Alcaraz — ¿Con quién sale?' },
+  ] },
+  { h: '¿Qué edad tienen?', cards: [
+    { slug: 'carlos-alcaraz', img: alcarazPhoto, t: '¿Qué edad tiene Carlos Alcaraz? Edad y cumpleaños' },
+    { slug: 'roger-federer', img: federerPhoto, t: '¿Qué edad tiene Roger Federer? Edad y biografía' },
+    { slug: 'coco-gauff', img: gauffPhoto, t: '¿Qué edad tiene Coco Gauff? Edad y estatura' },
+    { slug: 'rafael-nadal', img: nadalPhoto, t: '¿Qué edad tiene Rafael Nadal? Edad y carrera' },
+  ] },
+  { h: 'Estadísticas y récords de carrera', cards: [
+    { slug: 'novak-djokovic', img: djokovicPhoto, t: 'Estadísticas de Djokovic — Títulos y % de victorias' },
+    { slug: 'jannik-sinner', img: sinnerPhoto, t: 'Estadísticas de Sinner — Su ascenso al No. 1' },
+    { slug: 'iga-swiatek', img: swiatekPhoto, t: 'Estadísticas de Swiatek — Títulos y récords' },
+    { slug: 'aryna-sabalenka', img: sabalenkaPhoto, t: 'Estadísticas de Sabalenka — Grand Slams' },
+  ] },
+];
+
+const faqs = [
+  { q: '¿Quién es el número 1 del tenis mundial ahora mismo?', a: 'En el circuito masculino, Jannik Sinner ocupa el No. 1 de la ATP en 2026. En el femenino, Aryna Sabalenka lidera el ranking WTA. El ranking se actualiza cada semana según un sistema de puntos móvil de 52 semanas gestionado por la ATP y la WTA.' },
+  { q: '¿Quién ha ganado más títulos de Grand Slam de la historia?', a: 'Novak Djokovic tiene el récord masculino de todos los tiempos con 24 títulos individuales de Grand Slam. Margaret Court posee el récord femenino de todos los tiempos con 24 (incluidos títulos previos a la Era Abierta); Serena Williams encabeza la lista femenina de la Era Abierta con 23 Grand Slams.' },
+  { q: '¿Quién es el GOAT del tenis?', a: 'No hay respuesta oficial: el debate del «mejor de todos los tiempos» suele centrarse en Novak Djokovic (24 Grand Slams), Rafael Nadal (22 Grand Slams, dominante en tierra) y Roger Federer (20 Grand Slams, 310 semanas como No. 1). La mayoría de las métricas estadísticas actuales favorecen a Djokovic, pero el debate continúa según la era, el dominio por superficie y los cara a cara.' },
+  { q: '¿Quiénes son los tenistas mejor pagados?', a: 'Novak Djokovic lidera los premios de carrera con más de 185 millones de dólares. Rafael Nadal y Roger Federer le siguen en el lado masculino. En el femenino, Serena Williams encabeza las ganancias de carrera con más de 94 millones, con Iga Swiatek y Aryna Sabalenka subiendo rápido entre las jugadoras en activo.' },
+  { q: '¿Cuántos años tiene Carlos Alcaraz?', a: 'Carlos Alcaraz nació el 5 de mayo de 2003 en El Palmar, Murcia, España. Se hizo profesional en 2018 y se convirtió en el No. 1 del mundo más joven de la historia de la ATP con 19 años y 4 meses, el 12 de septiembre de 2022.' },
+  { q: '¿Quién es el No. 1 del mundo más joven de la historia del tenis?', a: 'Carlos Alcaraz se convirtió en el No. 1 masculino más joven de la historia con 19 años y 4 meses en septiembre de 2022. Martina Hingis es la No. 1 femenina más joven, llegando a lo más alto con 16 años y 6 meses el 31 de marzo de 1997.' },
+];
+const alternates = buildAlternates('/players/', [locale]);
+---
+
+<BaseLayout
+  alternates={alternates}
+  locale={locale}
+  title="Jugadores de tenis — Perfiles, ranking y estadísticas"
+  description="Explora los perfiles de los mejores jugadores ATP y WTA. Estadísticas de carrera, títulos de Grand Slam, ranking, patrimonio y equipamiento."
+  ogImage="/og/players.png"
+>
+  <div class="players-page" lang={locale}>
+    <div class="container">
+      <nav class="breadcrumbs"><a href={`${lp}/`}>Inicio</a> <span class="sep">/</span> <span class="current">Jugadores</span></nav>
+      <section class="page-hero">
+        <h1>Jugadores de tenis</h1>
+        <p class="subtitle">Perfiles, ranking, estadísticas e historias de los mejores tenistas del mundo</p>
+      </section>
+
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="player-search" placeholder={S.search} autocomplete="off" />
+        </div>
+        <div class="tour-filters">
+          <button class="tour-filter active" data-tour="all">{S.all}</button>
+          <button class="tour-filter" data-tour="atp">ATP</button>
+          <button class="tour-filter" data-tour="wta">WTA</button>
+        </div>
+      </div>
+
+      {[
+        { tour: 'atp', badge: S.men, badgeClass: 'atp', players: atpPlayers },
+        { tour: 'wta', badge: S.women, badgeClass: 'wta', players: wtaPlayers },
+      ].map((sec) => (
+        <section class="tour-section" data-tour={sec.tour}>
+          <div class="tour-header">
+            <h2>{sec.tour.toUpperCase()} Tour <span class={`tour-badge ${sec.badgeClass}`}>{sec.badge}</span></h2>
+            <a href={`${lp}/rankings/`} class="view-all">{S.full}</a>
+          </div>
+          <div class="players-grid">
+            {sec.players.map((player: any, i: number) => (
+              <a href={ph(player.slug)} class="player-card" data-name={`${player.first_name} ${player.last_name}`.toLowerCase()}>
+                <div class="player-rank">#{player.ranking}</div>
+                <div class="player-photo">
+                  <img src={player.image_url} alt={`${player.first_name} ${player.last_name}`} loading={sec.tour === 'atp' && i < 4 ? 'eager' : 'lazy'} width="400" height="400" decoding="async" />
+                </div>
+                <div class="player-info">
+                  {getFlagUrl(player.country_code || '') ? (<img src={getFlagUrl(player.country_code || '', 24)} alt={player.country_code || ''} class="player-flag-img" width="24" height="18" loading="lazy" decoding="async" />) : (<span class="player-flag">{countryFlags[player.country_code || ''] || ''}</span>)}
+                  <h3>{player.first_name} <strong>{player.last_name}</strong></h3>
+                  <div class="player-stats">
+                    <span class="stat"><em>{player.career_titles}</em> {S.titles}</span>
+                    {player.grand_slam_titles > 0 && (<span class="stat gs"><em>{player.grand_slam_titles}</em> {S.gs}</span>)}
+                    <span class="stat pts"><em>{player.points?.toLocaleString(NUMLOC)}</em> {S.pts}</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      {rows.map((row) => (
+        <section class="related-content">
+          <h2>{row.h}</h2>
+          <div class="articles-row">
+            {row.cards.map((c) => (
+              <a href={ph(c.slug)} class="article-card">
+                <img src={c.img || PLACEHOLDER_IMG} alt={c.t} loading="lazy" decoding="async" width="400" height="267" />
+                <h3>{c.t}</h3>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      {directoryPlayers.length > 0 && (
+        <section class="player-directory">
+          <h2>Directorio completo de jugadores</h2>
+          <p class="directory-intro">Todos los perfiles de jugadores en SUPER.TENNIS — {directoryPlayers.length.toLocaleString(NUMLOC)} jugadores de ATP y WTA, de la A a la Z por apellido.</p>
+          <div class="directory-cols">
+            <div class="directory-col">
+              <h3>ATP <span class="dir-count">({directoryAtp.length})</span></h3>
+              <ul class="directory-list">{directoryAtp.map((p) => (<li><a href={ph(p.slug)}>{p.first_name} {p.last_name}</a></li>))}</ul>
+            </div>
+            <div class="directory-col">
+              <h3>WTA <span class="dir-count">({directoryWta.length})</span></h3>
+              <ul class="directory-list">{directoryWta.map((p) => (<li><a href={ph(p.slug)}>{p.first_name} {p.last_name}</a></li>))}</ul>
+            </div>
+          </div>
+        </section>
+      )}
+
+      <FaqBlock faqs={faqs} title="Preguntas frecuentes" />
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ noResultsLabel: S.noResults }}>
+    (function () {
+      var searchInput = document.getElementById('player-search');
+      var tourFilters = Array.from(document.querySelectorAll('.tour-filter'));
+      var tourSections = Array.from(document.querySelectorAll('.tour-section[data-tour]'));
+      var activeTour = 'all';
+      function filterPlayers() {
+        var query = (searchInput && searchInput.value.toLowerCase().trim()) || '';
+        tourSections.forEach(function (section) {
+          var tour = section.getAttribute('data-tour') || '';
+          var showSection = activeTour === 'all' || activeTour === tour;
+          section.style.display = showSection ? '' : 'none';
+          if (showSection) {
+            var cards = Array.from(section.querySelectorAll('.player-card'));
+            var visibleCount = 0;
+            cards.forEach(function (card) {
+              var name = card.getAttribute('data-name') || '';
+              var matches = !query || name.indexOf(query) !== -1;
+              card.style.display = matches ? '' : 'none';
+              if (matches) visibleCount++;
+            });
+            var noResults = section.querySelector('.no-results');
+            if (!noResults) {
+              noResults = document.createElement('div');
+              noResults.className = 'no-results';
+              noResults.textContent = noResultsLabel;
+              var grid = section.querySelector('.players-grid');
+              if (grid) grid.appendChild(noResults);
+            }
+            noResults.classList.toggle('visible', visibleCount === 0 && query.length > 0);
+          }
+        });
+      }
+      if (searchInput) searchInput.addEventListener('input', filterPlayers);
+      tourFilters.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          tourFilters.forEach(function (b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          activeTour = btn.getAttribute('data-tour') || 'all';
+          filterPlayers();
+        });
+      });
+    })();
+  </script>
+</BaseLayout>
+
+<style>
+  .players-page { padding: 0 24px 60px; max-width: 1280px; margin: 0 auto; }
+  .breadcrumbs { padding: 20px 0 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+  .page-hero { padding: 48px 0 32px; border-bottom: 3px solid var(--court-green); margin-bottom: 40px; }
+  .page-hero h1 { font-family: var(--font-heading); font-size: 2.8rem; text-transform: uppercase; color: var(--dark); margin: 0; }
+  .subtitle { color: #666; font-size: 1.1rem; margin: 8px 0 0; }
+  .search-bar { display: flex; gap: 16px; align-items: center; margin-bottom: 32px; flex-wrap: wrap; }
+  .search-input-wrap { position: relative; flex: 1; min-width: 200px; }
+  .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--gray-400); pointer-events: none; }
+  #player-search { width: 100%; padding: 12px 16px 12px 42px; border: 2px solid var(--gray-200); border-radius: var(--radius); font-size: 0.95rem; font-family: var(--font-body); background: white; transition: border-color 0.2s; }
+  #player-search:focus { outline: none; border-color: var(--court-green); }
+  #player-search::placeholder { color: var(--gray-400); }
+  .tour-filters { display: flex; gap: 4px; background: var(--gray-100); border-radius: var(--radius); padding: 4px; }
+  .tour-filter { padding: 8px 18px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; border-radius: var(--radius-sm); color: var(--gray-600); transition: all 0.2s; font-family: var(--font-body); cursor: pointer; background: transparent; border: none; }
+  .tour-filter:hover { color: var(--gray-900); }
+  .tour-filter.active { background: white; color: var(--court-green); box-shadow: var(--shadow); }
+  .tour-section { margin-bottom: 48px; }
+  .tour-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .tour-header h2 { font-family: var(--font-heading); font-size: 1.6rem; text-transform: uppercase; display: flex; align-items: center; gap: 12px; margin: 0; }
+  .tour-badge { font-size: 0.7rem; padding: 3px 10px; border-radius: 4px; font-family: var(--font-body); text-transform: uppercase; letter-spacing: 0.05em; }
+  .tour-badge.atp { background: #003580; color: white; }
+  .tour-badge.wta { background: #7b2d8e; color: white; }
+  .view-all { color: var(--court-green); font-weight: 600; text-decoration: none; font-size: 0.9rem; }
+  .view-all:hover { text-decoration: underline; }
+  .players-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .player-card { text-decoration: none; color: inherit; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.2s, box-shadow 0.2s; position: relative; }
+  .player-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+  .player-rank { position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.75); color: var(--ball-yellow); font-family: var(--font-heading); font-size: 0.9rem; padding: 4px 10px; border-radius: 6px; z-index: 2; }
+  .player-photo { aspect-ratio: 1; overflow: hidden; }
+  .player-photo img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 0.3s; }
+  .player-card:hover .player-photo img { transform: scale(1.05); }
+  .player-info { padding: 14px 16px 18px; }
+  .player-flag { font-size: 1.2rem; margin-bottom: 4px; display: inline-block; }
+  .player-flag-img { margin-bottom: 4px; display: inline-block; border-radius: 2px; }
+  .player-info h3 { font-family: var(--font-body); font-size: 1rem; font-weight: 400; margin: 4px 0 8px; line-height: 1.3; }
+  .player-info h3 strong { font-weight: 700; text-transform: uppercase; font-family: var(--font-heading); font-size: 1.05rem; }
+  .player-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+  .stat { font-size: 0.8rem; color: #888; }
+  .stat em { font-style: normal; font-weight: 700; color: var(--dark); margin-right: 2px; }
+  .stat.gs em { color: #d4a017; }
+  .related-content { margin-top: 48px; padding-top: 32px; border-top: 2px solid #eee; }
+  .related-content h2 { font-family: var(--font-heading); font-size: 1.4rem; text-transform: uppercase; margin: 0 0 20px; }
+  .articles-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+  .article-card { text-decoration: none; color: inherit; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.2s; }
+  .article-card:hover { transform: translateY(-3px); }
+  .article-card img { width: 100%; aspect-ratio: 3/2; object-fit: cover; object-position: top; }
+  .article-card h3 { padding: 12px 14px 16px; font-size: 0.95rem; font-weight: 600; margin: 0; line-height: 1.4; }
+  .player-directory { margin-top: 48px; padding-top: 32px; border-top: 2px solid #eee; }
+  .player-directory h2 { font-family: var(--font-heading); font-size: 1.4rem; text-transform: uppercase; margin: 0 0 8px; }
+  .directory-intro { color: var(--gray-500, #888); font-size: 0.9rem; margin: 0 0 20px; }
+  .directory-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .directory-col h3 { font-family: var(--font-body); font-size: 0.95rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200, #eee); }
+  .dir-count { color: var(--gray-400, #aaa); font-weight: 400; }
+  .directory-list { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 24px; }
+  .directory-list li { margin: 0 0 6px; break-inside: avoid; }
+  .directory-list a { color: var(--gray-700, #444); text-decoration: none; font-size: 0.86rem; transition: color 0.15s; }
+  .directory-list a:hover { color: var(--court-green); text-decoration: underline; }
+  .no-results { display: none; text-align: center; padding: 48px 24px; color: var(--gray-500); font-size: 1rem; grid-column: 1 / -1; }
+  .no-results.visible { display: block; }
+  @media (max-width: 1024px) { .players-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 768px) { .players-grid { grid-template-columns: repeat(2, 1fr); } .articles-row { grid-template-columns: 1fr; } .page-hero h1 { font-size: 2rem; } .directory-cols { grid-template-columns: 1fr; gap: 24px; } .directory-list { columns: 1; } }
+  @media (max-width: 480px) { .players-grid { grid-template-columns: 1fr 1fr; gap: 12px; } .player-info { padding: 10px 12px 14px; } .player-info h3 { font-size: 0.9rem; } .search-bar { flex-direction: column; gap: 12px; } .search-input-wrap { width: 100%; } }
+  @media (max-width: 360px) { .players-grid { grid-template-columns: 1fr; gap: 16px; } }
+</style>
