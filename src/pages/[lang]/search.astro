@@ -1,0 +1,86 @@
+---
+/**
+ * Localized search (/es/search) — 1:1 copy of src/pages/search.astro. Pagefind indexes
+ * pages by their <html lang>, so on this lang=es page PagefindUI defaults to the Spanish
+ * index and returns /es/ results. UI chrome + labels translated.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getActiveLocales, buildAlternates, type Locale } from '../../lib/i18n';
+
+export async function getStaticPaths() {
+  const SUPPORTED = ['es'];
+  return getActiveLocales()
+    .filter((l) => SUPPORTED.includes(l))
+    .map((locale) => ({ params: { lang: locale }, props: { locale } }));
+}
+const { locale } = Astro.props as { locale: Locale };
+const alternates = buildAlternates('/search/', [locale]);
+---
+
+<BaseLayout
+  title="Buscar"
+  description="Busca en SUPER.TENNIS: jugadores, artículos, guías de equipamiento, récords y más."
+  locale={locale}
+  alternates={alternates}
+>
+  <div class="search-page">
+    <div class="container">
+      <h1>Buscar en SUPER.TENNIS</h1>
+      <div id="search"></div>
+    </div>
+  </div>
+
+  <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
+  <script is:inline src="/pagefind/pagefind-ui.js"></script>
+  <script is:inline define:vars={{ locale }}>
+    window.addEventListener('DOMContentLoaded', function() {
+      new PagefindUI({
+        element: '#search',
+        showSubResults: true,
+        showImages: true,
+        autofocus: true,
+        language: locale,
+        translations: {
+          placeholder: 'Buscar',
+          clear_search: 'Borrar',
+          load_more: 'Ver más resultados',
+          search_label: 'Buscar en este sitio',
+          filters_label: 'Filtros',
+          zero_results: 'No hay resultados para [SEARCH_TERM]',
+          many_results: '[COUNT] resultados para [SEARCH_TERM]',
+          one_result: '[COUNT] resultado para [SEARCH_TERM]',
+          alt_search: 'No hay resultados para [SEARCH_TERM]. Mostrando resultados para [DIFFERENT_TERM]',
+          search_suggestion: 'No hay resultados para [SEARCH_TERM]. Prueba una de estas búsquedas:',
+          searching: 'Buscando [SEARCH_TERM]...',
+        },
+      });
+    });
+  </script>
+</BaseLayout>
+
+<style>
+  .search-page {
+    padding: 40px 0 80px;
+    min-height: 60vh;
+  }
+  .search-page h1 {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    margin-bottom: 24px;
+  }
+  .search-page :global(.pagefind-ui__search-input) {
+    font-size: 1.1rem;
+    padding: 12px 16px;
+    border: 2px solid var(--gray-300);
+    border-radius: var(--radius);
+    width: 100%;
+  }
+  .search-page :global(.pagefind-ui__search-input:focus) {
+    border-color: var(--court-green, #16a34a);
+    outline: none;
+  }
+  .search-page :global(.pagefind-ui__result-link) {
+    color: #2563eb;
+    font-weight: 600;
+  }
+</style>

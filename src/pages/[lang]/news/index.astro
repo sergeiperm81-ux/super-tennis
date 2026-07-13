@@ -40,11 +40,19 @@ try {
 } catch {}
 const byId = new Map(allNews.map((n: any) => [n.id, n]));
 
-const { data: trans } = await supabase
-  .from('news_translations')
-  .select('news_id, title')
-  .eq('lang', locale)
-  .eq('status', 'published');
+// Paginate — a single Supabase select caps at 1000 rows, and there are ~1400 es translations.
+const trans: any[] = [];
+for (let from = 0; ; from += 1000) {
+  const { data } = await supabase
+    .from('news_translations')
+    .select('news_id, title')
+    .eq('lang', locale)
+    .eq('status', 'published')
+    .range(from, from + 999);
+  if (!data || data.length === 0) break;
+  trans.push(...data);
+  if (data.length < 1000) break;
+}
 const items = (trans || [])
   .map((t: any) => {
     const n = byId.get(t.news_id);

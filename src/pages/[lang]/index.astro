@@ -79,10 +79,24 @@ function locUrl(category: string, slug: string): string {
 // news blocks (buzz / trending) can render in Spanish (see dynamic-content.js).
 const newsMap: Record<string, { t: string; s: string; slug: string }> = {};
 try {
-  const { data: nt } = await supabase.from('news_translations').select('news_id, title, summary').eq('lang', locale).eq('status', 'published');
+  // Paginate — a single select caps at 1000 rows; ~1400 es translations, and recent news
+  // (highest IDs) would otherwise fall outside the cap and render English in the buzz.
+  const nt: any[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data } = await supabase.from('news_translations').select('news_id, title, summary').eq('lang', locale).eq('status', 'published').range(from, from + 999);
+    if (!data || data.length === 0) break;
+    nt.push(...data);
+    if (data.length < 1000) break;
+  }
   const nids = (nt || []).map((r: any) => r.news_id);
   if (nids.length) {
-    const { data: nrows } = await supabase.from('news').select('id, slug').in('id', nids);
+    const nrows: any[] = [];
+    for (let from = 0; ; from += 1000) {
+      const { data } = await supabase.from('news').select('id, slug').in('id', nids).range(from, from + 999);
+      if (!data || data.length === 0) break;
+      nrows.push(...data);
+      if (data.length < 1000) break;
+    }
     const slugById = new Map((nrows || []).map((n: any) => [n.id, n.slug]));
     for (const r of nt || []) {
       const slug = slugById.get(r.news_id);

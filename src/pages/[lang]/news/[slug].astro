@@ -29,11 +29,20 @@ export async function getStaticPaths() {
 
   const paths: Array<{ params: { lang: string; slug: string }; props: any }> = [];
   for (const locale of locales) {
-    const { data: trans } = await supabase
-      .from('news_translations')
-      .select('news_id, title, summary, body')
-      .eq('lang', locale)
-      .eq('status', 'published');
+    // Fetch ALL translations — a single Supabase select caps at 1000 rows, and there are
+    // ~1400 es news translations, so paginate or ~400 (incl. older active news) get dropped.
+    const trans: any[] = [];
+    for (let from = 0; ; from += 1000) {
+      const { data } = await supabase
+        .from('news_translations')
+        .select('news_id, title, summary, body')
+        .eq('lang', locale)
+        .eq('status', 'published')
+        .range(from, from + 999);
+      if (!data || data.length === 0) break;
+      trans.push(...data);
+      if (data.length < 1000) break;
+    }
     const tById = new Map((trans || []).map((t: any) => [t.news_id, t]));
     // Newest-first list of this locale's translated items (for "related").
     const localized = allNews
