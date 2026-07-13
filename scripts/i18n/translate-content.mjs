@@ -32,7 +32,7 @@ const PRICE_OUT = 0.6 / 1e6;
 const OUT_RATIO = { es: 1.1, fr: 1.1, zh: 0.7 };
 
 function parseArgs(argv) {
-  const a = { limit: null, ids: null, model: 'gpt-4o-mini', confirm: false, maxCost: 25, force: false, since: null };
+  const a = { limit: null, ids: null, model: 'gpt-4o-mini', confirm: false, maxCost: 25, force: false, since: null, concurrency: 1 };
   for (let i = 0; i < argv.length; i++) {
     const k = argv[i];
     if (k === '--confirm') a.confirm = true;
@@ -45,6 +45,7 @@ function parseArgs(argv) {
     else if (k === '--model') a.model = argv[++i];
     else if (k === '--max-cost') a.maxCost = parseFloat(argv[++i]);
     else if (k === '--since') a.since = argv[++i]; // news forward-only: only published_at >= this ISO date
+    else if (k === '--concurrency') a.concurrency = Math.max(1, parseInt(argv[++i], 10) || 1); // parallel API calls
   }
   return a;
 }
@@ -153,7 +154,12 @@ async function getCandidates(sb, type, lang, ids, force = false, category = null
 
   // источник — постранично (защита от больших таблиц, напр. players)
   const cols = [srcKey, ...fields].join(',');
-  const src = await fetchAllRows(() => baseFilter(sb.from(table).select(cols)));
+  // news: recent-first so visible surfaces (homepage buzz, /es/news top) translate before the archive
+  const src = await fetchAllRows(() => {
+    let q = baseFilter(sb.from(table).select(cols));
+    if (type === 'news') q = q.order('published_at', { ascending: false });
+    return q;
+  });
 
   // уже переведённые ключи
   const translated = new Set(
@@ -291,8 +297,11 @@ async function main() {
   const { default: OpenAI } = await import('openai');
   const openai = new OpenAI({ apiKey: requireEnv('OPENAI_API_KEY') });
 
-  let ok = 0, review = 0, failed = 0, spentIn = 0, spentOut = 0;
-  for (const item of candidates) {
+  let ok = 0, review = 0, failed = 0, spentIn = 0, spentOut = 0, processed = 0;
+
+  // Обрабатывает один кандидат: перевод → санитизация → upsert. Идемпотентно (upsert),
+  // поэтому безопасно гонять параллельно.
+  async function processItem(item) {
     try {
       const { translated, usage } = await translateItem(openai, args.model, args.lang, item, glossary);
       spentIn += usage.prompt_tokens || 0;
@@ -302,7 +311,7 @@ async function main() {
       let row;
       if (args.type === 'page') {
         const v = validatePageFields(fields);
-        if (!v.ok) { console.warn(`  [review] page ${item.key}: ${v.error}`); review++; }
+        if (!v.ok) { console.warn(`  [review] page ${item.key}: ${v.error}`); }
         row = { page_key: item.key, lang: args.lang, fields_json: fields, status: v.ok ? status : 'review', updated_at: new Date().toISOString() };
       } else {
         row = { [item.fkCol]: castKey(args.type, item.key), lang: args.lang, ...fields, status, updated_at: new Date().toISOString() };
@@ -311,13 +320,21 @@ async function main() {
       const { error } = await sb.from(transTable).upsert(row, {
         onConflict: args.type === 'page' ? 'page_key,lang' : `${item.fkCol},lang`,
       });
-      if (error) { console.warn(`  [fail] ${item.key}: ${error.message}`); failed++; continue; }
+      if (error) { console.warn(`  [fail] ${item.key}: ${error.message}`); failed++; return; }
       if (row.status === 'review') review++; else ok++;
     } catch (e) {
       console.warn(`  [fail] ${item.key}: ${e.message}`);
       failed++;
+    } finally {
+      processed++;
+      if (processed % 25 === 0) console.log(`  … ${processed}/${candidates.length} (ok=${ok} review=${review} failed=${failed})`);
     }
   }
+
+  // Пул воркеров: concurrency параллельных потоков разбирают общую очередь кандидатов.
+  const queue = candidates.slice();
+  const worker = async () => { for (let it; (it = queue.shift()); ) await processItem(it); };
+  await Promise.all(Array.from({ length: Math.min(args.concurrency, candidates.length) }, worker));
 
   const realCost = spentIn * PRICE_IN + spentOut * PRICE_OUT;
   console.log(`\n[translate] done. published=${ok} review=${review} failed=${failed}`);
