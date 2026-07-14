@@ -10,9 +10,14 @@ name: News Translate — Spanish (forward-only)
 #
 # Cost: ~8 news/day × ~$0.0002 ≈ well under 1 cent/day (gpt-4o-mini).
 
+# DISABLED 2026-07-14: news translation now runs INSIDE the Cloudflare Worker
+# (workers/content-cron) right after each daily news batch is published, using the
+# Worker's own OPENAI_API_KEY secret. This scheduled job was failing every day
+# because the GitHub repo has no OPENAI_API_KEY secret. Kept only for manual
+# backfills (workflow_dispatch) — which still require the repo secret to be set.
 on:
-  schedule:
-    - cron: '20 4 * * *'   # 04:20 UTC = 07:20 Sofia
+  # schedule:
+  #   - cron: '20 4 * * *'   # 04:20 UTC = 07:20 Sofia  (disabled — Worker handles it)
   workflow_dispatch:        # manual run / backfill a specific window via inputs
     inputs:
       since:

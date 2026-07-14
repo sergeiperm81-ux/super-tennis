@@ -669,6 +669,64 @@ function verifyCategory(
 // ============================================================
 // NEWS GENERATION
 // ============================================================
+// Translate a freshly-published news batch into Spanish (news_translations).
+// Runs inside the daily news cron so /es/ news is localized ON PUBLISH — no
+// dependency on the (previously failing) GitHub translate workflow. Best-effort:
+// failures are logged but never block news generation.
+async function translateNewsBatchToSpanish(
+  env: Env,
+  saved: Array<{ id: number; title: string; summary: string; body: string | null }>,
+  log: (m: string) => void,
+): Promise<void> {
+  if (!saved || saved.length === 0) return;
+  const system =
+    'You are a professional sports translator. Translate the JSON values into Spanish ' +
+    '(warm, fan-facing tone). Keep the SAME JSON keys. Keep any HTML tags intact. Do not ' +
+    'translate proper names (players, tournaments, brands). Return ONLY a JSON object.';
+  const rows: any[] = [];
+  for (const n of saved) {
+    if (!n || !n.id) continue;
+    try {
+      const payload: Record<string, string> = { title: n.title, summary: n.summary };
+      if (n.body) payload.body = n.body;
+      const r = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${env.OPENAI_API_KEY}` },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          temperature: 0.3,
+          response_format: { type: 'json_object' },
+          messages: [
+            { role: 'system', content: system },
+            { role: 'user', content: JSON.stringify(payload) },
+          ],
+        }),
+      });
+      if (!r.ok) { log(`   ⚠️ ES translate news ${n.id}: OpenAI ${r.status}`); continue; }
+      const data: any = await r.json();
+      const tr = JSON.parse(data.choices?.[0]?.message?.content || '{}');
+      rows.push({
+        news_id: n.id,
+        lang: 'es',
+        title: tr.title || n.title,
+        summary: tr.summary || n.summary,
+        body: n.body ? (tr.body || n.body) : null,
+        status: 'published',
+        updated_at: new Date().toISOString(),
+      });
+    } catch (e: any) {
+      log(`   ⚠️ ES translate news ${n.id}: ${e.message}`);
+    }
+  }
+  if (rows.length === 0) return;
+  try {
+    await supabaseQuery(env, 'news_translations', 'POST', { on_conflict: 'news_id,lang' }, rows);
+    log(`   🌐 Translated ${rows.length}/${saved.length} news → Spanish`);
+  } catch (e: any) {
+    log(`   ⚠️ ES translate upsert failed: ${e.message}`);
+  }
+}
+
 async function generateNews(env: Env): Promise<string> {
   // Tuning history:
   //   2026-05-01: 25/day → 8/day after investor flagged AI graphomania
@@ -888,11 +946,17 @@ async function generateNews(env: Env): Promise<string> {
   // 8. Upsert into Supabase, then deactivate old news only on success
   log(`💾 Upserting ${dedupedRows.length} items (${newsRows.length - dedupedRows.length} dupes removed)...`);
   try {
-    await supabaseQuery(env, 'news', 'POST', { 'on_conflict': 'slug' }, dedupedRows);
+    const savedNews = await supabaseQuery(env, 'news', 'POST', { 'on_conflict': 'slug' }, dedupedRows);
     log(`   ✅ Saved ${dedupedRows.length} items`);
     // Keep all news active — they serve as SSG pages for Google indexing
     // Old news stay in the archive, only the latest batch shows first in the feed
     log('📦  All news preserved in archive (no deactivation)');
+    // Localize the fresh batch to Spanish immediately (best-effort, non-blocking).
+    try {
+      await translateNewsBatchToSpanish(env, Array.isArray(savedNews) ? savedNews : [], log);
+    } catch (e: any) {
+      log(`   ⚠️ ES translation step errored: ${e.message}`);
+    }
   } catch (e: any) {
         console.error('API error:', e.message);
     log(`❌ Supabase error: ${e.message}`);
