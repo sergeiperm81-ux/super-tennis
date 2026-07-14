@@ -76,7 +76,8 @@ SUPER.TENNIS is a tennis news and lifestyle portal covering players, gear, recor
 - Content: ${s.totalArticles.toLocaleString()} long-form articles, ${s.playerPages.toLocaleString()}+ player pages, ${s.news.toLocaleString()} active news items
 - Updated: Daily (news 07:00 Sofia, rankings 11:00 UTC, YouTube Shorts daily, Bluesky ~20×/day)
 - Last content update: ${s.lastUpdate}
-- Language: English only
+- Languages: English (primary, at the root) and Spanish (full site under /es/ — articles, news, player profiles, rankings, gear, records, tournaments, lifestyle, search). Each page links its translation via hreflang.
+- Spanish edition: https://super.tennis/es/ — same content localized for Spanish-speaking tennis fans (Español)
 - Authority: Data sourced from ATP Tour, WTA Tour, ITF, Wikipedia. News from ESPN, BBC Sport, Tennis World USA, Daily Mail Sport, Bleacher Report
 - Editorial policy: faithful-rewrite only — no invented quotes, scores, deals, or relationships. Articles fact-checked against original source.
 

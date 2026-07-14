@@ -10,6 +10,7 @@ import {
   getEvergreenPlayerLinks,
   type RelatedLink,
 } from '../../lib/related-content';
+import { buildAlternates } from '../../lib/i18n';
 import { marked } from 'marked';
 
 // SSG: generate paths for all top players from Supabase + fallback
@@ -266,6 +267,7 @@ const profileArticleHtml = articles['profile'].html;
   title={`${player.first_name} ${player.last_name} — Height, Age, Stats & Bio${player.height_cm ? ` | ${player.height_cm}cm` : ''}`}
   description={player.bio_short || `${player.first_name} ${player.last_name}${age ? `, age ${age}` : ''}${player.height_cm ? `, height ${player.height_cm}cm (${Math.floor(player.height_cm / 30.48)}'${Math.round((player.height_cm % 30.48) / 2.54)}")` : ''} — ${player.tour === 'atp' ? 'ATP' : 'WTA'} tennis player from ${country}. Career stats, rankings, net worth, and racket on SUPER.TENNIS.`}
   ogImage={player.image_url || '/og/players.png'}
+  alternates={buildAlternates(`/players/${player.slug}/`, ['es'])}
 >
   <!-- JSON-LD -->
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
