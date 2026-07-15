@@ -87,6 +87,13 @@ async function fetchNews() {
   return all;
 }
 
+// Mirrors PLAYERS_CACHE_FILTER in src/lib/supabase.ts — the players the site
+// actually builds pages for. Without it we pulled all 136,025 rows on every
+// build just to date ~1,200 sitemap entries, which was a large share of the
+// egress that tripped Supabase into HTTP 402 on 2026-07-15. Players outside the
+// filter simply get no lastmod, which the sitemap already tolerates.
+const PLAYERS_FILTER = 'career_titles.gt.0,career_win.gt.20,career_prize_usd.gt.0';
+
 async function fetchPlayers() {
   const all = [];
   let from = 0;
@@ -95,6 +102,8 @@ async function fetchPlayers() {
     const { data, error } = await sb
       .from('players')
       .select('slug, stats_updated_at')
+      .or(PLAYERS_FILTER)
+      .order('id', { ascending: true })
       .range(from, from + PAGE - 1);
     if (error) throw error;
     if (!data || data.length === 0) break;

@@ -128,6 +128,10 @@ export interface Article {
 
 let _playersCache: Player[] | null = null;
 let _playersBySlug: Map<string, Player> | null = null;
+let _playersCachePromise: Promise<Player[]> | null = null;
+// Slugs already looked up and known to be absent — stops a bad slug from
+// re-querying on every page that mentions it.
+const _playersMissing = new Set<string>();
 
 let _articlesCache: Article[] | null = null;
 let _articlesBySlug: Map<string, Article> | null = null;
@@ -139,43 +143,67 @@ let _newsBySlug: Map<string, NewsItem> | null = null;
 let _rankingsCache: Map<string, any[]> = new Map();
 let _rankingsDateCache: Map<string, string> = new Map();
 
+// The players table holds 136,025 rows (~23 MB raw, several times that as JSON)
+// but the site only ever renders ~1,200 of them. Fetching the whole table on
+// every build burned ~3.6 GB of the 5 GB/month Supabase free-tier egress and
+// tripped the Data API into HTTP 402, which took news, rankings and the Shorts
+// pipeline down with it (2026-07-15).
+//
+// This is the exact superset of the stat-based pools in getTopPlayerSlugs:
+// 1,216 rows / 707 kB. Ranked-but-statless players are deliberately NOT covered
+// here — they reach the site through the rankings join rather than any stat
+// threshold, so getPlayerBySlug fetches those one row at a time. Widen this
+// filter if a pool ever starts selecting on a different column.
+const PLAYERS_CACHE_FILTER = 'career_titles.gt.0,career_win.gt.20,career_prize_usd.gt.0';
+
 async function ensurePlayersCache(): Promise<Player[]> {
   if (_playersCache) return _playersCache;
+  // Concurrent cold callers (pages do Promise.all over getPlayerBySlug) must
+  // share one fetch — otherwise each caller pulls the whole set again.
+  if (_playersCachePromise) return _playersCachePromise;
 
-  console.log('[cache] Fetching ALL players from Supabase...');
-  const startMs = Date.now();
+  _playersCachePromise = (async () => {
+    console.log('[cache] Fetching site-relevant players from Supabase...');
+    const startMs = Date.now();
 
-  // Supabase default limit is 1000; fetch in batches to get all
-  const allPlayers: Player[] = [];
-  const batchSize = 1000;
-  let offset = 0;
-  let hasMore = true;
+    // Supabase default limit is 1000; fetch in batches to get all
+    const allPlayers: Player[] = [];
+    const batchSize = 1000;
+    let offset = 0;
+    let hasMore = true;
 
-  while (hasMore) {
-    const { data, error } = await supabase
-      .from('players')
-      .select('*')
-      .range(offset, offset + batchSize - 1);
+    while (hasMore) {
+      const { data, error } = await supabase
+        .from('players')
+        .select('*')
+        .or(PLAYERS_CACHE_FILTER)
+        // Explicit order: range() pagination without one is not stable across
+        // requests, so rows could be duplicated or skipped between batches.
+        .order('id', { ascending: true })
+        .range(offset, offset + batchSize - 1);
 
-    if (error) {
-      console.error('[cache] ensurePlayersCache error:', error.message);
-      break;
+      if (error) {
+        console.error('[cache] ensurePlayersCache error:', error.message);
+        break;
+      }
+
+      if (data && data.length > 0) {
+        allPlayers.push(...(data as Player[]));
+        offset += batchSize;
+        hasMore = data.length === batchSize;
+      } else {
+        hasMore = false;
+      }
     }
 
-    if (data && data.length > 0) {
-      allPlayers.push(...(data as Player[]));
-      offset += batchSize;
-      hasMore = data.length === batchSize;
-    } else {
-      hasMore = false;
-    }
-  }
+    _playersCache = allPlayers;
+    _playersBySlug = new Map(allPlayers.map(p => [p.slug, p]));
 
-  _playersCache = allPlayers;
-  _playersBySlug = new Map(allPlayers.map(p => [p.slug, p]));
+    console.log(`[cache] Cached ${allPlayers.length} players in ${Date.now() - startMs}ms`);
+    return allPlayers;
+  })();
 
-  console.log(`[cache] Cached ${allPlayers.length} players in ${Date.now() - startMs}ms`);
-  return _playersCache;
+  return _playersCachePromise;
 }
 
 async function ensureArticlesCache(): Promise<Article[]> {
@@ -326,7 +354,34 @@ export async function getPlayers(options: {
 // Helper: get single player by slug
 export async function getPlayerBySlug(slug: string) {
   await ensurePlayersCache();
-  return _playersBySlug!.get(slug) ?? null;
+
+  const cached = _playersBySlug!.get(slug);
+  if (cached) return cached;
+  if (_playersMissing.has(slug)) return null;
+
+  // Cache miss: the player sits outside PLAYERS_CACHE_FILTER but can still have
+  // a page — every player ranked in the top 200 gets one regardless of stats
+  // (21 of them at last count). One row is cheap; memoise either way so a slug
+  // is fetched at most once per build.
+  const { data, error } = await supabase
+    .from('players')
+    .select('*')
+    .eq('slug', slug)
+    .limit(1);
+
+  if (error) {
+    console.error(`[cache] getPlayerBySlug(${slug}) fallback failed:`, error.message);
+    return null;
+  }
+
+  const player = data?.[0] as Player | undefined;
+  if (!player) {
+    _playersMissing.add(slug);
+    return null;
+  }
+
+  _playersBySlug!.set(slug, player);
+  return player;
 }
 
 // Helper: get latest rankings (with player details)
@@ -423,10 +478,14 @@ export interface DirectoryPlayer {
 }
 export async function getDirectoryPlayers(): Promise<DirectoryPlayer[]> {
   try {
-    const slugSet = new Set(await getTopPlayerSlugs(500));
-    const allPlayers = await ensurePlayersCache();
-    return allPlayers
-      .filter(p => slugSet.has(p.slug) && p.first_name && p.last_name)
+    const slugs = await getTopPlayerSlugs(500);
+    // Resolve via getPlayerBySlug instead of filtering the cache: players who
+    // are ranked but have no stats fall outside PLAYERS_CACHE_FILTER, and
+    // dropping them here would recreate the orphan pages this directory exists
+    // to eliminate — their page is built either way.
+    const players = await Promise.all(slugs.map(slug => getPlayerBySlug(slug)));
+    return players
+      .filter((p): p is Player => Boolean(p && p.first_name && p.last_name))
       .map(p => ({ slug: p.slug, first_name: p.first_name, last_name: p.last_name, tour: p.tour }))
       .sort((a, b) => (a.last_name || '').localeCompare(b.last_name || ''));
   } catch (e) {
