@@ -36,7 +36,8 @@ jobs:
           ANALYTICS_PASSWORD: ${{ secrets.ANALYTICS_PASSWORD }}
         run: |
           echo "⚠️ No news for today — triggering generation..."
-          RESULT=$(curl -s -m 120 "https://supertennis-cron.sfedoroff.workers.dev/trigger/news?pwd=$ANALYTICS_PASSWORD")
+          # Worker auth is Bearer-header only (query-param auth was removed for security)
+          RESULT=$(curl -s -m 120 -H "Authorization: Bearer $ANALYTICS_PASSWORD" "https://supertennis-cron.sfedoroff.workers.dev/trigger/news")
           echo "$RESULT"
           if echo "$RESULT" | grep -q "Saved"; then
             echo "✅ News generated successfully via failsafe"

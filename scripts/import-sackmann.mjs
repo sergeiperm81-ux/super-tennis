@@ -30,9 +30,12 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// GitHub raw URLs
-const BASE_ATP = 'https://raw.githubusercontent.com/JeffSackmann/tennis_atp/master';
-const BASE_WTA = 'https://raw.githubusercontent.com/JeffSackmann/tennis_wta/master';
+// Data sources. The original JeffSackmann/tennis_atp + tennis_wta GitHub repos were
+// deleted (404 as of 2026-07), so we keep local snapshots in data/sackmann/
+// (ATP from the hikmatazimzade/tennis-ai LFS mirror, WTA from the ppaulojr/tennis_wta
+// fork with the header row re-added). Point these at any http(s) mirror if one returns.
+const BASE_ATP = 'data/sackmann';
+const BASE_WTA = 'data/sackmann';
 
 // ─── CSV Parser (lightweight, no deps) ──────────────────
 function parseCSV(text) {
@@ -59,9 +62,16 @@ function parseCSV(text) {
 // ─── Fetch CSV from GitHub ──────────────────────────────
 async function fetchCSV(url) {
   console.log(`  📥 Fetching ${url.split('/').pop()}...`);
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status}: ${url}`);
-  const text = await res.text();
+  let text;
+  if (/^https?:\/\//.test(url)) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${url}`);
+    text = await res.text();
+  } else {
+    // Local snapshot (see BASE_ATP/BASE_WTA note above)
+    const { readFileSync } = await import('node:fs');
+    text = readFileSync(url, 'utf8');
+  }
   const rows = parseCSV(text);
   console.log(`  ✅ Parsed ${rows.length} rows`);
   return rows;
