@@ -6,14 +6,14 @@ const now = new Date().toISOString();
 
 const title = 'Leylah Fernandez Comes Home: The Underdog Who Made New York Believe';
 const meta_title = title;
-const meta_description = 'At 19 she stunned a US Open full of champions and made New York fall in love. Now Leylah Fernandez returns home to Montreal as her favourite hard-court summer begins.';
-const excerpt = 'She was the fearless teenager who toppled a US Open full of champions. Five years on, Leylah Fernandez comes home to Montreal for the summer stretch that made her name.';
+const meta_description = 'At 19 she stunned a US Open full of champions and made New York fall in love. Now Leylah Fernandez returns home to Canada as her favourite hard-court summer begins.';
+const excerpt = 'She was the fearless teenager who toppled a US Open full of champions. Five years on, Leylah Fernandez comes home to Canada for the summer stretch that made her name.';
 const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Leylah_Fernandez_%282023_DC_Open%29_05_%28cropped%29.jpg/500px-Leylah_Fernandez_%282023_DC_Open%29_05_%28cropped%29.jpg';
 const image_alt = 'Leylah Fernandez in a pale green top, jaw set and fist clenched after winning a point on a hard court';
 
 const body = `There is a particular sound a tennis crowd makes when it decides, all at once, that it has found someone to love. It isn't applause exactly. It's lower and hungrier than that — a rolling roar that builds every time their new favourite wins a point, until the whole stadium is leaning forward, willing her on. New York made that sound for two straight weeks in the late summer of 2021, and the person it was making it for was a 19-year-old left-hander from Montreal that almost nobody outside tennis had heard of.
 
-Her name is Leylah Fernandez. Five years on, she is not a Grand Slam champion, not the world number one, not any of the things that breathless fortnight seemed to promise. What she is instead is something quieter and, in its own way, more interesting: a fighter who has kept fighting, a fan favourite who never stopped being one, and a Canadian who is about to come home. As the tour swings back to the hard courts of North America — her surface, her season — Leylah Fernandez is heading for Montreal and the run of tournaments that made her name. It feels like the right moment to tell her story.
+Her name is Leylah Fernandez. Five years on, she is not a Grand Slam champion, not the world number one, not any of the things that breathless fortnight seemed to promise. What she is instead is something quieter and, in its own way, more interesting: a fighter who has kept fighting, a fan favourite who never stopped being one, and a Canadian who is about to come home. As the tour swings back to the hard courts of North America — her surface, her season — Leylah Fernandez is heading home for the run of North American tournaments that made her name. It feels like the right moment to tell her story.
 
 ## The fortnight that made her
 
@@ -71,11 +71,11 @@ The present is more complicated, and it would be dishonest to pretend otherwise.
 
 Because here is why now is the moment to watch her. The tour has left the grass of Europe behind — [Wimbledon has crowned its champions](/lifestyle/wimbledon-2026-recap-sinner-noskova-champions/) — and it is heading to the hard courts of North America for the long summer build-up to the US Open. And that stretch, for Leylah Fernandez, is home in every sense.
 
-It starts, this year, with the National Bank Open, which brings the women's event to Montreal at the beginning of August — her city, in front of her people, on the surface she grew up on. There is no tournament on the calendar that means more to a Canadian player, and few players who feed off a home crowd the way Fernandez does. From there the road runs through the American hard-court summer and lands, at the end of August, back at the US Open — the stage where, five years ago, a teenager made an entire city believe. She won't sneak up on anyone this time. But she has never needed to be the favourite to be dangerous.
+It starts, this year, with the National Bank Open, which stages its women's event in Toronto at the beginning of August — a home tournament, in front of a Canadian crowd, on the hard courts she grew up on. There is no tournament on the calendar that means more to a Canadian player, and few players who feed off a home crowd the way Fernandez does. From there the road runs through the American hard-court summer and lands, at the end of August, back at the US Open — the stage where, five years ago, a teenager made an entire city believe. She won't sneak up on anyone this time. But she has never needed to be the favourite to be dangerous.
 
 Nobody sensible is predicting she will win either title — the depth in the women's game right now is ferocious, and her 2026 form says a run of two or three good wins would be a fine result, not a fairytale. But that is exactly why this stretch is worth watching. Fernandez has never been a player you scout by her ranking; she is a player who catches fire when the stage and the crowd are right, and there is no combination of stage and crowd more likely to light her up than a home Masters and the US Open back to back. All she needs is one hot night to remind everyone what she can do. She has done it before, on the biggest court of all, when far fewer people believed in her than believe in her now.
 
-She is part of a genuine Canadian tennis wave, too, one that has turned a cold country with no great tennis tradition into a producer of champions — from [Félix Auger-Aliassime flying the flag on the men's side](/lifestyle/felix-auger-aliassime-lost-eight-finals-wimbledon-2026/) to [US Open champion Bianca Andreescu](/players/bianca-andreescu/). Fernandez is woven right through that story, both a product of Canada's rise and one of its brightest symbols. When she walks out in Montreal this summer, she carries a bit of all of it.
+She is part of a genuine Canadian tennis wave, too, one that has turned a cold country with no great tennis tradition into a producer of champions — from [Félix Auger-Aliassime flying the flag on the men's side](/lifestyle/felix-auger-aliassime-lost-eight-finals-wimbledon-2026/) to [US Open champion Bianca Andreescu](/players/bianca-andreescu/). Fernandez is woven right through that story, both a product of Canada's rise and one of its brightest symbols. When she walks out in front of a home Canadian crowd this summer, she carries a bit of all of it.
 
 ## Why we root for her
 
@@ -83,7 +83,7 @@ So no, Leylah Fernandez is not the world number one, and the Grand Slam that onc
 
 But that would miss the whole point of her. What Fernandez offers is something tennis is often short of: pure, uncynical fight, wrapped in obvious joy. She is the undersized underdog who stares down giants, the daughter of a self-taught coach who bet everything on belief, the player who saves her best for her country and her crowd. She reminds the rest of us — the ones watching from the couch, who will never hit a backhand like hers — why we love an underdog in the first place. Not because they always win, but because they always, always come to fight.
 
-The hard courts are calling, and Montreal is waiting. Leylah Fernandez is coming home to the summer that made her — a little older, a little more scarred, and every bit as fearless as the kid who made New York roar. Pull up a chair. This is the time of year she was built for.
+The hard courts are calling, and home is waiting. Leylah Fernandez is coming home to the summer that made her — a little older, a little more scarred, and every bit as fearless as the kid who made New York roar. Pull up a chair. This is the time of year she was built for.
 
 ---
 
