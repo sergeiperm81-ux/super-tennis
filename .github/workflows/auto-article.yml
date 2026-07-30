@@ -1,0 +1,95 @@
+name: Auto Daily Article
+
+# Fired when the scheduled cloud agent pushes a new article to auto-daily/pending.mjs.
+# Inserts it to Supabase (using the existing secrets), builds, deploys, and reports to Telegram.
+# The agent itself has no keys — this workflow is the "bridge" that holds them.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'auto-daily/pending.mjs'
+  workflow_dispatch:
+
+# Never run two of these at once (avoids racing deploys)
+concurrency:
+  group: auto-daily-article
+  cancel-in-progress: false
+
+jobs:
+  publish-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Insert article into Supabase
+        id: insert
+        run: |
+          set -eo pipefail
+          node auto-daily/pending.mjs | tee /tmp/pub.txt
+          SLUG=$(grep -oP 'PUBLISHED_SLUG=\K.*' /tmp/pub.txt | head -1)
+          TITLE=$(grep -oP 'PUBLISHED_TITLE=\K.*' /tmp/pub.txt | head -1)
+          if [ -z "$SLUG" ]; then echo "No PUBLISHED_SLUG printed — aborting"; exit 1; fi
+          echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
+          echo "title=$TITLE" >> "$GITHUB_OUTPUT"
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+
+      - name: Build Astro site
+        run: npm run build
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+
+      - name: Build search index (Pagefind)
+        run: npx pagefind --site dist
+
+      - name: Deploy to Cloudflare Pages
+        run: npx wrangler pages deploy dist --project-name supertennis
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Notify search engines (IndexNow)
+        if: success()
+        run: |
+          INOW_KEY="91c5dc98807613af2ffb83361ebbd154"
+          curl -s -X POST "https://api.indexnow.org/indexnow" \
+            -H "Content-Type: application/json" \
+            -d "{\"host\":\"super.tennis\",\"key\":\"${INOW_KEY}\",\"keyLocation\":\"https://super.tennis/${INOW_KEY}.txt\",\"urlList\":[\"https://super.tennis/lifestyle/${{ steps.insert.outputs.slug }}/\",\"https://super.tennis/sitemap-index.xml\"]}" || true
+
+      - name: Telegram report (success)
+        if: success()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\",
+              \"text\": \"✅ *Auto article published*\\n\\n${{ steps.insert.outputs.title }}\\n\\nhttps://super.tennis/lifestyle/${{ steps.insert.outputs.slug }}/\",
+              \"parse_mode\": \"Markdown\",
+              \"disable_web_page_preview\": false
+            }" || true
+
+      - name: Telegram alert (failure)
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\",
+              \"text\": \"❌ *Auto article FAILED*\\n\\nRun: [#${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\\nThe daily article did not publish — check the run.\",
+              \"parse_mode\": \"Markdown\",
+              \"disable_web_page_preview\": true
+            }" || true
