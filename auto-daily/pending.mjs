@@ -1,96 +1,106 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'canadian-open-two-cities-toronto-montreal-2026';
-const stamp = '2026-07-31T05:00:00.000Z';
-const title = 'Two Cities, One Trophy: Why the Canadian Open Moves House Every Year';
+const slug = 'alex-de-minaur-demon-fastest-man-tennis-2026';
+const stamp = '2026-08-02T05:00:00.000Z';
+const title = 'The Fastest Man in Tennis: Alex de Minaur and the Point That Refuses to End';
 const meta_title = title;
-const meta_description = 'The National Bank Open begins on 1 August with the women in Toronto and the men in Montreal. Here is why one of the oldest events in tennis lives in two cities.';
-const excerpt = 'One tournament, two cities, and a trophy that changes address every summer. As the National Bank Open opens on 1 August, here is the story behind the strangest, warmest arrangement in tennis.';
-const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/F%C3%A9lix_Auger-Aliassime_%282023_DC_Open%29_01_%28cropped%29.jpg/500px-F%C3%A9lix_Auger-Aliassime_%282023_DC_Open%29_01_%28cropped%29.jpg';
-const image_alt = 'Felix Auger-Aliassime on court in a white kit, preparing to strike a forehand';
+const meta_description = 'He married on the final Sunday of Wimbledon and handed back a title in Washington. Alex de Minaur starts again in Montreal, running down everything.';
+const excerpt = 'He is the reason a rally you thought was finished keeps going for another eight shots. As the tour lands in Montreal, here is why Alex de Minaur is the most exhausting man in tennis to play and the most fun to watch.';
+const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Alex_de_Minaur_2024.jpg/500px-Alex_de_Minaur_2024.jpg';
+const image_alt = 'Alex de Minaur photographed at the Laureus World Sports Awards in 2024';
 
-const body = `The draw for the biggest tennis tournament in Canada was made twice this morning, in two different cities, an hour apart. At eleven, in Montreal, the men's names came out of the pot. At noon, in Toronto, the women's. Same tournament, same sponsor, same trophies, same fortnight. Two buildings, and about five hours of highway in between.
+const body = `There is a moment in almost every Alex de Minaur match when the point is over and nobody has told him.
 
-If you follow tennis casually — if you are the sort of fan who watches the big weeks, loves the drama, and has never once thought about the ITF rulebook — that arrangement sounds like an administrative mistake nobody got round to fixing. It is not. It is deliberate, it is more than four decades old, and it is one of the quiet reasons the Canadian Open feels different from every other stop on the calendar.
+You know the moment. His opponent has hit the shot he has been building the whole rally towards, the one that has finished a thousand points against a thousand other players, and it is arrowing into the corner with the crowd already halfway out of their seats. And then a small figure in a bucket hat and a scowl arrives from somewhere he had no business arriving from, gets a racquet on it, and floats the ball back over the net. Not desperately. Not a scrambled lob that begs to be put away. Back down the middle, deep, with enough shape on it that the man who thought he had just won the point now has to hit another one.
 
-Here is what is actually happening between 1 and 13 August, and why a tournament that cannot decide where it lives has turned that indecision into its greatest asset.
+That is the sound of a de Minaur match: a slightly delayed groan from the far side of the court, over and over, for two hours.
 
-## One tournament, two homes
+If you follow tennis for the drama rather than the technique, he is one of the most rewarding players on tour to give an afternoon to. You do not need to understand a single thing about grip changes or court positioning. You just need to be able to see a ball that should have bounced twice and did not. This week he begins again in Montreal at the National Bank Open, three weeks after the biggest day of his personal life and three days after handing back one of his favourite titles. It is worth knowing who you are watching.
 
-The National Bank Open is a single event with two halves. In 2026 the women play at Sobeys Stadium, on the York University campus in the north end of Toronto. The men play at IGA Stadium, in Jarry Park in Montreal. Next year the two swap. The year after that they swap back. They have been doing this, back and forth, since the early 1980s.
+## A boy split between two countries
 
-Nowhere else in tennis does this. The Australian Open does not spend odd years in Sydney. Indian Wells does not decamp to San Diego when it feels like a change. Every other big tournament on the calendar has one address, one set of gates, one skyline behind the show court. Canada has two of everything, and swaps them on a permanent rota, so that neither Toronto nor Montreal ever has to be the city that lost.
+He was born in Sydney on 17 February 1999, to a Uruguayan father, Anibal, and a Spanish mother, Esther, who met in Australia, where Anibal ran an Italian restaurant and Esther worked as a waitress. It is the kind of family origin story that could only happen in a big immigrant city, and it gave their son three languages and two passports before he had any idea what to do with either.
 
-For a country this size, that logic is hard to argue with. Canada is enormous and its two biggest urban regions sit at opposite ends of a corridor, culturally as well as geographically. One tournament in one city would have made the other city a spectator for ever. Splitting the event was the compromise, and the compromise worked so well that it became the identity.
+When he was five the family moved to Alicante, his mother's home town on the Spanish coast. That is where tennis found him properly. At eight he began working with Adolfo Gutierrez, a coach who is still in his corner all these years later, which in a sport where players change teams the way the rest of us change phone contracts is remarkable in itself. He grew up on Spanish clay, drilled in the Spanish tradition, which is where the willingness to stay in a rally for twenty-five shots comes from.
 
-The practical effect is that this is the only major event in the sport where the crowd changes language halfway through the draw. In Montreal you get the bilingual roar, the "allez" that lands half a beat before the English "come on", the sense of a European tennis crowd that somehow ended up in North America. In Toronto you get one of the most multicultural sporting audiences anywhere on earth: flags for players from countries that have never staged a professional tournament, entire sections that adopt an unseeded qualifier because his grandparents came from the same place as theirs. Same tournament. Completely different room.
+But he never became Spanish. At thirteen he went back to Sydney. He has said, in more or less these words, over and over, that he always felt Australian and always intended to play for Australia, and when the moment came to choose a flag there was no drama about it at all. He speaks English with an Australian accent, Spanish like a local in Alicante, and enough French to be dangerous in a press conference in Montreal.
 
-## How a Victorian club match became a Masters event
+It matters to how he plays. Almost nobody else on tour is a genuine hybrid of the two great tennis cultures: the Spanish patience and footwork, the Australian refusal to be impressed by anybody. Watch him closely and you can see both. The construction of the point is Iberian. The body language between points is pure Sydney.
 
-The Canadian Open is old. Genuinely, startlingly old. It was first played in 1881, organised at the Toronto Lawn Tennis Club, and it is usually described as the third-oldest tournament in the sport, behind only Wimbledon and the US Open. A women's event followed in 1892. Tennis was still a lawn game for people with time on their hands, played in long sleeves, and Canada had a national championship before most of the countries that dominate the sport today had a tennis association.
+## Why they call him the Demon
 
-It stayed amateur until the late 1960s, turned professional in 1968 with the rest of the sport, and moved off clay onto hard courts in 1979. Until 1980 it was a Toronto event. From 1981 the men and women were split between the two cities on the alternating cycle that still runs today, and the tournament grew from a national championship into one of the nine biggest events on the men's tour and one of the biggest on the women's.
+The nickname arrived early and stuck, because it is one of the rare sporting nicknames that describes something you can actually see. De Minaur is not big. He is not a bomber. He does not win many points before the rally has properly started. What he has instead is a level of court coverage that turns other people's best shots into ordinary ones.
 
-It has changed names almost as often as it has changed cities. Older fans still call it the Rogers Cup, which is what it was until the title sponsorship passed to National Bank in 2021, and plenty of people simply call it the Canadian Open regardless of what is written on the backdrop. It has also stretched. What used to be a tight seven-day sprint now runs for the best part of a fortnight, which changed the tournament in ways that matter more to spectators than to players: there are more days of tennis, the first week is cheaper and calmer, and you can now go on a Sunday in early August and watch four hours of top-100 players for the price of a decent dinner.
+Speed in tennis is usually talked about as though it were a defensive quality, something you fall back on when your plan has failed. With him it is the plan. He runs down the first shot to buy the second, gets his body behind the second to flatten out the third, and by the fourth he is the one dictating from a position that had no right to exist. Opponents talk about him the way boxers talk about a fighter who will not go down: it is not that any single thing hurts, it is the accumulation, the sense that the match will simply keep happening to you until you make a mistake you would not normally make.
 
-That history is worth holding in your head when you watch this week, because it explains something about the atmosphere. This is not a manufactured event dropped into a market by a broadcaster. It has been played, in one form or another, for close to a century and a half. The people in those stands have grandparents who went.
+That is the source of the groan you hear from the other side of the net. It is not pain. It is arithmetic. Every player on tour has a mental budget for how many good shots a point should require, and he blows through it in the first ten minutes.
 
-## The champions who can never go back
+He is also, in a sport that has lately gone very glossy, cheerfully unglamorous. The look is functional. The interviews are dry and self-deprecating in that particular Australian way. If you have ever browsed the [stories behind the great tennis nicknames](/lifestyle/tennis-player-nicknames-history/), you will know that plenty of them were invented by marketing departments. This one was invented by the people who had to play him.
 
-Now for the genuinely strange consequence of the two-city system, and the thing that makes this tournament unlike any other: a defending champion here never defends in the same building.
+## The seven-quarterfinal problem
 
-Ben Shelton won the men's title last year in Toronto, beating Karen Khachanov 6-7(5), 6-4, 7-6(3) in a final he had no business winning from a set down. It was his first Masters 1000 title, and it made him the youngest American man to win one since Andy Roddick in Miami in 2004. He arrives in Montreal this week as defending champion of a tournament he has never played in Montreal. The court will be the same size. Nothing else will be familiar — not the walk from the locker room, not the shadows in the late afternoon, not the way the wind comes across the top of the stand. He is defending a title in a city where he has no memories to defend.
+There is one number that hangs over him, and it would be dishonest to write about him without it.
 
-The women's side has the mirror image of that story, and it is a sadder one. Victoria Mboko won last year in Montreal at eighteen years old, having started the season ranked 333rd in the world. She came in as a wild card and beat four Grand Slam champions on the way to the trophy: Sofia Kenin, Coco Gauff, Elena Rybakina, and then Naomi Osaka in the final, 2-6, 6-4, 6-1, after losing the first set in front of a home crowd that could barely breathe. Only Monica Seles in 1995 had won this title as a wild card before her. Mboko finished that fortnight as the highest-ranked Canadian woman on tour.
+De Minaur has reached seven Grand Slam quarterfinals. He has done it at all four majors: the Australian Open in 2025 and again in 2026, Roland Garros in 2024, Wimbledon in 2024, the US Open in 2020, 2024 and 2025. Reaching the last eight of every major in the world is something only a small group of players in history can claim, and it puts him permanently among the best of his generation.
 
-She will not be in Toronto. A knee injury picked up on the grass at Queen's in June has ruled her out, and she announced it herself, plainly, on Instagram — disappointed above all that she would not get to play in front of a Canadian crowd. She would not have been going back to Montreal anyway. Her title defence was always going to be in a different city, in a different stadium, in front of a different crowd. The injury took the rest.
+He has never reached a semifinal.
 
-There is something quietly poignant in that. In most sports, going back to defend a title means going back to the room where you won it. Here, the room does not wait for you. The tournament packs up and moves on, and you follow it wherever it went.
+Seven times he has walked out for a quarterfinal, and seven times he has walked off again. Some of those defeats were close and cruel. Some of them came against opponents in the middle of the sort of run nobody stops. He did reach the semifinals of the season-ending ATP Finals in 2025, which is the strongest evidence that the ceiling people talk about is less a real thing than a run of hard draws at the wrong moment. But the number sits there, and every August and every January somebody asks him about it, and he answers patiently again.
 
-## Montreal without its headliners
+His career-high ranking is world No. 6, reached on 15 July 2024, and he has essentially lived in the top ten ever since. In a different era he would have a major or two by now. In this one he has spent his prime years running into Jannik Sinner and Carlos Alcaraz in the second week, which is less a flaw in him than an accident of birth date.
 
-The men's field this year is missing three enormous names, and it is worth being honest about that rather than pretending otherwise.
+## Rotterdam, at the third time of asking
 
-Carlos Alcaraz has been out since a wrist injury in April, a lay-off that has already cost him Roland Garros and Wimbledon. Jannik Sinner, the world number one, and Novak Djokovic both withdrew on 24 July, a week before the start, citing workload and the need to arrive at the US Open in one piece. Both had played deep into Wimbledon, meeting in the semi-finals on 10 July, with Sinner going on to win the final two days later. Three weeks later they were being asked to play best-of-three on hard courts in Canada, then Cincinnati, then a Grand Slam. They said no.
+The best day of his tennis year came in February, indoors, in the Netherlands.
 
-The tournament director did not hide his frustration, and you can understand why: a Masters 1000 event sells tickets months in advance on the promise of the very best players, and losing three of the biggest draws in the sport with seven days to go is a commercial bruise. For Sinner it was the second year running — he missed Toronto last summer with an elbow problem picked up at Wimbledon.
+De Minaur had reached the final of the ABN AMRO Open in Rotterdam in each of the two previous years and lost both. Turning up a third time to a building where you have twice been beaten on the last day is its own kind of test, and he passed it emphatically, beating Felix Auger-Aliassime 6-3, 6-2 in a final that was over almost before the crowd had settled. It was his eleventh tour-level title, his first in Rotterdam, and it made him the first player in the tournament's history to reach three consecutive finals there.
 
-This is now one of the loudest arguments in tennis. The calendar has grown, the big events have stretched from one week to nearly two, and the players at the very top are being asked to be everywhere. Something gives, and what usually gives is the event that sits in the awkward gap between a Slam that just finished and a Slam about to start.
+The scoreline matters less than what it says about him. Losing a final hurts. Losing the same final twice starts to feel like a verdict. Going back and winning it at the third attempt is the most de Minaur thing imaginable: no sudden transformation, no new weapon unveiled, just the same player turning up again with the same plan until the plan finally worked.
 
-So what is actually left in Montreal? A great deal, as it turns out. Alexander Zverev, the 2026 Roland Garros champion, is the top seed and arrives as the most decorated man in the draw — a player who spent years being told he could not win the biggest matches and then [won one of the biggest of all on the clay in Paris](/lifestyle/roland-garros-2026-recap-zverev-andreeva-first-time-champions/). Felix Auger-Aliassime is seeded second, and if you want a story with some romance in it, a Canadian winning this title in Montreal would be the loudest thing that has happened in Canadian tennis in years. Alex de Minaur, Daniil Medvedev and Shelton fill out the top five.
+The rest of the year has been a solid top-ten year rather than a breakthrough one. Another Australian Open quarterfinal in January, in front of the home crowd who adopt him completely for a fortnight every summer. Then Wimbledon, where he went out in the fourth round to the Italian Flavio Cobolli, 7-5, 7-6, 6-3, on a day when the returns that usually come back kept finding the net cord instead.
 
-There is a case, too, that a thinned field is not the disaster the ticket office fears. The very best players are so far ahead of everyone else at the moment that the biggest events have started to feel a little predetermined; take three of them out and suddenly forty men can look at the draw sheet on a Friday afternoon and see an actual path. Ask anyone who was in the building for a semi-final between two players nobody had tipped whether the tennis was worse. It was not. It was tighter, stranger and considerably more anxious, which is usually what makes a match memorable.
+## A wedding on the final Sunday
 
-Look at what happens at this tournament when the favourites are missing, and you will find that the answer is usually something wonderful. Absences here have a habit of turning into breakthroughs. Mboko was a wild card. Shelton had never won a Masters. The gap at the top of a draw is the space where a career starts.
+And then, two days after Wimbledon finished, he got married.
 
-## Toronto, where the top of the game turns up
+De Minaur and the British player Katie Boulter had been together publicly since March 2021 and engaged since December 2024, and they chose the one week in the calendar when two professional tennis players are guaranteed to be in the same country with nothing scheduled. On 12 July, the final Sunday of the Championships, they married in a church near Boulter's family home at Old Woodhouse in Leicestershire.
 
-The women's draw does not have the same absentee problem. Aryna Sabalenka, the world number one, is the top seed in Toronto. Elena Rybakina is seeded second and Jessica Pegula third, and Pegula has won this title twice already — a player who has quietly built a Canadian record most bigger names would envy.
+They kept it small on purpose. Boulter's grandfather Brian, who she is extremely close to, was there, and the whole shape of the day was built around making sure he could be. She wore a custom lace dress by Caroline Castigliano with a piece of fabric from her late grandmother's wedding dress hand-stitched into it. No magazine deal, no sponsored arrival shots, no drone footage. For two people who spend most of the year being photographed at work, that reads like a decision made carefully.
 
-What makes the women's event compelling this year is the shape of the season behind it. The two Grand Slam titles on clay and grass both went to first-time major champions, which has left the ranking list in a state of genuine flux: the very best player in the world is clearly Sabalenka, and yet she is not the one who has been winning the trophies that matter most. A hard-court fortnight in Toronto, on the surface that suits her more than any other, is exactly where you would expect that to be corrected. Whether it is or not is the story of the fortnight.
+It has been a busy couple of seasons for this generation in that respect, and if you have followed [the wave of tennis weddings and engagements this year](/lifestyle/tennis-engagement-boom-class-of-2026-weddings/) you will recognise the pattern: a group of players who came up together, reached their late twenties, and started building lives that will outlast the ranking points. De Minaur has always been open about wanting the ordinary things. He got one of them in the two-day window the sport allowed him, and then he flew to America to go back to work.
 
-For Canadian fans there is Leylah Fernandez, who lit up New York as a teenager and has spent the years since being the player everybody in this country wants to see get one more magic fortnight. Home crowds are a strange gift for a player. They lift you and they lean on you, and the ones who learn to enjoy the weight of it tend to have the best weeks of their lives.
+## Washington, and a title handed back
 
-## What it is like to be there
+Which is where the last week gets complicated.
 
-If you ever get the chance to go, take it. The two grounds are not enormous by Grand Slam standards, and that is the point. You can stand two metres from a top-twenty player on an outside court in the first week. You can watch a practice session in the morning where the only sound is the ball and the shoes. Both venues sit away from the downtown core — York University in Toronto, Jarry Park in Montreal — which means the tournament takes over a neighbourhood rather than getting swallowed by a city centre.
+He arrived at the DC Open in Washington as top seed and defending champion, holder of a title he won in 2025 that suits him about as well as any event on the calendar: fast hard courts, brutal humidity, long matches, a tournament that rewards the man still moving properly in the third set. He beat Brandon Nakashima in the quarterfinals there a year ago on the way to lifting it.
 
-August in eastern Canada is hot and heavy, the kind of humidity that makes the evening sessions the best ticket in the building. Bring water, bring a hat, and do not book anything for the hour after your match finishes, because you will end up wandering to a side court and staying there. If you are planning a trip around watching live tennis rather than playing it, [our guide to the best cities for a tennis holiday](/lifestyle/tennis-travel-best-cities-live-tennis/) covers where the good weeks are.
+On Friday, Nakashima took it back. The American won 7-6(5), 6-4 in one hour and fifty-five minutes, and he did it in the one way that neutralises de Minaur completely: by never giving him anything to chase. Nakashima hit ten aces, won 83 per cent of the points behind his first serve, and saved six of the seven break points he faced. When a server is that clean, the returner's greatest weapon is switched off at the wall. There is no rally to extend if the rally never begins.
 
-## The country this tournament built, and that built it back
+That is the honest weakness in the de Minaur model, and it comes around a few times a year. He does not have a shot that ends a point on demand, so on the days an opponent serves out of his mind, he can be beaten without ever really playing badly himself. He walked off having lost the 500 ranking points that came with last year's trophy, and they now have to be replaced somewhere else, in the most crowded five weeks of the season.
 
-Canada has not had a home singles champion here often. Robert Bedard was the last Canadian man to win it, in 1958. Faye Urban won the women's title in 1969, and then nobody did until Bianca Andreescu in Toronto in 2019, in that unforgettable final where Serena Williams could not continue and Andreescu walked round the net to console her rather than celebrate. Fifty years between Canadian women champions, and then two in six years once Mboko took her turn.
+## Montreal, and the month that decides everything
 
-That is not a coincidence. Tennis Canada has spent two decades building a development system centred on the national training base in Montreal, and the results arrived all at once: Auger-Aliassime, Denis Shapovalov, Fernandez, Andreescu, Mboko. A country that had spent a century as a polite host of other people's tennis suddenly had players in the second week of Slams. Watching those names on a Canadian court in August is watching a long-term plan pay out in public.
+Somewhere else starts today.
 
-## Where it leads
+The National Bank Open runs from 1 to 13 August, and this year the men are at IGA Stadium in Montreal while the women play in Toronto, the two cities swapping the two halves of the tournament as they have done for more than forty years. It is the 136th edition of the men's event, a mandatory Masters 1000, and the first-round matches begin on 2 August. From here the tour goes to Cincinnati, and from Cincinnati to New York, where the last major of the year is waiting at the end of the month. If you want the map of how the summer fits together, the [US Open guide](/tournaments/us-open-guide/) lays out the whole run.
 
-The National Bank Open is not an end point. It is the first big test of the North American hard-court run that finishes at Flushing Meadows. From here everybody moves on to [Cincinnati](/tournaments/cincinnati-masters-guide/), and from Cincinnati to [the US Open](/tournaments/us-open-guide/), which is where the season decides who it has been about all along. The players who peak in Canada do not always survive the month. The ones who lose early here sometimes arrive in New York fresher than anybody.
+For de Minaur, this month is where a season like his is genuinely decided. He is not going to win a Masters 1000 by out-hitting anybody. What he can do, in the humidity, on courts that reward movement and punish players who quietly stopped training in June, is win four matches in six days because he is the only man left in the draw who does not seem to get tired. Some of his very best results have come in exactly these conditions, when everybody else is running on fumes and the man who never stopped running still looks fresh at nine in the evening.
 
-So watch this fortnight for what it is: two tournaments pretending to be one, in two cities that spend the year waiting for their turn. The draws are made. The trophies have been polished in two buildings 500 kilometres apart. On 1 August the first balls go up in Toronto and Montreal at more or less the same moment, and for thirteen days a whole country gets to argue about which half got the better half.
+Then there is autumn, and the Davis Cup, where he has been Australia's talisman for years, carrying them to back-to-back finals in Malaga and producing tennis in a green and gold shirt that he sometimes cannot find for himself alone. If you have never watched him in a team tie, the atmosphere is nothing like a normal tournament, and the [Davis Cup guide](/tournaments/davis-cup-guide/) explains why the format pulls that extra gear out of certain players.
 
-*Photo: Felix Auger-Aliassime at the DC Open by Hameltion, CC BY-SA 4.0, via Wikimedia Commons.*`;
+## What you actually get when you watch him
+
+Some players are worth watching because they might do something you have never seen before. De Minaur is worth watching for the opposite reason: because he will do the same thing four hundred times without ever getting bored of it, and somewhere in the second set you will realise you are not bored either.
+
+You will start counting shots. You will catch yourself leaning forward when the ball goes into the corner, because you have learnt in about twenty minutes that the corner is not safe against this man. You will watch a top-ten player on the other side of the net go through the five stages of grief in real time, from confidence, to irritation, to that particular flat-eyed stare that means he has accepted he will have to hit six winners to win a single point. There is not much better theatre in a sport that has plenty of it.
+
+He is twenty-seven. He has a wife, a coach he met when he was eight, eleven titles, no major semifinal yet, and a full calendar between here and December to do something about that last part. Montreal starts today, in a stadium in Jarry Park where the crowd will adopt him within about three games, partly because he shouts at himself in French when it goes wrong.
+
+Find a match this week and watch the first ten points. Then stop watching him, and watch the man on the other side of the net when the rally he thought he had already won keeps going. That reaction is the thing Alex de Minaur has spent his whole career collecting, and it is free.
+
+*Photo: Alex de Minaur at the Laureus World Sports Awards 2024 by Barcex, CC BY-SA 4.0, via Wikimedia Commons.*`;
 
 const record = {
   slug, title, excerpt, body,
