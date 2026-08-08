@@ -1,120 +1,120 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'cameron-norrie-montreal-2026-match-point-comeback-de-minaur';
-const stamp = '2026-08-07T05:00:00.000Z';
-const title = 'One Point From Over: Cameron Norrie and the Match That Gave Him His Career Back';
+const slug = 'arthur-ashe-name-on-biggest-stadium-in-tennis';
+const stamp = '2026-08-08T05:00:00.000Z';
+const title = 'The Man on the Building: Who Arthur Ashe Actually Was';
 const meta_title = title;
-const meta_description = 'Cameron Norrie was a point from losing in Montreal. He saved it, beat Alex de Minaur, and took back British No. 1. Inside the best comeback of his season.';
-const excerpt = 'He arrived in Mexico on a six-match losing streak and left Montreal on Thursday having beaten the third seed from a match point down. The story of a player nobody had written about in months, and why this one mattered.';
-const image_url = '/images/news/court-11.webp';
-const image_alt = 'A deep blue hard court surface marked with crisp white and pale blue lines under bright daylight';
+const meta_description = 'In three weeks the US Open fills the largest tennis stadium on earth. The story of the champion, activist and writer whose name is above the door.';
+const excerpt = 'You will hear his name a hundred times over the next month without hearing it at all. He won the first US Open of the Open Era and could not take the prize money, out-thought Jimmy Connors on the biggest afternoon of his life, and spent his last five months being arrested for other people.';
+const image_url = '/images/news/venue-02.webp';
+const image_alt = 'The curved steel roofline of a large sports stadium rising against a deep blue sky';
 
-const body = `There is a moment in a tennis match when everyone in the building quietly agrees it is finished. Nobody announces it. The crowd just settles, the way a room settles when a party is winding down, and people start thinking about the walk to the car. On Thursday evening at IGA Stadium in Montreal, that moment arrived at 5-2, 40-30 in the second set. Alex de Minaur had a match point. Cameron Norrie, a 30-year-old left-hander who had won one match of consequence all summer, was standing at the other end waiting to receive it.
+const body = `Sometime in the next three weeks you will hear the name a hundred times without really hearing it.
 
-De Minaur double faulted.
+It will be printed on your ticket, if you are lucky enough to be going. It will sit in the corner of the television graphic. Commentators will say it the way people say the name of a railway station, as pure location: we are live from Arthur Ashe Stadium. On 30 August, when the US Open main draw begins, twenty-three thousand people will climb into the largest tennis arena on earth, buy a drink that costs more than it should, find a seat somewhere up in the weather, and settle in.
 
-You can watch that clip a dozen times and it still does not look like a turning point. It looks like a small mistake in a big match, the kind that gets absorbed and forgotten thirty seconds later. Instead it was the hinge. Norrie won that game, then the next, then the set on a tie-break, and then he won the third set 6-1 against a man who is famous for never being outrun by anybody. Final score: 5-7, 7-6(5), 6-1. The third seed was out. The unseeded Brit who nobody had put on a preview list was into the fourth round of a Masters 1000.
+Almost nobody will be thinking about the man.
 
-If you follow tennis casually, from the sofa, in the bits of the season when it drifts into your life, you may not have thought about Cameron Norrie in a while. That is fair. He has not given you much reason to lately. What happened in Montreal this week is the reason to start again.
+That is not a criticism. Stadium names go soft with use. They become directions rather than tributes, and there is no reason a person watching a first-round match should be expected to hold a biography in their head. But Arthur Ashe is worth twenty minutes of your attention, and not for the reason you might assume. The tennis is the least interesting thing about him, and he won three Grand Slam titles.
 
-## The summer that was going nowhere
+## The park his father looked after
 
-To understand why this match mattered, you have to know how bad the preceding months had been.
+He was born on 10 July 1943 in Richmond, Virginia, and he grew up inside a park because his father ran it.
 
-Norrie went to Wimbledon this year as British No. 1 and lost in the first round. Not a quick, painless, get-it-over-with loss either. He lost across four hours to Michael Zheng, a 22-year-old American who had come through qualifying, and he lost it in the most agonising shape available: 6-7(7-9), 6-2, 6-7(2-7), 6-3, 7-6(10-4). Norrie took the first set in a tie-break. He took the third in a tie-break. He lost the match in a fifth-set tie-break, 10-4. He had reached the quarter-finals at the same tournament twelve months earlier. This time he went out on day one, in front of the home crowd, having arrived without a single win on grass all year and on a losing streak that had reached five matches.
+Arthur Ashe Sr was the caretaker and supervisor of Brook Field, the largest public park in Richmond that Black residents were permitted to use. It had baseball diamonds, a big swimming pool, and four tennis courts. The family lived on the grounds. Across town was Byrd Park, the good one, the showpiece, with better courts and better everything. Byrd Park was for white people. That was not an atmosphere or an attitude. It was the written rule.
 
-That streak went to six before it stopped.
+So the geography of his childhood was very simple: the sport he would eventually be world-famous for existed for him in a four-court patch of grass that his dad mowed, and the proper version of it was ten minutes away and legally out of reach.
 
-There is a particular kind of loneliness in that stretch of a tennis season, and it is worth sitting with for a second because it explains everything that followed. A player at Norrie's level is not in crisis in any way an outsider would recognise. He is still flying business class to beautiful places. He is still ranked inside the world's top forty, which makes him one of the best few dozen people on the planet at a thing that millions of people do. But he is losing. Every week he is losing, usually to somebody younger, usually in a way that suggests the ceiling has come down for good. And every week the tour packs up and moves to the next city and does it again.
+His mother died in the spring of 1950. He was not yet seven. Around the same age, a young Black player and coach named Ron Charity noticed the skinny kid hanging around the courts and started showing him what to do with a racket, which is one of those small human decisions that turns out to have consequences nobody could have priced at the time. From 1953 Ashe spent his summers at the training camp Dr Robert Walter Johnson ran in Lynchburg, a place built specifically to give talented Black juniors a route through a sport that had no intention of giving them one. Johnson taught tennis. He also taught his players to give away close line calls, to say nothing when they were provoked, to be so unimpeachably polite that no tournament could find an excuse to exclude them. It was survival strategy dressed as etiquette, and it shaped Ashe's public manner for the rest of his life.
 
-Then, at the end of July, in Los Cabos, something loosened. He won a match. Then another. Then, in the quarter-finals, he beat Bernard Tomic 6-1, 6-0 in the kind of scoreline that makes a player remember what his own game feels like when it works. That put him in his first semi-final of 2026. He lost it to Denis Shapovalov, 6-3, 5-7, 6-4, and if you were only reading results you would have filed it away as another defeat. Norrie clearly did not. He had won Los Cabos himself, back in 2021, in the season everything went right. Being back in the last four there was not nothing.
+He was good enough for a tennis scholarship to UCLA. In 1963, at twenty, he became the first Black player ever selected for the United States Davis Cup team. He was, by then, permanently a first, permanently an exhibit, permanently being watched for how he handled it.
 
-Five days later he was in Montreal, and he has not stopped winning since.
+## September 1968: the champion who could not take the cheque
 
-## Three matches, one week, no free points
+Here is the fact that makes people sit up.
 
-The route to de Minaur was not soft. Norrie beat Camilo Ugo Carabelli 7-6(5), 6-4, then Ignacio Buse 6-3, 6-3, and neither of those men are passengers. Then came the third round and the third seed.
+The 1968 US Open was the first one of the Open Era, the first time professionals and amateurs played the same tournament for the same trophy. Ashe was twenty-five, a lieutenant in the United States Army, and an amateur. He had stayed an amateur deliberately, because that was what Davis Cup eligibility required of him at the time.
 
-De Minaur is the worst possible draw for a player rebuilding confidence. He is the fastest man in the sport, a defensive specialist who turns winners back into rallies and makes you hit the same ball four extra times. We wrote about exactly that a few days ago, when he arrived here as one of the highest-ranked men left in a depleted draw. Playing him when you are short of matches is like being asked to run a half marathon to prove you have got over a cold.
+He won the whole thing. In the final he beat the Dutchman Tom Okker across five sets, 14-12, 5-7, 6-3, 3-6, 6-3. Read that first set again: fourteen games to twelve, before tie-breaks existed to put anyone out of their misery. He became the first Black man to win a Grand Slam singles title.
 
-For two sets, that is roughly how it went. Norrie was asked to sustain a level he had not touched in months.
+And because he was still an amateur, he could not accept the first prize of 14,000 dollars. The money went to Okker, the man he had just beaten. Ashe went home with a per diem, the daily expenses allowance paid to Davis Cup players, which in the currency of a Grand Slam champion amounts to roughly nothing. If you have ever wondered how tennis got from there to the enormous cheques handed over on court today, [how tennis prize money actually works](/lifestyle/tennis-prize-money-explained/) is a decent map of the distance travelled.
 
-"The level was so high the first two sets," he said afterwards. "From the beginning, he came out firing and I was like, woah, this is a crazy level, and I had to match it."
+He won the Australian Open in 1970, beating Dick Crealy 6-4, 9-7, 6-2. Two majors by twenty-six. And then, for five years, the biggest one stayed out of reach.
 
-He did not quite match it, and that is what makes the rest of it interesting. He was behind. He was a point from the exit. And what he described afterwards was not some surge of belief or a tactical epiphany. It was much more ordinary than that, and much more useful.
+## The afternoon he out-thought Jimmy Connors
 
-"Obviously I was down 5-2. It was looking like it was going to be done, but I just said, no, let's keep playing, keep testing the legs."
+5 July 1975. Wimbledon final. If you only ever watch one old tennis match, make it this one.
 
-Keep testing the legs. That is the whole philosophy of Cameron Norrie in six words, and it has been for a decade. He is not a shot-maker. He does not have a serve that ends points or a forehand that arrives like a piece of falling masonry. What he has is a flat, low, awkward left-handed ball that never sits up nicely, a backhand he can hold all day, and an engine. He wins by being there on the eighth shot, and the twelfth, and the twentieth, until the person opposite him decides to try something too good.
+Jimmy Connors was twenty-two, the defending champion, and playing like a man who had solved the sport. He hit the ball flatter and harder than anyone and he fed on pace; give him something quick and he sent it back quicker. Ashe was thirty-one, ranked below him, and widely expected to be an afternoon's work.
 
-Against a player like de Minaur, that is a strange kind of duel: two men who both refuse to miss, both waiting for the other one to get bored of the arrangement. Thursday, Norrie was the one who did not get bored. The third set went 6-1 to a man who had been on the brink of a first-round-out-of-Montreal flight forty minutes earlier.
+What Ashe did instead was borrow a plan from boxing. The previous autumn Muhammad Ali had beaten George Foreman in Zaire by refusing to fight the fight Foreman wanted. Ashe, working it through with people he trusted, arrived at the tennis version: give Connors nothing to hit. So he chipped. He sliced. He dinked the ball short and soft and low, mostly to the forehand, and dragged Connors from one side of the court to the other looking for a rhythm that never came. Between points he sat with his eyes closed.
 
-"It was a great match to win and test my level," he said. "I can take so much confidence from this one."
+It was 6-1, 6-1 in about the time it takes to make a sandwich. Connors, to his enormous credit, worked out enough of it to take the third set 5-7 and then broke early in the fourth. This is the part that tells you who Ashe was. He did not panic and start hitting, which is what almost everybody does when a plan starts leaking. He kept dinking. He won it 6-4.
 
-## From Johannesburg to Auckland to Texas to Britain
+Final score 6-1, 6-1, 5-7, 6-4.
 
-If you are new to him, Norrie's route into British tennis is genuinely one of the odder ones in the sport.
+It was, at thirty-one, the last Grand Slam singles title of his life, and the best argument anyone has ever made that tennis is a thinking sport. Nothing in that match was about being stronger or faster or younger, because Ashe was none of those things that day. He simply worked out what his opponent needed and declined to provide it for three hours. Players still talk about it as a template, and almost nobody has the nerve to try it, because dinking softly at a man who is hitting the ball through the wall requires you to believe your own analysis while the crowd is quietly wondering what on earth you are doing.
 
-He was born in Johannesburg in 1995 to British parents, and the family moved to Auckland when he was three. He grew up a New Zealand junior and played most of his junior career for New Zealand before switching to represent Great Britain in 2013. Then, instead of joining an academy or grinding the low-level professional circuit at 18 like most players with any promise, he went to university in Texas.
+He remains the only Black man ever to win the Wimbledon men's singles title. He is also still the only Black man to have won singles titles at Wimbledon, the US Open and the Australian Open. Fifty-one years later, nobody has joined him on that list.
 
-That is the part people always trip over. Norrie spent three years at Texas Christian University in Fort Worth, studying sociology on a scholarship, and became the top-ranked male college tennis player in the United States, the first player from TCU to reach that spot. He did not turn professional until the middle of 2017, at 21, which in modern tennis terms is practically middle-aged.
+## What he did when he was not playing
 
-American college tennis is where players go when the world has decided they are not quite good enough. It is a fine, healthy, well-coached life, and it is also, statistically, where most professional dreams go to be gently retired. Norrie went there and came out the other side as a top-ten player. That is a very rare thing.
+Most great players hand you a career and a highlights reel. Ashe hands you a second job that was arguably bigger than the first.
 
-The peak years came quickly once they came. He won the Indian Wells Masters in 2021, which remains the biggest title of his career and one of the great outlier weeks of the last decade. In 2022 he reached the Wimbledon semi-finals, the first of his career, playing on Centre Court in front of a home crowd that had spent years waiting for someone to inherit that role. He lost to Novak Djokovic, who then went on and won the thing. That September he reached world No. 8.
+In 1969, with Charlie Pasarell and Sheridan Snyder, he set up what became the National Junior Tennis League. The idea was to put rackets in the hands of children who would never otherwise get near the sport, and Ashe insisted on a condition that tells you everything about him: every chapter had to run academic support alongside the tennis. He was not interested in strip-mining neighbourhoods for talent. He wanted the kids who would never be any good to get something out of it too. The network now runs to more than 250 organisations reaching over 150,000 young people a year, which is a strange and lovely afterlife for a man who has been dead since 1993.
 
-And then, slowly, the way it happens to everyone eventually, it got harder. There was an arm injury in 2024 that took three months out of his year. His ranking slid until he dipped outside the top ninety. He has spent the seasons since climbing partway back up, losing ground, climbing again.
+Then there was South Africa. Ashe applied for a visa to play there in 1969 and was refused. He applied again. Refused. Three years running, the apartheid government would not let him in, and each refusal became an international news story, which was rather the point. He campaigned to have South Africa thrown out of the tennis tour and out of the Davis Cup.
 
-His coach through all of it, since 2017, has been Facundo Lugones, an Argentine who played alongside him at TCU. They have been together for nine years, which in professional tennis, where coaching partnerships have the shelf life of a supermarket avocado, is close to unheard of. Lugones has talked about the job as building a player's identity rather than fixing his weaknesses. What are your strengths, and how do we get the absolute maximum out of them, rather than trying to make you complete at everything. It is a philosophy that suits a man with no obvious weapons and enormous stubbornness.
+When he finally got in, in 1973, he became the first Black man to play the country's national championship, and he did it without accepting the designation of honorary white, the bureaucratic fiction the regime used to let famous Black visitors move through white spaces. Plenty of people, then and since, argued he should have stayed away. He thought being visible inside the country did more than being absent from it. You can disagree with him. He had thought about it harder than most of his critics.
 
-Lugones has also said something else that lands differently now, reflecting on watching Norrie find his enjoyment again after that injury layoff: that the comeback was probably just as enjoyable, or more, than the years of being in the top ten and winning titles.
+In 1985 he was arrested outside the South African embassy in Washington, protesting apartheid. He retired from playing in 1980 and captained the United States Davis Cup team from 1981 to 1985, winning it twice, in 1981 and 1982.
 
-You do not have to take that at face value. But it does explain why a man three years past his peak was still on court in Montreal at 5-2 down in the second, deciding to keep testing the legs.
+## The illness he did not choose, and the privacy he lost
 
-## The British No. 1 merry-go-round
+In 1979, at thirty-six, Ashe had a heart attack. He had quadruple bypass surgery. In 1983 he needed a second bypass, and during that operation he was given a blood transfusion.
 
-Here is the part that gives this week a bit of comedy.
+That transfusion carried HIV. Nobody knew, because in 1983 nobody was testing blood for something that barely had a name yet. He found out in 1988, after an infection sent doctors looking for a reason his immune system was failing.
 
-The British men's No. 1 ranking has changed hands three times in five months, and Norrie has now been involved in every single handover.
+He told his family and a small circle, and then he did what most of us would do: he got on with his life quietly. For nearly four years he raised his daughter Camera, wrote, commentated, and did not tell the world, because it was 1988 and the world was not kind about this.
 
-In March, Norrie took it from Jack Draper, the big left-handed hitter who had carried the weight of British expectation and then been flattened by an arm injury that cost him months. Norrie holding the position again after two years without it was already a small story.
+On 8 April 1992 he lost that choice. USA Today had the story and was going to run it. Rather than have it printed about him, Ashe called a press conference and sat down beside his wife, the photographer Jeanne Moutoussamy-Ashe, and said it himself. He was gracious, because he was always gracious, and he was also plainly angry that a decision this private had been taken out of his hands by people who felt the public was owed it. Camera was five.
 
-Then in July, Arthur Fery took it from Norrie. Fery, who had been ranked outside the world's top two hundred not long before, went on a Wimbledon run as a wild card that ended in the semi-finals, the first wild card to reach a Grand Slam semi-final in twenty-five years. He shot up to a career high near the top forty and became the twentieth British man to top the domestic rankings. His story was so good it swallowed the entire British summer, and rightly so.
+The last thing he wanted was to become a poster. He became one anyway, and then he did the work: raising money, talking about AIDS in rooms that did not want to discuss it, founding the Arthur Ashe Institute for Urban Health to deal with the fact that illness and poverty are the same conversation.
 
-Fery is not in Montreal. Norrie is. And by beating de Minaur, Norrie has climbed back above him in the live rankings and reclaimed the British No. 1 spot for the third time in his career.
+## The last five months
 
-If that sounds like a small administrative detail, consider what it is actually describing: three British men, none of them the same kind of player, trading the top domestic ranking every few months because all three of them are within about a handful of ranking points of each other. British tennis spent thirty years hoping for one credible man. It now has an argument.
+On 9 September 1992, five months before he died and visibly unwell, Arthur Ashe stood outside the White House protesting the United States policy of turning back Haitians who were fleeing their country by boat. The demonstration was organised by TransAfrica and the NAACP. Police arrested ninety-five people. Ashe was among the first, wrists in a plastic tie.
 
-Norrie is the oldest of the three by some distance. He turns 31 later this month. In a sport where 22-year-olds are winning majors, that fact is usually deployed as a gentle way of saying somebody is finished. This week it means something closer to the opposite.
+Asked why he was there, he said: I think our policy of interdiction is ridiculous. That is why I am here.
 
-## What is actually on the line now
+He was dying. He went and got arrested for strangers.
 
-Montreal has been chaos this year. The men's event lost Jannik Sinner, Novak Djokovic and Carlos Alcaraz before a ball was struck, and then the draw ate most of what was left. Top seed Alexander Zverev went out. Daniil Medvedev went out. Taylor Fritz went out. Felix Auger-Aliassime, the home hope and second seed, withdrew with a back injury without hitting a shot. De Minaur was the highest-ranked man left standing when Norrie got to him.
+Around the same period, an interviewer asked him whether AIDS was the heaviest thing he had ever had to carry. He said no. Being Black, he said, was the greatest burden he had had to bear. It stopped the room, and it has been quoted ever since, sometimes lazily. He was not ranking his suffering for effect. He meant something specific and exhausting: the permanent obligation to represent, to be the acceptable example, to have every opinion he expressed weighed as a statement on behalf of millions of people rather than as the thought of one man who had read a lot and considered it carefully.
 
-Which means the maths in front of Norrie is real. There is no longer a wall of untouchable names between him and a final. Sky Sports asked outright whether he was now the favourite to win the tournament, which is not a question anyone was asking about him in June.
+He finished his memoir, Days of Grace, in the last weeks of his life. He died on 6 February 1993 of AIDS-related pneumonia. He was forty-nine.
 
-Next is Arthur Fils, the 18th seed, who got through Mariano Navone 6-3, 6-2 and who will be playing Norrie for the first time. Fils is 22, French, and hits the ball extremely hard, which is the exact profile of player Norrie has spent his career frustrating and occasionally losing to. It is a genuinely difficult match and a genuinely winnable one.
+They laid him in state at the Governor's Mansion in Virginia. The last person to be given that honour there had been the Confederate general Stonewall Jackson. Consider the arc of that: a boy shut out of the white park in Richmond, lying in state in the mansion at the top of the same city. On 20 June 1993, Bill Clinton presented his Presidential Medal of Freedom.
 
-Beyond it sits the US Open, starting at the end of the month, where Norrie has previously reached the fourth round and where the surface, the schedule and the physicality all flatter him. A player who arrives in New York with three or four wins over top-thirty opposition in his pocket is a completely different proposition from a player who arrives with a six-match losing streak. Seeding matters. Confidence matters more.
+## Why his name is on the building
 
-## Why this is the good stuff
+Four years after he died, the US Open outgrew Louis Armstrong Stadium and built something enormous. It opened on 25 August 1997 with a dedication ceremony, Jeanne Moutoussamy-Ashe watching, and it seats 23,771 people, which still makes it the biggest tennis stadium in the world. A retractable roof went on in 2016, so the rain delays that used to swallow entire days are now mostly a memory.
 
-There is a version of tennis fandom that only tracks the top of the sport: the four or five men and women who win everything, the Slams, the rivalries, the records. It is a perfectly good way to watch. It is also missing most of what the sport actually is.
+Two days before the professionals arrived, children played on the new court first, at Arthur Ashe Kids' Day, which had been running since the year he died. Whoever made that scheduling decision understood the man completely.
 
-Because the sport is mostly this. It is a 30-year-old who went to university instead of an academy, who has been with the same coach since he was 21, who was in the world's top ten once and has spent four years since being told that was the peak, standing at 5-2 down in a second set on a Thursday in Montreal with nobody expecting anything of him, and deciding to see what happens if he keeps making his opponent hit one more ball.
+## When you watch this year
 
-Nothing about that is glamorous. There is no trophy attached to it yet and there may never be. He might lose to Fils. He might lose in the first round in Cincinnati next week. The ranking he just took back could be gone again by the time the US Open draw is made.
+The Open runs from 30 August to 13 September, and the truth about that stadium is that it is a strange place to watch tennis. It is vast. From the upper rows the players are small bright figures a long way down and the ball is a rumour. What you get instead is New York noise, twenty thousand people who have opinions and will share them, a night session with a texture no other tournament manages. If you like that side of the sport, [the loudest crowds in tennis](/lifestyle/tennis-fan-culture-loudest-crowds/) is where the atmosphere lives, and if you are considering the trip properly one year, [a fan guide to the four Grand Slams](/lifestyle/tennis-travel-guide-grand-slams/) and [the complete US Open guide](/tournaments/us-open-guide/) will tell you what you are signing up for.
 
-None of that changes what happened when de Minaur stood at the baseline with a match point and a routine second serve to hit. Norrie had done nothing for two sets except stay in the point. That was the only pressure he had applied all evening, and it turned out to be enough.
+What is worth carrying in with you is this. Most sporting venues are named after donors, sponsors, or people who happened to be very good at the sport. Ashe qualifies on the third count, and if that were the whole of it his name would have gone quietly into the concrete years ago.
 
-The players at the very top of tennis make you gasp. Players like Norrie make you recognise something. Most of us are not going to be the best in the world at anything. What is available to us is the other thing: turning up on the bad days, doing the unglamorous version of the work when the result looks decided, and occasionally being rewarded with a night that reminds everyone, including you, what you can still do.
+The name on that building belongs to someone who won the first Open Era US Open and was legally barred from the prize money, who beat the best player in the world by refusing to hit the ball hard, who was denied a visa three years running by a government that was frightened of him, who was outed by a newspaper while raising a five-year-old, and who spent one of his last free afternoons in plastic handcuffs on behalf of people he would never meet.
 
-He plays Fils next. Whatever happens, Thursday already happened.
+Fifteen days of tennis are about to be played in a room with that on the front of it. It is a good name to know before the first ball goes up.
 
 ---
 
-Related reading on super.tennis: [Alex de Minaur, the fastest man in tennis](/lifestyle/alex-de-minaur-demon-fastest-man-tennis-2026/), [Arthur Fery and the Wimbledon wild card that changed British tennis](/lifestyle/arthur-fery-wimbledon-2026-wildcard-grew-up-local/), [Jack Draper, Britain's lefty powerhouse](/lifestyle/jack-draper-british-tennis-lefty-powerhouse-rise/), and [why Montreal lost its biggest names this year](/lifestyle/montreal-2026-missing-stars-masters-1000-calendar-crunch/).`;
+Related reading on super.tennis: [how tennis prize money actually works](/lifestyle/tennis-prize-money-explained/), [the loudest crowds in tennis](/lifestyle/tennis-fan-culture-loudest-crowds/), [a fan guide to the four Grand Slams](/lifestyle/tennis-travel-guide-grand-slams/), and [the complete US Open guide](/tournaments/us-open-guide/).`;
 
 const record = {
   slug, title, excerpt, body,
