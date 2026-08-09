@@ -1,120 +1,128 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'arthur-ashe-name-on-biggest-stadium-in-tennis';
-const stamp = '2026-08-08T05:00:00.000Z';
-const title = 'The Man on the Building: Who Arthur Ashe Actually Was';
+const slug = 'belinda-bencic-toronto-2026-eleven-years-after-2015-title';
+const stamp = '2026-08-09T05:00:00.000Z';
+const title = 'Belinda Bencic Is Back in Toronto, Eleven Years After the Title That Made Her';
 const meta_title = title;
-const meta_description = 'In three weeks the US Open fills the largest tennis stadium on earth. The story of the champion, activist and writer whose name is above the door.';
-const excerpt = 'You will hear his name a hundred times over the next month without hearing it at all. He won the first US Open of the Open Era and could not take the prize money, out-thought Jimmy Connors on the biggest afternoon of his life, and spent his last five months being arrested for other people.';
-const image_url = '/images/news/venue-02.webp';
-const image_alt = 'The curved steel roofline of a large sports stadium rising against a deep blue sky';
+const meta_description = 'At 18 she beat four former world number ones to win Toronto. At 29, a mother and back in the top 12, Belinda Bencic has returned to the city where it began.';
+const excerpt = 'In 2015 an 18-year-old Belinda Bencic ran through four former world number ones to win Toronto. Eleven years later she is back in the same city, a mother, an Olympic champion and a genuinely different player.';
+const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Belinda_Bencic_%282023_DC_Open%29_01a_%28cropped%29.jpg/500px-Belinda_Bencic_%282023_DC_Open%29_01a_%28cropped%29.jpg';
+const image_alt = 'Belinda Bencic of Switzerland pictured at the 2023 DC Open';
 
-const body = `Sometime in the next three weeks you will hear the name a hundred times without really hearing it.
+const body = `Three hours and twenty-four minutes. That is how long Belinda Bencic spent on court in Toronto this week, trading ground with Taylor Townsend in a third-round match that simply refused to end: 6-7(5), 7-6(4), 6-4, two tie-breaks, one of those evenings where the scoreline stops telling you anything useful and you just watch two people decline to leave.
 
-It will be printed on your ticket, if you are lucky enough to be going. It will sit in the corner of the television graphic. Commentators will say it the way people say the name of a railway station, as pure location: we are live from Arthur Ashe Stadium. On 30 August, when the US Open main draw begins, twenty-three thousand people will climb into the largest tennis arena on earth, buy a drink that costs more than it should, find a seat somewhere up in the weather, and settle in.
+If you tuned in without knowing the backstory, you saw a very good Swiss player grinding out a win at a big hard-court tournament in August. If you did know the backstory, you saw something else. Because Bencic has been in exactly this place before, on these exact courts, and the last time she walked out of Toronto she was carrying the trophy and a completely rearranged life.
 
-Almost nobody will be thinking about the man.
+That was 2015. She was eighteen years old. It has taken eleven years, one Olympic gold medal, a series of injuries that nearly ended things quietly, and the birth of a daughter for her to come back and find herself in the second week of the same tournament again. This is the story of how that happened, and why she is one of the most quietly astonishing people on the WTA tour right now.
 
-That is not a criticism. Stadium names go soft with use. They become directions rather than tributes, and there is no reason a person watching a first-round match should be expected to hold a biography in their head. But Arthur Ashe is worth twenty minutes of your attention, and not for the reason you might assume. The tennis is the least interesting thing about him, and he won three Grand Slam titles.
+## The week an 18-year-old ran through four former world number ones
 
-## The park his father looked after
+Start with the thing that made her famous, because it still reads like a typo.
 
-He was born on 10 July 1943 in Richmond, Virginia, and he grew up inside a park because his father ran it.
+In August 2015, the Rogers Cup was in Toronto and Bencic arrived as a teenager with promise and not much else. Over six days she beat Caroline Wozniacki. Then Ana Ivanovic. Then, in the semi-final, Serena Williams, who was the world number one and in the middle of the most dominant stretch of her career, 3-6, 7-5, 6-4. Then Simona Halep in the final, 7-6(5), 6-7(4), 3-0, when Halep retired hurt at the start of the third.
 
-Arthur Ashe Sr was the caretaker and supervisor of Brook Field, the largest public park in Richmond that Black residents were permitted to use. It had baseball diamonds, a big swimming pool, and four tennis courts. The family lived on the grounds. Across town was Byrd Park, the good one, the showpiece, with better courts and better everything. Byrd Park was for white people. That was not an atmosphere or an attitude. It was the written rule.
+Four former world number ones in one week. At 18 years and 23 weeks old she became the youngest champion in the history of that tournament, taking the record off Ivanovic, who had set it in 2006. She also became the youngest player to beat Serena Williams in a completed match since a 17-year-old Maria Sharapova did it at the 2004 WTA Finals.
 
-So the geography of his childhood was very simple: the sport he would eventually be world-famous for existed for him in a four-court patch of grass that his dad mowed, and the proper version of it was ten minutes away and legally out of reach.
+You can imagine what the coverage looked like. The next Hingis. The next big thing. Swiss tennis, which had spent a decade watching Roger Federer be Roger Federer, suddenly had a teenage girl who beat the greatest player alive on a Saturday afternoon.
 
-His mother died in the spring of 1950. He was not yet seven. Around the same age, a young Black player and coach named Ron Charity noticed the skinny kid hanging around the courts and started showing him what to do with a racket, which is one of those small human decisions that turns out to have consequences nobody could have priced at the time. From 1953 Ashe spent his summers at the training camp Dr Robert Walter Johnson ran in Lynchburg, a place built specifically to give talented Black juniors a route through a sport that had no intention of giving them one. Johnson taught tennis. He also taught his players to give away close line calls, to say nothing when they were provoked, to be so unimpeachably polite that no tournament could find an excuse to exclude them. It was survival strategy dressed as etiquette, and it shaped Ashe's public manner for the rest of his life.
+Bencic has said since that beating Serena in Toronto is something she will always carry with her. What she does not tend to say out loud, but which anyone who followed the next few years could see, is how heavy a week like that can become once it is behind you.
 
-He was good enough for a tennis scholarship to UCLA. In 1963, at twenty, he became the first Black player ever selected for the United States Davis Cup team. He was, by then, permanently a first, permanently an exhibit, permanently being watched for how he handled it.
+## A Swiss kid and Martina Hingis's mother
 
-## September 1968: the champion who could not take the cheque
+The foundations were laid a long way from Canada, in a country of eight million people that has produced an absurd number of great tennis players.
 
-Here is the fact that makes people sit up.
+Bencic was born in Flawil, in eastern Switzerland, in March 1997, to Slovak parents. Her father Ivan coached her early. When she was around five, he went looking for advice from another Czech-and-Slovak-to-Swiss family and found Melanie Molitor, the mother and lifelong coach of Martina Hingis. Bencic joined Molitor's tennis school not long after and trained there through her childhood.
 
-The 1968 US Open was the first one of the Open Era, the first time professionals and amateurs played the same tournament for the same trophy. Ashe was twenty-five, a lieutenant in the United States Army, and an amateur. He had stayed an amateur deliberately, because that was what Davis Cup eligibility required of him at the time.
+That is not a small detail. Molitor built Hingis, who became the youngest world number one in history on a game made of angles, timing and early ball-striking rather than raw power. Bencic learned the same language. She takes the ball early. She redirects pace instead of manufacturing it. She stands close to the baseline in an era when almost everyone has drifted back towards the fence, and she is still, at 29, one of the cleanest strikers on the tour.
 
-He won the whole thing. In the final he beat the Dutchman Tom Okker across five sets, 14-12, 5-7, 6-3, 3-6, 6-3. Read that first set again: fourteen games to twelve, before tie-breaks existed to put anyone out of their misery. He became the first Black man to win a Grand Slam singles title.
+The junior results told you the coaching had taken. In 2013, at 16, she won the girls' titles at both Roland Garros and Wimbledon in the same season, only the third player ever to do it. One of the others, inevitably, was Hingis.
 
-And because he was still an amateur, he could not accept the first prize of 14,000 dollars. The money went to Okker, the man he had just beaten. Ashe went home with a per diem, the daily expenses allowance paid to Davis Cup players, which in the currency of a Grand Slam champion amounts to roughly nothing. If you have ever wondered how tennis got from there to the enormous cheques handed over on court today, [how tennis prize money actually works](/lifestyle/tennis-prize-money-explained/) is a decent map of the distance travelled.
+## The years that were harder than the highlight reel suggests
 
-He won the Australian Open in 1970, beating Dick Crealy 6-4, 9-7, 6-2. Two majors by twenty-six. And then, for five years, the biggest one stayed out of reach.
+Here is the part that gets skipped when people tell this story quickly.
 
-## The afternoon he out-thought Jimmy Connors
+After Toronto in 2015, Bencic climbed into the top ten at 18 and then spent several years being interrupted. Wrist trouble. A back problem. Surgery. Ranking slides that took her out of the top hundred and into the qualifying draws of tournaments she had been winning. If you are a fan who dips in and out of tennis, this is the phase you probably missed entirely, because it happens in the parts of the calendar that do not get broadcast.
 
-5 July 1975. Wimbledon final. If you only ever watch one old tennis match, make it this one.
+She rebuilt anyway. By 2019 she was back, and she reached the semi-finals of the US Open, her deepest run at a major at that point. In 2022 she won Charleston. She kept being good without ever quite recapturing the wild slipstream of that Toronto week.
 
-Jimmy Connors was twenty-two, the defending champion, and playing like a man who had solved the sport. He hit the ball flatter and harder than anyone and he fed on pace; give him something quick and he sent it back quicker. Ashe was thirty-one, ranked below him, and widely expected to be an afternoon's work.
+And then Tokyo happened.
 
-What Ashe did instead was borrow a plan from boxing. The previous autumn Muhammad Ali had beaten George Foreman in Zaire by refusing to fight the fight Foreman wanted. Ashe, working it through with people he trusted, arrived at the tennis version: give Connors nothing to hit. So he chipped. He sliced. He dinked the ball short and soft and low, mostly to the forehand, and dragged Connors from one side of the court to the other looking for a rhythm that never came. Between points he sat with his eyes closed.
+## Tokyo, and the medal that reframed everything
 
-It was 6-1, 6-1 in about the time it takes to make a sandwich. Connors, to his enormous credit, worked out enough of it to take the third set 5-7 and then broke early in the fourth. This is the part that tells you who Ashe was. He did not panic and start hitting, which is what almost everybody does when a plan starts leaking. He kept dinking. He won it 6-4.
+At the Olympic Games in Tokyo, played in the summer of 2021, Bencic beat Marketa Vondrousova 7-5, 2-6, 6-3 in the final to win the singles gold medal. She was the first Swiss woman ever to do it.
 
-Final score 6-1, 6-1, 5-7, 6-4.
+Olympic tennis occupies a strange place in the sport. It is not a Grand Slam, the ranking points are odd, and half the tour treats it as an inconvenience wedged into an already brutal calendar. But for players from smaller tennis nations, an Olympic medal is the thing that follows your name forever, in every headline, in every introduction. Five years on, Bencic has said that everything which came afterwards has felt more like a bonus.
 
-It was, at thirty-one, the last Grand Slam singles title of his life, and the best argument anyone has ever made that tennis is a thinking sport. Nothing in that match was about being stronger or faster or younger, because Ashe was none of those things that day. He simply worked out what his opponent needed and declined to provide it for three hours. Players still talk about it as a template, and almost nobody has the nerve to try it, because dinking softly at a man who is hitting the ball through the wall requires you to believe your own analysis while the crowd is quietly wondering what on earth you are doing.
+It is worth sitting with that sentence for a second, because it explains a lot about the person who came back to the tour three years later. She had already got the thing.
 
-He remains the only Black man ever to win the Wimbledon men's singles title. He is also still the only Black man to have won singles titles at Wimbledon, the US Open and the Australian Open. Fifty-one years later, nobody has joined him on that list.
+## April 2024: the pause
 
-## What he did when he was not playing
+Bencic and her husband Martin Hromkovic, a former footballer who also works as her fitness coach, had a daughter, Bella, in April 2024.
 
-Most great players hand you a career and a highlights reel. Ashe hands you a second job that was arguably bigger than the first.
+Tennis is not a sport that makes room for this. There is no off-season worth the name, no team to cover for you, no salary that keeps arriving while you are away. You stop, your ranking evaporates, and when you come back you come back to the bottom of the ladder against opponents who have spent your maternity leave getting better. The tour has a protected-ranking system, but a system is not the same thing as a soft landing.
 
-In 1969, with Charlie Pasarell and Sheridan Snyder, he set up what became the National Junior Tennis League. The idea was to put rackets in the hands of children who would never otherwise get near the sport, and Ashe insisted on a condition that tells you everything about him: every chapter had to run academic support alongside the tennis. He was not interested in strip-mining neighbourhoods for talent. He wanted the kids who would never be any good to get something out of it too. The network now runs to more than 250 organisations reaching over 150,000 young people a year, which is a strange and lovely afterlife for a man who has been dead since 1993.
+Her return began at the United Cup in January 2025, seven months after giving birth. She lost 6-1, 6-1 to Jasmine Paolini. If you want a single scoreline that captures how far away the top of the game can feel, that is the one. She started that season ranked outside the top 450.
 
-Then there was South Africa. Ashe applied for a visa to play there in 1969 and was refused. He applied again. Refused. Three years running, the apartheid government would not let him in, and each refusal became an international news story, which was rather the point. He campaigned to have South Africa thrown out of the tennis tour and out of the Davis Cup.
+She has been honest about the doubts. Some days she felt sharp and confident, she has said; other days the doubt crept back in, and the thing that got her through was that she had already learned how to handle it during the injury years. Her life had completely changed, she said, but for the better, and her priorities had changed with it. Family first, tennis second, which sounds like the sort of thing athletes say and in her case appears to be simply true. Bella travels with her to every tournament.
 
-When he finally got in, in 1973, he became the first Black man to play the country's national championship, and he did it without accepting the designation of honorary white, the bureaucratic fiction the regime used to let famous Black visitors move through white spaces. Plenty of people, then and since, argued he should have stayed away. He thought being visible inside the country did more than being absent from it. You can disagree with him. He had thought about it harder than most of his critics.
+## What the comeback actually looked like
 
-In 1985 he was arrested outside the South African embassy in Washington, protesting apartheid. He retired from playing in 1980 and captained the United States Davis Cup team from 1981 to 1985, winning it twice, in 1981 and 1982.
+It looked like this.
 
-## The illness he did not choose, and the privacy he lost
+In 2025, her first full season back, Bencic won Abu Dhabi, her first title as a mother. She won Tokyo later in the year, beating Linda Noskova in the final for the tenth title of her career. She reached the semi-finals of Wimbledon, the best Grand Slam result of her life, on grass, at 28, with a toddler in the players' box. She finished the year inside the top fifteen having started it outside the top 450, and the WTA named her its Comeback Player of the Year.
 
-In 1979, at thirty-six, Ashe had a heart attack. He had quadruple bypass surgery. In 1983 he needed a second bypass, and during that operation he was given a blood transfusion.
+Her own summary was almost apologetic about it. Everything happened much faster than we expected, she said. Better results than we expected.
 
-That transfusion carried HIV. Nobody knew, because in 1983 nobody was testing blood for something that barely had a name yet. He found out in 1988, after an infection sent doctors looking for a reason his immune system was failing.
+If you are a fan who mostly watches the majors, that Wimbledon run is probably where Bencic re-entered your field of vision, and you might have assumed she was having one good fortnight. She was not. She was three-quarters of the way through the most improbable season of her career.
 
-He told his family and a small circle, and then he did what most of us would do: he got on with his life quietly. For nearly four years he raised his daughter Camera, wrote, commentated, and did not tell the world, because it was 1988 and the world was not kind about this.
+You can read more about the wider shift she is part of in our look at [the parenthood generation on tour](/lifestyle/tennis-parenthood-generation-2026-mothers-fathers-on-tour/), because Bencic is not doing this alone any more, and that itself is new.
 
-On 8 April 1992 he lost that choice. USA Today had the story and was going to run it. Rather than have it printed about him, Ashe called a press conference and sat down beside his wife, the photographer Jeanne Moutoussamy-Ashe, and said it himself. He was gracious, because he was always gracious, and he was also plainly angry that a decision this private had been taken out of his hands by people who felt the public was owed it. Camera was five.
+## The ranking that made history in February
 
-The last thing he wanted was to become a poster. He became one anyway, and then he did the work: raising money, talking about AIDS in rooms that did not want to discuss it, founding the Arthur Ashe Institute for Urban Health to deal with the fact that illness and poverty are the same conversation.
+On 2 February 2026, the WTA rankings came out and Bencic was ninth in the world. Elina Svitolina, whose daughter Skai was born in 2022, was tenth.
 
-## The last five months
+For the first time since the WTA rankings began in 1975, there were two mothers inside the top ten at the same moment. Half a century of professional women's tennis, and it had never happened before.
 
-On 9 September 1992, five months before he died and visibly unwell, Arthur Ashe stood outside the White House protesting the United States policy of turning back Haitians who were fleeing their country by boat. The demonstration was organised by TransAfrica and the NAACP. Police arrested ninety-five people. Ashe was among the first, wrists in a plastic tie.
+Rankings history is usually a dry sort of trivia. This one is not. For most of the sport's modern era, having a child was understood as a career ending, or at best a career interrupting, decision, and the handful of players who came back and stayed elite were treated as freaks of nature rather than as evidence that the model was wrong. Two at once, in the same top ten, in the same week, changes what a 24-year-old player weighing up her options is looking at.
 
-Asked why he was there, he said: I think our policy of interdiction is ridiculous. That is why I am here.
+Bencic had earned it the hard way. She began 2026 by going unbeaten through the United Cup group stage and knockouts, dragging Switzerland to their first final in the competition, winning her singles matches and then coming back out to play deciding mixed doubles. In the final against Poland she beat Iga Swiatek 3-6, 6-0, 6-3. Switzerland still lost the tie 2-1, sealed in the mixed doubles, and Bencic finished the week 5-0 in singles and was named the Finals MVP anyway. Losing a final while being unambiguously the best player in it is a very Bencic outcome.
 
-He was dying. He went and got arrested for strangers.
+Wimbledon this year ended in the fourth round, in a match she will think about for a while: Coco Gauff beat her 6-4, 4-6, 7-6(6), one point at a time, deep into the night.
 
-Around the same period, an interviewer asked him whether AIDS was the heaviest thing he had ever had to carry. He said no. Being Black, he said, was the greatest burden he had had to bear. It stopped the room, and it has been quoted ever since, sometimes lazily. He was not ranking his suffering for effect. He meant something specific and exhausting: the permanent obligation to represent, to be the acceptable example, to have every opinion he expressed weighed as a statement on behalf of millions of people rather than as the thought of one man who had read a lot and considered it carefully.
+## Toronto, and the 21-year-old on the other side of the net
 
-He finished his memoir, Days of Grace, in the last weeks of his life. He died on 6 February 1993 of AIDS-related pneumonia. He was forty-nine.
+Which brings us back to Canada, and to the odd symmetry of what happens next.
 
-They laid him in state at the Governor's Mansion in Virginia. The last person to be given that honour there had been the Confederate general Stonewall Jackson. Consider the arc of that: a boy shut out of the white park in Richmond, lying in state in the mansion at the top of the same city. On 20 June 1993, Bill Clinton presented his Presidential Medal of Freedom.
+The Canadian Open now runs as [a two-city event, women in Toronto and men in Montreal](/lifestyle/canadian-open-two-cities-toronto-montreal-2026/), on an expanded twelve-day format with 96-player draws. Bencic came in seeded twelfth and ranked twelfth. She beat Sloane Stephens 6-3, 6-1 in her opening match, then survived Townsend across those three hours and twenty-four minutes to reach the last sixteen.
 
-## Why his name is on the building
+Waiting for her is Alexandra Eala, and you could not script it better if you tried.
 
-Four years after he died, the US Open outgrew Louis Armstrong Stadium and built something enormous. It opened on 25 August 1997 with a dedication ceremony, Jeanne Moutoussamy-Ashe watching, and it seats 23,771 people, which still makes it the biggest tennis stadium in the world. A retractable roof went on in 2016, so the rain delays that used to swallow entire days are now mostly a memory.
+Eala is 21, from the Philippines, and is currently living through the fortnight of her life. Last week she won the DC Open, beating Jessica Pegula 4-6, 6-4, 6-0 in a final that rain had pushed into an extra day, to become the first player from the Philippines to win a WTA Tour singles title. She arrived in Toronto on a winning streak that has now reached seven matches and a ranking of world number 20. We wrote about [her breakthrough and what she means to Filipino tennis](/lifestyle/alexandra-eala-philippines-first-tennis-star-berlin-grass-2026/) earlier this summer, and the noise around her in Toronto, a city with an enormous Filipino community, has been extraordinary.
 
-Two days before the professionals arrived, children played on the new court first, at Arthur Ashe Kids' Day, which had been running since the year he died. Whoever made that scheduling decision understood the man completely.
+So: the 21-year-old having her Toronto moment, against the woman who had hers in this city at 18 and then spent eleven years discovering what comes after. They have never played each other before. Whatever happens, one of those two stories continues this week and the other pauses.
 
-## When you watch this year
+The rest of the draw is not exactly quiet either. Leylah Fernandez, the Canadian, knocked out Mirra Andreeva in front of a home crowd that lost its mind. Diana Shnaider took out Pegula. And Elena Rybakina, [the quietest superstar in the sport](/lifestyle/elena-rybakina-quietest-superstar-toronto-2026-world-number-one/), is still in there working on the ranking maths. As second weeks go, Toronto is delivering.
 
-The Open runs from 30 August to 13 September, and the truth about that stadium is that it is a strange place to watch tennis. It is vast. From the upper rows the players are small bright figures a long way down and the ball is a rumour. What you get instead is New York noise, twenty thousand people who have opinions and will share them, a night session with a texture no other tournament manages. If you like that side of the sport, [the loudest crowds in tennis](/lifestyle/tennis-fan-culture-loudest-crowds/) is where the atmosphere lives, and if you are considering the trip properly one year, [a fan guide to the four Grand Slams](/lifestyle/tennis-travel-guide-grand-slams/) and [the complete US Open guide](/tournaments/us-open-guide/) will tell you what you are signing up for.
+## What to look for if you have never really watched her
 
-What is worth carrying in with you is this. Most sporting venues are named after donors, sponsors, or people who happened to be very good at the sport. Ashe qualifies on the third count, and if that were the whole of it his name would have gone quietly into the concrete years ago.
+If you are going to watch Bencic for the first time, here is what makes her worth the ninety minutes.
 
-The name on that building belongs to someone who won the first Open Era US Open and was legally barred from the prize money, who beat the best player in the world by refusing to hit the ball hard, who was denied a visa three years running by a government that was frightened of him, who was outed by a newspaper while raising a five-year-old, and who spent one of his last free afternoons in plastic handcuffs on behalf of people he would never meet.
+She stands on the baseline. Not near it, on it. Most of the tour has quietly retreated two or three metres behind the line to buy reaction time against modern serving and modern forehands, and Bencic simply refuses to. She takes the ball as it rises. It means she gives her opponent almost no time between shots, and it means when she is slightly off, she is very off, because there is no margin built into where she is standing.
 
-Fifteen days of tennis are about to be played in a room with that on the front of it. It is a good name to know before the first ball goes up.
+She redirects rather than overpowers. Watch what she does with a heavy cross-court ball: instead of adding pace to it, she changes its direction down the line early, so the point flips ownership in a single shot. It is a Hingis inheritance, and it is why she can beat players who hit the ball considerably harder than she does.
 
----
+And she is a good watch under pressure now in a way she was not at 22. The Townsend match was decided by two tie-breaks and a single break in the third. The old Bencic might have lost that. The current one, by her own account, plays with the calm of someone for whom the result stops mattering the moment she gets back to the hotel room.
 
-Related reading on super.tennis: [how tennis prize money actually works](/lifestyle/tennis-prize-money-explained/), [the loudest crowds in tennis](/lifestyle/tennis-fan-culture-loudest-crowds/), [a fan guide to the four Grand Slams](/lifestyle/tennis-travel-guide-grand-slams/), and [the complete US Open guide](/tournaments/us-open-guide/).`;
+## The thing about second chapters
+
+There is a version of the Bencic story that ends in 2015. Teenage prodigy beats Serena, wins Toronto, is anointed, gets injured, drifts. Tennis produces that story constantly, and it is usually the whole story.
+
+What makes this one worth your attention is that the second chapter turned out to be longer and better than the first. The Olympic gold came six years after Toronto. The Wimbledon semi-final came four years after the gold, and a year after she had a baby. She is playing the best sustained tennis of her career at 29, having taken eighteen months out of the middle of it, and the ranking history she is making now is the kind that will still be cited when Bella is old enough to understand it.
+
+Eleven years ago in this city she was the answer to a question about the future. She is not that any more, and she seems entirely at peace with it. She is just an exceptional tennis player, in the second week of a big tournament, with a toddler in the box and nothing left to prove to anybody.
+
+*Photo: Belinda Bencic at the 2023 DC Open by Hameltion, CC BY-SA 4.0, via Wikimedia Commons.*`;
 
 const record = {
   slug, title, excerpt, body,
