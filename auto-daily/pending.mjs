@@ -1,128 +1,134 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'belinda-bencic-toronto-2026-eleven-years-after-2015-title';
-const stamp = '2026-08-09T05:00:00.000Z';
-const title = 'Belinda Bencic Is Back in Toronto, Eleven Years After the Title That Made Her';
+const slug = 'new-balls-please-why-tennis-argues-about-the-ball-2026';
+const stamp = '2026-08-10T05:00:00.000Z';
+const title = 'New Balls Please: Why Tennis Keeps Arguing About a Fuzzy Yellow Ball';
 const meta_title = title;
-const meta_description = 'At 18 she beat four former world number ones to win Toronto. At 29, a mother and back in the top 12, Belinda Bencic has returned to the city where it began.';
-const excerpt = 'In 2015 an 18-year-old Belinda Bencic ran through four former world number ones to win Toronto. Eleven years later she is back in the same city, a mother, an Olympic champion and a genuinely different player.';
-const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Belinda_Bencic_%282023_DC_Open%29_01a_%28cropped%29.jpg/500px-Belinda_Bencic_%282023_DC_Open%29_01a_%28cropped%29.jpg';
-const image_alt = 'Belinda Bencic of Switzerland pictured at the 2023 DC Open';
+const meta_description = 'Every nine games an umpire says new balls please. Behind those two words sit a 50,000-mile supply chain, an injury row and a live ATP experiment.';
+const excerpt = 'Two words from the umpire, a scramble of ballkids, and a fresh tin cracked open. The tennis ball looks like the simplest object in sport. It is currently the most argued-over thing on tour.';
+const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Tennis_Racquets_and_Balls_on_a_Clay_Court.jpg/500px-Tennis_Racquets_and_Balls_on_a_Clay_Court.jpg';
+const image_alt = 'Tennis rackets and balls resting on a red clay court';
 
-const body = `Three hours and twenty-four minutes. That is how long Belinda Bencic spent on court in Toronto this week, trading ground with Taylor Townsend in a third-round match that simply refused to end: 6-7(5), 7-6(4), 6-4, two tie-breaks, one of those evenings where the scoreline stops telling you anything useful and you just watch two people decline to leave.
+const body = `Two words, murmured into a microphone, and everything on court changes rhythm. **New balls, please.** The ballkids break into a jog. A sealed tin hisses open somewhere behind the baseline. Six bright yellow spheres get rolled out, the server picks two, squeezes them, rejects one, squeezes another, and play resumes. If you are watching at home with a drink in your hand, the whole ritual takes about eleven seconds and you probably use it to check your phone.
 
-If you tuned in without knowing the backstory, you saw a very good Swiss player grinding out a win at a big hard-court tournament in August. If you did know the backstory, you saw something else. Because Bencic has been in exactly this place before, on these exact courts, and the last time she walked out of Toronto she was carrying the trophy and a completely rearranged life.
+Do not. That little ceremony is, right now, the centre of the loudest argument in professional tennis — an argument about wrists and elbows and shoulders, about whether the sport has been quietly grinding down the arms of the people who play it, and about whether a ball that costs a couple of pounds can end careers. As the National Bank Open works through its second week in Toronto and Montreal, and the tour points itself at New York, the ball is the thing players keep being asked about, and the thing they keep having opinions on.
 
-That was 2015. She was eighteen years old. It has taken eleven years, one Olympic gold medal, a series of injuries that nearly ended things quietly, and the birth of a daughter for her to come back and find herself in the second week of the same tournament again. This is the story of how that happened, and why she is one of the most quietly astonishing people on the WTA tour right now.
+Here is what that fuzzy yellow object actually is, why it dies so quickly, why the best players in the world are furious about it, and what tennis is finally doing in response.
 
-## The week an 18-year-old ran through four former world number ones
+## The rule almost nobody knows
 
-Start with the thing that made her famous, because it still reads like a typo.
+Start with the ritual itself, because the numbers are stranger than you would guess.
 
-In August 2015, the Rogers Cup was in Toronto and Bencic arrived as a teenager with promise and not much else. Over six days she beat Caroline Wozniacki. Then Ana Ivanovic. Then, in the semi-final, Serena Williams, who was the world number one and in the middle of the most dominant stretch of her career, 3-6, 7-5, 6-4. Then Simona Halep in the final, 7-6(5), 6-7(4), 3-0, when Halep retired hurt at the start of the third.
+Under the sport's regulations, balls are changed for the first time after **seven** games, and then every **nine** games after that. Not nine from the start. Seven, then nine, forever.
 
-Four former world number ones in one week. At 18 years and 23 weeks old she became the youngest champion in the history of that tournament, taking the record off Ivanovic, who had set it in 2006. She also became the youngest player to beat Serena Williams in a completed match since a 17-year-old Maria Sharapova did it at the 2004 WTA Finals.
+The reason for that odd first number is beautifully practical: the warm-up. Players spend several minutes before the first point hitting with the match balls, so those balls arrive at 1-0 already slightly used. The extra two games of grace at the front simply account for the mileage the ball racked up before anyone was keeping score.
 
-You can imagine what the coverage looked like. The next Hingis. The next big thing. Swiss tennis, which had spent a decade watching Roger Federer be Roger Federer, suddenly had a teenage girl who beat the greatest player alive on a Saturday afternoon.
+Once you know it, you cannot unsee it. Count the games in the first set of the next match you watch. At the changeover after the seventh game, the tin comes out. Then the ninth after that. The whole match runs to that metronome, and the players track it in a way you would find slightly unnerving — they know, at any moment, exactly how old the ball in their hand is and how many games it has left. It is a small tactical layer running underneath everything else, and it never appears on the scoreboard.
 
-Bencic has said since that beating Serena in Toronto is something she will always carry with her. What she does not tend to say out loud, but which anyone who followed the next few years could see, is how heavy a week like that can become once it is behind you.
+## What a tennis ball has to be
 
-## A Swiss kid and Martina Hingis's mother
+The ball is one of the most tightly specified objects in sport. To be approved for professional play, it has to weigh between **56.0 and 59.4 grams** and measure between **6.54 and 6.86 centimetres** across. Those tolerances are tiny. The difference between the lightest legal ball and the heaviest is about the weight of a two-pence coin.
 
-The foundations were laid a long way from Canada, in a country of eight million people that has produced an absurd number of great tennis players.
+Then there is the bounce test, which is delightfully low-tech for a sport with electronic line calling. A ball is dropped from **100 inches** onto concrete. It has to come back up between **53 and 58 inches**. That is it. That is the standard the whole professional game rests on.
 
-Bencic was born in Flawil, in eastern Switzerland, in March 1997, to Slovak parents. Her father Ivan coached her early. When she was around five, he went looking for advice from another Czech-and-Slovak-to-Swiss family and found Melanie Molitor, the mother and lifelong coach of Martina Hingis. Bencic joined Molitor's tennis school not long after and trained there through her childhood.
+Balls also come in speed categories, and the naming is the sort of thing that makes newcomers throw their hands up. Type 1 is the *fast* ball — and it is designed for *slow* surfaces. Type 3 is the *slow* ball, designed for *fast* surfaces. Type 2 sits in the middle. The logic is compensation rather than description: you put a quicker ball on a sluggish court and a draggier ball on a skiddy one, aiming for something like a consistent experience for the viewer and the player. There are high-altitude balls too, made with lower internal pressure, because thin mountain air lets a normal ball fly like it has been fired from something.
 
-That is not a small detail. Molitor built Hingis, who became the youngest world number one in history on a game made of angles, timing and early ball-striking rather than raw power. Bencic learned the same language. She takes the ball early. She redirects pace instead of manufacturing it. She stands close to the baseline in an era when almost everyone has drifted back towards the fence, and she is still, at 29, one of the cleanest strikers on the tour.
+Court surface changes everything about how that ball behaves once it lands, which is why the same tin plays like a different product depending on where you open it. If you have never quite worked out why the same players look like different athletes from one month to the next, our guide to [the different court surfaces and what they do](/lifestyle/tennis-court-types-explained/) is the place to start.
 
-The junior results told you the coaching had taken. In 2013, at 16, she won the girls' titles at both Roland Garros and Wimbledon in the same season, only the third player ever to do it. One of the others, inevitably, was Hingis.
+## The 50,000-mile ball
 
-## The years that were harder than the highlight reel suggests
+Now for the fact that tends to stop people mid-sentence.
 
-Here is the part that gets skipped when people tell this story quickly.
+The official Wimbledon ball, before it is ever struck, travels roughly **50,570 miles** through **11 countries** across **four continents**.
 
-After Toronto in 2015, Bencic climbed into the top ten at 18 and then spent several years being interrupted. Wrist trouble. A back problem. Surgery. Ranking slides that took her out of the top hundred and into the qualifying draws of tournaments she had been winning. If you are a fan who dips in and out of tennis, this is the phase you probably missed entirely, because it happens in the parts of the calendar that do not get broadcast.
+Clay comes from South Carolina. Silica from Greece. Magnesium carbonate from Japan. Zinc oxide from Thailand. Sulphur from South Korea. Rubber from Malaysia. All of it converges on a factory in Bataan, in the Philippines, where the rubber is vulcanised into the core. The wool, meanwhile, is shipped from New Zealand to Stroud in Gloucestershire, where it is woven into felt — and then flown back to the Philippines to be glued onto the cores. Petroleum naphthalene arrives from China. Glue from Basilan. The tins come from Indonesia. And then the finished, pressurised, packaged balls make one last journey of around 6,660 miles to a corner of south-west London so that someone can hit one into the net on a Tuesday.
 
-She rebuilt anyway. By 2019 she was back, and she reached the semi-finals of the US Open, her deepest run at a major at that point. In 2022 she won Charleston. She kept being good without ever quite recapturing the wild slipstream of that Toronto week.
+That is not a scandal, exactly. It is what a globalised supply chain looks like when you follow a single small object all the way through it. But it does reframe the thing sitting on the baseline. The ball is not simple. It is the most travelled participant at any tournament.
 
-And then Tokyo happened.
+## Why balls die
 
-## Tokyo, and the medal that reframed everything
+A tennis ball has two enemies, and both of them win.
 
-At the Olympic Games in Tokyo, played in the summer of 2021, Bencic beat Marketa Vondrousova 7-5, 2-6, 6-3 in the final to win the singles gold medal. She was the first Swiss woman ever to do it.
+The first is fluff. Every strike, every skid across the court, drags the felt outwards. A new ball is smooth and tight and cuts through air. A nine-game-old ball is shaggy, and that fuzz creates drag: it flies slower, sits up higher, and takes more effort to hit through. Ball inspectors and ballkids are trained to look for exactly this. As one Wimbledon description of the job puts it, you are looking for a lack of fluff.
 
-Olympic tennis occupies a strange place in the sport. It is not a Grand Slam, the ranking points are odd, and half the tour treats it as an inconvenience wedged into an already brutal calendar. But for players from smaller tennis nations, an Olympic medal is the thing that follows your name forever, in every headline, in every introduction. Five years on, Bencic has said that everything which came afterwards has felt more like a bonus.
+The second is pressure. Almost every professional ball is pressurised — there is compressed gas inside the rubber core, and that is what gives you the crisp, alive bounce. From the second the tin is opened, that gas begins escaping through the rubber. Slowly at first, then not so slowly under repeated impact. By the end of its nine games a match ball has measurably less bounce than it had at the start, and the players are the ones absorbing the difference.
 
-It is worth sitting with that sentence for a second, because it explains a lot about the person who came back to the tour three years later. She had already got the thing.
+Heat and humidity accelerate all of it. Warm air makes the gas inside expand, giving a livelier bounce; damp air soaks into the felt and makes the ball heavier and slower. Which is why Wimbledon keeps its balls in courtside refrigerators at a constant **20 degrees Celsius** until the moment they are needed. The All England Club gets through around **54,250 balls** in a fortnight — close to 2,000 a day — and every one of them is chilled before it goes out.
 
-## April 2024: the pause
+Wimbledon has used **Slazenger** balls since **1902**, which makes it the longest-running partnership in the sport. The other three majors go their own way: Dunlop has supplied the Australian Open since 2019 and renewed through the end of the decade; Wilson supplies both Roland Garros and the US Open. Four majors, three brands, four distinct feels — and that is before you count the dozens of regular tour events in between.
 
-Bencic and her husband Martin Hromkovic, a former footballer who also works as her fitness coach, had a daughter, Bella, in April 2024.
+## The argument
 
-Tennis is not a sport that makes room for this. There is no off-season worth the name, no team to cover for you, no salary that keeps arriving while you are away. You stop, your ranking evaporates, and when you come back you come back to the bottom of the ladder against opponents who have spent your maternity leave getting better. The tour has a protected-ranking system, but a system is not the same thing as a soft landing.
+Which brings us to the fight.
 
-Her return began at the United Cup in January 2025, seven months after giving birth. She lost 6-1, 6-1 to Jasmine Paolini. If you want a single scoreline that captures how far away the top of the game can feel, that is the one. She started that season ranked outside the top 450.
+For several years now, a steady stream of the world's best players have said the same thing in different words: the ball changes too often between tournaments, and their arms are paying for it.
 
-She has been honest about the doubts. Some days she felt sharp and confident, she has said; other days the doubt crept back in, and the thing that got her through was that she had already learned how to handle it during the injury years. Her life had completely changed, she said, but for the better, and her priorities had changed with it. Family first, tennis second, which sounds like the sort of thing athletes say and in her case appears to be simply true. Bella travels with her to every tournament.
+Novak Djokovic has been the most direct. "There is certainly a connection between frequent injuries of the wrist, elbow, and shoulder with ball changes," he has said, adding that he is "absolutely in favour of choosing one ball with which we will play all ATP tournaments." Daniil Medvedev — who once compared a particularly bloated batch to grapefruit — has spoken about worrying that he will have shoulder pain for the rest of his life. Alexander Zverev, Stefanos Tsitsipas, Stan Wawrinka and Sebastian Korda have all raised versions of the same complaint.
 
-## What the comeback actually looked like
+The mechanism they describe is not mysterious. As a ball loses pressure and gains fluff, you have to swing harder to produce the same speed and spin. Do that thousands of times a week and the load lands on the wrist, elbow, forearm and shoulder. Now change the brand next week so the ball is a fraction heavier or livelier, and the body has to recalibrate that load all over again. Repeat across an eleven-month season.
 
-It looked like this.
+The circumstantial evidence has piled up. Carlos Alcaraz lost most of his 2026 to a wrist problem, missing both Roland Garros and Wimbledon — a lost summer we wrote about [when the Wimbledon withdrawal was confirmed](/lifestyle/carlos-alcaraz-misses-wimbledon-2026-wrist-injury-lost-summer/). Jack Draper has managed arm trouble through his rise. Taylor Fritz has dealt with forearm issues. None of that proves the ball did it — arm injuries in a sport built on repetitive one-armed acceleration have plenty of candidate causes, and modern racket and string technology asks more of the joints than the wooden era ever did. For a wider look at what actually breaks down in a tennis player, our rundown of [the injuries that define careers](/lifestyle/tennis-injuries-common/) covers the rest of the body too.
 
-In 2025, her first full season back, Bencic won Abu Dhabi, her first title as a mother. She won Tokyo later in the year, beating Linda Noskova in the final for the tenth title of her career. She reached the semi-finals of Wimbledon, the best Grand Slam result of her life, on grass, at 28, with a toddler in the players' box. She finished the year inside the top fifteen having started it outside the top 450, and the WTA named her its Comeback Player of the Year.
+And not everyone in the locker room is convinced. Casper Ruud has said openly that he is tired of the ball being made into a drama every week. That dissent matters, because it is a reminder that this is a genuine dispute among professionals rather than a settled fact — some players believe the ball is wrecking arms, and others believe it has become the tour's favourite excuse.
 
-Her own summary was almost apologetic about it. Everything happened much faster than we expected, she said. Better results than we expected.
+## What tennis is actually doing about it
 
-If you are a fan who mostly watches the majors, that Wimbledon run is probably where Bencic re-entered your field of vision, and you might have assumed she was having one good fortnight. She was not. She was three-quarters of the way through the most improbable season of her career.
+The interesting development is that the governing body stopped treating this as noise.
 
-You can read more about the wider shift she is part of in our look at [the parenthood generation on tour](/lifestyle/tennis-parenthood-generation-2026-mothers-fathers-on-tour/), because Bencic is not doing this alone any more, and that itself is new.
+Since 2023 the ATP has gathered feedback through more than **3,500 player surveys**. In **2025** it did something structurally significant: it centralised the ball-supplier selection process, taking it away from individual tournaments choosing their own suppliers independently and coordinating it across the calendar instead. Swings that used to be a patchwork — the February indoor stretch in Europe, the outdoor events in the Americas and Middle East, the European spring clay run — were aligned onto common balls. In **2026** that alignment has been pushed further still, so that almost every swing on the calendar now runs on a consistent manufacturer.
 
-## The ranking that made history in February
+That is a real answer to the loudest version of the complaint. If the problem is that the ball is different every week, then making it the same for six or eight weeks at a stretch removes a large part of the variable.
 
-On 2 February 2026, the WTA rankings came out and Bencic was ninth in the world. Elina Svitolina, whose daughter Skai was born in 2022, was tenth.
+But it does not touch the second complaint: that within a single match, on hard courts, the ball degrades far too fast.
 
-For the first time since the WTA rankings began in 1975, there were two mothers inside the top ten at the same moment. Half a century of professional women's tennis, and it had never happened before.
+So this month tennis ran an experiment. At the Challenger event in **Lexington** from **3 to 9 August**, the tour trialled a completely different ball-change schedule: the first change after **five** games, then every **seven** thereafter, instead of the standard seven and nine. Backed by the Player Advisory Council and prompted directly by player feedback about hard-court ball wear, the trial collected ball-tracking data through the week. Those findings are due to be reviewed when the council next meets, during the US Open.
 
-Rankings history is usually a dry sort of trivia. This one is not. For most of the sport's modern era, having a child was understood as a career ending, or at best a career interrupting, decision, and the handful of players who came back and stayed elite were treated as freaks of nature rather than as evidence that the model was wrong. Two at once, in the same top ten, in the same week, changes what a 24-year-old player weighing up her options is looking at.
+It is a modest-sounding tweak with large implications. Shortening the cycle means fresher, livelier balls for more of every match, which means less of the heavy, laboured hitting players blame for their arms. It also means more balls consumed per match, more interruptions, and a subtly different sport: more free points on serve, shorter rallies, a faster and possibly less interesting spectacle. Nobody gets to have both.
 
-Bencic had earned it the hard way. She began 2026 by going unbeaten through the United Cup group stage and knockouts, dragging Switzerland to their first final in the competition, winning her singles matches and then coming back out to play deciding mixed doubles. In the final against Poland she beat Iga Swiatek 3-6, 6-0, 6-3. Switzerland still lost the tie 2-1, sealed in the mixed doubles, and Bencic finished the week 5-0 in singles and was named the Finals MVP anyway. Losing a final while being unambiguously the best player in it is a very Bencic outcome.
+## Why this fortnight in particular
 
-Wimbledon this year ended in the fourth round, in a match she will think about for a while: Coco Gauff beat her 6-4, 4-6, 7-6(6), one point at a time, deep into the night.
+There is a reason the ball conversation always spikes in August.
 
-## Toronto, and the 21-year-old on the other side of the net
+The North American hard-court swing runs on the Wilson ball, and it has a reputation among players for being jumpy and hard to control. That is a specific complaint with a specific consequence: when the ball behaves unpredictably off the strings, serving accuracy dips and neutral rallies get scrappier, and the players punished hardest are the ones whose game is built on precision rather than raw power.
 
-Which brings us back to Canada, and to the odd symmetry of what happens next.
+Add the conditions. August in Toronto, Montreal, Cincinnati and New York means heat and humidity, which is exactly the environment in which felt swells and balls slow down. Add the compression of the calendar, with players moving from a Masters event straight into another and then into a fifteen-day major. It is the moment in the season when the equipment is under the most stress and the bodies have the least recovery.
 
-The Canadian Open now runs as [a two-city event, women in Toronto and men in Montreal](/lifestyle/canadian-open-two-cities-toronto-montreal-2026/), on an expanded twelve-day format with 96-player draws. Bencic came in seeded twelfth and ranked twelfth. She beat Sloane Stephens 6-3, 6-1 in her opening match, then survived Townsend across those three hours and twenty-four minutes to reach the last sixteen.
+It is also the stretch of the year when the most withdrawals get announced. Correlation is not causation. But you can understand why the players keep pointing at the ball.
 
-Waiting for her is Alexandra Eala, and you could not script it better if you tried.
+Surfaces amplify all of this, incidentally. Clay grabs the felt and roughs it up faster than any other surface, which is one of many reasons the European spring feels like a different sport — something we dug into in our piece on [why crushed brick decides everything at Roland Garros](/lifestyle/roland-garros-clay-terre-battue-why-it-decides-everything/).
 
-Eala is 21, from the Philippines, and is currently living through the fortnight of her life. Last week she won the DC Open, beating Jessica Pegula 4-6, 6-4, 6-0 in a final that rain had pushed into an extra day, to become the first player from the Philippines to win a WTA Tour singles title. She arrived in Toronto on a winning streak that has now reached seven matches and a ranking of world number 20. We wrote about [her breakthrough and what she means to Filipino tennis](/lifestyle/alexandra-eala-philippines-first-tennis-star-berlin-grass-2026/) earlier this summer, and the noise around her in Toronto, a city with an enormous Filipino community, has been extraordinary.
+## What to look for from the sofa
 
-So: the 21-year-old having her Toronto moment, against the woman who had hers in this city at 18 and then spent eleven years discovering what comes after. They have never played each other before. Whatever happens, one of those two stories continues this week and the other pauses.
+Now that you know the rhythm, the ball ritual becomes genuinely fun to watch.
 
-The rest of the draw is not exactly quiet either. Leylah Fernandez, the Canadian, knocked out Mirra Andreeva in front of a home crowd that lost its mind. Diana Shnaider took out Pegula. And Elena Rybakina, [the quietest superstar in the sport](/lifestyle/elena-rybakina-quietest-superstar-toronto-2026-world-number-one/), is still in there working on the ranking maths. As second weeks go, Toronto is delivering.
+Count to seven games and wait for the tin. Watch which player is serving when the fresh ones arrive — servers love new balls, and a big hitter who gets them at 4-4 in a tight set has just been handed a small gift. Watch the squeeze-and-reject routine: the server is feeling for a ball with tight, even felt and no soft spots, and the one they hand back to the ballkid has usually failed some test only they can detect.
 
-## What to look for if you have never really watched her
+Watch, too, in the last games before a change. The ball is at its heaviest and slowest, and some of the best long rallies in any match happen in game eight or nine of a cycle, when neither player can hit through the other because the equipment will not let them.
 
-If you are going to watch Bencic for the first time, here is what makes her worth the ninety minutes.
+And listen. A fresh ball has a sharp, high pop off the strings. A dying one thuds. Once you can hear the difference, you will hear it constantly.
 
-She stands on the baseline. Not near it, on it. Most of the tour has quietly retreated two or three metres behind the line to buy reaction time against modern serving and modern forehands, and Bencic simply refuses to. She takes the ball as it rises. It means she gives her opponent almost no time between shots, and it means when she is slightly off, she is very off, because there is no margin built into where she is standing.
+## Where they all end up
 
-She redirects rather than overpowers. Watch what she does with a heavy cross-court ball: instead of adding pace to it, she changes its direction down the line early, so the point flips ownership in a single shot. It is a Hingis inheritance, and it is why she can beat players who hit the ball considerably harder than she does.
+One last thing, because it is the part of the story nobody televises.
 
-And she is a good watch under pressure now in a way she was not at 22. The Townsend match was decided by two tie-breaks and a single break in the third. The old Bencic might have lost that. The current one, by her own account, plays with the calm of someone for whom the result stops mattering the moment she gets back to the hotel room.
+Roughly a **billion** tennis balls are produced and discarded worldwide every year, and a pressurised rubber ball wrapped in glued wool felt is not a friendly object to dispose of.
 
-## The thing about second chapters
+Some tournaments handle it better than most. At Wimbledon, used match balls are sold to the public each day from a Wimbledon Foundation kiosk near Court 14, with proceeds going to the Foundation. Balls that are not sold get donated to clubs and schools that do not need championship-grade equipment, or recycled into cushioned matting for court surfaces.
 
-There is a version of the Bencic story that ends in 2015. Teenage prodigy beats Serena, wins Toronto, is anointed, gets injured, drifts. Tennis produces that story constantly, and it is usually the whole story.
+And a few thousand of them go somewhere considerably more charming. In partnership with Wildlife Trusts in Avon, Glamorgan and Northumberland, Wimbledon balls have been sliced open and mounted on poles between 75 centimetres and a metre and a half off the ground, where they become nesting boxes for harvest mice — Britain's smallest rodent, small enough to live comfortably inside a ball that Novak Djokovic once served with.
 
-What makes this one worth your attention is that the second chapter turned out to be longer and better than the first. The Olympic gold came six years after Toronto. The Wimbledon semi-final came four years after the gold, and a year after she had a baby. She is playing the best sustained tennis of her career at 29, having taken eighteen months out of the middle of it, and the ranking history she is making now is the kind that will still be cited when Bella is old enough to understand it.
+It is a lovely image, and it also cannot possibly scale. A few thousand mouse houses against a billion discarded balls is a rounding error. The sport has not solved this one; it has just found a very photogenic corner of it.
 
-Eleven years ago in this city she was the answer to a question about the future. She is not that any more, and she seems entirely at peace with it. She is just an exceptional tennis player, in the second week of a big tournament, with a toddler in the box and nothing left to prove to anybody.
+## The smallest thing on the court
 
-*Photo: Belinda Bencic at the 2023 DC Open by Hameltion, CC BY-SA 4.0, via Wikimedia Commons.*`;
+There is something quietly absurd about all of this. Tennis has spent the last few years arguing about electronic line calling, tie-break formats, calendar length and prize money — and all the while the object at the centre of every single point has been the thing doing the most damage and getting the least attention.
+
+That is finally shifting. The supplier calendar has been rebuilt. Ball-tracking data is being collected. A Challenger field in Kentucky spent the first week of August playing under rules nobody else uses, so that a committee meeting in New York can look at the numbers and decide whether the whole sport should follow.
+
+So the next time an umpire leans into the microphone and says those two words, give it the eleven seconds. Somewhere in that hiss of an opening tin is a wool fibre from New Zealand, a decision made in a boardroom, and a real argument about how long the people you have come to watch will be able to keep playing.
+
+*Photo: Rackets and balls on a clay court by KeepActive Australia, CC BY-SA 4.0, via Wikimedia Commons.*`;
 
 const record = {
   slug, title, excerpt, body,
@@ -131,7 +137,9 @@ const record = {
   published_at: stamp, updated_at: stamp,
   ai_model: 'claude-cloud-auto', ai_generated_at: stamp,
 };
+
 const { data, error } = await supabase.from('articles').upsert(record, { onConflict: 'slug' }).select('id,slug');
 if (error) { console.error('ERROR', error); process.exit(1); }
+console.log('OK', data);
 console.log('PUBLISHED_SLUG=' + slug);
 console.log('PUBLISHED_TITLE=' + title);
