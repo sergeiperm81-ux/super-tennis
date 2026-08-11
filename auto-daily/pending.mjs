@@ -1,134 +1,102 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'new-balls-please-why-tennis-argues-about-the-ball-2026';
-const stamp = '2026-08-10T05:00:00.000Z';
-const title = 'New Balls Please: Why Tennis Keeps Arguing About a Fuzzy Yellow Ball';
+const slug = 'elina-svitolina-toronto-2026-best-tennis-of-her-life-at-31';
+const stamp = '2026-08-11T05:00:00.000Z';
+const title = 'Elina Svitolina at 31: Toronto, a 10-match streak and Swiatek next';
 const meta_title = title;
-const meta_description = 'Every nine games an umpire says new balls please. Behind those two words sit a 50,000-mile supply chain, an injury row and a live ATP experiment.';
-const excerpt = 'Two words from the umpire, a scramble of ballkids, and a fresh tin cracked open. The tennis ball looks like the simplest object in sport. It is currently the most argued-over thing on tour.';
-const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Tennis_Racquets_and_Balls_on_a_Clay_Court.jpg/500px-Tennis_Racquets_and_Balls_on_a_Clay_Court.jpg';
-const image_alt = 'Tennis rackets and balls resting on a red clay court';
+const meta_description = 'Elina Svitolina is 31, ranked No. 9 and playing the best tennis of her life. Inside the Toronto run, the Rome title, Ukraine and the Swiatek semifinal.';
+const excerpt = 'She lost the first set, then won 11 of the next 12 games. At 31, with a three-year-old at home and Ukraine on her mind, Elina Svitolina is having the season of her career.';
+const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Elina_Svitolina_%282023_DC_Open%29_28_%28cropped%29.jpg/500px-Elina_Svitolina_%282023_DC_Open%29_28_%28cropped%29.jpg';
+const image_alt = 'Elina Svitolina of Ukraine on court at the 2023 DC Open';
 
-const body = `Two words, murmured into a microphone, and everything on court changes rhythm. **New balls, please.** The ballkids break into a jog. A sealed tin hisses open somewhere behind the baseline. Six bright yellow spheres get rolled out, the server picks two, squeezes them, rejects one, squeezes another, and play resumes. If you are watching at home with a drink in your hand, the whole ritual takes about eleven seconds and you probably use it to check your phone.
+const body = `There is a particular silence that falls over a tennis crowd when a match turns, and on Monday night in Toronto it lasted about twenty minutes. Ekaterina Alexandrova had just taken the first set 6-3, hitting the ball so flat and so early that Elina Svitolina looked like a woman defending a house with a broom. Then Svitolina won eleven of the next twelve games. The second set was 6-0. By the time she led 5-1 in the decider, the noise coming down from the stands at Sobeys Stadium was not the polite appreciation you get for a good rally. It was the sound of people realising they were watching something.
 
-Do not. That little ceremony is, right now, the centre of the loudest argument in professional tennis — an argument about wrists and elbows and shoulders, about whether the sport has been quietly grinding down the arms of the people who play it, and about whether a ball that costs a couple of pounds can end careers. As the National Bank Open works through its second week in Toronto and Montreal, and the tour points itself at New York, the ball is the thing players keep being asked about, and the thing they keep having opinions on.
+She closed it out 3-6, 6-0, 6-3 in an hour and thirty-three minutes, and with that she is into the semi-finals of the National Bank Open. She is 31 years old. She has a three-year-old daughter. She is ranked No. 9 in the world. And by any honest reading of the numbers, she is playing the best tennis of her life.
 
-Here is what that fuzzy yellow object actually is, why it dies so quickly, why the best players in the world are furious about it, and what tennis is finally doing in response.
+If you follow tennis the way most of us do — a few matches here, the highlights there, the second week of the Slams properly — Svitolina is easy to miss. She has been on tour since she was a teenager. She has never won a Grand Slam. She does not have a signature outfit or a viral celebration. What she has, in 2026, is the kind of season that makes you go back and check the dates, because it does not look like the season of a player in her thirties. It looks like the season of somebody arriving.
 
-## The rule almost nobody knows
+## The streak nobody was counting
 
-Start with the ritual itself, because the numbers are stranger than you would guess.
+Here is the number that should have been in bigger type all week: ten. Svitolina has now won ten matches in a row at WTA 1000 level, the tier immediately below the Grand Slams, where the fields are deepest and the byes run out fastest. That streak runs back through her title in Rome in May and straight through this fortnight in Toronto without a loss.
 
-Under the sport's regulations, balls are changed for the first time after **seven** games, and then every **nine** games after that. Not nine from the start. Seven, then nine, forever.
+The Toronto semi-final is her fourth WTA 1000 semi-final of 2026 — more than any other player on tour this season, in a year when the top of the women's game has been as crowded and as volatile as anyone can remember. It is the sixteenth of her career, which tells you how long she has been showing up at this level, and how rarely she has been given credit for it.
 
-The reason for that odd first number is beautifully practical: the warm-up. Players spend several minutes before the first point hitting with the match balls, so those balls arrive at 1-0 already slightly used. The extra two games of grace at the front simply account for the mileage the ball racked up before anyone was keeping score.
+Alexandrova was not a soft draw either. The Russian, seeded 16th, had knocked out the world No. 1 two rounds earlier, beating Aryna Sabalenka 7-6(3), 4-6, 6-4 in a match that took nearly two and a half hours and effectively blew the top half of the draw open. Svitolina had already taken out Amanda Anisimova, the No. 8 seed, 6-2, 6-4. This is not a run built on other people's misfortune. It is a run built on beating the people in front of her.
 
-Once you know it, you cannot unsee it. Count the games in the first set of the next match you watch. At the changeover after the seventh game, the tin comes out. Then the ninth after that. The whole match runs to that metronome, and the players track it in a way you would find slightly unnerving — they know, at any moment, exactly how old the ball in their hand is and how many games it has left. It is a small tactical layer running underneath everything else, and it never appears on the scoreboard.
+## A season that keeps outgrowing itself
 
-## What a tennis ball has to be
+Start in January, in Auckland, where she won the title before most of the tour had finished unpacking. Then Melbourne, where she beat Coco Gauff 6-1, 6-2 in the quarter-finals — an hour of tennis so lopsided it made the American look like she had wandered into the wrong stadium — and reached her first Australian Open semi-final. First. She had played that tournament for more than a decade and never gone past the last eight. At 31, she went one better, and only Sabalenka, who beat her 6-2, 6-3 on the way to a fourth straight final, stopped her.
 
-The ball is one of the most tightly specified objects in sport. To be approved for professional play, it has to weigh between **56.0 and 59.4 grams** and measure between **6.54 and 6.86 centimetres** across. Those tolerances are tiny. The difference between the lightest legal ball and the heaviest is about the weight of a two-pence coin.
+Then Dubai, and a final, where Jessica Pegula beat her 6-2, 6-4. Then Indian Wells in March, where she beat Iga Swiatek 6-2, 4-6, 6-4 in the quarter-finals and reached the last four in the desert.
 
-Then there is the bounce test, which is delightfully low-tech for a sport with electronic line calling. A ball is dropped from **100 inches** onto concrete. It has to come back up between **53 and 58 inches**. That is it. That is the standard the whole professional game rests on.
+And then Rome, which is the one that will be in the record books long after the rest of it blurs. Svitolina beat Swiatek again in the semi-final, 6-4, 2-6, 6-2, and then beat Gauff in the final, 6-4, 6-7(3), 6-2, to win the Italian Open for the third time, nine and eight years after the first two. At 31 years and eight months she became the oldest woman to win three titles at the same WTA 1000 event, and the oldest to beat three top-five opponents at a single WTA 1000 event — a record that had belonged to Serena Williams. Twenty tour-level singles titles now, two of them from this season alone.
 
-Balls also come in speed categories, and the naming is the sort of thing that makes newcomers throw their hands up. Type 1 is the *fast* ball — and it is designed for *slow* surfaces. Type 3 is the *slow* ball, designed for *fast* surfaces. Type 2 sits in the middle. The logic is compensation rather than description: you put a quicker ball on a sluggish court and a draggier ball on a skiddy one, aiming for something like a consistent experience for the viewer and the player. There are high-altitude balls too, made with lower internal pressure, because thin mountain air lets a normal ball fly like it has been fired from something.
+Her ranking, as of the most recent list, is No. 9, with 4,459 points. Her career high is No. 3, set in February 2018, when she was 23 and being talked about as the next great thing. Eight years on, nobody is calling her the next anything. They are just having to deal with her.
 
-Court surface changes everything about how that ball behaves once it lands, which is why the same tin plays like a different product depending on where you open it. If you have never quite worked out why the same players look like different athletes from one month to the next, our guide to [the different court surfaces and what they do](/lifestyle/tennis-court-types-explained/) is the place to start.
+## What happened in the middle
 
-## The 50,000-mile ball
+The reason this season reads strangely is that there is a hole in the middle of her career where a peak should be.
 
-Now for the fact that tends to stop people mid-sentence.
+In 2022 she stopped playing. Her daughter, Skai, was born that October. Svitolina came back in 2023 with a ranking that had all but evaporated, and within a few months she was in a Wimbledon semi-final, having beaten a world No. 1 on the way. That summer was treated at the time as a lovely story, a nice postscript. It turned out to be the prologue.
 
-The official Wimbledon ball, before it is ever struck, travels roughly **50,570 miles** through **11 countries** across **four continents**.
+Coming back after a baby is not a matter of fitness alone, and Svitolina has been unusually straight about that. The body changes. The calendar becomes a logistics problem involving cots, flights, childcare and grandparents. The thing that changes most, though, is the weighting. A bad loss is still a bad loss, but it is no longer the largest thing in the room when you get back to the hotel. Plenty of players have said a version of this. Svitolina is one of the few who has gone out and converted it into results at the sharp end of WTA 1000s, and she is part of a much broader shift on tour that we looked at in our piece on [the parenthood generation](/lifestyle/tennis-parenthood-generation-2026-mothers-fathers-on-tour/) — the players who now travel with a pram in the entourage and treat it as completely normal, because it finally is.
 
-Clay comes from South Carolina. Silica from Greece. Magnesium carbonate from Japan. Zinc oxide from Thailand. Sulphur from South Korea. Rubber from Malaysia. All of it converges on a factory in Bataan, in the Philippines, where the rubber is vulcanised into the core. The wool, meanwhile, is shipped from New Zealand to Stroud in Gloucestershire, where it is woven into felt — and then flown back to the Philippines to be glued onto the cores. Petroleum naphthalene arrives from China. Glue from Basilan. The tins come from Indonesia. And then the finished, pressurised, packaged balls make one last journey of around 6,660 miles to a corner of south-west London so that someone can hit one into the net on a Tuesday.
+## The handshake that does not happen
 
-That is not a scandal, exactly. It is what a globalised supply chain looks like when you follow a single small object all the way through it. But it does reframe the thing sitting on the baseline. The ball is not simple. It is the most travelled participant at any tournament.
+There is one moment in every Svitolina win that does not look like a celebration, and if you have not been following the story you might miss what it means.
 
-## Why balls die
+In the third round in Toronto she beat Anastasia Potapova in straight sets and then did not shake hands at the net. She has not shaken hands with Russian or Belarusian opponents since Russia invaded her country in February 2022, and she does not make a performance of it: she walks to the umpire, acknowledges the chair, and goes to her bag. Potapova has represented Austria since a change of sporting nationality in December 2025. It did not alter Svitolina's position. The point she has made, repeatedly and in public, is that the passport on the entry list is not the issue; what the players say about the war is.
 
-A tennis ball has two enemies, and both of them win.
+Ukrainian players have asked the sport for something concrete — a written declaration condemning the invasion as a condition of competing, and an end to state funding of players from the invading countries. Tennis has not gone anywhere near that. So the message, for now, gets carried match by match, by a small group of players who have spent four years being asked about it at press conferences after losses as well as wins.
 
-The first is fluff. Every strike, every skid across the court, drags the felt outwards. A new ball is smooth and tight and cuts through air. A nine-game-old ball is shaggy, and that fuzz creates drag: it flies slower, sits up higher, and takes more effort to hit through. Ball inspectors and ballkids are trained to look for exactly this. As one Wimbledon description of the job puts it, you are looking for a lack of fluff.
+It has also, this season, been carried by trophies. Marta Kostyuk won Madrid; Svitolina then won Rome — back-to-back WTA 1000 titles for a country whose training facilities have been shelled. If you want the fuller version of that generation's story, our feature on [Kostyuk's run in Paris](/lifestyle/marta-kostyuk-first-ukrainian-roland-garros-semifinal-2026/) covers it properly. Svitolina, for her part, has spent years raising money through her foundation for Ukrainian children, and has been blunt about what she thinks sport owes a country at war.
 
-The second is pressure. Almost every professional ball is pressurised — there is compressed gas inside the rubber core, and that is what gives you the crisp, alive bounce. From the second the tin is opened, that gas begins escaping through the rubber. Slowly at first, then not so slowly under repeated impact. By the end of its nine games a match ball has measurably less bounce than it had at the start, and the players are the ones absorbing the difference.
+## The other half of the household
 
-Heat and humidity accelerate all of it. Warm air makes the gas inside expand, giving a livelier bounce; damp air soaks into the felt and makes the ball heavier and slower. Which is why Wimbledon keeps its balls in courtside refrigerators at a constant **20 degrees Celsius** until the moment they are needed. The All England Club gets through around **54,250 balls** in a fortnight — close to 2,000 a day — and every one of them is chilled before it goes out.
+You cannot tell this season without Gael Monfils, and this year that is a bittersweet sentence.
 
-Wimbledon has used **Slazenger** balls since **1902**, which makes it the longest-running partnership in the sport. The other three majors go their own way: Dunlop has supplied the Australian Open since 2019 and renewed through the end of the decade; Wilson supplies both Roland Garros and the US Open. Four majors, three brands, four distinct feels — and that is before you count the dozens of regular tour events in between.
+Monfils, her husband, is 39 and retiring. He announced last October that 2026 would be his final season, and in May he played his last Roland Garros, going out to his compatriot Hugo Gaston in five sets. The cameras, inevitably, found Svitolina in the stands, and she was in tears — not the tidy, photogenic kind, but the sort you get when somebody you love is finishing the only job they have ever had. We wrote about that farewell at the time in [Monfils and his last Roland Garros](/lifestyle/gael-monfils-roland-garros-farewell-2026/), and it is worth reading alongside what she is doing now, because the two things are happening in the same house.
 
-## The argument
+There is a symmetry to it that is almost too neat: one career winding down at 39, the other reaching an unexpected high at 31, and a three-year-old in the middle of it who thinks that airports and racket bags are simply what families are. Svitolina wrote an open letter to Skai in The Players' Tribune, and the line people kept quoting was about her daughter maybe, one day, being the one out there playing. It reads less like a prediction than like a woman describing the reason she keeps getting on planes.
 
-Which brings us to the fight.
+## Wednesday night: Swiatek, again
 
-For several years now, a steady stream of the world's best players have said the same thing in different words: the ball changes too often between tournaments, and their arms are paying for it.
+The semi-final is on Wednesday evening at Sobeys Stadium, and it is the rematch the draw has been pointing at since Sunday.
 
-Novak Djokovic has been the most direct. "There is certainly a connection between frequent injuries of the wrist, elbow, and shoulder with ball changes," he has said, adding that he is "absolutely in favour of choosing one ball with which we will play all ATP tournaments." Daniil Medvedev — who once compared a particularly bloated batch to grapefruit — has spoken about worrying that he will have shoulder pain for the rest of his life. Alexander Zverev, Stefanos Tsitsipas, Stan Wawrinka and Sebastian Korda have all raised versions of the same complaint.
+Iga Swiatek, seeded seventh here, has been merciless this fortnight. Her quarter-final against Diana Shnaider took 64 minutes and finished 6-2, 6-1. She is a six-time Grand Slam champion, she is 25, and she is the closest thing the modern women's game has to a machine with a warranty.
 
-The mechanism they describe is not mysterious. As a ball loses pressure and gains fluff, you have to swing harder to produce the same speed and spin. Do that thousands of times a week and the load lands on the wrist, elbow, forearm and shoulder. Now change the brand next week so the ball is a fraction heavier or livelier, and the body has to recalibrate that load all over again. Repeat across an eleven-month season.
+And yet. The head-to-head is Swiatek 4, Svitolina 3 — and both 2026 meetings have gone to Svitolina, in three sets, on two different surfaces. Indian Wells in March: 6-2, 4-6, 6-4. Rome in May: 6-4, 2-6, 6-2. Swiatek's only other semi-final this season was also against Svitolina, and she lost that one too. Whatever the ranking gap says, the Ukrainian has found something in this match-up that most of the tour has not, and she has found it twice this year already.
 
-The circumstantial evidence has piled up. Carlos Alcaraz lost most of his 2026 to a wrist problem, missing both Roland Garros and Wimbledon — a lost summer we wrote about [when the Wimbledon withdrawal was confirmed](/lifestyle/carlos-alcaraz-misses-wimbledon-2026-wrist-injury-lost-summer/). Jack Draper has managed arm trouble through his rise. Taylor Fritz has dealt with forearm issues. None of that proves the ball did it — arm injuries in a sport built on repetitive one-armed acceleration have plenty of candidate causes, and modern racket and string technology asks more of the joints than the wooden era ever did. For a wider look at what actually breaks down in a tennis player, our rundown of [the injuries that define careers](/lifestyle/tennis-injuries-common/) covers the rest of the body too.
+Part of it is stylistic. Swiatek's game is built on spin and on taking time away, and it works best against players who want to swing freely and be given a rhythm to swing into. Svitolina gives her neither. She stands in, blunts the heavy forehand, and turns the match into a series of decisions rather than a series of exchanges. Both 2026 meetings followed roughly the same shape: Swiatek won a set comfortably, Svitolina refused to go away, and the third set turned on four or five points that came down to who was still choosing well after two hours.
 
-And not everyone in the locker room is convinced. Casper Ruud has said openly that he is tired of the ball being made into a drama every week. That dissent matters, because it is a reminder that this is a genuine dispute among professionals rather than a settled fact — some players believe the ball is wrecking arms, and others believe it has become the tour's favourite excuse.
+The winner plays for the title on Thursday afternoon, at the tournament Svitolina won in 2017, when she beat Caroline Wozniacki 6-4, 6-0 in the final and was the hottest player on tour. Nine years is a long time between visits to a final in a place like this. Most careers do not offer a second window. Hers has.
 
-## What tennis is actually doing about it
+## What is actually at stake
 
-The interesting development is that the governing body stopped treating this as noise.
+For the neutral, the pleasant thing about this week is that it matters without being a Slam. Nobody is playing for a place in history on Thursday afternoon. They are playing for a large trophy, a serious number of ranking points, and the confidence that decides how the next month goes.
 
-Since 2023 the ATP has gathered feedback through more than **3,500 player surveys**. In **2025** it did something structurally significant: it centralised the ball-supplier selection process, taking it away from individual tournaments choosing their own suppliers independently and coordinating it across the calendar instead. Swings that used to be a patchwork — the February indoor stretch in Europe, the outdoor events in the Americas and Middle East, the European spring clay run — were aligned onto common balls. In **2026** that alignment has been pushed further still, so that almost every swing on the calendar now runs on a consistent manufacturer.
+That next month is brutal. The tour barely pauses: the Cincinnati Open begins in Ohio this week, with main-draw play starting on Thursday, which means anyone who reaches Thursday's final in Toronto will be crossing a border and changing time zones while their opponents in Ohio have already had two days of practice on site. Then comes the US Open at the end of the month, the loudest fortnight in the sport, on the same kind of hard court where Svitolina reached the semi-finals back in 2019.
 
-That is a real answer to the loudest version of the complaint. If the problem is that the ball is different every week, then making it the same for six or eight weeks at a stretch removes a large part of the variable.
+So a title here is worth more than a title. It would move her back towards the top five and, more usefully, hand her a seeding at Flushing Meadows that keeps the very best players away from her until the second week. That is the unglamorous arithmetic behind the glamour, and it is one reason players in their thirties tend to arrive at the US Open either flying or wrecked, with very little in between. Svitolina, on current evidence, is flying.
 
-But it does not touch the second complaint: that within a single match, on hard courts, the ball degrades far too fast.
+## What to watch for, if you do not play
 
-So this month tennis ran an experiment. At the Challenger event in **Lexington** from **3 to 9 August**, the tour trialled a completely different ball-change schedule: the first change after **five** games, then every **seven** thereafter, instead of the standard seven and nine. Backed by the Player Advisory Council and prompted directly by player feedback about hard-court ball wear, the trial collected ball-tracking data through the week. Those findings are due to be reviewed when the council next meets, during the US Open.
+Svitolina's tennis does not announce itself, which is part of why she has spent a decade being underrated, and it is worth knowing what to look for.
 
-It is a modest-sounding tweak with large implications. Shortening the cycle means fresher, livelier balls for more of every match, which means less of the heavy, laboured hitting players blame for their arms. It also means more balls consumed per match, more interruptions, and a subtly different sport: more free points on serve, shorter rallies, a faster and possibly less interesting spectacle. Nobody gets to have both.
+She is not a first-strike player. She will not blow three winners past you in a game. What she does is refuse to give you a free point, ever. The ball comes back deep, usually to the middle third of the court where there is no angle to work with, and it comes back at a slightly awkward height. Her movement is the real weapon: she takes away the corners that other players think they have earned, so opponents start aiming an extra six inches closer to the line, and then the errors arrive on their own. That is what happened to Alexandrova on Monday. Nothing dramatic changed. The Russian simply had to hit one more good ball per rally than she wanted to, and the second set went 6-0.
 
-## Why this fortnight in particular
+Watch her between points, too. The pace never rises. She takes the same amount of time down a set as she does up a break, walks the same route to the towel, and her face gives away roughly nothing. In a sport where matches are frequently lost in the eight seconds after a bad miss, that flat, unhurried rhythm is not a personality quirk. It is a shot in itself. Her full record, and how the numbers stack up against the rest of the top ten, is on her [player page](/players/elina-svitolina/).
 
-There is a reason the ball conversation always spikes in August.
+## The thing about second acts
 
-The North American hard-court swing runs on the Wilson ball, and it has a reputation among players for being jumpy and hard to control. That is a specific complaint with a specific consequence: when the ball behaves unpredictably off the strings, serving accuracy dips and neutral rallies get scrappier, and the players punished hardest are the ones whose game is built on precision rather than raw power.
+The easy story to tell about Elina Svitolina is redemption, and it is the wrong one. She was never lost. She won the WTA Finals in 2018. She took Olympic bronze in Tokyo. She made Slam semi-finals in 2019 and again, absurdly, months after giving birth. She has been very good for a very long time, in a way that generates respect rather than headlines.
 
-Add the conditions. August in Toronto, Montreal, Cincinnati and New York means heat and humidity, which is exactly the environment in which felt swells and balls slow down. Add the compression of the calendar, with players moving from a Masters event straight into another and then into a fifteen-day major. It is the moment in the season when the equipment is under the most stress and the bodies have the least recovery.
+What is happening in 2026 is different, and stranger. This is not a player hanging on and getting a nice week. This is a player whose game has apparently improved at an age when the sport expects the opposite, in a year when she has beaten the world No. 1's closest rivals repeatedly, on hard courts and clay, in three-set matches that were decided by whoever was still thinking clearly at 4-4 in the third. That is not luck, and it is not a farewell tour. It is a peak, arriving late and completely uninvited.
 
-It is also the stretch of the year when the most withdrawals get announced. Correlation is not causation. But you can understand why the players keep pointing at the ball.
+On Wednesday night in Toronto she will walk out to face Iga Swiatek, in front of a crowd that has already decided who it likes. Somewhere behind that, in a hotel room with the television on or fast asleep, there is a three-year-old who will not remember a second of it. She will not need to. There is going to be tape.
 
-Surfaces amplify all of this, incidentally. Clay grabs the felt and roughs it up faster than any other surface, which is one of many reasons the European spring feels like a different sport — something we dug into in our piece on [why crushed brick decides everything at Roland Garros](/lifestyle/roland-garros-clay-terre-battue-why-it-decides-everything/).
-
-## What to look for from the sofa
-
-Now that you know the rhythm, the ball ritual becomes genuinely fun to watch.
-
-Count to seven games and wait for the tin. Watch which player is serving when the fresh ones arrive — servers love new balls, and a big hitter who gets them at 4-4 in a tight set has just been handed a small gift. Watch the squeeze-and-reject routine: the server is feeling for a ball with tight, even felt and no soft spots, and the one they hand back to the ballkid has usually failed some test only they can detect.
-
-Watch, too, in the last games before a change. The ball is at its heaviest and slowest, and some of the best long rallies in any match happen in game eight or nine of a cycle, when neither player can hit through the other because the equipment will not let them.
-
-And listen. A fresh ball has a sharp, high pop off the strings. A dying one thuds. Once you can hear the difference, you will hear it constantly.
-
-## Where they all end up
-
-One last thing, because it is the part of the story nobody televises.
-
-Roughly a **billion** tennis balls are produced and discarded worldwide every year, and a pressurised rubber ball wrapped in glued wool felt is not a friendly object to dispose of.
-
-Some tournaments handle it better than most. At Wimbledon, used match balls are sold to the public each day from a Wimbledon Foundation kiosk near Court 14, with proceeds going to the Foundation. Balls that are not sold get donated to clubs and schools that do not need championship-grade equipment, or recycled into cushioned matting for court surfaces.
-
-And a few thousand of them go somewhere considerably more charming. In partnership with Wildlife Trusts in Avon, Glamorgan and Northumberland, Wimbledon balls have been sliced open and mounted on poles between 75 centimetres and a metre and a half off the ground, where they become nesting boxes for harvest mice — Britain's smallest rodent, small enough to live comfortably inside a ball that Novak Djokovic once served with.
-
-It is a lovely image, and it also cannot possibly scale. A few thousand mouse houses against a billion discarded balls is a rounding error. The sport has not solved this one; it has just found a very photogenic corner of it.
-
-## The smallest thing on the court
-
-There is something quietly absurd about all of this. Tennis has spent the last few years arguing about electronic line calling, tie-break formats, calendar length and prize money — and all the while the object at the centre of every single point has been the thing doing the most damage and getting the least attention.
-
-That is finally shifting. The supplier calendar has been rebuilt. Ball-tracking data is being collected. A Challenger field in Kentucky spent the first week of August playing under rules nobody else uses, so that a committee meeting in New York can look at the numbers and decide whether the whole sport should follow.
-
-So the next time an umpire leans into the microphone and says those two words, give it the eleven seconds. Somewhere in that hiss of an opening tin is a wool fibre from New Zealand, a decision made in a boardroom, and a real argument about how long the people you have come to watch will be able to keep playing.
-
-*Photo: Rackets and balls on a clay court by KeepActive Australia, CC BY-SA 4.0, via Wikimedia Commons.*`;
+*Photo: Elina Svitolina at the 2023 DC Open, CC BY-SA, via Wikimedia Commons.*`;
 
 const record = {
   slug, title, excerpt, body,
@@ -137,9 +105,7 @@ const record = {
   published_at: stamp, updated_at: stamp,
   ai_model: 'claude-cloud-auto', ai_generated_at: stamp,
 };
-
 const { data, error } = await supabase.from('articles').upsert(record, { onConflict: 'slug' }).select('id,slug');
 if (error) { console.error('ERROR', error); process.exit(1); }
-console.log('OK', data);
 console.log('PUBLISHED_SLUG=' + slug);
 console.log('PUBLISHED_TITLE=' + title);
