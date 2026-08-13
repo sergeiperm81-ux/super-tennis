@@ -1,106 +1,108 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'alexander-zverev-cincinnati-2026-top-seed-first-slam-champion';
-const stamp = '2026-08-12T05:00:00.000Z';
-const title = 'The Best Draw of His Life: Alexander Zverev Arrives in Cincinnati as Top Seed';
+const slug = 'montreal-2026-final-college-tennis-route-shelton-nakashima';
+const stamp = '2026-08-13T05:00:00.000Z';
+const title = 'Montreal 2026: The Masters Final That College Tennis Built';
 const meta_title = title;
-const meta_description = 'Sinner and Alcaraz are out injured and the top seed in Cincinnati is a first-time major champion. Why these eleven days matter so much to Alexander Zverev.';
-const excerpt = 'He spent eleven years being told his Grand Slam was coming next year. Two months after it finally arrived in Paris, Alexander Zverev walks into an Ohio hard-court fortnight with both men above him missing.';
-const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Alexander_Zverev_%2830004409818%29.jpg/500px-Alexander_Zverev_%2830004409818%29.jpg';
-const image_alt = 'Alexander Zverev holding a tour trophy, the German is the top seed at the 2026 Cincinnati Open';
+const meta_description = 'Ben Shelton and Brandon Nakashima meet in the Montreal final and both took the American college route. Inside the pipeline tennis stopped laughing at.';
+const excerpt = 'Two former college players contest the Montreal final, all four semi-finalists wore a university shirt, and a Stanford graduate made the Wimbledon semis. The college route is not a consolation prize any more.';
+const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Fery_WMQ22_%2813%29_%2852191184348%29.jpg/500px-Fery_WMQ22_%2813%29_%2852191184348%29.jpg';
+const image_alt = 'Arthur Fery, a Stanford graduate turned Wimbledon semi-finalist, playing on grass in tennis whites';
 
-const body = `For eleven years, the most dependable joke in tennis was that Alexander Zverev would win a Grand Slam next year. It was told kindly at first, when he was a 19-year-old beanpole with a serve like a dropped piano and a forehand that people compared to things rather than to other players. It was told less kindly later. By the time he was 27 it had curdled into something closer to a diagnosis: brilliant, durable, unlucky, and somehow always standing in the wrong place when the trophy was handed over.
+const body = `The two men walking out for the final in Montreal on Thursday night share a detail that would have been treated as a punchline twenty years ago. Before either of them played a professional match that mattered, they went to university.
 
-Then, on a Sunday afternoon in June, the joke stopped working.
+Ben Shelton spent two years at the University of Florida. Brandon Nakashima spent one at the University of Virginia. Between them they have a Masters 1000 title, a US Open semi-final, an NCAA singles championship and a share in a national team title, and on Thursday one of them will lift the National Bank Open trophy at IGA Stadium. If you have followed tennis for any length of time, you will remember when American college tennis was described — gently, but constantly — as the place you went when the tour did not want you. That description is out of date, and this week in Canada is the loudest evidence yet.
 
-This week the man who ended it walks into a tennis club in the Ohio suburbs as the highest-ranked player in the building, and if you have only been half-watching tennis this summer, you might not have registered how strange and how significant that is. The Cincinnati Open runs from 13 to 23 August. The world No. 1 is not there. The world No. 2 is not there. The player at the top of the draw is a 29-year-old German who, until ten weeks ago, was the best player alive without a major title.
+## A Wednesday night that told the whole story
 
-## A Masters 1000 in a cornfield suburb
+Nakashima got there first. He beat Rafael Jodar 7-6(3), 6-4 in the opening semi-final, a match between two men who both wore the orange and navy of Virginia, in different eras, never in the same season. It was the first Masters 1000 final of Nakashima's career, arriving at 25, six and a half years after he left Charlottesville with a single college season behind him and an ACC Freshman of the Year award in his bag.
 
-Start with the place, because it is one of the great oddities of the tennis calendar. The Cincinnati Open is not really in Cincinnati. It is played at the Lindner Family Tennis Center in Mason, a suburb about twenty miles north-east of the city, on a site that for decades felt like a county fair that happened to have Grand Slam champions wandering through it. You could stand three feet from the best player in the world on a practice court with a paper cup of lemonade in your hand. Fans loved it precisely because it did not feel grand.
+Then Shelton, the defending champion, dealt with Learner Tien 6-2, 6-3 under the lights to set up an all-American final. Shelton won this title last year in Toronto — the men and women swap cities each summer — beating Karen Khachanov 6-7(5), 6-4, 7-6(3) in a final that ran to three hours of pure nerve. He became the youngest American man to win a Masters title since Andy Roddick in 2004. He is 23 now, and he is the closest thing the college system has to a billboard.
 
-It has grown up since. A campus transformation worth around 260 million dollars has roughly doubled the footprint of the site, added new stadium seating and shade and space to breathe, and let the tournament expand its singles fields to 96 players. That is why the event now sprawls across eleven days instead of a tidy week: with 96 in the draw, 32 seeds, twelve qualifiers and five wildcards, there is simply more tennis to fit in. The total prize money this year is 9,415,725 dollars, and the champion walks away with 1,151,380 of it, plus the 1,000 ranking points that actually matter more to the people playing.
+Nakashima is worth pausing on, because his version of the college route was the shortest possible one. He enrolled early at Virginia as a 17-year-old from San Diego, went 17-5 in singles and 20-3 in doubles in his one season, collected the ACC Freshman of the Year award, and announced in December 2019 that he was leaving to turn professional. Six years of steady, unglamorous work followed: a career-high of No. 29 in May 2025, a reputation as one of the cleanest ball-strikers on tour, and a persistent sense among people who watch closely that he was better than his results. This week the results caught up.
 
-What has not changed is the weather. Ohio in mid-August is a wet blanket. The humidity sits on the court in the afternoon and does not lift until the lights come on, and every year somebody with a beautiful game gets beaten less by an opponent than by the air. Watch the towel routines. Watch how many players change shirts at every changeover. Cincinnati has always been where the summer starts to cost something.
+Look at the four semi-finalists again, because the pattern is the point. Shelton: Florida. Nakashima: Virginia. Jodar: Virginia. Tien: a short spell at USC in early 2023, joining the Trojans mid-season, going unbeaten in dual matches before deciding his game was ready and turning professional later that year. Every single one of them had, at some stage, pulled on a university shirt and played for a team. At a Masters 1000 semi-final stage. In 2026.
 
-## The draw that opened up
+That is not a coincidence, and it is not a quirk of one draw. It is the visible end of a change that has been building for a decade.
 
-Here is the situation Zverev has walked into. Jannik Sinner, the world No. 1, is not playing: a troublesome right knee. Carlos Alcaraz, the defending champion here and the world No. 2, is not playing either, still managing the right wrist that has shadowed his entire season — the injury that took him out of Roland Garros and then out of Wimbledon, and turned what should have been his summer into a long, frustrating wait. You can read our account of [what that wrist has cost him](/lifestyle/carlos-alcaraz-misses-wimbledon-2026-wrist-injury-lost-summer/) if you missed it.
+## The Spaniard who flew the wrong way
 
-Subtract those two from a hard-court Masters 1000 and the whole thing tilts. Zverev, ranked No. 3, becomes the top seed. Novak Djokovic, seeded and still capable of turning any fortnight into his own, is a three-time champion at this event and remains the most dangerous name in the draw. But the two men who have spent two years dividing the sport's biggest trophies between them are both at home with ice packs.
+If you want the story in one player, take Jodar.
 
-On the women's side there is no such vacuum. Iga Swiatek is back to defend the title she won last year, Aryna Sabalenka heads the draw, and Elena Rybakina, Jessica Pegula and Coco Gauff anchor the remaining quarters — a genuinely open week with the No. 1 ranking still live between the top two. The women arrive in Ohio with everything to play for. The men arrive with a hole at the top of the sheet, and the question of who has the nerve to step into it.
+He is Spanish, from Madrid, born in September 2006, and by the ordinary logic of European tennis he should never have seen an American campus. Spain has the academies, the clay, the coaches, the tradition. He had also just won the US Open boys' singles title in 2024, beating Nicolai Budkov Kjaer in the final, which is the kind of result that normally comes with a racket contract and a plane ticket to the Challenger circuit.
 
-## Eleven years of nearly
+Instead he went to Virginia. One season. He was named ACC Freshman of the Year and ITA National Rookie of the Year in the spring of 2025, and then, at the end of that year, he gave up his remaining college eligibility and turned professional. What followed was almost silly: three Challenger titles in the autumn of 2025, including Lincoln and Charlottesville, then tour-level wins through 2026 at the Australian Open, Dallas, Delray Beach, Acapulco and Miami. He reached a career-high of world No. 22 on 1 June 2026. He is 19.
 
-If you do not follow tennis closely, Zverev may exist in your head as a name rather than a person. Here is the shape of him.
+This week he became, by the reckoning of the people who track such things, the first player born in 2006 or later to reach a Masters 1000 semi-final. Twelve months ago he was a college kid ranked outside the top 500, playing matches in front of a few hundred students, doing homework on the bus. If that sounds like a fairy tale, remember what it actually took: a year of team practice, a coaching staff who knew him, a schedule that let him grow into his body without hunting ranking points every week in a different country.
 
-He is 198 centimetres tall — six foot six — and moves like someone considerably smaller, which is the first thing that makes him worth watching. He was born in Hamburg to a Russian tennis family; his father played Davis Cup for the Soviet Union, his mother coached, and his older brother Mischa was a top-30 player who now travels with him. He turned professional at 16. By 20 he was beating Roger Federer in a Masters 1000 final. By 21 he had won the ATP Finals, the season-ending event where the best eight play off, beating Federer and Djokovic back to back to do it. He won it again in 2021. He won Olympic gold in Tokyo the same year. He has 24 tour-level titles.
+The Spanish teenager who chose Virginia is the sharpest possible answer to the old snobbery. He did not go to college because nobody wanted him. He went because it was the better plan.
 
-And for a decade none of it counted in the only currency that tennis really keeps score in.
+## When college was the road, not the detour
 
-He lost the 2020 US Open final to Dominic Thiem from two sets up, five games from the title, and then lost the fifth set in a tie-break. He lost the 2024 Roland Garros final to Alcaraz in five. He lost the 2025 Australian Open final to Sinner. Three finals, three defeats, and in between them a broken ankle in Paris in 2022 that required surgery and cost him most of a year, plus the low-grade public assumption that whatever it is that turns a great player into a champion, he did not have it.
+None of this is new, exactly. It is a return.
 
-That is a specific kind of career to carry around. Not failure — nobody with an Olympic gold and two ATP Finals titles has failed — but a persistent, public *almost*, replayed on highlight reels every time a major came round.
+Arthur Ashe won the NCAA singles title for UCLA in 1965, taking the doubles as well and leading the Bruins to the team championship, before going on to a career that gave the sport its conscience and its biggest stadium — the story we told in full in [the piece on how his name ended up on Arthur Ashe Stadium](/lifestyle/arthur-ashe-name-on-biggest-stadium-in-tennis/). Jimmy Connors won the NCAA singles title as a freshman at UCLA in 1971, the first freshman ever to do it, then turned professional after that single season. John McEnroe won it for Stanford in 1978, also as a freshman, also leading his team to the title, and left almost immediately afterwards.
 
-## The Sunday in Paris
+For a couple of generations, the American university was simply where good tennis players played tennis. Nobody thought it was strange. It was where you got matches, coaching, structure and a degree, and if you were good enough, the tour was still there afterwards.
 
-He won it on 7 June, on the red clay of Court Philippe-Chatrier, and he did it the hard way, which somehow felt appropriate.
+Then the sport changed shape. The junior-to-pro conveyor belt sped up. Academies in Florida and Spain took thirteen-year-olds. Agents began signing teenagers before they had a ranking. If you were still at university at 21, the assumption was that you had already been quietly filed away as not good enough. Between the mid-1980s and the 2010s, the number of former college players in the top 20 shrank to a handful, and those who made it — John Isner out of Georgia after four full years, Kevin Anderson out of Illinois — were treated as amiable exceptions rather than a pattern.
 
-His opponent was Flavio Cobolli, the Italian, playing the match of his life. Zverev took the first set 6-1 and looked like a man about to be efficient about it. Cobolli took the second 6-4. Zverev took the third 6-4. Then Cobolli, refusing to leave, won a fourth-set tie-break 7-5, and suddenly the German was one set from a fourth lost Grand Slam final, in front of a crowd that had begun to sense a story.
+The message to a talented 17-year-old was blunt. Turn pro now or accept that you have chosen a different life.
 
-He won the fifth set 6-1.
+## What actually changed
 
-Afterwards he said the line that has followed him ever since: no matter what happens now, he will always be a Grand Slam champion. It is not an elegant sentence. It is the sentence of somebody who has been asked the same question at every press conference for eleven years and has finally been handed the answer. He also became the first man outside the group of Alcaraz, Sinner, Djokovic and Nadal to win a major since Daniil Medvedev at the 2021 US Open — a fact that says as much about the era he has been trapped in as it does about him. We wrote about that fortnight and the two first-time champions it produced in our [Roland Garros 2026 recap](/lifestyle/roland-garros-2026-recap-zverev-andreeva-first-time-champions/), and it still reads like the week the sport changed shape.
+Several things at once, which is usually how these shifts happen.
 
-## What happens after the thing finally happens
+The first is money, and specifically the shape of it. Professional tennis below the top 100 remains a brutal business. You pay for flights, hotels, coaching, stringing, physiotherapy and entry fees before you earn anything, and a bad three months can end you. A college scholarship removes all of that at exactly the age when it hurts most. Since American colleges began allowing athletes to earn from their name and image, the sums involved have gone from zero to genuinely useful. For an 18-year-old choosing between a fully funded four years and a season of Futures events in car parks in eastern Europe, the maths has quietly flipped.
 
-Here is where it gets interesting for anyone who enjoys watching people as much as watching tennis.
+The second is the standard. College tennis in 2026 is not gentle. Squads are stacked with players from Spain, France, Britain, Australia and Japan; dual matches are played with no-ad scoring, so every deuce is a single sudden point in front of a shouting crowd. Players describe it as the closest thing to a Davis Cup tie you can get every weekend. That format does something to a young player that the individual circuit does not: it teaches them to hold their nerve while other people depend on them.
 
-There is a well-known pattern in this sport: the player who finally wins their first major does not always kick on. Sometimes the release is so total that the next few months go soft. The thing they organised their entire life around has been achieved, and the ordinary Tuesday second round in a hot city stops feeling urgent. Andy Murray went through a version of it. So did Thiem, in a much sadder way.
+There is a third thing that rarely gets written down, and it is simply the daily life. A college player wakes up in the same bed for months at a time. They practise on the same courts with the same six or seven people, all of whom are trying to beat them for a place in the line-up. They have a strength coach, a physiotherapist, a team doctor and a schedule built by adults whose job is the long term rather than next week. Nobody is paying for any of it out of prize money that has not been won yet. For a nineteen-year-old whose serve is still arriving and whose shoulders are still filling out, that stability is worth more than a handful of ranking points collected in airports.
 
-Zverev has now had ten weeks of life on the other side. The evidence so far is mixed, and last week it was uncomfortable.
+The fourth is that the tour finally built a door. The PIF ATP Next Gen Accelerator Programme, created in 2023 with the Intercollegiate Tennis Association and now in its fourth year, gives leading college men a fast route onto the Challenger Tour. Qualify by finishing in the top 20 of the year-end ITA singles rankings or by reaching the NCAA singles quarter-finals, and you are handed up to eight Accelerator spots at Challenger 50 and 75 events, with main-draw entry for the top ten and qualifying entry for the rest. Twenty-three players qualified for the 2026-27 class. Its alumni include Jodar, Georgia's Ethan Quinn, South Carolina's Toby Samuel and a British player named Arthur Fery.
 
-He went to Montreal for the Canadian Open as the top seed, got the first-round bye that comes with it, and lost his opening match to the Dutchman Tallon Griekspoor. He took the first set in a tie-break and then lost the next two: 6-7 (3-7), 6-2, 6-4 to Griekspoor. It was one of the best wins of Griekspoor's career and one of the flatter losses of Zverev's summer. The top seed was out before most casual viewers had noticed he was in.
+Put plainly: the biggest thing college players used to lose by staying was time and access. Two years of ranking points you could never get back. The Accelerator gives a large chunk of that back, and the effect has been immediate.
 
-You can read that two ways, and both are defensible. The pessimistic read: the hunger has gone, and a man who won the thing he wanted no longer finds Tuesday in Montreal worth bleeding for. The optimistic read: he played a clay season that ended in the most emotionally expensive fortnight of his life, took a grass season, and then flew to North America to start again on a surface that punishes anyone who is even five per cent off. Griekspoor is a big hard-court hitter who was playing well. Sometimes tennis is just that.
+## The Shelton exhibit
 
-Cincinnati will tell us which read is right, and it will tell us quickly.
+Shelton is the case study everyone reaches for, and he deserves it.
 
-## Why this tournament, of all tournaments
+He arrived at Florida as a freshman and clinched the point that won the Gators their first national team title in 2021. His father, Bryan Shelton, a former professional, was the head coach — which sounds cosy until you consider what it is like to play in front of your father on match point with a national title in the balance. The following year he won the NCAA singles championship as a sophomore. In August 2022, at 19, he gave up his last two years of eligibility and turned professional with a wild card into the US Open.
 
-There is a neat symmetry to Zverev arriving here with something to prove, because Cincinnati is one of the places that has always liked him. He won it in 2021, beating Andrey Rublev 6-2, 6-3 in a final so one-sided it barely qualified as a contest — part of the best stretch of his career, the summer he also took Olympic gold. The courts here are quick enough to reward his serve and true enough to reward his backhand, which is one of the two or three best in the sport and the shot most likely to make you sit forward.
+Fourteen months later he was in the US Open semi-finals. Since then he has become one of the loudest, most watchable players in the men's game, and we went into what makes him such fun in [our feature on Shelton and the noise he brings to a tennis court](/lifestyle/ben-shelton-american-tennis-serve-personality-canadian-open/). What people forget is the sequence. He did not stumble out of college and get lucky. He arrived on tour having already won a national title, already handled a season of expectation, already learned how to lose in front of people he cared about. He had done his apprenticeship. It just happened to have a mascot.
 
-Last year he made the semi-finals and ran into Alcaraz while visibly struggling with the conditions, losing 4-6, 3-6 after a medical timeout, drenched and depleted. That is Cincinnati too. The city has given him a title and taken a fortnight from him, and this year it hands him a draw with the two men who have beaten him in his last two Grand Slam finals both absent.
+## The women got there first
 
-For a player who has spent his career being told he cannot convert opportunity, that is a very loud invitation.
+The women's side of this story is older and, for some reason, less told.
 
-## What to watch for when he plays
+Danielle Collins won two NCAA singles titles at Virginia, in 2014 and 2016, arrived on tour late by modern standards and reached an Australian Open final in 2022. Emma Navarro won the NCAA singles title for the same university in 2021 and has since become a fixture in the world's top 20. Peyton Stearns became the first Texas woman to win the NCAA singles championship in 2022, has been as high as No. 28 in the world, and beat Taylor Townsend 7-6(10-8), 7-5 to win the ATX Open earlier this year.
 
-If you are going to give a few hours to a Zverev match this week, here is what to look at, because his tennis rewards attention in a way that does not always show up in highlight packages.
+There is a lovely detail buried in that list. Navarro's father, Ben Navarro, owns the Cincinnati Open through his Beemok group — the tournament whose main draw begins today, and which we break down in [our full guide to Cincinnati](/tournaments/cincinnati-masters-guide/). The daughter of the man who owns one of the biggest events on the calendar took the college route, and nobody has ever suggested she needed it because she could not afford anything else. She took it because it works.
 
-**The second serve.** This is his weather vane. When Zverev is comfortable, his second serve is a heavy, kicking thing that jumps at the returner's shoulder. When he is tight, it slows down and lands short, and you will see opponents step inside the baseline to attack it. You can read his entire mental state in one ball toss.
+## The route that is still not for everyone
 
-**The backhand down the line.** His forehand has been rebuilt more than once and remains the shot that betrays him under pressure. The backhand does not betray him. Watch how many rallies he wins by simply refusing to miss it, then flattening one out of nowhere.
+It would be a lie to tell you this is the new default, and the players themselves would be the first to say so.
 
-**The way he moves for a man that size.** Six foot six athletes are not supposed to slide into a defensive backhand and recover in two steps. He does. It is the least discussed part of his game and probably the reason his career has lasted.
+Carlos Alcaraz and Jannik Sinner did not go to university. Neither did Coco Gauff or Mirra Andreeva. If you are ready at 16 — genuinely, physically, mentally ready — the tour will take you and nothing should stand in the way. Tien is the interesting middle case: he tried the campus, spent a few weeks winning every dual match he played, and concluded within a single semester that he was already good enough. He was right. He reached the Australian Open quarter-finals in January and hit a career-high of No. 18 in May, still only 20.
 
-**The long points.** Zverev is one of the great rally-tolerant players of his generation. If a match reaches the third hour in Ohio humidity, he is usually the fitter man. That has cost him matches when he refuses to shorten points he could have won earlier, and it has won him plenty of others.
+The college route works best for a specific kind of player: the one who is very good but not yet finished growing, the one who needs two years of matches more than two years of flights, the one whose body or nerve arrives a little later than their talent. Some of those players would have been lost entirely under the old system.
 
-His head-to-heads, his stats and his year-by-year results all live on his [player page](/players/alexander-zverev/) if you want the numbers underneath the story. This season he is 38-10, with that one enormous title.
+Which brings us to the man in the photograph at the top of this piece. Arthur Fery grew up ten minutes from the All England Club, went to [Stanford on a scholarship](/players/arthur-fery/), became the first Stanford player ranked No. 1 in American college singles since Bob Bryan, and turned professional after three years with a ranking that gave no hint of what was coming. This July, as a wild card ranked outside the top 100, he beat Grigor Dimitrov, Zizou Bergs and Flavio Cobolli to reach the Wimbledon semi-finals — the first wild card to do that in the men's draw since Goran Ivanisevic in 2001. Alexander Zverev finally stopped him. Nobody in south-west London will forget the fortnight.
 
-## The fortnight after this one
+Three years of college tennis did not cost Fery a career. It gave him one.
 
-Everything in August points at New York. The US Open is the last major of the year, and it is the tournament where Zverev came closest to his first before Paris — where he stood two sets up in 2020 and could not close it. Whatever happens in Ohio, the ranking points and the confidence he collects here are essentially a deposit on that.
+## What to look for in Cincinnati
 
-There is a bigger question sitting behind all of it, and it is one the whole sport is quietly asking. Sinner and Alcaraz have redrawn the men's game so thoroughly that the rest of the tour has spent two years playing for third place — Sinner spent the spring breaking Djokovic's Masters 1000 records, a run we covered when [he took the record in Rome](/lifestyle/sinner-breaks-djokovic-masters-1000-record-rome-2026/). Now both of them are hurt, at the same time, in the same month, at the wrong end of a brutal season. Their absence has created a genuine opening, and openings in tennis close fast.
+The main draw in Cincinnati starts today, which means the sport barely pauses to breathe after Montreal. When you sit down to watch this fortnight, try a small experiment: notice how many of the players you are cheering for spent a season or two on an American campus.
 
-Zverev has spent eleven years being the man who arrives at the door a moment too late. This week the door is open and nobody is standing in it.
+Nakashima, if he can back up the best week of his life. Shelton, who now has a title to defend twice over. Jodar, who has gone from lecture halls to the top 25 in about the time it takes most players to win a Challenger. Quinn, the Georgia man who saved four match points to win the 2023 NCAA final and has since climbed to a career-high of No. 48. Cameron Norrie, three years at TCU and a former Wimbledon semi-finalist, still grinding out summers on hard courts. They are not novelties on the entry list any more. They are a significant chunk of it.
 
-If you want a way in, take a night session. The lights come on over Mason around eight, the temperature drops maybe four degrees, the moths arrive, and the crowd — a mix of Ohio families, Cincinnati regulars and people who drove four hours from Indiana — settles into that particular hum American tennis crowds have. Somewhere in the middle of it will be a very tall German hitting backhands, no longer playing for the thing he could never get, which is a different and much more interesting kind of pressure. That is worth an evening of anyone's time.
+And whoever wins on Thursday night in Montreal, one fact holds either way. A Masters 1000 trophy will be handed to a man who once played a match knowing that if he lost it, his team lost too — and who found out, in a half-empty college arena in front of a few hundred students, exactly what he was made of.
 
-*Photo: Alexander Zverev with a tour trophy by Keith Allison, CC BY-SA 2.0, via Wikimedia Commons.*`;
+Somebody should tell the seventeen-year-olds still being warned that university is where careers go to die. The evidence is on court tonight, holding a trophy.
+
+*Photo: Arthur Fery at Wimbledon qualifying by si.robi, CC BY-SA 2.0, via Wikimedia Commons.*`;
 
 const record = {
   slug, title, excerpt, body,
