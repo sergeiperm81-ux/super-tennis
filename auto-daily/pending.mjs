@@ -1,108 +1,106 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'montreal-2026-final-college-tennis-route-shelton-nakashima';
-const stamp = '2026-08-13T05:00:00.000Z';
-const title = 'Montreal 2026: The Masters Final That College Tennis Built';
+const slug = 'grigor-dimitrov-cincinnati-2026-long-way-back';
+const stamp = '2026-08-14T05:00:00.000Z';
+const title = 'Grigor Dimitrov and the Long Way Back to Cincinnati';
 const meta_title = title;
-const meta_description = 'Ben Shelton and Brandon Nakashima meet in the Montreal final and both took the American college route. Inside the pipeline tennis stopped laughing at.';
-const excerpt = 'Two former college players contest the Montreal final, all four semi-finalists wore a university shirt, and a Stanford graduate made the Wimbledon semis. The college route is not a consolation prize any more.';
-const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Fery_WMQ22_%2813%29_%2852191184348%29.jpg/500px-Fery_WMQ22_%2813%29_%2852191184348%29.jpg';
-const image_alt = 'Arthur Fery, a Stanford graduate turned Wimbledon semi-finalist, playing on grass in tennis whites';
+const meta_description = 'Grigor Dimitrov returns to Cincinnati at 35 on a wild card, nine years after the greatest fortnight of his career. A story about beginning again.';
+const excerpt = 'He won Cincinnati in 2017 and lost almost everything since. At 35, Grigor Dimitrov is back on the same courts with a wild card and no guarantees.';
+const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Grigor_Dimitrov_%282023_DC_Open%29_01.jpg/500px-Grigor_Dimitrov_%282023_DC_Open%29_01.jpg';
+const image_alt = 'Grigor Dimitrov serving at the 2023 DC Open in Washington';
 
-const body = `The two men walking out for the final in Montreal on Thursday night share a detail that would have been treated as a punchline twenty years ago. Before either of them played a professional match that mattered, they went to university.
+const body = `The last time Grigor Dimitrov was the biggest story in tennis, he was lying on the grass at Wimbledon with one hand pressed to his chest, and the man he was beating was climbing over the net to help him up.
 
-Ben Shelton spent two years at the University of Florida. Brandon Nakashima spent one at the University of Virginia. Between them they have a Masters 1000 title, a US Open semi-final, an NCAA singles championship and a share in a national team title, and on Thursday one of them will lift the National Bank Open trophy at IGA Stadium. If you have followed tennis for any length of time, you will remember when American college tennis was described — gently, but constantly — as the place you went when the tour did not want you. That description is out of date, and this week in Canada is the loudest evidence yet.
+You probably remember the pictures even if you were only half watching. July 2025, fourth round, Centre Court. Dimitrov led Jannik Sinner by two sets to love — 6-3, 7-5 — and was level at 2-2 in the third. He hit an ace. Then he crumpled. A partially torn pectoral muscle, the kind of injury that arrives without warning and ends everything in the space of one serve. Sinner crossed to his side of the court, checked on him, and then carried Dimitrov's bags off court for him, the world number one turned porter because there was nothing else useful a person could do.
 
-## A Wednesday night that told the whole story
+That was the fifth Grand Slam in a row that Dimitrov had been unable to finish. It also cost him the US Open, which ended a run of 58 consecutive Grand Slam appearances stretching back to the 2011 Australian Open. Fourteen years of always being there, gone in a single afternoon.
 
-Nakashima got there first. He beat Rafael Jodar 7-6(3), 6-4 in the opening semi-final, a match between two men who both wore the orange and navy of Virginia, in different eras, never in the same season. It was the first Masters 1000 final of Nakashima's career, arriving at 25, six and a half years after he left Charlottesville with a single college season behind him and an ACC Freshman of the Year award in his bag.
+This week he is in Ohio, at the Cincinnati Open, playing on a wild card. He is 35 years old and ranked outside the top 100. And the peculiar, lovely thing about this particular tournament is that it is the same one he won.
 
-Then Shelton, the defending champion, dealt with Learner Tien 6-2, 6-3 under the lights to set up an all-American final. Shelton won this title last year in Toronto — the men and women swap cities each summer — beating Karen Khachanov 6-7(5), 6-4, 7-6(3) in a final that ran to three hours of pure nerve. He became the youngest American man to win a Masters title since Andy Roddick in 2004. He is 23 now, and he is the closest thing the college system has to a billboard.
+## The most beautiful game nobody could quite explain
 
-Nakashima is worth pausing on, because his version of the college route was the shortest possible one. He enrolled early at Virginia as a 17-year-old from San Diego, went 17-5 in singles and 20-3 in doubles in his one season, collected the ACC Freshman of the Year award, and announced in December 2019 that he was leaving to turn professional. Six years of steady, unglamorous work followed: a career-high of No. 29 in May 2025, a reputation as one of the cleanest ball-strikers on tour, and a persistent sense among people who watch closely that he was better than his results. This week the results caught up.
+If you have followed tennis for any length of time, you have an opinion about Grigor Dimitrov, and the opinion is probably tangled up with a nickname he never asked for.
 
-Look at the four semi-finalists again, because the pattern is the point. Shelton: Florida. Nakashima: Virginia. Jodar: Virginia. Tien: a short spell at USC in early 2023, joining the Trojans mid-season, going unbeaten in dual matches before deciding his game was ready and turning professional later that year. Every single one of them had, at some stage, pulled on a university shirt and played for a team. At a Masters 1000 semi-final stage. In 2026.
+They called him Baby Federer. It was meant as the highest compliment available in the sport, and for years it functioned as something closer to a curse. He had the one-handed backhand, the loose shoulders, the way of arriving at the ball early and unhurried so that a difficult shot looked like a decision rather than a scramble. Watch old clips and you will see it: the pause at the top of the ball toss, the whip of the racket head, the sense that this was a player who had studied beauty and then gone out and learned it.
 
-That is not a coincidence, and it is not a quirk of one draw. It is the visible end of a change that has been building for a decade.
+The problem with being told you resemble the greatest stylist the game ever produced is that everybody then waits for you to produce his results. When you do not, the compliment curdles. For most of his twenties, Dimitrov was written about as a disappointment — a player of enormous gifts who kept losing matches he ought to have won, who could take a set off anyone and then lose the plot in the third.
 
-## The Spaniard who flew the wrong way
+That is a brutal way to be discussed in public for a decade. It is also, on the evidence, not really true. Three Grand Slam semi-finals is not a failure. Beating a defending champion at Wimbledon is not a failure. But tennis has a habit of measuring people against the ceiling somebody else imagined for them, and Dimitrov spent years being measured against a ceiling he had never claimed.
 
-If you want the story in one player, take Jodar.
+## The autumn when everything worked
 
-He is Spanish, from Madrid, born in September 2006, and by the ordinary logic of European tennis he should never have seen an American campus. Spain has the academies, the clay, the coaches, the tradition. He had also just won the US Open boys' singles title in 2024, beating Nicolai Budkov Kjaer in the final, which is the kind of result that normally comes with a racket contract and a plane ticket to the Challenger circuit.
+Then came 2017, and for about three months Grigor Dimitrov was the best story in men's tennis.
 
-Instead he went to Virginia. One season. He was named ACC Freshman of the Year and ITA National Rookie of the Year in the spring of 2025, and then, at the end of that year, he gave up his remaining college eligibility and turned professional. What followed was almost silly: three Challenger titles in the autumn of 2025, including Lincoln and Charlottesville, then tour-level wins through 2026 at the Australian Open, Dallas, Delray Beach, Acapulco and Miami. He reached a career-high of world No. 22 on 1 June 2026. He is 19.
+In August of that year he arrived in Cincinnati and did not lose a set all week. Not one. In the final he beat Nick Kyrgios 6-3, 7-5 — Kyrgios at his most dangerous, all serve and improvisation — and Dimitrov simply refused to blink. It was his first Masters 1000 title and his third trophy of the season.
 
-This week he became, by the reckoning of the people who track such things, the first player born in 2006 or later to reach a Masters 1000 semi-final. Twelve months ago he was a college kid ranked outside the top 500, playing matches in front of a few hundred students, doing homework on the bus. If that sounds like a fairy tale, remember what it actually took: a year of team practice, a coaching staff who knew him, a schedule that let him grow into his body without hunting ranking points every week in a different country.
+If the story had stopped there it would already have been the best year of his life. It did not stop there. In November he qualified for the season-ending ATP Finals in London as a debutant, went through the round robin, and beat David Goffin in the final 7-5, 4-6, 6-3 to win the biggest indoor title in the sport. No debutant had won it since Alex Corretja in 1998. He finished the year at world number three, behind only Rafael Nadal and Roger Federer, which is a sentence you would like to have on your gravestone if you play tennis for a living.
 
-The Spanish teenager who chose Virginia is the sharpest possible answer to the old snobbery. He did not go to college because nobody wanted him. He went because it was the better plan.
+The Cincinnati crowd have a long memory for that fortnight, and so does he. Nine years is a long time in an athlete's life, but the O2 trophy and the Cincinnati trophy are on the same shelf, and it turns out the Cincinnati one is the easier of the two to go back and visit. He has been given a wild card into this year's main draw alongside Stan Wawrinka, Gael Monfils and Jack Draper — four men whose combined highlight reel would keep you up until three in the morning. If you want the background on why this event carries the weight it does in the American summer, our [guide to the Cincinnati Masters](/tournaments/cincinnati-masters-guide/) walks through the history.
 
-## When college was the road, not the detour
+## He has done this before
 
-None of this is new, exactly. It is a return.
+It is worth remembering, before we get to the difficult years, that resurrection is something of a Dimitrov speciality.
 
-Arthur Ashe won the NCAA singles title for UCLA in 1965, taking the doubles as well and leading the Bruins to the team championship, before going on to a career that gave the sport its conscience and its biggest stadium — the story we told in full in [the piece on how his name ended up on Arthur Ashe Stadium](/lifestyle/arthur-ashe-name-on-biggest-stadium-in-tennis/). Jimmy Connors won the NCAA singles title as a freshman at UCLA in 1971, the first freshman ever to do it, then turned professional after that single season. John McEnroe won it for Stanford in 1978, also as a freshman, also leading his team to the title, and left almost immediately afterwards.
+By the summer of 2019 he had slid out of the top 70 and the obituaries were already being drafted. He arrived in New York ranked 78th in the world, which at the US Open puts you in the section of the draw nobody bothers to preview. He then beat Roger Federer in the quarter-finals — Federer, in New York, in five sets — and walked into a Grand Slam semi-final as the second-lowest-ranked man ever to reach that stage at the tournament. He lost the semi-final, and he lost it well.
 
-For a couple of generations, the American university was simply where good tennis players played tennis. Nobody thought it was strange. It was where you got matches, coaching, structure and a degree, and if you were good enough, the tour was still there afterwards.
+Nobody saw that coming, least of all the people who had spent the previous eighteen months explaining that he was finished. It is the single most useful thing to know about him: his career has never moved in a straight line, and the flat stretches have a habit of ending abruptly and without notice.
 
-Then the sport changed shape. The junior-to-pro conveyor belt sped up. Academies in Florida and Spain took thirteen-year-olds. Agents began signing teenagers before they had a ranking. If you were still at university at 21, the assumption was that you had already been quietly filed away as not good enough. Between the mid-1980s and the 2010s, the number of former college players in the top 20 shrank to a handful, and those who made it — John Isner out of Georgia after four full years, Kevin Anderson out of Illinois — were treated as amiable exceptions rather than a pattern.
+## What the ranking cannot tell you
 
-The message to a talented 17-year-old was blunt. Turn pro now or accept that you have chosen a different life.
+Here is the part of the story that fans tend to skip, because it is unglamorous and slow and there are no highlights of it.
 
-## What actually changed
+Coming back from a torn pectoral is not a matter of waiting for the muscle to knit and then resuming your career. Dimitrov started 2026 in Brisbane and lost, and lost again, and kept losing. In April, after an early exit in Monte Carlo, he dropped out of the world's top 100 for the first time in fourteen years. Consider what that actually means: a man who had been a top-100 player continuously since he was 21 was suddenly not one. He went back to the Challenger circuit — the second tier, small crowds, long drives, no ball kids in some places — and lost to a player ranked 312th in the world.
 
-Several things at once, which is usually how these shifts happen.
+At his lowest point this year he was outside the world's top 150, and for a while outside 160. He was asked about it before Wimbledon and did not perform the usual athlete's serenity. "The way our ranking is structured is so unfair that it makes no sense to talk about it," he said. "It is simple: if you win, you have a high ranking. If you lose, you keep dropping in the rankings." You can hear the frustration of a man who understands the arithmetic perfectly well and resents having to explain it.
 
-The first is money, and specifically the shape of it. Professional tennis below the top 100 remains a brutal business. You pay for flights, hotels, coaching, stringing, physiotherapy and entry fees before you earn anything, and a bad three months can end you. A college scholarship removes all of that at exactly the age when it hurts most. Since American colleges began allowing athletes to earn from their name and image, the sums involved have gone from zero to genuinely useful. For an 18-year-old choosing between a fully funded four years and a season of Futures events in car parks in eastern Europe, the maths has quietly flipped.
+What he said about the injury itself was more revealing, and if you have ever come back from anything — surgery, illness, a bad year — you will recognise it immediately. He talked about being frightened. "I was frightened of the thought of having to come back on the court again and start hitting," he said. "My first hits, even practices, were extremely difficult for me mentally to not only swing through, but I had lots of flashbacks, and it was just a very, very uncomfortable feeling." And: "You start questioning everything and you start doubting everything."
 
-The second is the standard. College tennis in 2026 is not gentle. Squads are stacked with players from Spain, France, Britain, Australia and Japan; dual matches are played with no-ad scoring, so every deuce is a single sudden point in front of a shouting crowd. Players describe it as the closest thing to a Davis Cup tie you can get every weekend. That format does something to a young player that the individual circuit does not: it teaches them to hold their nerve while other people depend on them.
+He also described what happened immediately after Sinner walked him off Centre Court. "I cried for two hours in the locker room, came out straight to the hospital, and I was like, OK, good, now the rehab starts."
 
-There is a third thing that rarely gets written down, and it is simply the daily life. A college player wakes up in the same bed for months at a time. They practise on the same courts with the same six or seven people, all of whom are trying to beat them for a place in the line-up. They have a strength coach, a physiotherapist, a team doctor and a schedule built by adults whose job is the long term rather than next week. Nobody is paying for any of it out of prize money that has not been won yet. For a nineteen-year-old whose serve is still arriving and whose shoulders are still filling out, that stability is worth more than a handful of ranking points collected in airports.
+Two hours, and then the practical sentence. That is a very particular kind of toughness, and it is not the kind that shows up in a stat sheet. The physical side of these comebacks is only ever half the job — we have written before about [how tennis players recover from serious injuries](/lifestyle/tennis-player-injuries-recovery/), and the recurring theme is that the body is usually ready before the nerve is.
 
-The fourth is that the tour finally built a door. The PIF ATP Next Gen Accelerator Programme, created in 2023 with the Intercollegiate Tennis Association and now in its fourth year, gives leading college men a fast route onto the Challenger Tour. Qualify by finishing in the top 20 of the year-end ITA singles rankings or by reaching the NCAA singles quarter-finals, and you are handed up to eight Accelerator spots at Challenger 50 and 75 events, with main-draw entry for the top ten and qualifying entry for the rest. Twenty-three players qualified for the 2026-27 class. Its alumni include Jodar, Georgia's Ethan Quinn, South Carolina's Toby Samuel and a British player named Arthur Fery.
+## Centre Court, again
 
-Put plainly: the biggest thing college players used to lose by staying was time and access. Two years of ranking points you could never get back. The Accelerator gives a large chunk of that back, and the effect has been immediate.
+Wimbledon gave him a wild card this summer. He was ranked 146th and it was, frankly, a sentimental decision as much as a sporting one. It turned out to be the best call the All England Club made all fortnight.
 
-## The Shelton exhibit
+He beat the Australian Dane Sweeny in the first round. Then he beat the 15th seed Jakub Mensik — one of the hardest hitters of the new generation — 7-6(5), 4-6, 7-5, 6-3, which is not a scoreline you produce by nostalgia. And then, in the third round, he was sent back out to Centre Court. The same court. Twelve months on.
 
-Shelton is the case study everyone reaches for, and he deserves it.
+His opponent was Matteo Berrettini, himself a Wimbledon finalist and himself a man who has spent years fighting his own body. They played for the better part of four hours and Dimitrov won it 6-3, 6-4, 3-6, 5-7, 6-3, losing a two-set lead and then, this time, refusing to let the match go with it. Anyone who watched knew exactly what the fifth set was about. It was about the last time he had been ahead by two sets on that piece of grass.
 
-He arrived at Florida as a freshman and clinched the point that won the Gators their first national team title in 2021. His father, Bryan Shelton, a former professional, was the head coach — which sounds cosy until you consider what it is like to play in front of your father on match point with a national title in the balance. The following year he won the NCAA singles championship as a sophomore. In August 2022, at 19, he gave up his last two years of eligibility and turned professional with a wild card into the US Open.
+It carried him into the fourth round for the sixth time in his career. And then, because tennis has a novelist's sense of cruelty, he lost a match he was winning. Arthur Fery — a British wild card ranked far below him, a player almost nobody outside the country had heard of a month earlier — came back from two sets to one down and beat him 7-5, 3-6, 4-6, 6-4, 7-6(7) in three hours and 55 minutes. A fifth-set tiebreak. Seven points to five in the breaker. Fery went to the quarter-finals and became the story of the summer in Britain; if you missed how that unfolded, the tale of [the wild card who grew up ten minutes from Wimbledon](/lifestyle/arthur-fery-wimbledon-2026-wildcard-grew-up-local/) is worth your time.
 
-Fourteen months later he was in the US Open semi-finals. Since then he has become one of the loudest, most watchable players in the men's game, and we went into what makes him such fun in [our feature on Shelton and the noise he brings to a tennis court](/lifestyle/ben-shelton-american-tennis-serve-personality-canadian-open/). What people forget is the sequence. He did not stumble out of college and get lucky. He arrived on tour having already won a national title, already handled a season of expectation, already learned how to lose in front of people he cared about. He had done his apprenticeship. It just happened to have a mascot.
+For Dimitrov, though, it was the strangest possible result: the best fortnight he had produced in two years, ending in a loss from a winning position, on the court where the last winning position had ended in an ambulance. He walked off to a standing ovation.
 
-## The women got there first
+## Why any of this should matter to you
 
-The women's side of this story is older and, for some reason, less told.
+There is a version of the tennis calendar that only really cares about four or five people. Sinner and Alcaraz are both missing Cincinnati this year with a knee and a wrist, which has thrown the men's draw wide open and handed the top seeding to [Alexander Zverev, chasing form in Ohio](/lifestyle/alexander-zverev-cincinnati-2026-top-seed-first-slam-champion/) before New York. That is the headline. That is what the previews are about.
 
-Danielle Collins won two NCAA singles titles at Virginia, in 2014 and 2016, arrived on tour late by modern standards and reached an Australian Open final in 2022. Emma Navarro won the NCAA singles title for the same university in 2021 and has since become a fixture in the world's top 20. Peyton Stearns became the first Texas woman to win the NCAA singles championship in 2022, has been as high as No. 28 in the world, and beat Taylor Townsend 7-6(10-8), 7-5 to win the ATX Open earlier this year.
+But the reason people fall in love with this sport is rarely the headline. It is a specific human being walking out alone with a bag over one shoulder, no substitutions available, no team-mate to hide behind, and finding out in public whether the work held.
 
-There is a lovely detail buried in that list. Navarro's father, Ben Navarro, owns the Cincinnati Open through his Beemok group — the tournament whose main draw begins today, and which we break down in [our full guide to Cincinnati](/tournaments/cincinnati-masters-guide/). The daughter of the man who owns one of the biggest events on the calendar took the college route, and nobody has ever suggested she needed it because she could not afford anything else. She took it because it works.
+Dimitrov's first-round opponent here is the Argentine Sebastian Baez, a fine hard-court test and no gift of a draw. The tournament runs to 23 August, the US Open follows in New York, and the realistic ceiling for a 35-year-old ranked in the 130s is not a Masters 1000 title. Everyone involved knows this, including him.
 
-## The route that is still not for everyone
+What is genuinely at stake is smaller and, in a way, larger. He is trying to get his ranking back into a range where he does not need anyone's permission to enter tournaments. He is trying to string together enough matches that the body stops feeling like a hostile witness. He is trying, at an age when most of his contemporaries have moved into the commentary box, to still be a tennis player.
 
-It would be a lie to tell you this is the new default, and the players themselves would be the first to say so.
+## The backhand argument
 
-Carlos Alcaraz and Jannik Sinner did not go to university. Neither did Coco Gauff or Mirra Andreeva. If you are ready at 16 — genuinely, physically, mentally ready — the tour will take you and nothing should stand in the way. Tien is the interesting middle case: he tried the campus, spent a few weeks winning every dual match he played, and concluded within a single semester that he was already good enough. He was right. He reached the Australian Open quarter-finals in January and hit a career-high of No. 18 in May, still only 20.
+Let us also be honest about the shallow reason to watch him, which is that he is one of the most pleasing players of his generation to look at.
 
-The college route works best for a specific kind of player: the one who is very good but not yet finished growing, the one who needs two years of matches more than two years of flights, the one whose body or nerve arrives a little later than their talent. Some of those players would have been lost entirely under the old system.
+The one-handed backhand is a nearly extinct shot. It is technically inferior for returning modern serves and defending high balls, which is why the coaching world quietly abandoned it, and the sport is measurably poorer for having done so. Dimitrov's is a beauty: high finish, full extension, the ball leaving the strings with topspin that makes it dip late. When he is moving well he plays a kind of tennis that feels handmade in an era of machined efficiency.
 
-Which brings us to the man in the photograph at the top of this piece. Arthur Fery grew up ten minutes from the All England Club, went to [Stanford on a scholarship](/players/arthur-fery/), became the first Stanford player ranked No. 1 in American college singles since Bob Bryan, and turned professional after three years with a ranking that gave no hint of what was coming. This July, as a wild card ranked outside the top 100, he beat Grigor Dimitrov, Zizou Bergs and Flavio Cobolli to reach the Wimbledon semi-finals — the first wild card to do that in the men's draw since Goran Ivanisevic in 2001. Alexander Zverev finally stopped him. Nobody in south-west London will forget the fortnight.
+You get maybe two or three players per generation whose matches are worth watching regardless of the scoreline. He has been one of them for fifteen years, through the disappointing seasons and the glorious autumn and all the injuries since. The stylists get remembered longer than their results deserve, which is the game's small compensation for making them lose so often.
 
-Three years of college tennis did not cost Fery a career. It gave him one.
+## What a wild card is actually for
 
-## What to look for in Cincinnati
+Tournaments hand out wild cards for three reasons: to help a young player, to sell tickets, and occasionally to do something decent for someone who has earned it. This year Cincinnati gave four of them to men who have won the biggest titles the sport offers, one of whom is playing his final season and one of whom won this exact tournament.
 
-The main draw in Cincinnati starts today, which means the sport barely pauses to breathe after Montreal. When you sit down to watch this fortnight, try a small experiment: notice how many of the players you are cheering for spent a season or two on an American campus.
+The tickets will sell. But there is a straightforward pleasure in a tournament remembering who won it, and in a crowd getting the chance to make a noise for a player at the end of his career rather than the beginning of it. Somebody in that stadium was there in 2017. Quite a few somebodies, probably.
 
-Nakashima, if he can back up the best week of his life. Shelton, who now has a title to defend twice over. Jodar, who has gone from lecture halls to the top 25 in about the time it takes most players to win a Challenger. Quinn, the Georgia man who saved four match points to win the 2023 NCAA final and has since climbed to a career-high of No. 48. Cameron Norrie, three years at TCU and a former Wimbledon semi-finalist, still grinding out summers on hard courts. They are not novelties on the entry list any more. They are a significant chunk of it.
+He may lose in the first round. That is a completely plausible outcome and it would not diminish anything, because the interesting part already happened — in a gym in Bulgaria, in an empty practice court somewhere, in the moment a frightened man made himself swing through a forehand and find out whether his chest would hold.
 
-And whoever wins on Thursday night in Montreal, one fact holds either way. A Masters 1000 trophy will be handed to a man who once played a match knowing that if he lost it, his team lost too — and who found out, in a half-empty college arena in front of a few hundred students, exactly what he was made of.
+If you are watching this week, find his match on the schedule and give it an hour. Not because you will see the tennis of 2017, but because you will see a person who has been given every rational reason to stop, and who keeps turning up anyway with the prettiest backhand in the building. That is worth an hour of anybody's evening.
 
-Somebody should tell the seventeen-year-olds still being warned that university is where careers go to die. The evidence is on court tonight, holding a trophy.
-
-*Photo: Arthur Fery at Wimbledon qualifying by si.robi, CC BY-SA 2.0, via Wikimedia Commons.*`;
+*Photo: Grigor Dimitrov at the 2023 DC Open by Hameltion, CC BY-SA 4.0, via Wikimedia Commons.*`;
 
 const record = {
   slug, title, excerpt, body,
