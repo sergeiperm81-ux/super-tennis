@@ -1,120 +1,108 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'why-players-fall-apart-august-heat-cincinnati-2026';
-const stamp = '2026-08-16T05:00:00.000Z';
-const title = 'Why Great Players Fall Apart in the August Heat';
+const slug = 'us-open-2026-mixed-doubles-championship-sabalenka-djokovic';
+const stamp = '2026-08-17T05:00:00.000Z';
+const title = 'The Million Dollar Two Day Circus: US Open Mixed Doubles Returns';
 const meta_title = title;
-const meta_description = 'Novak Djokovic was sick on court in 85 percent humidity in Cincinnati. Here is what heat really does to a tennis player and the new rule built to help.';
-const excerpt = 'A three-time champion beaten by the air itself. Inside what August humidity does to a body, the new ATP heat rule, and how to spot a player who is cooking.';
-const image_url = '/images/news/atmo-06.webp';
-const image_alt = 'A lone tennis player walking off a hard court in heavy low evening sun, seen through a chain-link fence';
+const meta_description = 'Sabalenka with Djokovic, Venus with Bublik, a million dollars and two nights in New York. The US Open mixed doubles experiment is back on 25 August 2026.';
+const excerpt = 'Sixteen teams, two days, one million dollars and a format the purists still cannot forgive. Here is why the US Open mixed doubles event has become the best ticket of Fan Week.';
+const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Aryna_Sabalenka_%282024_DC_Open%29_06.jpg/500px-Aryna_Sabalenka_%282024_DC_Open%29_06.jpg';
+const image_alt = 'Aryna Sabalenka pictured on court at the DC Open, ahead of her 2026 US Open mixed doubles appearance with Novak Djokovic';
 
-const body = `The best returner in the history of the sport spent Saturday afternoon in Ohio losing an argument with the air.
+const body = `The best two days of this year's US Open will be finished before the US Open officially begins.
 
-If you had the Cincinnati Open on in the background, you saw something that does not really have a name. Novak Djokovic — three-time champion at this event, seeded third this week, ranked fifth in the world — walked to his chair in the second set and was sick. He took a medical timeout. Then he went back out and played another hour of professional tennis, and lost 2-6, 6-4, 6-4 to a 25-year-old Argentine called Thiago Agustin Tirante, who had never beaten anybody remotely that good.
+That sentence should not make sense. Grand Slams are two-week cathedrals; the good stuff is meant to arrive slowly, on the second Saturday, after you have earned it by watching a fortnight of tennis in a darkened living room. And yet on 25 and 26 August, five days before a single main-draw ball is struck in Queens, Arthur Ashe Stadium and Louis Armstrong Stadium will host the loudest, silliest, most star-stuffed thing on the tennis calendar: the US Open Mixed Doubles Championship, sixteen teams, one million dollars to the winners, and a guest list that reads like somebody raided the top ten and let them pick partners in a school playground.
 
-The temperature that afternoon was not the headline. The humidity was 85 percent.
+Aryna Sabalenka has picked Novak Djokovic. Venus Williams, who turned 46 in June, has picked Alexander Bublik, the most unpredictable man in tennis. Naomi Osaka has picked Kei Nishikori. Alexandra Eala, three weeks after winning her first tour title, has picked Felix Auger-Aliassime and will play her first professional mixed doubles match on the biggest court in the sport.
 
-Every August, at least once, tennis does this to somebody. A player you have watched win everything walks out to a mid-afternoon match on an outside court in a mid-sized American city, and by the middle of the second set they are somebody else: slower between points, blank behind the eyes, towel in hand every twenty seconds, hitting a shot they have made ten thousand times straight into the bottom of the net. If you do not play, it can look like a lapse in concentration or a bad attitude. It is neither. It is thermodynamics, and it is worth understanding, because it explains more August tennis than any tactical analysis will.
+If you love tennis but have never held a racket in anger, this is the event built for you. Here is what it is, why it exists, why it made half the locker room furious, and why the two players who hated it most have now won it twice.
 
-## What actually happened in Mason, Ohio
+## A Slam that starts before it starts
 
-Give Tirante his due first, because the story gets told wrong otherwise.
+The 2026 US Open main draw runs from 30 August to 13 September. But the gates at Flushing Meadows open a week earlier for Fan Week, which begins on 23 August: free access to the grounds, practice courts you can stand two metres from, qualifying matches where somebody ranked 180 in the world plays for the biggest payday of their life.
 
-He was born in La Plata, on the Argentine coast south of Buenos Aires, in April 2001. He started hitting balls at his grandfather's club before he could properly walk, and he was taught by his aunt. In 2019 he was the ITF junior world champion, won the boys' doubles at Roland Garros and took the Orange Bowl singles title. Then came the long grind that swallows most juniors: seven years of Challenger events, mostly on clay, mostly in South America and southern Europe, arriving in Cincinnati this week at a career-high ranking of No. 50.
+Fan Week used to be a pleasant warm-up act. Since 2025 it has had a headline event. The mixed doubles championship, once a genteel sideshow spread thinly across the second week in front of half-empty side courts, was ripped out of the main draw entirely and rebuilt as a two-day made-for-television spectacle in the week before. Eight qualifying teams play off on 24 August. Sixteen teams contest the championship proper on 25 and 26 August. The winners split one million dollars, which is more than either of them would earn for reaching the singles quarter-finals.
 
-Against Djokovic he lost the first set 6-2 in about half an hour and looked exactly like a man ranked fiftieth playing a man who has won twenty-four majors. Then he did not go away. He served 13 aces. He hit 40 winners. Across two hours and 44 minutes he kept the ball in play in conditions where keeping the ball in play is a form of violence, and he took the two breaks of serve he needed. Djokovic actually saved 13 of the 15 break points he faced. Two were enough.
+The tennis itself is deliberately compressed. Early-round matches are played in sets to four games rather than six, so a whole match can be done inside an hour. A match tiebreak replaces a deciding set. Nothing is allowed to drift. The idea is that you can sit down at seven in the evening, watch three matches involving eight famous people, and be finished before the subway gets awkward.
 
-Afterwards Djokovic was direct about it. It was, he said, "not an enjoyable match for me, for sure." He explained that he has a health issue he has been managing for several years, one that hot and humid conditions make considerably worse, and that knowing it was coming did not help: "I did anticipate it, but there are all these things, like nerves and everything involved that makes it worse, and that's what happened." Asked whether he would be back at a tournament he has won three times, he said he hoped so, but that it looked "more likely not."
+For a tournament that has spent decades trying to persuade casual viewers that doubles is worth their attention, it is the most aggressive answer anyone has tried: stop asking people to find doubles, and put doubles in the only place nobody can miss.
 
-Tirante, who called it the best win of his career, plays Martin Landaluce next. If you want the wider picture of the week — who is left, who is seeded where, why this event matters so much on the road to New York — our [Cincinnati Masters tournament guide](/tournaments/cincinnati-masters-guide/) has it, and [Grigor Dimitrov's wild-card return](/lifestyle/grigor-dimitrov-cincinnati-2026-long-way-back/) is the other story worth following in this draw.
+## The field is faintly ridiculous, which is the whole idea
 
-## The number that matters is not the temperature
+Look at the entry list and you can feel the USTA grinning.
 
-This is the part most broadcasts never explain properly, and it is the whole ballgame.
+Sabalenka and Djokovic is the headline, and it is a genuinely strange pairing to imagine: the most physically forceful ball-striker in the women's game alongside the most complete defensive mind the men's game has produced, a 24-time Grand Slam champion who has, at this stage of his career, very little left to prove and apparently a considerable amount left to enjoy. Sabalenka arrives in New York as the two-time defending US Open singles champion and the world No. 1. She could reasonably have spent that Tuesday resting. She has chosen instead to play an exhibition-adjacent event on a Tuesday night in front of 23,000 people, which tells you something about both her personality and the pull of the format.
 
-Your body has essentially one tool for dumping heat in hot weather: sweat that evaporates off your skin. The sweating itself does nothing. The cooling happens in the phase change, when liquid water on your arm turns into vapour and carries energy away with it. That is it. That is the entire cooling system.
+Venus Williams with Bublik is the pairing that will sell out Armstrong. Venus has two mixed doubles majors already, won in a different century, and has spent 2026 doing the thing nobody expected her to still be doing: turning up. Bublik is the sport's designated chaos agent, a man who hits underarm serves for fun and has been known to describe his own tactics with open bafflement. Whatever happens on that court will not be boring.
 
-Now make the air humid. Air that is already close to saturated cannot absorb much more water, so the sweat stops evaporating and simply sits there, running off you in sheets. You are producing litres of the stuff, losing salt and water at a frightening rate, and getting almost no cooling in return. You are paying the full price of the mechanism and receiving none of the benefit.
+Then there is the rest of it. Iga Swiatek and Casper Ruud return as the 2025 runners-up, an unusually well-mannered team who came within two points of the title. Osaka and Nishikori give the event its Japanese superteam. Eala and Auger-Aliassime give it a genuine story: the 21-year-old from the Philippines who beat Jessica Pegula in the Washington final at the start of this month, walking out at Ashe with one of the most naturally gifted ball-strikers of his generation. If you have followed [Eala's rise this season](/lifestyle/alexandra-eala-philippines-first-tennis-star-berlin-grass-2026/), the sheer speed of it is still difficult to process.
 
-That is why 30 degrees in Mason, Ohio can be far more dangerous than 38 degrees in a dry heat, and it is why the sport has stopped measuring air temperature at all. The metric that now governs professional tennis is Wet Bulb Globe Temperature, or WBGT, which folds together four things: air temperature, humidity, wind speed and radiant heat from the sun and the court surface. It is a measure of how hard it is for a human being to shed heat, not how hot the air is. A still, 85-percent-humidity afternoon in the American Midwest can post a higher WBGT than a blazing dry day in Madrid.
+And at the centre of all of it, unfashionable and unbothered, stand the two-time defending champions.
 
-Research on tennis bears this out: players report markedly more cramping and more heat exhaustion in hot humid conditions than in hot dry ones, at every level of the game. The thermometer lies. The wet-bulb number tells the truth.
+## The pseudo-exhibition, and the people who called it that
 
-## What is going on inside a player who is cooking
+When the new format was announced in February 2025, the reaction from the doubles community was not polite.
 
-In a normal match, a professional's core temperature settles somewhere around 38.5 degrees Celsius and stays there. Push relative humidity above 60 percent and the evaporative escape route closes down, and core temperature climbs instead of stabilising — up toward 39.5. Readings above 39.0 have been recorded during live professional matches.
+Sara Errani and Andrea Vavassori, the Italian pair who had won the US Open mixed title in 2024 under the old rules, issued a joint statement describing the change as a "pseudo-exhibition" and a "profound injustice" that "disrespects an entire category of players". They were not being precious. The maths was brutal and simple: the old event had 32 teams, most of them doubles specialists, spread across the second week. The new one had 16 teams, selected largely on singles ranking, which meant that the people who had spent their careers becoming the best mixed doubles players in the world were now, in effect, uninvited from the only mixed doubles title that pays properly.
 
-Meanwhile the fluid is pouring out. Sweat rates of up to 2.5 litres an hour have been measured in hot humid conditions. Two and a half litres. Per hour. In a match that can run past three hours, that is a meaningful fraction of everything a body holds, and it is not just water going — it is sodium, and once sodium levels drop far enough, muscles start firing on their own. That is what a cramp is. It is not weakness. It is chemistry.
+Doubles is where a lot of professional tennis careers actually survive. It is where players go after injuries, after the singles ranking slides, after the body stops producing three-set wins on demand. A doubles specialist is not a failed singles player; they are a different kind of expert, with a different set of instincts about angles, poaching and the half-volley. Watching a genuine doubles team work is closer to watching a well-drilled midfield than watching two individuals share a court. If you have never really looked at it that way, [the basics of doubles patterns](/lifestyle/tennis-doubles-strategy/) reward about ten minutes of attention and change what you see forever.
 
-And this is the part that most changes what you are watching: cognition goes before the legs do. Elevated core temperature degrades decision-making, reaction time and executive function well before a player is physically incapable of running. So the tell is not usually somebody hobbling. It is somebody choosing wrong. Going for a winner from a defensive position because the rally feels unsurvivable. Standing further inside the baseline to shorten points. Serving and rushing forward on a ball that does not deserve it. Missing routine forehands not because the technique broke but because the person operating the technique is, in a small and specific way, no longer entirely present.
+Handing their showpiece to sixteen singles stars for a two-day television event was, from that perspective, a raid. The BBC ran the "profound injustice" line as a headline. The argument was not really about scheduling. It was about whether the sport regards doubles as a discipline or as content.
 
-Watch Djokovic's second and third sets on Saturday with that in mind and it reads completely differently. He was not playing badly. He was playing while overheating, which is a different sport.
+## The other three Slams are watching very carefully
 
-## The rule that arrived this season
+It is easy to forget how much history is being reorganised here. Mixed doubles is one of the oldest competitions in the sport. It survived the amateur era, the arrival of the Open era, the professionalisation of everything, and decades of being scheduled at times that suggested nobody in the building particularly wanted it there. For most of that time it was the format where a great champion could win an extra trophy almost by accident, and where fans got to see combinations that the rest of the season would never allow.
 
-Here is what makes this particular week interesting rather than just grim: 2026 is the first year the men's tour has had a proper heat rule at all.
+Australia, Paris and Wimbledon still run theirs the traditional way: a full draw, mostly specialists and enthusiastic singles players, matches played over the fortnight on outside courts, a trophy handed over on the second weekend to modest applause. New York is now the outlier, and everybody else is watching the numbers.
 
-The ATP Board approved it at the end of last season, and it came into force for this one, following years of complaints that finally boiled over after some brutal Shanghai conditions. It is built on WBGT and it has two clear thresholds. When WBGT reaches 30.1 degrees Celsius during the first two sets of a best-of-three singles match, either player can request a 10-minute cooling break after the second set — and if one player asks, both get it. In those ten minutes they can use ice towels and fans, hydrate, change clothes, take a shower and even receive coaching, all supervised by ATP medical staff. If WBGT climbs past 32.2, outdoor play is suspended entirely until it is safe.
+If two nights in August generate more attention, more ticket revenue and more social clips than a fortnight of conventional mixed doubles ever did, the pressure on the other three to follow will be enormous. That is what makes this more than a scheduling curiosity. The US Open has effectively run a public experiment on whether a Grand Slam event can be redesigned around what an audience will actually watch, rather than around what the sport has always done. The result of that experiment is being read very closely in three other cities.
 
-The genuinely striking thing about that rule is how late it is. The WTA has protected its players with a heat rule since 1992. It took the men's tour thirty-four more years to arrive at the same basic principle: that there is a point past which asking somebody to keep running is not a test of character but a medical risk.
+## Then the Italians went and won it anyway
 
-You can argue about whether the thresholds are right. You cannot really argue that a sport which asks people to sprint in direct sun on a surface that radiates heat back at them, for three hours, in August, in the Ohio River valley, needed no rule at all.
+Here is where the story stops being a grievance and starts being wonderful.
 
-## Melbourne wrote the textbook the hard way
+Errani and Vavassori entered the 2025 event they had publicly condemned. They then walked through a draw stuffed with singles royalty and beat Swiatek and Ruud in the final, 6-3, 5-7, 10-6, taking the championship match into a deciding tiebreak in front of a full Ashe. Two doubles specialists, playing the format they had called an insult, defeating a two-time major champion and a three-time Grand Slam finalist to keep the trophy in Italian hands for a second year.
 
-If you want to know why these policies exist in the form they do, the answer is January in Australia.
+It was one of the most satisfying sporting outcomes of 2025, and it quietly proved both sides of the argument at once. The USTA got its stadium full and its highlights everywhere. Errani and Vavassori got the loudest crowd of their professional lives and a chance to demonstrate, in front of people who had never watched a doubles match on purpose, exactly what the specialists do that the singles stars cannot.
 
-The 2014 Australian Open is the reference point. Temperatures hit 43 degrees in the sun and 40 in the shade. Nine players withdrew on a single day. Canadian Frank Dancevic blacked out on court, and described the run-up to it in words nobody who read them has forgotten: "I was dizzy from the middle of the first set and then I saw Snoopy and I thought, wow, Snoopy, that's weird." A ball boy fainted. Water bottles deformed. It was the moment the sport stopped treating heat as weather and started treating it as a hazard.
+Because that is what the match showed. Under pressure, in the compressed format, the difference was not power. Swiatek and Ruud hit the ball harder. The Italians simply knew where everybody was going to be. Vavassori at the net has the reflexes of a goalkeeper and the positioning of somebody reading a script; Errani, who is 39 this year and about a foot shorter than most of the field, returns serve as though the ball owes her money. Even players who spend their lives in doubles admitted afterwards that the event had given them a level of attention they had never experienced.
 
-Out of that came the Heat Stress Scale that Melbourne uses now — a 1 to 5 rating built, like the ATP rule, on air temperature, radiant heat, humidity and wind. At the bottom of the scale, normal play. At the top, level 5, everything outdoors stops.
+## What it feels like to watch
 
-And it still gets used. This January, on 24 January 2026, outdoor matches at the Australian Open were suspended as the mercury passed 36 degrees with 40 forecast, and the roofs went across the show courts. Jannik Sinner, the defending champion, cramped badly enough that his match was briefly halted. Players who train year-round in Florida or Dubai — Madison Keys, Jessica Pegula, Amanda Anisimova among them — coped noticeably better than those who do not. That is not a coincidence, and we will come back to it.
+If you tune in for the first time this year, expect something that does not behave like tennis usually behaves.
 
-## New York already knew
+The short sets mean there is no settling-in period. A break of serve in the first game is close to decisive, so everybody plays their most aggressive tennis immediately. Points are shorter, net exchanges are constant, and the reflex volleys come in bursts that make the crowd noise arrive a half-second late. Because the players know each other socially rather than professionally, there is a looseness to it: talking between points, laughing at their own mistakes, occasionally forgetting whose serve it is.
 
-The other landmark is the 2018 US Open, and it is the closest cousin to what happened in Cincinnati this weekend, because New York in late August is the same kind of heat as Ohio: not extreme on the thermometer, murderous in the air.
+And there is the strangeness of seeing giants of the sport in an unfamiliar frame. Singles is a lonely, controlled thing; you watch a player manage themselves for two hours. Mixed doubles puts them in a partnership and shows you a completely different personality. You learn who apologises, who takes over, who covers for a partner having a bad five minutes. A great deal of what is charming about the format has nothing to do with the tennis at all.
 
-Five men retired with heat-related problems on a single day. The tournament took the emergency step of applying to the men a rule that at the time existed only on the women's tour, granting a 10-minute break between the third and fourth sets. Djokovic himself, in a four-hour match against Marton Fucsovics, called for trainers who packed him in ice towels late in the second set.
+There is also a tactical puzzle running underneath the fun, and once you notice it you cannot stop watching for it. Mixed doubles is the only format in tennis where the two players on the same side of the net have genuinely different physical tools, and every team has to decide how honest it is going to be about that. Do you aim relentlessly at the woman, on the assumption that the man hits harder, and risk looking both ungallant and foolish when she starts punishing you? Do you serve wide to open the court for your partner at the net, or straight at the body to jam the return and buy them an easy volley? Where does the returner stand when a man serving at 210 kilometres per hour is aiming at a target two metres away?
 
-But the moment people actually remember from that fortnight involved a shirt. During his match against Djokovic, John Millman walked to the net and asked to change clothes mid-set, because the sweat pouring off him was making the court itself dangerous. The air temperature that evening was a mild 21 degrees or so. Humidity was above 80 percent. The umpire allowed the change under an "equipment out of adjustment" provision, which is possibly the driest phrase ever applied to a man who was, functionally, a fountain.
+The good teams answer those questions before the match starts. The famous ones frequently work it out live, on camera, in front of a stadium. Watch how quickly Sabalenka takes charge of a point, or how Bublik handles the moment he realises his partner has seen more Grand Slam finals than he has. Those small negotiations are where the entertainment actually lives, and they are visible in a way that almost nothing in singles ever is.
 
-Twenty-one degrees. Remember that number the next time somebody says a match cannot have been that hard because it was not that hot.
+Two things are worth knowing before you sit down. The first is that the final is played over full sets, so if the event is going to produce a real contest, it will produce it at the end. The second is that the crowd on those two nights is the least reverent crowd of the fortnight. Nobody has paid main-draw prices. Nobody is watching in respectful silence. If you want to know what New York sounds like when it has decided to enjoy itself, this is the sample.
 
-## Why they cannot simply be fitter
+## The argument has not gone away
 
-The obvious objection is that these are among the most conditioned athletes alive, so why does this happen to them at all?
+None of this settles the underlying question, and it is worth being honest about that rather than pretending the trophy fixed it.
 
-Two reasons. The first is that fitness and heat tolerance are not the same trait. Adapting to heat is a separate physiological process — it takes roughly one to two weeks of repeated exposure, and it produces measurable changes: you start sweating earlier, you sweat more, and crucially you lose less salt in each litre. A player who has spent June and July on European clay and grass, in mild air, and flies into the Midwest for a Sunday practice and a Tuesday first round, has not had that fortnight. Their body is still calibrated for somewhere else.
+Mixed doubles at the US Open is now, functionally, a different event with the same name. It has a million-dollar prize, a prime-time slot and a field selected to sell tickets. The doubles specialists who built the event's history mostly get in through the qualifying playoff or a wild card, and the tournament has already had some uncomfortable decisions to make about who deserves those places. The record books will continue to list mixed doubles champions in a single unbroken column, as though 2024 and 2026 were the same competition. They are not.
 
-The second is scheduling. This part of the calendar is a compressed run of hard-court events squeezed between Wimbledon and the US Open, and players arrive already carrying whatever the grass season did to them. The ones who show up rested and acclimatised have an enormous, invisible advantage — which is part of why [Alexander Zverev's position as top seed here](/lifestyle/alexander-zverev-cincinnati-2026-top-seed-first-slam-champion/) is about far more than form.
+Whether that matters depends on what you think a Grand Slam is for. If it is a museum, the change is vandalism. If it is a sport that has to keep finding new people to fall in love with it, then two nights of Sabalenka and Djokovic sharing a service box is worth more than a fortnight of empty side courts, and the Italians proved that the specialists can win it on merit anyway.
 
-And then there is the individual variable, which is the one nobody outside a player's team can see. Djokovic has now said plainly that he has a condition that makes hot, humid conditions especially punishing. That is not an excuse offered after a defeat; it is a physiological fact that has been visible in his results in this specific climate for years. Everything a professional does around heat — the hydration protocol, the salt, the pre-cooling with ice vests before walking on, the electrolyte load in the days beforehand — is an attempt to buy back a margin that a body was not necessarily born with. If the science of what these athletes put into themselves interests you, our [guide to what tennis players actually eat and drink](/lifestyle/tennis-diet-nutrition-guide/) goes through it properly.
+What is not in doubt is that people are watching. That was the whole gamble, and it paid.
 
-## How to watch a player who is overheating
+## Where it fits in your week
 
-None of this is much use unless it changes what you see, so here is what to look for over the rest of this fortnight and through New York.
+The practical version, if you want to plan around it: Fan Week opens on 23 August, mixed doubles qualifying is on 24 August, and the championship runs across 25 and 26 August at Ashe and Armstrong. Then the grounds reset, the main draw begins on 30 August, and the singles fortnight runs to the men's final on 13 September. If you are working out what to watch and when across the whole two weeks, [our US Open guide](/tournaments/us-open-guide/) lays out the shape of it.
 
-Watch the time between points, not the points. A player in trouble starts using every second of the shot clock, then a little more. Watch the towel: not the routine wipe, but the moment somebody stops mid-court, hands on knees, and looks at the ground for a beat too long. Watch where they stand to receive — a player who moves several feet inside the baseline against a big server is often not being brave, but shortening the match. Watch the ball toss on second serves, which is usually the first piece of technique to wobble.
+It is also, quietly, becoming the part of the calendar where the sport's great returning figures show up. Venus Williams is in this field at 46. Her sister has spent this summer easing back into competition through doubles as well, a route that lets a legendary body compete without asking it to survive three sets alone; the story of [Serena's 2026 comeback](/lifestyle/serena-williams-comeback-2026-queens-doubles-mboko/) has followed exactly that logic. Doubles has always been tennis's kindest format to the people it has already taken a great deal from.
 
-Watch what they carry at changeovers. Ice towels round the neck, cold drinks with visible salt, cooling vests, a hand held under a fan. And listen for the umpire announcing a heat break, because from this season that is a formal event with a threshold behind it rather than a mercy the officials granted at their discretion.
+So on the evening of 25 August, when Djokovic walks out to serve with Sabalenka standing at the net in front of him and 23,000 people making an unreasonable amount of noise about it, you will be watching something that did not exist three years ago, that a lot of serious people believe should not exist at all, and that two Italians keep winning out of what looks a great deal like spite.
 
-Above all, watch the eyes. Overheating has a look — a slight delay before responding to a line call, a slowness in turning towards the chair. The body carries on for a surprisingly long time after the mind has begun to check out.
+Pull up a chair early. This one is over by Wednesday night.
 
-## The part that does not show up on the highlight reel
-
-There is a version of Saturday that gets filed as a shock result. World No. 50 beats a legend, twenty seconds of highlights, on to the next thing.
-
-The truer version is that two men walked onto a court in the Ohio River valley in the middle of August, both of them subject to the same laws of physics, and one of them held together while the other came apart — and that the one who came apart went back out after being sick in front of a full stadium and played another hour anyway, losing two tight sets by a single break each. That is not a collapse. That is somebody being beaten by conditions and refusing to make it look easy for them.
-
-Tennis is the rare sport with no substitutions, no time-outs at will, no clock to run down and no teammate to hide behind. When the air turns against a player there is nowhere to go and nothing to do except keep walking to the baseline. The new rulebook helps at the edges. It does not change the fundamental deal.
-
-So when you next see somebody great look ordinary on a sticky afternoon in a small stadium in a place you would not otherwise think about, you will know it is not a lack of effort you are watching. It is a person doing arithmetic with a body that has stopped cooperating, in an atmosphere that has quietly decided to keep every bit of heat it is given.
-
----
-
-Related reading on super.tennis: our [Cincinnati Masters guide](/tournaments/cincinnati-masters-guide/), [Grigor Dimitrov and the long way back](/lifestyle/grigor-dimitrov-cincinnati-2026-long-way-back/), [Alexander Zverev as top seed in Ohio](/lifestyle/alexander-zverev-cincinnati-2026-top-seed-first-slam-champion/), and [what tennis players eat](/lifestyle/tennis-diet-nutrition-guide/).`;
+*Photo: Aryna Sabalenka at the DC Open, via Wikimedia Commons.*`;
 
 const record = {
   slug, title, excerpt, body,
