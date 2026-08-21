@@ -1,130 +1,116 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'portuguese-tennis-borges-faria-cincinnati-2026-history';
-const stamp = '2026-08-20T05:00:00.000Z';
-const title = 'The Week Portuguese Tennis Stopped Being a One Man Story';
+const slug = 'winston-salem-open-2026-last-stop-before-us-open';
+const stamp = '2026-08-21T05:00:00.000Z';
+const title = 'The Last Stop Before the US Open Is a College Campus in North Carolina';
 const meta_title = title;
-const meta_description = 'Nuno Borges and Jaime Faria both reached the last 16 in Cincinnati, a first for Portugal at a Masters 1000. Inside the quiet rise of Portuguese tennis.';
-const excerpt = 'A qualifier from Lisbon beat the Montreal champion. A late bloomer from Maia beat Andrey Rublev. For the first time, Portugal had two men in the last 16 of a Masters 1000 - and the story behind it has been forty years in the making.';
-const image_url = '/images/news/venue-07.webp';
-const image_alt = 'An aerial view of a hard court tennis complex, with a main stadium court surrounded by outside courts';
+const meta_description = 'The Winston-Salem Open starts on Sunday, the final ATP stop before the US Open. Inside the strangest week in tennis and why careers keep starting there.';
+const excerpt = 'Forty-eight men, a university tennis complex in North Carolina, and seven days before the biggest tournament in America. The Winston-Salem Open is the least glamorous week on the calendar and one of the most revealing - here is what it is, who is playing, and why so many careers have begun there.';
+const image_url = '/images/news/venue-10.webp';
+const image_alt = 'An aerial view of empty blue hard courts at a tennis complex, the kind of outside courts used at a small ATP tournament';
 
-const body = `On Sunday afternoon in Ohio, a 23-year-old from Lisbon who had spent the previous week grinding through qualifying walked out against the man who had just won Montreal, and beat him in straight sets without ever appearing especially startled by what he was doing.
+const body = `By Sunday afternoon, while most of the tennis world has already mentally boarded a flight to New York, forty-eight men will walk out onto hard courts on a university campus in North Carolina and start a tournament almost nobody has circled.
 
-You almost certainly did not watch it. Ben Shelton against Jaime Faria was not the match on the main channel, and it was not the match anyone had circled. It was a second-round tie between a top-ten player arriving on a six-match winning streak and a Portuguese qualifier whose name most commentators had to check the pronunciation of. Then Faria won 6-4, 6-4, and by Tuesday night something had happened in Cincinnati that had never happened before in the history of Portuguese tennis.
+This is the Winston-Salem Open, and it occupies the least glamorous slot in professional tennis: the seven days immediately before the US Open. The main draw begins on Sunday 23 August at the Wake Forest Tennis Complex, with two matches scheduled for the afternoon and two more under lights. The singles final is on Saturday 29 August at four in the afternoon. The very next morning, the US Open main draw starts in Queens, and everything that happened in North Carolina gets quietly filed under preparation.
 
-This is a story about two players you may not know, from a country you do not associate with tennis, having the best week of their lives at the same time in the same American city. It is also, if you stand back a little, a story about how small countries stop being small in this sport — slowly, unevenly, and then all at once on a Tuesday in August that nobody was paying attention to.
+What is worth knowing, though - and it is the reason I want you to give this week ten minutes of your attention - is that the word preparation does a lot of lying there. For a certain kind of player - and there are far more of them than there are Alcarazes and Sabalenkas - Winston-Salem is not a warm-up. It is the tournament. It is a genuine chance at a trophy, a fortnight of ranking points, and in several famous cases a career turning over from potential into fact.
 
-## The match that started it
+## The worst week on the calendar, and the men who take it anyway
 
-Faria came into the Cincinnati Open through the qualifying draw, which is the tennis equivalent of arriving at a party through the kitchen. Qualifiers get the ugly courts, the early start times and the opponent nobody wanted. What they also get, occasionally, is a top seed who has been on a plane for six hours and has not adjusted to the conditions.
+Think about what you are being asked to do as a player in the last full week of August.
 
-Shelton had. He had just won the National Bank Open in Montreal, beating Brandon Nakashima in the final without dropping a set all week — his second Masters 1000 title and the first successful defence of that trophy by anyone since Rafael Nadal in 2019. He came to Ohio as one of the favourites and the most in-form player on the American hard courts.
+You have just come out of a month of North American hard courts. Toronto or Montreal, then Cincinnati, both of them brutal, both of them humid, both of them played in the sort of heat that turns a three-set match into an endurance event. If you had a good run, you are tired. If you had a bad one, you are tired and doubting yourself. And in eight days, the last Grand Slam of the season begins, the one with the biggest stadium, the loudest crowd and the longest fortnight in tennis.
 
-What happened next was not a smash-and-grab. Faria broke early in the first set and then had to survive the response, and it is the shape of the second set that tells you the most about him. He went down 1-4. Against a player of Shelton's ceiling, on a fast court, 1-4 in the second set is where careers quietly end and everyone politely says the qualifier had a good tournament anyway.
+The conventional wisdom says rest. Fly to New York early, practise on the actual courts, get your body flat and your sleep right, and arrive at Flushing Meadows with something left in the tank.
 
-Faria won the next five games. Shelton created twelve break points across the match and converted exactly one of them. That statistic is the whole story: a young player who had never beaten anyone in the top ten spent two hours refusing to blink while a much more decorated opponent kept knocking on the door.
+The players who enter Winston-Salem have decided the conventional wisdom is wrong for them. Their argument is simple and it is very human: you cannot practise match rhythm. You can hit a thousand balls with a coach feeding cross-court and still walk out for a first round in New York feeling like you have forgotten how to compete. What these players want is not more tennis. It is more matches - matches with a scoreboard, a chair umpire and consequences.
 
-Afterwards, asked what had changed, Faria gave one of those answers that sound like nothing and are actually everything. He talked about changing his mentality and his work ethic, about trying to focus more on the process. His original target for the season, he said, had simply been to get into the top 100.
+If you lost early in Cincinnati, you have been hitting for a week with nothing on the line. Going to New York with that as your preparation is a frightening prospect. So you drive four hundred miles south instead, and you try to win three matches in a place with a small crowd, cheap tickets and a court you can walk right up to.
 
-Then he beat Adam Walton 4-6, 6-4, 7-6(3), coming from a set down and from a break down in the second, to reach the fourth round of a Masters 1000 event for the first time in his life.
+That is the deal Winston-Salem offers, and it is why the entry list is always deeper than it has any right to be.
 
-## Meanwhile, on another court
+## What it actually is
 
-While Faria was doing the improbable thing, the other Portuguese man in the draw was doing the difficult thing very well.
+Let me give you the plain facts, because the tournament is easy to describe and surprisingly hard to find on television.
 
-Nuno Borges is 29, from Maia in the north of Portugal, and he has been Portugal's best player for several years now without ever quite becoming a name that travels. His Cincinnati week began with a three-set survival job against Thanasi Kokkinakis — 5-7, 7-6(3), 7-6(4), two tie-breaks, the kind of match that leaves you with nothing in the tank and everything to play for. He beat Francisco Cerundolo 6-4, 6-4 in the next round.
+The Winston-Salem Open is an ATP 250, the entry level of the men's tour above Challengers. It is played on outdoor hard courts at the Wake Forest Tennis Complex on the Wake Forest University campus in Winston-Salem, North Carolina. Total prize money this year is over 775,000 dollars.
 
-And then he beat Andrey Rublev.
+The singles draw holds 48 players, four of whom come through qualifying. Qualifying is played across Saturday 22 and Sunday 23 August. The main draw runs from Sunday through Friday, and the final is on the last Saturday of the month. The draw itself was made on Friday evening at half past five, local time, which means that as you read this the brackets have just been written.
 
-Rublev was the 13th seed. He and Borges had played five times before and Borges had lost all five. On Tuesday, Borges won 6-3, 6-4, and did it with the sort of unfussy competence that gets you very little television time and a great deal of respect from other players. First win over Rublev, sixth attempt, best possible timing.
+2026 is the fifteenth edition. The tournament arrived in Winston-Salem in 2011 and has been played every year since with one exception - the 2020 edition never happened, lost with so much else to the pandemic, which is why the fifteenth anniversary falls in a year you might have counted as the sixteenth.
 
-That result, arriving on the same day as Faria's comeback against Walton, produced the line that ran across every Portuguese sports page on Wednesday morning: for the first time ever, two Portuguese men were in the last 16 of the same Masters 1000.
+The way it came to exist is a small piece of tennis politics worth knowing. The slot was created by folding two struggling events into one. Pilot Pen Tennis in New Haven, Connecticut - which had itself moved from Long Island, where the tournament had been played since 1981 - was combined with the Romanian Open in Bucharest, and the resulting licence was handed to Winston-Salem. Two tournaments in two countries were rolled up and set down on a college campus in North Carolina, and a fortnight of tennis history was rebooted from scratch.
 
-## What Portugal had never done before
+John Isner won the first one in 2011, seeded fourth, in a town that had never hosted a tour event before. Fifteen years later, the tournament has outlived plenty of flashier ideas.
 
-It is worth being precise about how unusual this is, because "first time ever" gets thrown around loosely in tennis.
+## The most winnable big draw in tennis
 
-The Masters 1000 tier has existed in its modern form since 1990. In all that time, across nine tournaments a year on three continents, Portugal had never once had two men reach the fourth round of the same event. Not in the 1990s, not in the 2000s, not during the best years of the only Portuguese player most casual fans could name.
+Here is the part that makes Winston-Salem strange in the best way.
 
-For most of that period, Portuguese tennis was not a group. It was a person. And when it was a person, it was almost always Joao Sousa.
+A 48-player draw is unusual. Most 250s hold 28 or 32 players. Wimbledon and the US Open hold 128. A 48 draw means the top sixteen seeds get a first-round bye, so a seeded player needs four wins for the title rather than five, and it means there is room for a small army of players who would not normally be within touching distance of a tour-level main draw.
 
-## The one man country
+Do the arithmetic from the other end and you see why this week matters so much to so many people. Forty-eight players start. Only one leaves with a trophy, but a first-round win at an ATP 250 is worth real ranking points and real money to a man ranked in the nineties who has spent the summer flying between continents on his own budget. If you have never looked closely at what a tour player actually banks after tax, coaching, flights and physio, our piece on [how tennis prize money really works](/lifestyle/tennis-prize-money-explained/) is a sobering read. Winning two matches in Winston-Salem can be the difference between a profitable August and one you would rather not discuss with your accountant.
 
-If you followed tennis at all in the 2010s, you saw Sousa without necessarily registering him: a compact, relentless competitor who turned up in the second week of majors, played long matches against better-ranked players and occasionally won them.
+Then there is the qualifying draw, which is where I would spend my Saturday if I lived anywhere near North Carolina. Four players make it through. The rest go home, or hang around as alternates in case somebody withdraws with a strained shoulder on Sunday morning. This is not a hypothetical route to something wonderful. At Roland Garros this year a Dutchman named Jesper de Jong lost in the last round of qualifying, got into the draw when Arthur Fils pulled out, and then beat Stan Wawrinka and Karen Khachanov to reach the fourth round of a Grand Slam - [the lucky loser run that made the whole tournament stop and look](/lifestyle/jesper-de-jong-roland-garros-2026-lucky-loser-run/). Every qualifying draw contains someone waiting for a phone call like that.
 
-In September 2013 he became the first Portuguese man in history to win an ATP Tour title, at the Malaysian Open in Kuala Lumpur. He beat David Ferrer, then the world No. 4, in the quarter-finals, and then came through a final against Julien Benneteau 2-6, 7-5, 6-4. He was 24 and ranked 77th in the world when he did it. He climbed to a career high of No. 28 in May 2016. He won the title at home in Estoril in 2018. He retired in 2024.
+## Where careers have actually started
 
-Before Sousa, the high-water mark for Portuguese men's tennis was Frederico Gil reaching the Estoril final in May 2010 and losing it. That was, genuinely, the best any Portuguese man had ever done. An entire country's tennis history could be summarised in one runner-up trophy and then one man's career.
+This is the argument that ought to win you over, because it is not sentiment. It is a list.
 
-That is a very particular kind of sporting existence, and if you come from a country that produces champions in your sport it is hard to imagine. It means every result rests on one set of shoulders. It means the national federation, the sponsors, the television rights, the junior programme and the entire public conversation about the sport all rise and fall with whether one man's back is holding up. And it means that when he retires, there is a real chance the whole thing simply stops.
+In 2016, a 25-year-old Spaniard named Pablo Carreno Busta arrived in Winston-Salem without a tour title to his name. He beat his compatriot Roberto Bautista Agut in the final, 6-7, 7-6, 6-4, two tie-breaks and three hours of grinding, and won his first ATP trophy. He would go on to reach two Grand Slam semi-finals and win an Olympic bronze medal.
 
-Football has always been the sun in Portugal, and everything else grows in whatever light gets through. Tennis had a lovely coastal ATP event at Estoril, a handful of clubs, and one very good player at a time, if that.
+In 2018, a lanky Russian who had spent most of the season being described as promising and erratic beat Steve Johnson 6-4, 6-4 to take the title. That was Daniil Medvedev, in the summer that his career slid into gear. Within two years he was contesting Grand Slam finals; within three he had won the US Open.
 
-Which is why two men in the last 16 of the same Masters 1000 is a bigger deal than the phrase makes it sound. Two is not twice as good as one. Two is a different category of thing. Two means the result was not a fluke of one exceptional individual. Two means there is a system somewhere behind it, or at the very least a culture that has started producing more than one answer.
+In 2019, Hubert Hurkacz beat Benoit Paire 6-3, 3-6, 6-3 for the first ATP title of his life. He has since reached a Wimbledon semi-final and spent years in the world top ten.
 
-## The long way round: Nuno Borges
+In 2023 Sebastian Baez won it. In 2024 Lorenzo Sonego took the title without dropping much of anything, beating the young American Alex Michelsen 6-0, 6-3 in a final that lasted barely an hour. Last year Marton Fucsovics beat Botic van de Zandschulp 6-3, 7-6 for the trophy.
 
-The two men who did it could hardly have arrived by more different routes.
+Look at that list again. A maiden title for a future Olympic medallist. A first big statement from a future US Open champion. A first title for a future world number six. Winston-Salem does not just fill a week. It keeps catching players at the exact moment they turn into who they are going to be, which is a genuinely rare thing for a tournament that most fans could not place on a map.
 
-[Borges](/players/nuno-borges/) took the slowest, least glamorous path available, and it is the reason he is still improving at 29 while players five years younger are already talking about their bodies.
+## Who is in the field this year
 
-He went to America. From 2015 to 2019 he played college tennis at Mississippi State, took a degree in kinesiology, was named SEC Player of the Year three years running in 2017, 2018 and 2019, and reached the NCAA singles final in his last season. Then he turned professional properly, at an age when the sport's prodigies have already had their first injury layoff, and started the long climb through Challenger events — ten Challenger finals, titles in Antalya, Barletta, Monterrey, Phoenix twice, and one in Maia, the town he grew up in.
+The entry list published in late July had thirteen players from inside the world top fifty and four former champions of the event, which for an ATP 250 in the shadow of a Grand Slam is a serious field.
 
-The payoff came in July 2024 in Bastad, Sweden, in the most improbable circumstances imaginable. Borges reached his first ATP final and found Rafael Nadal on the other side of the net, on clay, in what everyone understood was the closing chapter of the greatest clay-court career the game has produced.
+Luciano Darderi leads it. The Italian was ranked 23 when the list came out, having spent 2026 turning himself from a clay-court specialist into a player who can hurt people on any surface. Behind him: Arthur Rinderknech of France, Alejandro Tabilo of Chile, and Ignacio Buse, the young Peruvian who has been one of the quiet stories of the season.
 
-Borges beat him 6-3, 6-2. He broke Nadal five times. He became only the fifth man to beat Nadal in a tour-level clay-court final, joining Novak Djokovic, Roger Federer, Andy Murray and Horacio Zeballos on a list that reads like a misprint with his name attached. He also became just the second Portuguese man in the Open era to win a tour singles title, after Sousa.
+Then there is [Arthur Fery](/players/arthur-fery/), which is a name that would have meant almost nothing to you a year ago and now belongs to a Wimbledon semi-finalist. The Briton went from a wildcard nobody expected anything from to one of the defining runs of the grass season, and he arrives in North Carolina ranked around 37 with a completely different life to the one he had last summer.
 
-"I am living in the clouds," he said afterwards. Two months later he was ranked No. 30 in the world, a career high, and the highest a Portuguese man had ever climbed.
+Denis Shapovalov is in the draw too, a former world number ten still hunting the consistency to match his hands. So is Adrian Mannarino, at an age when most players have already opened a coaching academy, who won this title in 2022. Carreno Busta comes back nine years after his breakthrough here. Sonego defends nothing but arrives as the 2024 champion. Baez completes the quartet of former winners.
 
-He has come back down since — the tour is unsentimental about late developers — and he arrived in Cincinnati somewhere in the high forties. But a player who beat Nadal in a final and Rublev in a Masters 1000 is not a player having lucky weeks. He is a player who took eight years longer than the phenomenons and got to roughly the same place.
+That is what makes the field worth your time. It is not a collection of names you half recognise from a draw sheet. It is a group of players in wildly different places on the same curve - one on the way up, one on the way back, one hanging on, one who has already had his moment and would rather like another.
 
-## The fast way round: Jaime Faria
+## The two Americans, and the college pipeline
 
-[Faria](/players/jaime-faria/) is the other model entirely: a Lisbon kid who turned 23 exactly two weeks before he beat Shelton, six foot two, right-handed, two-handed backhand, and in a considerable hurry.
+Only two American players earned direct acceptance into this year's main draw, which for a tournament on American soil is a striking number, and both of them are worth watching for the same reason.
 
-His breakthrough was one of those runs that looks absurd written down. In the early part of 2024 he won twenty consecutive matches on the ITF World Tennis Tour, taking four straight M25 titles — all of them in Portugal, in front of people who knew exactly who he was. He qualified into the main draw at the Estoril Open that spring for his ATP debut, in his home city, which is either the best or the most terrifying way to start a professional career. In May he won his first Challenger, at Oeiras just along the coast.
+Ethan Quinn makes his Winston-Salem debut having climbed to a career-high ranking of 46 during a breakout season. Jenson Brooksby also plays here for the first time, ranked 77, still working his way back to the level he had before injuries and a long absence took years out of his twenties. He won his first tour title in 2025 at the US Men's Clay Court Championships, which for a player who had spent that long in the wilderness was one of the more moving afternoons of last season.
 
-He broke into the top 100 in 2025 and hit a career high of No. 87 that February. This June he made the third round at Roland Garros. In July, when the Estoril Open shifted to a new summer slot on the calendar, he was handed one of the tournament's wild cards — the local boy the event now wants on its posters.
+Quinn came out of American college tennis, which is no longer the consolation route it was once treated as. Fery played at Stanford. That path - four years of team tennis, a degree, then a professional career started at 22 instead of 18 - has stopped being a fallback and started being a strategy, and we wrote about exactly that shift after this summer's [Montreal final and the college route behind it](/lifestyle/montreal-2026-final-college-tennis-route-shelton-nakashima/).
 
-He still had to qualify for Cincinnati. He is still, by the standards of the players he has been beating, an unknown. What he clearly is not is intimidated, and there is a specific kind of player who is dangerous precisely because nobody has told him yet which matches he is supposed to lose.
+Wild cards were still being finalised when the entry list went out, and by tradition Winston-Salem hands at least one to a young American who has never played a tour main draw before. That match, whenever it lands, will be somebody's first. Those are always the ones worth finding.
 
-## What Wednesday took away
+## What it is like to be there
 
-Sport does not usually let two stories run at once for very long, and Wednesday evening was where this one narrowed.
+If you have only ever watched tennis from a sofa or from row 40 of a stadium, an ATP 250 is a different sport.
 
-Borges drew Nakashima in the fourth round, an American having his own remarkable fortnight — runner-up in Montreal, a career-high ranking of No. 22 secured, and fresh from saving three consecutive match points to beat Daniil Medvedev 6-7(3), 7-6(4), 6-1 in the previous round. They had never played each other before.
+The Wake Forest Tennis Complex is a college facility, not an arena. The main court seats a few thousand. The outside courts have a couple of rows of bleachers and a fence, and you can stand at that fence and be six feet from a top-hundred player hitting a forehand. You can hear the coaching. You can hear a player muttering at himself between points, which is the single most humanising sound in professional sport. Tickets cost a fraction of a US Open grounds pass and you can watch tennis from eleven in the morning until eleven at night.
 
-It went the distance. Borges lost the first set 3-6, took the second on a tie-break, and lost the third 3-6. Nakashima went through to the quarter-finals. Borges went to the airport with the best Masters 1000 win of his year and a defeat he will replay for a while.
+Late August in North Carolina is hot and thick and the evening sessions are the good ones, when the lights come on over the courts and the temperature finally drops into something survivable. Locals bring folding chairs. Students wander through. It feels less like a major sporting event than a very well organised town fair that happens to have the world top fifty in it.
 
-Faria is still in it. He plays Lorenzo Musetti in the fourth round on Thursday, which may well be happening while you read this, and the tournament runs to its singles finals on Sunday 23 August. Whatever the scoreboard says by tonight, the fortnight has already rewritten a page of his country's record book.
+That is the thing sport keeps forgetting to tell you: the smaller the tournament, the closer you get. You will never be six feet from Carlos Alcaraz. You can be six feet from a man ranked 60 in the world, and he is playing tennis you could not comprehend at close range.
 
-## Why two matters more than one
+## What to watch for this week
 
-There is a pattern in tennis that repeats often enough to be worth naming: countries do not produce one great player and then stop. They produce one, and if the conditions are right, the one becomes the reason for the next several.
+Cincinnati has a couple of matches left to play out this weekend and the last big names of the American summer will be crowned there. New York opens its gates on Sunday for Fan Week, and by next weekend the qualifying rounds and the practice-court gossip will have swallowed all the oxygen in tennis.
 
-[Italy is the loudest current example](/lifestyle/how-italy-built-tennis-empire-2026-sinner-paolini-errani/) — a country that spent decades as a respectable tennis nation and then, within a handful of years, turned into the dominant force in the sport, with depth so absurd that players who would headline any other country's team are fourth choice for theirs. That did not come from one prodigy. It came from federation money, a coaching structure, and crucially a group of players close enough in age to drag each other upwards.
+In the middle of that, on a campus in North Carolina, forty-eight players will be chasing the last trophy before the Slam. Watch for the qualifiers - four of them, playing on Saturday and Sunday for a place in a main draw that could change their season. Watch Quinn, who has the best twelve months of his life behind him and no idea yet how good he might become. Watch Fery, arriving somewhere small with expectations he has never carried before. Watch Mannarino, still going, still infuriating opponents with a game that should not work at this level and somehow does.
 
-You can see the same mechanism in smaller versions everywhere. It is what makes a run like [Alexandra Eala carrying the Philippines onto the tour](/lifestyle/alexandra-eala-philippines-first-tennis-star-berlin-grass-2026/) so significant beyond the results themselves: a child somewhere sees a person with their flag winning on television, and the arithmetic of what is possible changes in their head.
+And if you find the stream and you are not sure why you are watching a second-round match between two players you have never heard of on a Tuesday afternoon in August, keep this in mind: Daniil Medvedev played one of those exact matches on that exact court eight years ago, and nobody was watching that either.
 
-Portugal is at the very beginning of that process, and it may not go anywhere. Plenty of promising fortnights do not. But it now has a 29-year-old proving that the long route works and a 23-year-old proving the fast route works, both ranked high enough to be in the main draw of everything, both beating top-20 players in the same week on the same hard courts.
+The trophy gets lifted on Saturday at four. By Sunday lunchtime the winner will be on a plane to New York with the rest of them, and the difference is that he will get on it having won something.
 
-For a kid in Porto or Braga who has just watched two men with their flag next to their name beat Rublev and Shelton on consecutive days, that is not a statistic. That is an instruction.
-
-## The part that does not show up in the record books
-
-Here is what I keep coming back to about this week.
-
-Nobody in Cincinnati went out of their way to make it a story. There was no ceremony, no montage, no interview panel about Portuguese tennis. Borges beat Rublev on a court where the seats were half full because the marquee names were playing elsewhere. Faria beat Shelton in a second-round match that most of the tennis world found out about from a push notification.
-
-The history was made almost accidentally, in the ordinary machinery of a Masters 1000 week, by two men who were mostly just trying to win their next match. That is how it usually happens. The moments that later get described as turning points look, at the time, like an unremarkable Tuesday with two results on it.
-
-The Cincinnati Open will crown its champions on Sunday and those names will go on the trophy and into the highlight packages. Nobody is going to put "first time two Portuguese men reached the last 16" on a plaque. It will live in a federation press release, a few Portuguese sports pages, and the memory of whoever was on court 8 with a Portuguese flag over their shoulders on Tuesday afternoon.
-
-But if Portuguese tennis turns out to have a proper generation in ten years' time, this is the week people will point back to. Not because anyone won a title. Because for the first time, when the draw sheet was printed, there were two of them.
-
-*Photo: hard court tennis complex from above, via Unsplash.*`;
+*Photo: blue hard courts from above, via Unsplash.*`;
 
 const record = {
   slug, title, excerpt, body,
