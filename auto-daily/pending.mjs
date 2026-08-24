@@ -1,116 +1,98 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'winston-salem-open-2026-last-stop-before-us-open';
-const stamp = '2026-08-21T05:00:00.000Z';
-const title = 'The Last Stop Before the US Open Is a College Campus in North Carolina';
+const slug = 'arthur-fils-cincinnati-2026-masters-title-us-open';
+const stamp = '2026-08-24T05:00:00.000Z';
+const title = 'Arthur Fils Broke a 12-Year French Drought in Cincinnati. New York Is Next.';
 const meta_title = title;
-const meta_description = 'The Winston-Salem Open starts on Sunday, the final ATP stop before the US Open. Inside the strangest week in tennis and why careers keep starting there.';
-const excerpt = 'Forty-eight men, a university tennis complex in North Carolina, and seven days before the biggest tournament in America. The Winston-Salem Open is the least glamorous week on the calendar and one of the most revealing - here is what it is, who is playing, and why so many careers have begun there.';
-const image_url = '/images/news/venue-10.webp';
-const image_alt = 'An aerial view of empty blue hard courts at a tennis complex, the kind of outside courts used at a small ATP tournament';
+const meta_description = 'Arthur Fils won the Cincinnati Open at 22, the first French Masters 1000 champion since 2014. Now he walks into a wide-open US Open. Here is his story.';
+const excerpt = 'At 22, Arthur Fils won the biggest title of his life in Cincinnati and ended a drought that had haunted French tennis for more than a decade. With the world number one out injured, he arrives at the US Open as the most dangerous unseeded-looking seed in the draw. This is who he is, where he came from, and why the whole of France is suddenly holding its breath.';
+const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Arthur_Fils_at_EFG_Swiss_Open_Gstaad_2023_Pic_Gordon_Simmonds.jpg/500px-Arthur_Fils_at_EFG_Swiss_Open_Gstaad_2023_Pic_Gordon_Simmonds.jpg';
+const image_alt = 'Arthur Fils of France follows through on a forehand during a match at the Swiss Open in Gstaad';
 
-const body = `By Sunday afternoon, while most of the tennis world has already mentally boarded a flight to New York, forty-eight men will walk out onto hard courts on a university campus in North Carolina and start a tournament almost nobody has circled.
+const body = `For most of the second set on Saturday evening, it looked as though Arthur Fils was going to lose the way promising young players so often lose - loudly, and then quietly. He had taken the opening set of the Cincinnati Open final. Then he watched Frances Tiafoe find his range, turn the noise back around, and level the match by winning the second 6-1. There is a version of this story where the 22-year-old Frenchman lets the size of the moment swallow him whole.
 
-This is the Winston-Salem Open, and it occupies the least glamorous slot in professional tennis: the seven days immediately before the US Open. The main draw begins on Sunday 23 August at the Wake Forest Tennis Complex, with two matches scheduled for the afternoon and two more under lights. The singles final is on Saturday 29 August at four in the afternoon. The very next morning, the US Open main draw starts in Queens, and everything that happened in North Carolina gets quietly filed under preparation.
+Instead, he did the thing that tells you more about a player than any ranking ever will. He won the third set 6-0.
 
-What is worth knowing, though - and it is the reason I want you to give this week ten minutes of your attention - is that the word preparation does a lot of lying there. For a certain kind of player - and there are far more of them than there are Alcarazes and Sabalenkas - Winston-Salem is not a warm-up. It is the tournament. It is a genuine chance at a trophy, a fortnight of ranking points, and in several famous cases a career turning over from potential into fact.
+Not close. Not nervy. Six games to love, in the biggest match of his life, against a former US Open semi-finalist, in a stadium that had come to watch an American win. When the final ball landed, Fils did not so much celebrate as detonate - and somewhere in that release was the weight of a number he probably could not have named in the moment but which the record books noticed immediately. Arthur Fils had just become the first French man to win a Masters 1000 title in more than twelve years.
 
-## The worst week on the calendar, and the men who take it anyway
+If you do not follow the sport closely, that sentence might slide past you. Let me slow it down, because it is the whole point.
 
-Think about what you are being asked to do as a player in the last full week of August.
+## What he actually won
 
-You have just come out of a month of North American hard courts. Toronto or Montreal, then Cincinnati, both of them brutal, both of them humid, both of them played in the sort of heat that turns a three-set match into an endurance event. If you had a good run, you are tired. If you had a bad one, you are tired and doubting yourself. And in eight days, the last Grand Slam of the season begins, the one with the biggest stadium, the loudest crowd and the longest fortnight in tennis.
+The Masters 1000 events are the tier of tournament directly below the four Grand Slams. There are nine of them a year, they gather almost every top player in the world, and winning one is the clearest signal in tennis that you have arrived - not as a talent, which is cheap, but as a champion, which is not. Cincinnati is one of the most punishing of the lot: a fortnight of heat and humidity in Ohio, played on hard courts that reward the fittest and the bravest, and traditionally the final dress rehearsal before the US Open.
 
-The conventional wisdom says rest. Fly to New York early, practise on the actual courts, get your body flat and your sleep right, and arrive at Flushing Meadows with something left in the tank.
+Fils arrived in Cincinnati ranked 21st in the world. He left it ranked 11th, a career high, having beaten a string of seeded players and then dismantled [Frances Tiafoe](/players/frances-tiafoe/) 6-3, 1-6, 6-0 in the final. Along the way he knocked out the Italian Flavio Cobolli 6-3, 6-4 in the semi-finals, ending Cobolli's own hopes of climbing into the world's top five.
 
-The players who enter Winston-Salem have decided the conventional wisdom is wrong for them. Their argument is simple and it is very human: you cannot practise match rhythm. You can hit a thousand balls with a coach feeding cross-court and still walk out for a first round in New York feeling like you have forgotten how to compete. What these players want is not more tennis. It is more matches - matches with a scoreboard, a chair umpire and consequences.
+Here is the statistic that made French tennis writers reach for superlatives. Fils is only the seventh French man in history to win a Masters 1000 title, and the first since Jo-Wilfried Tsonga lifted the Canadian Open trophy in 2014. That is a twelve-year wait, ended by a player who was ten years old when it began. At 22, he is the youngest French champion in the entire history of the Masters 1000 series, which stretches back to 1990.
 
-If you lost early in Cincinnati, you have been hitting for a week with nothing on the line. Going to New York with that as your preparation is a frightening prospect. So you drive four hundred miles south instead, and you try to win three matches in a place with a small crowd, cheap tickets and a court you can walk right up to.
+Twelve years is a long time for a country that produces more good tennis players per head than almost anywhere on earth. Understanding why that drought hurt so much - and why ending it matters beyond one trophy - means understanding where Arthur Fils comes from.
 
-That is the deal Winston-Salem offers, and it is why the entry list is always deeper than it has any right to be.
+## The week that turned him into a champion
 
-## What it actually is
+Titles like this are not won in a single afternoon. Fils spent the best part of two weeks in the Ohio heat, playing through the sort of humid, energy-sapping conditions that reduce three-set matches to tests of will, and he came through a draw stacked with seeded players without ever looking like a man out of his depth. Each round he survived nudged his ranking higher and his self-belief higher still, until by the semi-finals he was the one applying the pressure rather than absorbing it.
 
-Let me give you the plain facts, because the tournament is easy to describe and surprisingly hard to find on television.
+There is a practical dimension to what he won, too, that is easy to overlook while you are watching the trophy lift. A Masters 1000 title is worth a small fortune in prize money and a large haul of ranking points, and those points reshape a career in concrete ways. They lift a player's seeding, which means gentler early-round draws at the biggest events, which means fewer landmines between him and the second week of a Grand Slam. Success, in tennis, compounds. Winning Cincinnati does not just put a trophy on the Frenchman's shelf; it changes the terrain of every tournament he plays for the next twelve months.
 
-The Winston-Salem Open is an ATP 250, the entry level of the men's tour above Challengers. It is played on outdoor hard courts at the Wake Forest Tennis Complex on the Wake Forest University campus in Winston-Salem, North Carolina. Total prize money this year is over 775,000 dollars.
+## The kid from Bondoufle
 
-The singles draw holds 48 players, four of whom come through qualifying. Qualifying is played across Saturday 22 and Sunday 23 August. The main draw runs from Sunday through Friday, and the final is on the last Saturday of the month. The draw itself was made on Friday evening at half past five, local time, which means that as you read this the brackets have just been written.
+He was born on 12 June 2004 in Bondoufle, a modest town in the Essonne, just south of Paris, into a family with Haitian heritage. He is not a product of a glamorous tennis academy or a tennis dynasty. He is a suburban French kid who happened to be extravagantly gifted and unusually stubborn about it.
 
-2026 is the fifteenth edition. The tournament arrived in Winston-Salem in 2011 and has been played every year since with one exception - the 2020 edition never happened, lost with so much else to the pandemic, which is why the fifteenth anniversary falls in a year you might have counted as the sixteenth.
+The gift showed early. In 2020, at 16, he won the Orange Bowl, the unofficial world championship of junior tennis and a title whose winners' list reads like a roll call of future greats. The following year he reached the boys' singles final at Roland Garros and won the boys' doubles, announcing himself on the courts where, one day, the entire country would want him to do something historic.
 
-The way it came to exist is a small piece of tennis politics worth knowing. The slot was created by folding two struggling events into one. Pilot Pen Tennis in New Haven, Connecticut - which had itself moved from Long Island, where the tournament had been played since 1981 - was combined with the Romanian Open in Bucharest, and the resulting licence was handed to Winston-Salem. Two tournaments in two countries were rolled up and set down on a college campus in North Carolina, and a fortnight of tennis history was rebooted from scratch.
+What separates Fils from the dozens of gifted juniors who never make the leap is the shape of his game and the size of his engine. He is built low and powerful, and he moves like a sprinter who took a wrong turn into a racket sport. His forehand is a genuine weapon - heavy, flat, hit with a full-body uncoiling that can end a rally from anywhere on the court. He plays, as one French federation description once put it, a resolutely aggressive style: he wants the point over, he wants it over on his terms, and he would rather miss going for a winner than win by waiting.
 
-John Isner won the first one in 2011, seeded fourth, in a town that had never hosted a tour event before. Fifteen years later, the tournament has outlived plenty of flashier ideas.
+That approach is guided now by Sebastien Grosjean, a former world number four and ex-captain of the French Davis Cup team, a man who spent his own career at the sharp end of the sport and knows exactly how it swallows people whole. The partnership has given Fils something his early years lacked: a governor on the raw horsepower, a sense of when to press and when to build.
 
-## The most winnable big draw in tennis
+His first professional title came in 2023 at the Lyon Open, where he became the youngest champion in the tournament's history and the youngest French man to win a tour-level title in nearly two decades. The trophies kept arriving after that. This spring he won on the clay of Barcelona, a surface that supposedly did not suit his flat, first-strike game, which was its own quiet statement about how complete he was becoming. Cincinnati is the fourth tour title of his career and, by a distance, the biggest.
 
-Here is the part that makes Winston-Salem strange in the best way.
+## Why France has been waiting so long
 
-A 48-player draw is unusual. Most 250s hold 28 or 32 players. Wimbledon and the US Open hold 128. A 48 draw means the top sixteen seeds get a first-round bye, so a seeded player needs four wins for the title rather than five, and it means there is room for a small army of players who would not normally be within touching distance of a tour-level main draw.
+To feel the full charge of what happened on Saturday, you have to sit for a moment with French tennis's peculiar heartbreak.
 
-Do the arithmetic from the other end and you see why this week matters so much to so many people. Forty-eight players start. Only one leaves with a trophy, but a first-round win at an ATP 250 is worth real ranking points and real money to a man ranked in the nineties who has spent the summer flying between continents on his own budget. If you have never looked closely at what a tour player actually banks after tax, coaching, flights and physio, our piece on [how tennis prize money really works](/lifestyle/tennis-prize-money-explained/) is a sobering read. Winning two matches in Winston-Salem can be the difference between a profitable August and one you would rather not discuss with your accountant.
+No French man has won a Grand Slam singles title since Yannick Noah at Roland Garros in 1983. Think about that. A country that fills the biggest clay-court stadium in the sport every summer, that has produced a conveyor belt of top-ten players, that treats tennis as something close to a national art form - and its men have gone more than forty years without a major.
 
-Then there is the qualifying draw, which is where I would spend my Saturday if I lived anywhere near North Carolina. Four players make it through. The rest go home, or hang around as alternates in case somebody withdraws with a strained shoulder on Sunday morning. This is not a hypothetical route to something wonderful. At Roland Garros this year a Dutchman named Jesper de Jong lost in the last round of qualifying, got into the draw when Arthur Fils pulled out, and then beat Stan Wawrinka and Karen Khachanov to reach the fourth round of a Grand Slam - [the lucky loser run that made the whole tournament stop and look](/lifestyle/jesper-de-jong-roland-garros-2026-lucky-loser-run/). Every qualifying draw contains someone waiting for a phone call like that.
+It has not been for lack of talent, which is what makes it ache. The generation of Tsonga, Gael Monfils, Richard Gasquet and Gilles Simon gave France a decade of thrilling, maddening, near-miss tennis. Tsonga reached an Australian Open final. Monfils reached semi-finals and became one of the most beloved entertainers the game has ever seen. Gasquet had a backhand that belonged in a museum. Between them they won everything except the thing that mattered most, and the country loved them and grieved them in almost the same breath.
 
-## Where careers have actually started
+So when a 22-year-old comes along who hits harder, moves faster and, crucially, refuses to flinch in the third set of a final he could easily have lost, the reaction is not measured. It is hope, uncut and slightly frightening, because France has had its heart broken by hope before. Fils is not being asked to be a good player. He is being asked, whether it is fair or not, to end a wait that is older than his parents' careers.
 
-This is the argument that ought to win you over, because it is not sentiment. It is a list.
+There is also a sense, this time, that the hope rests on firmer foundations. France is not pinning everything on one man in isolation; a cluster of young French players has pushed into the upper reaches of the game in recent seasons, and Fils has emerged as the spearhead of that group rather than a lone flag-bearer. That matters, because the loneliest thing in sport is to be a country's only chance. Shared expectation is lighter than solitary expectation, and Fils seems to carry his with a looseness that his celebrated predecessors, for all their gifts, often appeared to lack.
 
-In 2016, a 25-year-old Spaniard named Pablo Carreno Busta arrived in Winston-Salem without a tour title to his name. He beat his compatriot Roberto Bautista Agut in the final, 6-7, 7-6, 6-4, two tie-breaks and three hours of grinding, and won his first ATP trophy. He would go on to reach two Grand Slam semi-finals and win an Olympic bronze medal.
+The healthiest thing about him is that he seems to know all of this and not care. He plays with a joy that is impossible to fake - fist pumps, roars, a grin that breaks out when a rally goes his way. He is a footballer's kind of athlete dropped into an individual sport, all emotion and adrenaline, and crowds outside France have started to adopt him precisely because he so obviously loves being watched.
 
-In 2018, a lanky Russian who had spent most of the season being described as promising and erratic beat Steve Johnson 6-4, 6-4 to take the title. That was Daniil Medvedev, in the summer that his career slid into gear. Within two years he was contesting Grand Slam finals; within three he had won the US Open.
+## Into a US Open that just cracked wide open
 
-In 2019, Hubert Hurkacz beat Benoit Paire 6-3, 3-6, 6-3 for the first ATP title of his life. He has since reached a Wimbledon semi-final and spent years in the world top ten.
+The timing could hardly be more dramatic. On Sunday 30 August, the US Open main draw begins in New York, and it does so with a hole in the middle of it.
 
-In 2023 Sebastian Baez won it. In 2024 Lorenzo Sonego took the title without dropping much of anything, beating the young American Alex Michelsen 6-0, 6-3 in a final that lasted barely an hour. Last year Marton Fucsovics beat Botic van de Zandschulp 6-3, 7-6 for the trophy.
+[Jannik Sinner](/players/jannik-sinner/), the world number one and the man who has bestrode the season, has withdrawn from Flushing Meadows with a knee injury. His last match was the Wimbledon final he won in July; he has decided his body needs the time more than the tournament needs him. His absence has rearranged everything. [Alexander Zverev](/players/alexander-zverev/) inherits the number one seeding. [Carlos Alcaraz](/players/carlos-alcaraz/), the defending champion, back to full health after his own wrist trouble earlier in the year, is the bookmakers' clear favourite and the man everyone else in the draw is trying to avoid.
 
-Look at that list again. A maiden title for a future Olympic medallist. A first big statement from a future US Open champion. A first title for a future world number six. Winston-Salem does not just fill a week. It keeps catching players at the exact moment they turn into who they are going to be, which is a genuinely rare thing for a tournament that most fans could not place on a map.
+Into that reshuffled field walks Arthur Fils, seeded 13th, carrying the best form of his life and a trophy still warm from Ohio. Seeding is a funny thing at a moment like this. On paper 13 sounds modest. In reality, with the number one out and the draw suddenly full of oxygen, a player of Fils's ceiling arriving on a Masters-title high is exactly the kind of name that makes seeded opponents check the bracket nervously.
 
-## Who is in the field this year
+Nobody sensible is picking him to win the US Open. The step from a Masters 1000 to a best-of-five-sets Grand Slam over a fortnight is enormous, and it has broken plenty of players who looked unstoppable in August. Fils has never gone past the fourth round of a major. New York, with its late-night chaos, its brutal heat and its crowds that adopt a favourite by the second set, is a place that tests temperament as much as talent.
 
-The entry list published in late July had thirteen players from inside the world top fifty and four former champions of the event, which for an ATP 250 in the shadow of a Grand Slam is a serious field.
+But that is precisely why Cincinnati matters beyond the trophy. The knock on young Fils was always the third set - the tight one, the one where the legs go heavy and the mind starts negotiating. On Saturday, in front of a crowd that wanted the other man to win, he answered that question in the most emphatic way available to a tennis player. Six games to love. If he can bottle even a fraction of that composure and carry it onto the biggest stage in the sport, the fortnight in Queens becomes genuinely interesting.
 
-Luciano Darderi leads it. The Italian was ranked 23 when the list came out, having spent 2026 turning himself from a clay-court specialist into a player who can hurt people on any surface. Behind him: Arthur Rinderknech of France, Alejandro Tabilo of Chile, and Ignacio Buse, the young Peruvian who has been one of the quiet stories of the season.
+## What to watch for when he plays
 
-Then there is [Arthur Fery](/players/arthur-fery/), which is a name that would have meant almost nothing to you a year ago and now belongs to a Wimbledon semi-finalist. The Briton went from a wildcard nobody expected anything from to one of the defining runs of the grass season, and he arrives in North Carolina ranked around 37 with a completely different life to the one he had last summer.
+If Cincinnati was your introduction to Fils and you want to know what to look for when his matches come on in New York, here is your short guide.
 
-Denis Shapovalov is in the draw too, a former world number ten still hunting the consistency to match his hands. So is Adrian Mannarino, at an age when most players have already opened a coaching academy, who won this title in 2022. Carreno Busta comes back nine years after his breakthrough here. Sonego defends nothing but arrives as the 2024 champion. Baez completes the quartet of former winners.
+Watch the forehand, obviously, because it is the shot everything else is built around. But watch his feet more. The thing that separates the current version of Fils from the exciting-but-erratic kid of two years ago is footwork - the small, frantic adjusting steps that let him load and fire from positions where he used to just flail. When he is moving well, the forehand becomes a nightmare to play against because he can hit it from anywhere, at any angle, at a speed that gives opponents no time to reset.
 
-That is what makes the field worth your time. It is not a collection of names you half recognise from a draw sheet. It is a group of players in wildly different places on the same curve - one on the way up, one on the way back, one hanging on, one who has already had his moment and would rather like another.
+Watch his body language, too. Fils wears every emotion on his face, which makes him one of the most readable and most watchable players in the sport. When he is up, he feeds off the crowd and the energy compounds. The old fragility showed when things tightened; the Cincinnati final suggested that fragility is thinning out. A whole tournament will tell us whether it has really gone.
 
-## The two Americans, and the college pipeline
+And watch the crowd's response to him, because it is part of the story. American crowds love a big hitter and a big personality, and Fils is unmistakably both. Do not be surprised if, by the second week, a French kid from the Paris suburbs has a chunk of New York roaring for him against the odds. That is how these things start.
 
-Only two American players earned direct acceptance into this year's main draw, which for a tournament on American soil is a striking number, and both of them are worth watching for the same reason.
+## The season that changed him
 
-Ethan Quinn makes his Winston-Salem debut having climbed to a career-high ranking of 46 during a breakout season. Jenson Brooksby also plays here for the first time, ranked 77, still working his way back to the level he had before injuries and a long absence took years out of his twenties. He won his first tour title in 2025 at the US Men's Clay Court Championships, which for a player who had spent that long in the wilderness was one of the more moving afternoons of last season.
+Step back from the individual matches and 2026 looks like the year Arthur Fils stopped being a prospect and became a player. He began the season outside the top twenty and spent the North American summer methodically climbing, a run to the Canadian Open quarter-finals nudging him up the rankings before Cincinnati blew the door off. His record on the year now sits comfortably in the winning column across all three surfaces, which for a player once boxed in as a hard-court flat-hitter is the most telling development of all.
 
-Quinn came out of American college tennis, which is no longer the consolation route it was once treated as. Fery played at Stanford. That path - four years of team tennis, a degree, then a professional career started at 22 instead of 18 - has stopped being a fallback and started being a strategy, and we wrote about exactly that shift after this summer's [Montreal final and the college route behind it](/lifestyle/montreal-2026-final-college-tennis-route-shelton-nakashima/).
+Titles on clay in Barcelona and now hardcourt gold in Cincinnati make the point that he is no longer a specialist. He is a threat wherever the tour lands, and that versatility is what turns a good career into a great one. It is also what makes the years ahead feel so open. He is 22. He is improving in the parts of his game - movement, temperament, patience - that usually come last and matter most. And he has just proved to himself, in the harshest possible setting, that he can hold his nerve when the trophy is actually on the line.
 
-Wild cards were still being finalised when the entry list went out, and by tradition Winston-Salem hands at least one to a young American who has never played a tour main draw before. That match, whenever it lands, will be somebody's first. Those are always the ones worth finding.
+The French drought of major titles will not end this fortnight; that would be asking too much of a 22-year-old at his first Grand Slam as a genuine contender. But something shifted on Saturday night in Ohio, and everyone who cares about French tennis felt it. A young man who had spent his career being described as the future finally did something that belongs to the present tense.
 
-## What it is like to be there
+New York gets him next. Whatever happens there, he arrives as a champion rather than a hope, and for a country that has waited four decades for a men's major, that is not nothing. It is the first solid ground France has stood on in a long, long time.
 
-If you have only ever watched tennis from a sofa or from row 40 of a stadium, an ATP 250 is a different sport.
-
-The Wake Forest Tennis Complex is a college facility, not an arena. The main court seats a few thousand. The outside courts have a couple of rows of bleachers and a fence, and you can stand at that fence and be six feet from a top-hundred player hitting a forehand. You can hear the coaching. You can hear a player muttering at himself between points, which is the single most humanising sound in professional sport. Tickets cost a fraction of a US Open grounds pass and you can watch tennis from eleven in the morning until eleven at night.
-
-Late August in North Carolina is hot and thick and the evening sessions are the good ones, when the lights come on over the courts and the temperature finally drops into something survivable. Locals bring folding chairs. Students wander through. It feels less like a major sporting event than a very well organised town fair that happens to have the world top fifty in it.
-
-That is the thing sport keeps forgetting to tell you: the smaller the tournament, the closer you get. You will never be six feet from Carlos Alcaraz. You can be six feet from a man ranked 60 in the world, and he is playing tennis you could not comprehend at close range.
-
-## What to watch for this week
-
-Cincinnati has a couple of matches left to play out this weekend and the last big names of the American summer will be crowned there. New York opens its gates on Sunday for Fan Week, and by next weekend the qualifying rounds and the practice-court gossip will have swallowed all the oxygen in tennis.
-
-In the middle of that, on a campus in North Carolina, forty-eight players will be chasing the last trophy before the Slam. Watch for the qualifiers - four of them, playing on Saturday and Sunday for a place in a main draw that could change their season. Watch Quinn, who has the best twelve months of his life behind him and no idea yet how good he might become. Watch Fery, arriving somewhere small with expectations he has never carried before. Watch Mannarino, still going, still infuriating opponents with a game that should not work at this level and somehow does.
-
-And if you find the stream and you are not sure why you are watching a second-round match between two players you have never heard of on a Tuesday afternoon in August, keep this in mind: Daniil Medvedev played one of those exact matches on that exact court eight years ago, and nobody was watching that either.
-
-The trophy gets lifted on Saturday at four. By Sunday lunchtime the winner will be on a plane to New York with the rest of them, and the difference is that he will get on it having won something.
-
-*Photo: blue hard courts from above, via Unsplash.*`;
+*Photo: Arthur Fils at the EFG Swiss Open Gstaad 2023 by Gordon Simmonds, CC BY-SA 4.0, via Wikimedia Commons.*`;
 
 const record = {
   slug, title, excerpt, body,
