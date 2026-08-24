@@ -68,14 +68,24 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: pages deploy dist --project-name supertennis
 
-      - name: Submit updated pages to IndexNow + Google
+      # IndexNow (Bing/Yandex) is unaffected by the Google decision below and
+      # needs no service account, so it keeps running on its own.
+      - name: Submit updated pages to IndexNow
         if: success()
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          node scripts/submit-indexnow.mjs --limit=200 || true
+
+      # Off for general content — same gate as deploy.yml / indexing-cron.yml.
+      - name: Submit updated pages to Google Indexing API
+        if: success() && vars.INDEXING_ENABLED == 'true'
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
         run: |
-          node scripts/submit-indexnow.mjs --limit=200 || true
           node scripts/request-indexing.mjs --limit=100 --type=all || true
 
       - name: Telegram alert on failure

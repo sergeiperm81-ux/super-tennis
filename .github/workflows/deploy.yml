@@ -94,8 +94,12 @@ jobs:
           curl -s "https://www.google.com/ping?sitemap=https://super.tennis/sitemap-index.xml" || true
           echo "Search engines notified"
 
+      # Google only supports the Indexing API for JobPosting/BroadcastEvent
+      # pages, so it stays off for our general content (decision 2026-06-19 —
+      # see indexing-cron.yml). This step was missed when the others were
+      # disabled and kept submitting ~26 URLs on every deploy for two months.
       - name: Submit new pages to Google Indexing API
-        if: success() && env.GOOGLE_SA_JSON != ''
+        if: success() && env.GOOGLE_SA_JSON != '' && vars.INDEXING_ENABLED == 'true'
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
