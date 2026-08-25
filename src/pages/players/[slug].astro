@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PlayerGearBlock from '../../components/PlayerGearBlock.astro';
-import { getPlayerBySlug, getTopPlayerSlugs, getRelatedPlayers, getArticleBySlug, getPlayerRanking } from '../../lib/supabase';
+import { getPlayerBySlug, getTopPlayerSlugs, getRelatedPlayers, getArticleBySlug, getPlayerRanking, getPlayerNews } from '../../lib/supabase';
 import { fallbackPlayers, countryFlags, countryNames, handLabels, getFlagUrl } from '../../lib/fallback-data';
 import { addInterlinks } from '../../lib/interlinks';
 import {
@@ -51,6 +51,11 @@ if (!player) {
 // this is the only live number left for a player page — and it was not being
 // shown at all. null for retired players, who hold no current ranking.
 const liveRank = await getPlayerRanking(player.player_id, player.tour);
+
+// Coverage that already mentions this player. news.player_slugs is populated on
+// every row but nothing read it, so the pages had no link to their own news.
+// Empty for most players — only around two dozen are covered regularly.
+const playerNews = await getPlayerNews(player.slug, 5);
 
 // Calculate age
 function getAge(birthDate: string | null): number | null {
@@ -713,6 +718,23 @@ const profileArticleHtml = articles['profile'].html;
             </div>
           )}
 
+          {playerNews.length > 0 && (
+            <div class="player-news">
+              <h3>Latest news featuring {player.first_name} {player.last_name}</h3>
+              <ul class="player-news-list">
+                {playerNews.map(n => (
+                  <li>
+                    <a href={`/news/${n.slug}/`}>{n.title}</a>
+                    <time datetime={n.published_at}>
+                      {new Date(n.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </time>
+                  </li>
+                ))}
+              </ul>
+              <a class="player-news-more" href="/news/">All tennis news →</a>
+            </div>
+          )}
+
           {articles['career-timeline'].exists && (
             <div class="timeline-section">
               <h3>Career Timeline</h3>
@@ -899,6 +921,19 @@ const profileArticleHtml = articles['profile'].html;
 </BaseLayout>
 
 <style>
+  .player-news { margin: 28px 0 8px; }
+  .player-news h3 { font-size: 1.05rem; margin: 0 0 12px; color: var(--gray-900); }
+  .player-news-list { list-style: none; margin: 0 0 12px; padding: 0; }
+  .player-news-list li {
+    display: flex; justify-content: space-between; gap: 16px; align-items: baseline;
+    padding: 9px 0; border-bottom: 1px solid var(--gray-200);
+  }
+  .player-news-list a { color: var(--gray-800); text-decoration: none; font-size: 0.94rem; }
+  .player-news-list a:hover { color: var(--court-green); text-decoration: underline; }
+  .player-news-list time { color: var(--gray-500); font-size: 0.78rem; white-space: nowrap; }
+  .player-news-more { font-size: 0.85rem; color: var(--court-green); text-decoration: none; font-weight: 600; }
+  .player-news-more:hover { text-decoration: underline; }
+
   .player-profile {
     max-width: 1200px;
     margin: 0 auto;

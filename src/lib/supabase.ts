@@ -652,6 +652,35 @@ export async function getActiveNews(limit = 6): Promise<NewsItem[]> {
   }
 }
 
+// News items that mention a given player. Every news row already carries a
+// populated player_slugs array, but nothing was reading it — player pages had
+// no link to the coverage written about them, and the news items had no route
+// back to the player. Only ~24 players are covered often enough for this to
+// return anything, so callers must handle an empty list as the normal case.
+const _newsByPlayer: Map<string, NewsItem[]> = new Map();
+
+export async function getPlayerNews(playerSlug: string, limit = 5): Promise<NewsItem[]> {
+  try {
+    const allNews = await ensureNewsCache();
+    if (_newsByPlayer.size === 0) {
+      for (const n of allNews) {
+        if (!(n as any).is_active && (n as any).is_active !== undefined) continue;
+        for (const slug of n.player_slugs ?? []) {
+          const list = _newsByPlayer.get(slug);
+          if (list) list.push(n);
+          else _newsByPlayer.set(slug, [n]);
+        }
+      }
+      for (const list of _newsByPlayer.values()) {
+        list.sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''));
+      }
+    }
+    return (_newsByPlayer.get(playerSlug) ?? []).slice(0, limit);
+  } catch {
+    return [];
+  }
+}
+
 export async function getNewsBySlug(slug: string): Promise<NewsItem | null> {
   try {
     await ensureNewsCache();
