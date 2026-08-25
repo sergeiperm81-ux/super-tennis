@@ -176,3 +176,13 @@
 /tournaments/roland-garros        /tournaments/roland-garros-guide/   301
 /tournaments/roland-garros/       /tournaments/roland-garros-guide/   301
 /tournaments/roland-garros/*      /tournaments/roland-garros-guide/   301
+
+# --- 2026-08-25: Spanish edition retired ---
+# /es/ ran for several months and returned 63 organic sessions in 90 days —
+# 1.7% of real traffic from ~1,287 pages (0.05 sessions per page). Its 5,265
+# GA4 pageviews were ~97% bots: 5,119 Direct at an 8-second average session
+# against 63 from search. The tree mirrored the English one 1:1, so a single
+# splat maps every retired URL onto its English original and nothing 404s.
+# Translations remain in Supabase; re-enable via SHIPPED_DEFAULT in src/lib/i18n.ts.
+/es/                                    /                       301
+/es/*                                   /:splat                 301

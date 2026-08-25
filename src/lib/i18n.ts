@@ -17,9 +17,16 @@ export const DEFAULT_LOCALE: Locale = 'en';
 
 /** Локали, которые МОГУТ быть активированы (кроме дефолтной en). */
 const ACTIVATABLE: Locale[] = ['es', 'fr', 'zh'];
-/** Shipped pilot: es активен по умолчанию. Override через I18N_LOCALES (CSV) меняет набор;
- *  I18N_LOCALES=none|off отключает все локали (чисто английский сайт). */
-const SHIPPED_DEFAULT: Locale[] = ['es'];
+/** RETIRED 2026-08-25: сайт снова чисто английский.
+ *  Испанская версия проработала несколько месяцев и дала 63 органические сессии
+ *  за 90 дней (1.7% живого трафика) при ~1 287 страницах — почти половина сайта
+ *  ради 0.05 сессии на страницу. Её 5 265 просмотров в GA4 были на 97% ботами
+ *  (5 119 Direct со средней сессией 8 секунд против 63 из поиска).
+ *  Пустой список = /es/ не собирается, hreflang-альтернативы не выводятся,
+ *  переключатель языка в шапке скрыт (showSwitcher требует >1 локали).
+ *  Переводы в Supabase НЕ удалены — вернуть можно этим же списком.
+ *  Override через I18N_LOCALES (CSV) по-прежнему работает. */
+const SHIPPED_DEFAULT: Locale[] = [];
 
 const OG_LOCALE: Record<Locale, string> = {
   en: 'en_US',
@@ -108,9 +115,17 @@ export interface Alternate {
  * @param available локали, для которых перевод этой страницы реально существует.
  */
 export function buildAlternates(enPath: string, available: Locale[]): Alternate[] {
+  // `available` is hard-coded as ['es'] by ~20 evergreen pages, so it cannot be
+  // trusted on its own: after the Spanish edition was retired those calls would
+  // still advertise hreflang="es" pointing at URLs that now 301 away, and
+  // BaseLayout would keep showing the language switcher (it derives its options
+  // from this list). Intersecting with the active locales here disables both
+  // from one place and keeps the hard-coded callers harmless.
+  const active = getActiveLocales();
   const list: Alternate[] = [{ hreflang: hreflang('en'), href: enPath }];
   for (const loc of available) {
     if (loc === 'en') continue;
+    if (!active.includes(loc)) continue;
     list.push({ hreflang: hreflang(loc), href: localizedPath(loc, enPath) });
   }
   list.push({ hreflang: 'x-default', href: enPath });
