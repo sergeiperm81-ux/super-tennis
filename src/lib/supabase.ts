@@ -149,12 +149,15 @@ let _rankingsDateCache: Map<string, string> = new Map();
 // tripped the Data API into HTTP 402, which took news, rankings and the Shorts
 // pipeline down with it (2026-07-15).
 //
-// This is the exact superset of the stat-based pools in getTopPlayerSlugs:
-// 1,216 rows / 707 kB. Ranked-but-statless players are deliberately NOT covered
-// here — they reach the site through the rankings join rather than any stat
-// threshold, so getPlayerBySlug fetches those one row at a time. Widen this
-// filter if a pool ever starts selecting on a different column.
-const PLAYERS_CACHE_FILTER = 'career_titles.gt.0,career_win.gt.20,career_prize_usd.gt.0';
+// This is the superset of the pools in getTopPlayerSlugs. image_url is part of
+// it because a curated photo is now the strongest "this player matters" signal:
+// the 2026-08 migration wiped every stat column, so the stat thresholds match
+// almost nobody, and retired greats like Federer and Nadal carry no ranking
+// either. Ranked-but-photoless players still arrive through the rankings join,
+// and getPlayerBySlug fetches anything outside this set one row at a time.
+// Widen this filter if a pool ever starts selecting on a different column.
+const PLAYERS_CACHE_FILTER =
+  'career_titles.gt.0,career_win.gt.20,career_prize_usd.gt.0,image_url.not.is.null';
 
 async function ensurePlayersCache(): Promise<Player[]> {
   if (_playersCache) return _playersCache;
@@ -418,9 +421,13 @@ export async function getTopPlayerSlugs(limit = 200): Promise<string[]> {
     // Replicate the original multi-pool logic in memory
     const slugs: string[] = [];
 
-    // Players with photos AND career titles
+    // Players with a curated photo. This used to also require career_titles > 0,
+    // but the stat columns were wiped in the 2026-08 migration, which silently
+    // dropped every retired great from the build — the homepage kept linking to
+    // /players/roger-federer/ and friends while they 404'd. A photo is curated
+    // by hand, so on its own it is a good enough signal that a page is wanted.
     for (const p of allPlayers) {
-      if (p.image_url && p.career_titles > 0) slugs.push(p.slug);
+      if (p.image_url) slugs.push(p.slug);
     }
     // Players with photos AND significant wins
     for (const p of allPlayers) {
