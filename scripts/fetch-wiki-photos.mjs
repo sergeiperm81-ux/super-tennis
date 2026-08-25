@@ -15,6 +15,11 @@
  *   --report          Generate HTML report for manual verification
  *   --ranked          Target ranked players (ATP/WTA top 100) missing photos,
  *                     regardless of career_titles
+ *   --slugs a,b,c     Target these exact player slugs. Retired players are not
+ *                     in the rankings and have no career_titles once the stats
+ *                     columns are empty, so neither other mode reaches them —
+ *                     but the site still links to Federer, Nadal, Serena and
+ *                     the rest of the all-time greats.
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -41,6 +46,7 @@ const getArg = (name) => {
 const hasFlag = (name) => args.includes(`--${name}`);
 
 const LIMIT = parseInt(getArg('limit') || '50');
+const SLUGS = (getArg('slugs') || '').split(',').map(s => s.trim()).filter(Boolean);
 const TOUR = getArg('tour');
 const DRY_RUN = hasFlag('dry-run');
 const FORCE = hasFlag('force');
@@ -292,6 +298,20 @@ async function main() {
     rankedPlayers.sort((a, b) => a._ranking - b._ranking);
 
     players = rankedPlayers.slice(0, LIMIT);
+  } else if (SLUGS.length > 0) {
+    // Explicit slug list — the only mode that reaches retired players.
+    let query = supabase
+      .from('players')
+      .select('player_id, first_name, last_name, full_name, slug, country_code, tour, career_titles, image_url')
+      .in('slug', SLUGS);
+    if (!FORCE) query = query.or('image_url.is.null,image_url.not.ilike.%wikimedia%');
+
+    const { data, error } = await query;
+    if (error) {
+      console.error('❌ Failed to fetch players:', error.message);
+      process.exit(1);
+    }
+    players = data || [];
   } else {
     // Default mode: fetch players with career_titles > 0
     let query = supabase
