@@ -1,0 +1,359 @@
+---
+/**
+ * /money/how-much-tennis-umpires-earn/ — evergreen explainer.
+ *
+ * Search intent: "how much do tennis umpires make", "tennis umpire salary",
+ * "gold badge umpire", "how to become a tennis umpire". Sits in the second
+ * most efficient hub on the site.
+ *
+ * Accuracy note: neither the ATP nor the WTA publishes official pay scales,
+ * so every figure in circulation is a reported estimate. The page says so
+ * plainly rather than presenting estimates as facts.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+import { getPageAlternates } from '../../lib/i18n';
+
+const title = 'How Much Do Tennis Umpires Earn? | SUPER.TENNIS';
+const h1 = 'How Much Do Tennis Umpires Earn?';
+const metaDescription = 'What tennis officials are paid: the badge system from white to gold, reported day rates at Grand Slams, estimated annual earnings for a full-time chair umpire, and why no official pay scale is published by the tours.';
+const publishedDate = '2026-08-25';
+const alternates = await getPageAlternates('money/how-much-tennis-umpires-earn', Astro.url.pathname);
+
+const quickAnswer = "Neither the ATP nor the WTA publishes an official pay scale for officials, so every figure in circulation is a reported estimate rather than a confirmed salary. On those reports, a gold badge chair umpire working a full international schedule — the Grand Slams plus twenty or more tour events — earns somewhere in the region of $70,000 to $85,000 a year. Umpires are paid per day rather than on a salary, with Grand Slam day rates reported around $450 to $500, and they cover a working year built almost entirely out of travel. The badge system runs white, bronze, silver, gold, and only a small number of officials worldwide hold the gold badge.";
+
+const badgeTable = [
+  { badge: 'White', level: 'National', works: 'Domestic tournaments in your own country', note: 'Entry point, usually part-time and often unpaid at first' },
+  { badge: 'Bronze', level: 'International (entry)', works: 'ITF World Tour events', note: 'First internationally recognised certification' },
+  { badge: 'Silver', level: 'International', works: 'ATP / WTA tour events, Grand Slam support roles', note: 'The level at which officiating can become a career' },
+  { badge: 'Gold', level: 'International (highest)', works: 'Grand Slam show courts, finals, ATP / WTA Finals', note: 'Very small number worldwide' },
+];
+
+const payTable = [
+  { item: 'Grand Slam day rate (gold badge)', figure: '~$450-500 per day', source: 'Reported figures from recent Slams' },
+  { item: 'Full international season', figure: '~$70,000-85,000', source: 'Estimate for a gold badge working Slams plus 20+ events' },
+  { item: 'Weekly tour earnings', figure: '~$1,000-1,500 per week', source: 'Reported for chair umpires on tour' },
+  { item: 'Official published scale', figure: 'None', source: 'Neither ATP nor WTA discloses pay' },
+];
+
+const faqs = [
+  {
+    q: 'How much does a tennis umpire earn per year?',
+    a: 'Reports put a gold badge chair umpire working a full international schedule at roughly $70,000 to $85,000 a year. That figure assumes the Grand Slams plus twenty or more tour events, which means being on the road for most of the season. It is worth stressing that neither tour publishes pay scales, so this is a reported estimate rather than a confirmed salary.',
+  },
+  {
+    q: 'Are umpires paid a salary or per match?',
+    a: 'Per day, not per match. An official contracted for a tournament is paid a daily rate for the days they work, whether that turns out to be one long five-setter or three short matches. Annual earnings are therefore a function of how many tournament days an umpire can string together across a year — which is why the top officials travel almost constantly.',
+  },
+  {
+    q: 'What is a gold badge umpire?',
+    a: 'The highest certification an official can hold, awarded by the ITF. Gold badge umpires are the ones you see in the chair for Grand Slam finals and the season-ending championships. Only a small number hold it worldwide, and reaching it takes years of working upward through the white, bronze and silver levels.',
+  },
+  {
+    q: 'How do you become a tennis umpire?',
+    a: 'You start domestically. National associations run entry-level courses and certification, and new officials work club and national tournaments to build experience. Progressing to bronze, silver and eventually gold means passing further ITF assessments and officiating at successively higher levels, usually over several years. Almost nobody starts as a full-time official — the early stages are part-time and frequently unpaid.',
+  },
+  {
+    q: 'Do umpires earn more at Grand Slams?',
+    a: 'The day rates are higher than at smaller events, and the fortnight is long, so a Slam is a meaningful block of a year\'s earnings. But the differential is far smaller than most people expect: reported Slam rates sit in the hundreds of dollars per day, against prize money in the millions being decided a few metres away.',
+  },
+  {
+    q: 'Do line judges earn the same as chair umpires?',
+    a: 'No — line judges are paid considerably less, and the role is shrinking. Electronic line calling has replaced human line judges entirely at a growing number of events, which has removed a large share of the entry-level officiating work that once existed at professional tournaments.',
+  },
+  {
+    q: 'Why is there no official pay scale?',
+    a: 'The tours simply do not disclose it, and officials are generally engaged on a per-tournament basis rather than as salaried employees of a single organisation. The practical consequence is that every number published anywhere — including on this page — traces back to reported figures rather than to an official source, and should be read as an approximation.',
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/money/how-much-tennis-umpires-earn/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: {
+    '@type': 'Organization',
+    '@id': 'https://super.tennis/#organization',
+    name: 'SUPER.TENNIS Editorial',
+    url: 'https://super.tennis/about/',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Money', item: 'https://super.tennis/money/' },
+    { '@type': 'ListItem', position: 3, name: 'Umpire Earnings' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article" alternates={alternates}>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/money/">Money</a> <span class="sep">/</span>
+      <span class="current">Umpire Earnings</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">🪑</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/about/">SUPER.TENNIS Editorial</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <aside class="system-note">
+      <span class="system-note-label">On these numbers</span>
+      <p>Neither the ATP nor the WTA publishes an official pay scale for officials. Every figure below comes from <strong>reported estimates</strong> rather than a disclosed source, and should be read as an approximation rather than a confirmed salary.</p>
+    </aside>
+
+    <div class="article-body">
+      <h2 id="badges">The badge system</h2>
+      <p>
+        Officiating is a career with a visible ladder, and the rungs are colour-coded. Certification runs from white at national level up to gold, the standard required to sit in the chair for a Grand Slam final.
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Badge</th><th>Level</th><th>Where they work</th><th>Note</th></tr></thead>
+          <tbody>
+            {badgeTable.map(r => <tr><td><strong>{r.badge}</strong></td><td>{r.level}</td><td>{r.works}</td><td>{r.note}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Climbing it takes years. Officials start at domestic tournaments, often unpaid, and work upward through assessments at each level. Only a small number of people worldwide hold the gold badge at any one time.
+      </p>
+
+      <h2 id="the-money">What the money looks like</h2>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Item</th><th>Reported figure</th><th>Basis</th></tr></thead>
+          <tbody>
+            {payTable.map(r => <tr><td>{r.item}</td><td><strong>{r.figure}</strong></td><td>{r.source}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        The structure matters as much as the number. Umpires are paid by the day, not by the match and not by salary, so a year's earnings depend on how many tournament days they can accumulate. A gold badge official working the Slams plus a full tour schedule is on the road for most of the season to reach the figures above.
+      </p>
+
+      <h2 id="perspective">The gap nobody mentions</h2>
+      <p>
+        Put the two sides of the same court next to each other and the contrast is stark. A Grand Slam <a href="/money/grand-slam-prize-money-breakdown/">champion collects millions</a>. The official who spent the fortnight ruling on their matches, including the final, is working on a day rate in the hundreds.
+      </p>
+      <p>
+        This is not a scandal so much as a structural feature of how the sport is organised — prize money scales with commercial value, officiating costs are a fixed operating expense — but it does explain why officiating attracts people who want the life rather than the money, and why so few make it a full-time career.
+      </p>
+
+      <h2 id="line-judges">What electronic calling changed</h2>
+      <p>
+        The lower rungs of the ladder are disappearing. Electronic line calling has replaced human line judges outright at a growing number of professional events, removing a large block of the entry-level paid work through which officials once gained experience.
+      </p>
+      <p>
+        The chair umpire's job is not going anywhere — someone still has to manage the match, apply the code, and handle players — but the pathway into the profession is narrower than it was a decade ago.
+      </p>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/money/how-much-tennis-players-earn/" class="context-card">
+          <span class="context-label">Money</span>
+          <span class="context-title">How Much Players Earn</span>
+        </a>
+        <a href="/money/grand-slam-prize-money-breakdown/" class="context-card">
+          <span class="context-label">Prize money</span>
+          <span class="context-title">Grand Slam Prize Money</span>
+        </a>
+        <a href="/money/cost-of-playing-pro-tennis/" class="context-card">
+          <span class="context-label">Costs</span>
+          <span class="context-title">What a Season Costs</span>
+        </a>
+        <a href="/rules/tennis-serve-rules/" class="context-card">
+          <span class="context-label">Rules</span>
+          <span class="context-title">What Umpires Actually Call</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Tennis Umpire Earnings — FAQ" />
+  </article>
+</BaseLayout>
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--gray-800);
+  }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p { font-size: 1rem; line-height: 1.75; margin: 0 0 16px; }
+  .article-body ul, .article-body ol { margin: 0 0 16px; padding-left: 22px; line-height: 1.75; }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+
+  .points-table-wrap { overflow-x: auto; margin: 8px 0 24px; }
+  .points-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  .points-table th, .points-table td {
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .points-table th {
+    background: var(--gray-50);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-700);
+    font-weight: 700;
+  }
+  .points-table td:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--court-green);
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>

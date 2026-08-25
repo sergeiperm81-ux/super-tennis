@@ -1,0 +1,348 @@
+---
+/**
+ * /money/cost-of-playing-pro-tennis/ — evergreen explainer.
+ *
+ * Search intent: "how much does it cost to play professional tennis",
+ * "do tennis players lose money", "tennis break even ranking", "cost of a
+ * tennis coach". The mirror image of how-much-tennis-players-earn, which is
+ * the strongest page in this hub — that one covers the income side, this one
+ * covers why the income is not the answer.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+import { getPageAlternates } from '../../lib/i18n';
+
+const title = 'What It Costs to Play Pro Tennis — And Who Breaks Even | SUPER.TENNIS';
+const h1 = 'What It Costs to Play Pro Tennis';
+const metaDescription = 'The expense side of professional tennis: coaching, travel, accommodation, physio, stringing and entry costs, why prize money alone is a misleading number, and the ITF finding that only a few hundred players in the world break even.';
+const publishedDate = '2026-08-25';
+const alternates = await getPageAlternates('money/cost-of-playing-pro-tennis', Astro.url.pathname);
+
+const quickAnswer = "Prize money is a gross figure, not income. A professional pays for coaching, flights, hotels, physiotherapy, racket stringing, entry fees and tax out of it, and pays for a travelling team as well if they have one — so a season that looks profitable on a prize-money list can end in a loss. The scale of this is not anecdotal: the ITF's Pro Circuit review found that in 2013 the break-even point on the earnings list fell at roughly rank 336 for men and 253 for women, meaning everyone below those positions spent more on the season than they won. Tennis has no salary, no club and no guaranteed income — a player who loses in the first round of a small event can finish the week down money.";
+
+const costTable = [
+  { item: 'Coach', note: 'Salary or a percentage of prize money, plus their travel and accommodation', weight: 'Usually the largest single cost' },
+  { item: 'Flights', note: '25-30 tournaments a year across several continents', weight: 'Major' },
+  { item: 'Accommodation', note: 'Hotels for player and any travelling team, sometimes for two weeks', weight: 'Major' },
+  { item: 'Physio / fitness trainer', note: 'Full-time for established players, per-trip for others', weight: 'Significant' },
+  { item: 'Racket stringing', note: 'Several rackets restrung daily during a tournament', weight: 'Small but relentless' },
+  { item: 'Entry and admin', note: 'Registration, visas, insurance, equipment', weight: 'Small' },
+  { item: 'Tax', note: 'Often withheld in the country where the prize money was won', weight: 'Significant' },
+];
+
+const faqs = [
+  {
+    q: 'How much does it cost to play professional tennis for a year?',
+    a: 'It depends entirely on the level and the size of the team. A player travelling alone on the lower circuits can keep costs down substantially; a player with a full-time coach and physio on the main tour is funding several salaries and several sets of flights and hotels for 25-30 weeks a year. There is no single published figure, which is precisely why the break-even ranking is the more useful number.',
+  },
+  {
+    q: 'Do professional tennis players lose money?',
+    a: 'Many of them do. The ITF\'s Pro Circuit review found the break-even point in 2013 sat at about rank 336 for men and 253 for women — meaning every player below those marks spent more competing than they earned in prize money. Since several thousand players compete professionally in any given year, the overwhelming majority are running at a loss.',
+  },
+  {
+    q: 'Why is prize money a misleading number?',
+    a: 'Because it is revenue, not profit, and it is reported without any of the costs attached. A player who wins $80,000 in a season and spends $95,000 chasing it appears on the earnings list as someone who made $80,000. Career prize-money totals, which get quoted constantly, are gross figures across an entire career and say nothing about what the player actually kept.',
+  },
+  {
+    q: 'How much does a tennis coach cost?',
+    a: 'It is usually the biggest line in the budget. Arrangements vary — a fixed retainer, a percentage of prize money, or a combination — and on top of the fee the player generally covers the coach\'s flights, accommodation and meals for every tournament week. That is why so many players outside the top 100 travel without one, or share a coach with another player.',
+  },
+  {
+    q: 'What is the break-even ranking in tennis?',
+    a: 'The point on the earnings list where prize money starts to exceed the cost of competing. The ITF put it at roughly 336 for men and 253 for women in its 2013 review. The exact number moves with prize money levels and travel costs, but the shape of the finding has not changed: profitability begins somewhere in the low hundreds, not the low thousands.',
+  },
+  {
+    q: 'How do lower-ranked players fund a season?',
+    a: 'Some combination of national federation support, private sponsorship, family funding, prize money from smaller events, and coaching work in the off-season. It is an unglamorous reality behind a sport that markets itself through its champions — the qualifying draw at any tournament is full of players whose season is financed by someone other than the tour.',
+  },
+  {
+    q: 'Do players pay tax where they win the money?',
+    a: 'Frequently, yes. Prize money is often taxed in the country where it was earned, and withholding is common, so a player competing across a dozen countries can be dealing with a dozen tax positions in a single season. It is one of the less visible reasons the headline prize-money figure and the amount that reaches a player\'s account differ so much.',
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/money/cost-of-playing-pro-tennis/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: {
+    '@type': 'Organization',
+    '@id': 'https://super.tennis/#organization',
+    name: 'SUPER.TENNIS Editorial',
+    url: 'https://super.tennis/about/',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Money', item: 'https://super.tennis/money/' },
+    { '@type': 'ListItem', position: 3, name: 'Cost of Playing' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article" alternates={alternates}>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/money/">Money</a> <span class="sep">/</span>
+      <span class="current">Cost of Playing</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">✈️</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/about/">SUPER.TENNIS Editorial</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <div class="article-body">
+      <h2 id="gross-not-net">Prize money is revenue, not income</h2>
+      <p>
+        Every earnings list published in tennis shows a gross number. It is the amount a player won, before the coach was paid, before the flights were booked, before the hotel bills and the stringing and the tax.
+      </p>
+      <p>
+        That is a reasonable way to rank achievement and a terrible way to describe a livelihood. A player can appear on a list having "earned" $80,000 and have finished the year out of pocket. <a href="/money/how-much-tennis-players-earn/">Our page on player earnings</a> covers what comes in; this one covers what goes out.
+      </p>
+
+      <h2 id="what-it-costs">Where the money goes</h2>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Cost</th><th>What it involves</th><th>Weight</th></tr></thead>
+          <tbody>
+            {costTable.map(r => <tr><td><strong>{r.item}</strong></td><td>{r.note}</td><td>{r.weight}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        The structural problem is that almost all of it is fixed. A player pays for the flight, the hotel and the coach whether they win the tournament or lose in the first round on Monday — and in a <a href="/rules/tennis-tournament-formats/">single-elimination sport</a>, losing on Monday is the single most common outcome there is.
+      </p>
+
+      <h2 id="break-even">The break-even line</h2>
+      <p>
+        The most useful number in this whole subject comes from the ITF's review of its Pro Circuit. Looking at 2013, it found the break-even point on the earnings list fell at approximately <strong>rank 336 for men and 253 for women</strong>. Above those positions, prize money covered the cost of competing. Below them, it did not.
+      </p>
+      <p>
+        Set that against the number of people who play professionally — several thousand in any given year — and the picture inverts the one the sport presents. Professional tennis is not a pyramid with a wide, comfortable base. It is a very thin spike, and almost everyone standing on the slope is paying for the privilege.
+      </p>
+
+      <h2 id="the-coach">Why so many players travel alone</h2>
+      <p>
+        Coaching is usually the largest single expense, and it is not just a fee. The player typically covers the coach's flights, accommodation and meals for every tournament week, which effectively doubles the travel budget.
+      </p>
+      <p>
+        This is why the further you look down the rankings, the more players you find working without a full-time coach, sharing one with another player, or being coached by a parent. It is not a lack of ambition. It is arithmetic.
+      </p>
+
+      <h2 id="who-pays">Who actually funds a career</h2>
+      <p>
+        For players below the break-even line, the money comes from somewhere other than the tour: national federation programmes, private sponsors, family, off-season coaching work, or some combination of all four. A qualifying draw is full of players whose week is being financed by a source that has nothing to do with tennis's commercial success.
+      </p>
+      <p>
+        None of this is hidden, exactly — it is simply never the story told. The sport markets itself through the twenty or so people for whom the economics work spectacularly well, and those people are genuinely extraordinary. But they are not representative, and the gap between them and rank 400 is not a gap in talent alone.
+      </p>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/money/how-much-tennis-players-earn/" class="context-card">
+          <span class="context-label">Income</span>
+          <span class="context-title">How Much Players Earn</span>
+        </a>
+        <a href="/money/grand-slam-prize-money-breakdown/" class="context-card">
+          <span class="context-label">Prize money</span>
+          <span class="context-title">Grand Slam Prize Money</span>
+        </a>
+        <a href="/money/how-much-tennis-umpires-earn/" class="context-card">
+          <span class="context-label">Officials</span>
+          <span class="context-title">What Umpires Earn</span>
+        </a>
+        <a href="/rankings/how-tennis-rankings-work/" class="context-card">
+          <span class="context-label">Rankings</span>
+          <span class="context-title">How Rankings Work</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Cost of Playing Pro Tennis — FAQ" />
+  </article>
+</BaseLayout>
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--gray-800);
+  }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p { font-size: 1rem; line-height: 1.75; margin: 0 0 16px; }
+  .article-body ul, .article-body ol { margin: 0 0 16px; padding-left: 22px; line-height: 1.75; }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+
+  .points-table-wrap { overflow-x: auto; margin: 8px 0 24px; }
+  .points-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  .points-table th, .points-table td {
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .points-table th {
+    background: var(--gray-50);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-700);
+    font-weight: 700;
+  }
+  .points-table td:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--court-green);
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>

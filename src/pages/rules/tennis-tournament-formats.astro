@@ -1,0 +1,369 @@
+---
+/**
+ * /rules/tennis-tournament-formats/ — evergreen explainer.
+ *
+ * Search intent: "what is a bye in tennis", "tennis draw size", "what is
+ * qualifying in tennis", "round robin tennis finals", "how many rounds in a
+ * grand slam". All draw-sheet vocabulary that goes unexplained on every
+ * broadcast, and all of it stable year to year.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+import { getPageAlternates } from '../../lib/i18n';
+
+const title = 'Tennis Tournament Formats — Draws, Byes and Qualifying | SUPER.TENNIS';
+const h1 = 'Tennis Tournament Formats';
+const metaDescription = 'How a tennis tournament is built: draw sizes from 128 down to 28, how many rounds each takes, what a bye is and who gets one, how qualifying and lucky losers work, and why the year-end finals use a round robin instead of a knockout.';
+const publishedDate = '2026-08-25';
+const alternates = await getPageAlternates('rules/tennis-tournament-formats', Astro.url.pathname);
+
+const quickAnswer = "Almost all tennis is single-elimination: lose once and you are out. Grand Slams use a 128-player draw that takes seven rounds to win. The biggest tour events use 96 or 56, mid-tier events 32 or 48, and the smallest 28. When a draw size is not a power of two — 96, 56 and 28 all qualify — the top seeds receive a bye, meaning they skip the first round entirely because there is nobody to play. Players outside the ranking cut can enter a separate qualifying draw in the days beforehand to win one of the last main-draw places. The single exception to knockout tennis is the season-ending finals, where the top eight play a round robin and everyone is guaranteed three matches.";
+
+const drawTable = [
+  { size: '128', rounds: '7', events: 'Grand Slams', byes: 'None' },
+  { size: '96', rounds: '7 (with byes)', events: 'Largest Masters 1000 / WTA 1000', byes: 'Top 32 seeds' },
+  { size: '64', rounds: '6', events: 'Some 500-level events', byes: 'None' },
+  { size: '56', rounds: '6 (with byes)', events: 'Masters 1000 / WTA 1000', byes: 'Top 8 seeds' },
+  { size: '48', rounds: '6 (with byes)', events: 'Larger 500 events', byes: 'Top 16 seeds' },
+  { size: '32', rounds: '5', events: 'ATP / WTA 500 and 250', byes: 'None' },
+  { size: '28', rounds: '5 (with byes)', events: 'ATP / WTA 250', byes: 'Top 4 seeds' },
+  { size: '8', rounds: 'Round robin + SF + F', events: 'ATP / WTA Finals', byes: 'Not applicable' },
+];
+
+const entryTable = [
+  { route: 'Direct entry', how: 'Ranking is high enough to make the cut-off', seeded: 'Yes, if inside the seeded group' },
+  { route: 'Qualifying', how: 'Wins 2-3 matches in a preliminary draw', seeded: 'Normally unseeded' },
+  { route: 'Wild card', how: 'Invited by the tournament', seeded: 'Normally unseeded' },
+  { route: 'Lucky loser', how: 'Lost in final qualifying, promoted after a late withdrawal', seeded: 'Unseeded' },
+  { route: 'Protected ranking', how: 'Returning from long injury or maternity leave', seeded: 'No — entry only' },
+];
+
+const faqs = [
+  {
+    q: 'What is a bye in tennis?',
+    a: 'A free pass through the first round. It happens when a draw is not a power of two — 96, 56 and 28 are all common sizes — so there are not enough players to fill every first-round slot. The empty slots are given to the top seeds, who therefore start in round two. It is a genuine advantage: one fewer match to win, and one more day of rest.',
+  },
+  {
+    q: 'How many rounds does it take to win a Grand Slam?',
+    a: 'Seven. A 128-player draw halves each round — 64, 32, 16, 8, 4, 2 — so a champion plays seven matches over a fortnight. For men that means up to seven best-of-five matches, which is why the physical demands of a Slam are talked about in a different register from any other event.',
+  },
+  {
+    q: 'What is qualifying in tennis?',
+    a: 'A separate mini-tournament held in the days before the main draw, for players ranked below the direct-entry cut-off. Winning two or three matches earns one of the final main-draw places. Qualifiers arrive already match-hardened and with nothing to lose, which is exactly why seeded players dread drawing one in the first round.',
+  },
+  {
+    q: 'What is a lucky loser?',
+    a: 'A player who lost in the final round of qualifying and then gets into the main draw anyway, because someone withdrew too late to be replaced properly. The name sounds dismissive but the opportunity is real — lucky losers have gone on deep runs, and occasionally won titles, from a slot they had already lost.',
+  },
+  {
+    q: 'Why do the year-end finals use a round robin?',
+    a: 'Because eight players and a knockout format would mean half the field flies home after one match. A round robin guarantees every qualifier three matches, which is fairer to players who spent a whole season earning their place and better for a tournament selling a full week of tickets. The top two from each group of four then move into conventional semifinals.',
+  },
+  {
+    q: 'Can you lose a match at the year-end finals and still win the title?',
+    a: 'Yes, and it happens regularly. A player can lose one round-robin match, still finish in the top two of their group on wins, and go on to win both knockout matches. It is the only significant event in tennis where a defeat does not end your tournament.',
+  },
+  {
+    q: 'Why are some draws 96 players instead of 64 or 128?',
+    a: 'It is a compromise between prestige and calendar space. A 96-draw event feels close to a Grand Slam in scale and runs across roughly twelve days, giving broadcasters two full weekends, but it does not need the 128 players a Slam requires. The cost is the awkward arithmetic — 96 is not a power of two, so the top 32 seeds get byes to make the maths work.',
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/rules/tennis-tournament-formats/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: {
+    '@type': 'Organization',
+    '@id': 'https://super.tennis/#organization',
+    name: 'SUPER.TENNIS Editorial',
+    url: 'https://super.tennis/about/',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Rules', item: 'https://super.tennis/rules/' },
+    { '@type': 'ListItem', position: 3, name: 'Tournament Formats' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article" alternates={alternates}>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/rules/">Rules</a> <span class="sep">/</span>
+      <span class="current">Tournament Formats</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">🗂️</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/about/">SUPER.TENNIS Editorial</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <div class="article-body">
+      <h2 id="knockout">Lose once and you are gone</h2>
+      <p>
+        Tennis is almost entirely single-elimination, and that shapes everything about how the sport feels. There is no league table to climb back up, no second leg, no group stage to survive. A player can be the best in the world and go home on a Tuesday because someone served well for two hours.
+      </p>
+      <p>
+        Everything below — draw sizes, byes, qualifying — is the machinery that decides who gets into that knockout and how many matches they need to win.
+      </p>
+
+      <h2 id="draw-sizes">Draw sizes and rounds</h2>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Draw</th><th>Rounds to win</th><th>Typical events</th><th>Byes</th></tr></thead>
+          <tbody>
+            {drawTable.map(r => <tr><td><strong>{r.size}</strong></td><td>{r.rounds}</td><td>{r.events}</td><td>{r.byes}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        A clean draw halves neatly: 128 becomes 64, then 32, 16, 8, 4, 2. Seven rounds to a Grand Slam title. The awkward sizes are the interesting ones.
+      </p>
+
+      <h2 id="byes">The bye, and the arithmetic behind it</h2>
+      <p>
+        Draws of 96, 56 and 28 are not powers of two, so they cannot halve cleanly. The gap is filled with byes: empty first-round slots handed to the top seeds, who simply start in round two.
+      </p>
+      <p>
+        It is not a small courtesy. A bye removes a match from a seed's week, saves a day of physical load and shortens the path to the title by one win. At a 56-draw event the top eight seeds effectively play a 32-draw tournament while everyone else plays a 56. Combined with <a href="/rankings/tennis-seeding-explained/">seeding</a>, it is the second structural advantage the ranking buys you.
+      </p>
+
+      <h2 id="getting-in">Five ways into a draw</h2>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Route</th><th>How you get in</th><th>Seeded?</th></tr></thead>
+          <tbody>
+            {entryTable.map(r => <tr><td><strong>{r.route}</strong></td><td>{r.how}</td><td>{r.seeded}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Most of a draw is direct entry — your ranking is high enough and you are in. The remaining places go to qualifiers who fought through a preliminary draw, wild cards the tournament chose to invite, and occasionally a lucky loser promoted at the last minute when someone pulls out. If that withdrawal comes too late for even a lucky loser, the result is a <a href="/rules/walkover-retirement-default/">walkover</a>.
+      </p>
+
+      <h2 id="qualifying">Qualifying: the tournament before the tournament</h2>
+      <p>
+        While the main draw is still being finalised, a second event is already under way on the outside courts. Players ranked below the cut-off play two or three matches for the last handful of main-draw places, in front of almost nobody.
+      </p>
+      <p>
+        The qualifiers who make it through arrive with two things the seeds do not have: recent match play on the actual courts, and no expectations whatsoever. That combination is why a first-round tie against a qualifier is quietly one of the least attractive draws a seed can get.
+      </p>
+
+      <h2 id="round-robin">The one exception: round robin</h2>
+      <p>
+        The season-ending finals break the knockout rule entirely. Eight qualified players are split into two groups of four, everyone plays everyone in their group, and the top two from each group advance to the semifinals.
+      </p>
+      <p>
+        The reasoning is practical on both sides. Players who spent eleven months qualifying get three guaranteed matches rather than a possible one, and the tournament gets a full week of scheduled tennis to sell. It also produces something you see nowhere else in the sport: a player losing a match and still winning the title.
+      </p>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/rankings/tennis-seeding-explained/" class="context-card">
+          <span class="context-label">Draws</span>
+          <span class="context-title">Tennis Seeding Explained</span>
+        </a>
+        <a href="/rules/walkover-retirement-default/" class="context-card">
+          <span class="context-label">Rules</span>
+          <span class="context-title">Walkover, Retirement, Default</span>
+        </a>
+        <a href="/rules/how-many-sets-in-tennis/" class="context-card">
+          <span class="context-label">Format</span>
+          <span class="context-title">How Many Sets in a Match</span>
+        </a>
+        <a href="/tournaments/" class="context-card">
+          <span class="context-label">Events</span>
+          <span class="context-title">Tournament Guides</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Tennis Tournament Formats — FAQ" />
+  </article>
+</BaseLayout>
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--gray-800);
+  }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p { font-size: 1rem; line-height: 1.75; margin: 0 0 16px; }
+  .article-body ul, .article-body ol { margin: 0 0 16px; padding-left: 22px; line-height: 1.75; }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+
+  .points-table-wrap { overflow-x: auto; margin: 8px 0 24px; }
+  .points-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  .points-table th, .points-table td {
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .points-table th {
+    background: var(--gray-50);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-700);
+    font-weight: 700;
+  }
+  .points-table td:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--court-green);
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>
