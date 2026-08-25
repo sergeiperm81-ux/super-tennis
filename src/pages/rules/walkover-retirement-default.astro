@@ -1,0 +1,345 @@
+---
+/**
+ * /rules/walkover-retirement-default/ — evergreen explainer.
+ *
+ * Search intent: "what is a walkover in tennis", "what does ret mean tennis",
+ * "tennis default vs disqualification", "w/o meaning". These abbreviations
+ * appear on every draw sheet and scoreboard and are almost never explained,
+ * so the query volume is steady and the answer is short and factual.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+import { getPageAlternates } from '../../lib/i18n';
+
+const title = 'Walkover, Retirement and Default in Tennis Explained | SUPER.TENNIS';
+const h1 = 'Walkover, Retirement and Default';
+const metaDescription = 'What W/O, RET and DEF mean on a tennis scoreboard: the difference between a walkover before the match, a retirement during it, and a default for misconduct — plus what each one means for the result, the crowd and the player left standing.';
+const publishedDate = '2026-08-25';
+const alternates = await getPageAlternates('rules/walkover-retirement-default', Astro.url.pathname);
+
+const quickAnswer = "The three abbreviations mark three different ways a match can end without being played out. A walkover (W/O) happens before a ball is struck: one player cannot start, so the other advances without playing. A retirement (RET) happens during the match, when a player who has started is unable to continue, usually through injury or illness — the score stands at the point they stopped and the opponent advances. A default (DEF) is a disqualification imposed by the officials for misconduct or a rule breach, and it can happen before or during a match. Only a retirement and a default produce a partial scoreline; a walkover produces no score at all.";
+
+const typesTable = [
+  { code: 'W/O', name: 'Walkover', when: 'Before the match starts', cause: 'Injury, illness or withdrawal after the draw', score: 'No score recorded' },
+  { code: 'RET', name: 'Retirement', when: 'During the match', cause: 'Injury or illness makes continuing impossible', score: 'Score stands as it was' },
+  { code: 'DEF', name: 'Default', when: 'Before or during', cause: 'Misconduct, code violations, rule breach', score: 'Partial score if play had begun' },
+  { code: 'WD', name: 'Withdrawal', when: 'Before the draw or before play', cause: 'Player pulls out of the tournament entirely', score: 'Replaced by a lucky loser' },
+];
+
+const faqs = [
+  {
+    q: 'What is a walkover in tennis?',
+    a: 'A walkover means one player could not take the court at all, so the other advances to the next round without playing. It is recorded on the draw sheet as W/O with no score, because no tennis took place. For the player advancing it is a mixed blessing — a free round of rest, but also a lost day of match rhythm, which matters more than it sounds at a two-week Grand Slam.',
+  },
+  {
+    q: 'What does RET mean on a tennis scoreboard?',
+    a: 'Retirement. The match started, and at some point a player was unable to continue — almost always because of injury or illness. The score freezes wherever it was and the opponent is credited with the win. You will see it written as something like "6-3, 2-1 RET", which tells you exactly how far the match got before it stopped.',
+  },
+  {
+    q: 'What is the difference between a retirement and a default?',
+    a: 'A retirement is a physical matter — the player cannot go on. A default is a disciplinary one — the officials remove the player for misconduct or a breach of the rules. The most widely seen recent example came at the 2020 US Open, when Novak Djokovic was defaulted after accidentally striking a line judge with a ball hit away in frustration. The distinction is about cause, not about how far the match had gone.',
+  },
+  {
+    q: 'Does a walkover count as a win?',
+    a: 'The player advances, which is what counts competitively, but it is not a win over an opponent in any playing sense and head-to-head records normally treat it accordingly. How ranking points and prize money are handled varies by tour and by situation, so the safest general statement is the simple one: the player moves into the next round without having played.',
+  },
+  {
+    q: 'Can a player retire and still keep prize money?',
+    a: 'Generally yes — a player who starts a match and retires has reached that round, and the prize money for the round reached is normally theirs. This is precisely why the rules around starting an event while injured are debated so often, and why tours have tightened the conditions under which a player can withdraw before a first-round match and still be compensated.',
+  },
+  {
+    q: 'What is the difference between a withdrawal and a walkover?',
+    a: 'Timing. A withdrawal happens early enough for the draw to be adjusted — the player is taken out and a lucky loser from qualifying takes the place, so a real match still gets played. A walkover happens once the draw is fixed and the opponent is already scheduled, leaving nobody to fill the slot.',
+  },
+  {
+    q: 'Why do walkovers upset tournaments so much?',
+    a: 'Because a ticket has been sold for a match that will not happen. A retirement at least delivers some tennis; a walkover delivers none, and it usually becomes known only hours before play. It is one of the awkward realities of a sport where a single player being unfit removes an entire fixture, with no substitutes bench to call on.',
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/rules/walkover-retirement-default/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: {
+    '@type': 'Organization',
+    '@id': 'https://super.tennis/#organization',
+    name: 'SUPER.TENNIS Editorial',
+    url: 'https://super.tennis/about/',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Rules', item: 'https://super.tennis/rules/' },
+    { '@type': 'ListItem', position: 3, name: 'Walkover, Retirement, Default' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article" alternates={alternates}>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/rules/">Rules</a> <span class="sep">/</span>
+      <span class="current">Walkover, Retirement, Default</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">🚪</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/about/">SUPER.TENNIS Editorial</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <div class="article-body">
+      <h2 id="three-words">Three words for three different things</h2>
+      <p>
+        Draw sheets are full of abbreviations that nobody explains. W/O, RET and DEF turn up next to a name and the match simply is not there, and the three of them mean genuinely different things — not three flavours of the same thing.
+      </p>
+      <p>
+        The clean way to remember it: a walkover is <em>before</em>, a retirement is <em>during</em>, and a default is <em>imposed</em>.
+      </p>
+
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Code</th><th>Name</th><th>When</th><th>Cause</th><th>Score</th></tr></thead>
+          <tbody>
+            {typesTable.map(r => <tr><td><strong>{r.code}</strong></td><td>{r.name}</td><td>{r.when}</td><td>{r.cause}</td><td>{r.score}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="walkover">Walkover: the match that never was</h2>
+      <p>
+        A walkover is recorded when a player cannot take the court at all — an injury that flares up in the warm-up, an illness overnight, a problem that surfaces after the draw is already fixed. No tennis is played, so no score exists, and the opponent advances.
+      </p>
+      <p>
+        Players are rarely delighted by one. A free round sounds like a gift, and physically it is, but tennis is a rhythm sport and a day without a competitive match in the middle of a Grand Slam can leave a player cold going into the next round.
+      </p>
+
+      <h2 id="retirement">Retirement: the match that stopped</h2>
+      <p>
+        A retirement means play began and then could not continue. The score is frozen exactly where it stood, which is why you see results written as "6-4, 3-2 RET" — a scoreline that tells you the match was competitive and then, abruptly, was not.
+      </p>
+      <p>
+        This is the outcome that raises the hardest questions in the sport. A player who starts and retires has reached that round and is generally entitled to the prize money for it, which creates an obvious tension when someone arrives at a tournament already carrying an injury. The tours have tightened those rules over the years without ever fully settling the argument.
+      </p>
+
+      <h2 id="default">Default: the match that was taken away</h2>
+      <p>
+        A default is a disqualification. It is not about fitness at all — officials remove a player for misconduct or a breach of the rules, and it can happen before a match or in the middle of one.
+      </p>
+      <p>
+        The example everyone reaches for is the 2020 US Open, when Novak Djokovic hit a ball away in frustration and struck a line judge. The ball was not aimed at anyone, and it made no difference: the rule covers the act, not the intent, and the world No. 1 was out of the tournament within minutes. It remains the clearest demonstration of how a default differs from everything else on this page — the player was perfectly able to continue.
+      </p>
+
+      <h2 id="withdrawal">And withdrawal, the one that happens quietly</h2>
+      <p>
+        A withdrawal is the fourth term you will see, and it is the least dramatic because it happens early. The player pulls out before the draw is locked, a lucky loser from qualifying is promoted into the slot, and a real match takes place after all. Nobody in the stadium notices, which is exactly the point — the difference between a withdrawal and a walkover is mostly a matter of how much notice everyone got.
+      </p>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/rules/tennis-scoring-explained/" class="context-card">
+          <span class="context-label">Scoring</span>
+          <span class="context-title">How Tennis Scoring Works</span>
+        </a>
+        <a href="/rules/how-long-is-a-tennis-match/" class="context-card">
+          <span class="context-label">Timing</span>
+          <span class="context-title">How Long Is a Tennis Match</span>
+        </a>
+        <a href="/rankings/tennis-seeding-explained/" class="context-card">
+          <span class="context-label">Draws</span>
+          <span class="context-title">Seeding, Wild Cards, Lucky Losers</span>
+        </a>
+        <a href="/rules/tennis-serve-rules/" class="context-card">
+          <span class="context-label">Rules</span>
+          <span class="context-title">Tennis Serve Rules</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Walkover, Retirement, Default — FAQ" />
+  </article>
+</BaseLayout>
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--gray-800);
+  }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p { font-size: 1rem; line-height: 1.75; margin: 0 0 16px; }
+  .article-body ul, .article-body ol { margin: 0 0 16px; padding-left: 22px; line-height: 1.75; }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+
+  .points-table-wrap { overflow-x: auto; margin: 8px 0 24px; }
+  .points-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  .points-table th, .points-table td {
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .points-table th {
+    background: var(--gray-50);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-700);
+    font-weight: 700;
+  }
+  .points-table td:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--court-green);
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>

@@ -1,0 +1,351 @@
+---
+/**
+ * /rules/tennis-serve-rules/ — evergreen explainer.
+ *
+ * Search intent: "tennis serve rules", "what is a let in tennis", "foot fault",
+ * "how many serves do you get", "can you serve underarm". Pure rule lookup,
+ * the format that performs best here, and the questions a new viewer asks
+ * within about ten minutes of switching a match on.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+import { getPageAlternates } from '../../lib/i18n';
+
+const title = 'Tennis Serve Rules — Faults, Lets and Foot Faults | SUPER.TENNIS';
+const h1 = 'Tennis Serve Rules';
+const metaDescription = 'The rules of serving in tennis: how many serves you get, where you must stand, what counts as a fault, what a let is, how foot faults are called, the 25-second shot clock, and whether an underarm serve is legal.';
+const publishedDate = '2026-08-25';
+const alternates = await getPageAlternates('rules/tennis-serve-rules', Astro.url.pathname);
+
+const quickAnswer = "A server gets two attempts on every point. The serve must be struck before the ball bounces, hit diagonally into the service box on the far side, and the server must keep both feet behind the baseline until the racket makes contact. A first serve that misses is a fault and brings a second serve; missing both is a double fault and the receiver wins the point outright. If the ball clips the net cord and still lands in the correct box, it is a let and that serve is replayed with no penalty. Serving starts from the right of the centre mark and alternates sides after every point, and players have 25 seconds between points under the shot clock.";
+
+const callsTable = [
+  { call: 'Fault', what: 'Serve misses the correct service box, or the server foot-faults', result: 'Second serve; if it was already the second, the point is lost' },
+  { call: 'Double fault', what: 'Both serves are faults', result: 'Point to the receiver' },
+  { call: 'Let', what: 'Serve touches the net cord and still lands in the correct box', result: 'That serve is replayed — no penalty, unlimited repeats' },
+  { call: 'Foot fault', what: 'A foot touches the baseline or inside the court before contact', result: 'Counts as a fault, even if the serve landed in' },
+  { call: 'Ace', what: 'Legal serve the receiver does not touch', result: 'Point to the server' },
+  { call: 'Service winner', what: 'Receiver reaches the serve but cannot return it in play', result: 'Point to the server' },
+];
+
+const faqs = [
+  {
+    q: 'How many serves do you get in tennis?',
+    a: 'Two on every point. Missing the first costs you nothing except the safety margin — most players hit the first serve hard and the second more conservatively, because missing the second one hands the point straight to the opponent. That single asymmetry shapes more tactics than any other rule in the sport.',
+  },
+  {
+    q: 'What is a let in tennis?',
+    a: 'A serve that touches the top of the net and still lands in the correct service box. It is replayed with no penalty, and there is no limit on how many times it can happen in a row. A ball that clips the net and lands outside the box is simply a fault. Note that once the point is under way, a ball hitting the net cord is played normally — the let applies to the serve only.',
+  },
+  {
+    q: 'What is a foot fault?',
+    a: 'Touching the baseline, or the court inside it, with either foot before the racket meets the ball. The server may leave the ground — practically every professional does — but the take-off must be from behind the line. A foot fault counts as a fault even if the serve lands in, which is why it is such an ugly way to lose a point on a second serve.',
+  },
+  {
+    q: 'Where do you stand to serve?',
+    a: 'Behind the baseline, between the centre mark and the singles sideline, on the correct side for that point. The first point of every game is served from the right-hand side (the deuce court) into the diagonally opposite box, and the server alternates sides after each point. In doubles the server may stand anywhere between the centre mark and the doubles sideline.',
+  },
+  {
+    q: 'Is an underarm serve legal?',
+    a: 'Completely legal. The rules say nothing about the height of the swing — the ball must simply be struck before it touches the ground and land in the correct box. Underarm serves have been used deliberately at the highest level against opponents who return from far behind the baseline, and while they still cause a stir in the crowd, no rule is being bent.',
+  },
+  {
+    q: 'How long does a server have between points?',
+    a: 'Twenty-five seconds on most of the professional tour, enforced by a visible shot clock that starts when the previous point ends. A first violation is normally a warning; a second costs a fault. The clock was introduced to end the long-running argument about time-wasting, and it has largely worked.',
+  },
+  {
+    q: 'What happens if you serve out of turn or from the wrong side?',
+    a: 'Play stops and the error is corrected as soon as it is noticed, but points already completed stand. If a whole game has been served by the wrong player, the order stays as it is until the end of that game and then reverts. The principle is consistent: fix the sequence going forward, do not unpick tennis that has already been played.',
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/rules/tennis-serve-rules/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: {
+    '@type': 'Organization',
+    '@id': 'https://super.tennis/#organization',
+    name: 'SUPER.TENNIS Editorial',
+    url: 'https://super.tennis/about/',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Rules', item: 'https://super.tennis/rules/' },
+    { '@type': 'ListItem', position: 3, name: 'Serve Rules' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article" alternates={alternates}>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/rules/">Rules</a> <span class="sep">/</span>
+      <span class="current">Serve Rules</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">🎯</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/about/">SUPER.TENNIS Editorial</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <div class="article-body">
+      <h2 id="two-serves">Two serves, and why that matters</h2>
+      <p>
+        Every point in tennis starts with the same small gift: the server gets two attempts. Nothing else in the sport works this way, and almost every serving tactic follows from it.
+      </p>
+      <p>
+        A first serve can be hit at full power because missing it costs nothing but the margin. A second serve carries the whole point — miss it and the opponent wins without touching the ball. That is why second-serve percentages are watched so closely, and why "second serve" is the most dangerous phrase a commentator can say at 4-5, 30-40.
+      </p>
+
+      <h2 id="where-to-stand">Where the server stands</h2>
+      <p>
+        Behind the baseline, between the centre mark and the sideline, on the side dictated by the score. The first point of a game is served from the right-hand side — the deuce court — diagonally into the far service box, and the server switches sides after every point. In doubles the server has the extra width of the alley to work with.
+      </p>
+      <p>
+        Feet must stay behind the line until contact. Jumping is fine, and practically universal at professional level, but the take-off must come from behind the baseline. The service boxes themselves never change size — all the numbers live on our <a href="/rules/tennis-court-dimensions/">court dimensions</a> page.
+      </p>
+
+      <h2 id="calls">Every call you will hear</h2>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Call</th><th>What happened</th><th>Result</th></tr></thead>
+          <tbody>
+            {callsTable.map(r => <tr><td><strong>{r.call}</strong></td><td>{r.what}</td><td>{r.result}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="the-let">The let, the one rule that repeats forever</h2>
+      <p>
+        If a serve clips the net cord and still drops into the right box, nothing has gone wrong and nothing is penalised — the serve is simply taken again. There is no cap on how often it can happen, so a player can in principle serve five lets in a row and still be on a first serve.
+      </p>
+      <p>
+        The rule applies only to the serve. Once a rally is running, a ball that catches the net cord and trickles over is live, and chasing it down is part of the game. Some events have experimented with abolishing the service let entirely, but the mainstream professional tours have kept it.
+      </p>
+
+      <h2 id="shot-clock">The 25-second shot clock</h2>
+      <p>
+        Servers now have 25 seconds between points, counted down on a visible clock that starts the moment the previous point ends. A first breach usually brings a warning and a second costs a fault.
+      </p>
+      <p>
+        Before the clock, time-wasting was argued about every single tournament, with umpires applying the rule inconsistently and players complaining either way. Putting the number on a screen where the crowd can see it settled the argument almost overnight — it is one of the more successful rule changes tennis has made this century.
+      </p>
+
+      <h2 id="underarm">Yes, you are allowed to serve underarm</h2>
+      <p>
+        The rulebook says the ball must be struck before it touches the ground and land in the correct box. It says nothing whatsoever about how high the racket travels. An underarm serve is therefore perfectly legal, and it has a genuine tactical use against opponents who return from several metres behind the baseline.
+      </p>
+      <p>
+        It remains rare, and it still draws a reaction from the crowd, because tennis carries a strong sense of etiquette alongside its rules. But a player who uses one is not breaking anything except a convention.
+      </p>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/rules/tennis-scoring-explained/" class="context-card">
+          <span class="context-label">Scoring</span>
+          <span class="context-title">How Tennis Scoring Works</span>
+        </a>
+        <a href="/rules/tie-break-rules-explained/" class="context-card">
+          <span class="context-label">Tiebreak</span>
+          <span class="context-title">Tiebreak Rules Explained</span>
+        </a>
+        <a href="/rules/tennis-court-dimensions/" class="context-card">
+          <span class="context-label">Court</span>
+          <span class="context-title">Court Dimensions</span>
+        </a>
+        <a href="/records/fastest-tennis-serves-ever/" class="context-card">
+          <span class="context-label">Records</span>
+          <span class="context-title">Fastest Serves Ever</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Tennis Serve Rules — FAQ" />
+  </article>
+</BaseLayout>
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--gray-800);
+  }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p { font-size: 1rem; line-height: 1.75; margin: 0 0 16px; }
+  .article-body ul, .article-body ol { margin: 0 0 16px; padding-left: 22px; line-height: 1.75; }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+
+  .points-table-wrap { overflow-x: auto; margin: 8px 0 24px; }
+  .points-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  .points-table th, .points-table td {
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .points-table th {
+    background: var(--gray-50);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-700);
+    font-weight: 700;
+  }
+  .points-table td:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--court-green);
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>

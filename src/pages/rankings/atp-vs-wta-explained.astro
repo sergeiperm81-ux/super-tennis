@@ -1,0 +1,366 @@
+---
+/**
+ * /rankings/atp-vs-wta-explained/ — evergreen explainer.
+ *
+ * Search intent: "atp vs wta", "difference between atp and wta", "what does
+ * atp stand for", "why do men play 5 sets". Sits in the strongest hub on the
+ * site and answers the question that comes before the points tables: who runs
+ * what, and which differences between the two tours are real.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+import { getPageAlternates } from '../../lib/i18n';
+
+const title = 'ATP vs WTA — What Is the Difference? | SUPER.TENNIS';
+const h1 = 'ATP vs WTA Explained';
+const metaDescription = 'ATP and WTA compared: what each acronym means, who runs the men and women tours, the tournament tiers, why only men play best-of-five at Grand Slams, the year-end finals, the team competitions, and when Grand Slam prize money became equal.';
+const publishedDate = '2026-08-25';
+const alternates = await getPageAlternates('rankings/atp-vs-wta-explained', Astro.url.pathname);
+
+const quickAnswer = "The ATP (Association of Tennis Professionals) runs the men's tour and the WTA (Women's Tennis Association) runs the women's tour. They are separate organisations with separate rankings, separate calendars and separate year-end championships, founded a year apart in 1972 and 1973. The four Grand Slams belong to neither — they are run by their own national federations under the ITF, which is why both tours play them. The biggest on-court difference is format: men play best-of-five sets at Grand Slams only, while women play best-of-three everywhere. All four Slams now pay men and women equally, a process that started at the US Open in 1973 and finished at Wimbledon in 2007.";
+
+const comparisonTable = [
+  { aspect: 'Full name', atp: 'Association of Tennis Professionals', wta: "Women's Tennis Association" },
+  { aspect: 'Founded', atp: '1972', wta: '1973' },
+  { aspect: 'Top tier below Slams', atp: 'Masters 1000 (9 events)', wta: 'WTA 1000' },
+  { aspect: 'Middle tiers', atp: 'ATP 500, ATP 250', wta: 'WTA 500, WTA 250' },
+  { aspect: 'Feeder circuit', atp: 'ATP Challenger Tour, ITF', wta: 'WTA 125, ITF World Tour' },
+  { aspect: 'Year-end final', atp: 'ATP Finals (top 8)', wta: 'WTA Finals (top 8)' },
+  { aspect: 'Team competition', atp: 'Davis Cup', wta: 'Billie Jean King Cup' },
+  { aspect: 'Grand Slam format', atp: 'Best of 5 sets', wta: 'Best of 3 sets' },
+  { aspect: 'Format elsewhere', atp: 'Best of 3 sets', wta: 'Best of 3 sets' },
+];
+
+const parityTable = [
+  { slam: 'US Open', year: '1973', note: 'First sporting event in the world to pay equally' },
+  { slam: 'Australian Open', year: '2001', note: 'Second Slam to reach parity' },
+  { slam: 'Roland Garros', year: '2006', note: 'Followed a decade of public pressure' },
+  { slam: 'Wimbledon', year: '2007', note: 'Last of the four to equalise' },
+];
+
+const faqs = [
+  {
+    q: 'What is the difference between ATP and WTA?',
+    a: 'They are the two governing bodies of professional tennis: the ATP runs the men\'s tour, the WTA the women\'s. Each publishes its own rankings, sanctions its own tournaments and stages its own year-end championship. They share the four Grand Slams, which are run separately by their host federations, and they increasingly share venues — many of the biggest events now run a combined men\'s and women\'s draw in the same fortnight.',
+  },
+  {
+    q: 'Why do men play five sets and women play three?',
+    a: 'It is a survival of tradition rather than a current rule of the sport. Men play best-of-five only at the four Grand Slams; everywhere else on the ATP tour they play best-of-three, exactly like the WTA. The debate about whether to align the two formats resurfaces every Slam, with arguments running in both directions — some want women to play five sets at the Slams, some want men to play three.',
+  },
+  {
+    q: 'Do men and women earn the same prize money?',
+    a: 'At the Grand Slams, yes. The US Open equalised in 1973, the Australian Open in 2001, Roland Garros in 2006 and Wimbledon in 2007. Below Slam level the picture is more uneven: prize money at individual ATP and WTA events depends on the tier and the tournament, and the tours have committed to closing the remaining gaps at the 1000 level over the coming seasons.',
+  },
+  {
+    q: 'Are the ranking systems the same?',
+    a: 'The principle is shared — a rolling 52-week window in which only a set number of your best results count — but the details differ, including how many results count and which events are compulsory. The point values also diverge below Slam level. Our separate breakdowns cover each in full.',
+  },
+  {
+    q: 'Who runs the Grand Slams, ATP or WTA?',
+    a: 'Neither. Each Slam is run by its national federation — Tennis Australia, the French Tennis Federation, the All England Club and the USTA — under the umbrella of the ITF, the sport\'s global governing body. This is why Slam rules can differ from tour rules, and why the four events were able to move at different speeds on questions like equal prize money and deciding-set tiebreaks.',
+  },
+  {
+    q: 'What are Masters 1000 and WTA 1000 events?',
+    a: 'The tier immediately below the Grand Slams, and the biggest events either tour runs on its own. The ATP has nine Masters 1000 tournaments; the WTA has its own 1000-level series. Winners earn 1,000 ranking points, hence the name, and most are compulsory for the leading players — a skipped mandatory event counts as a zero result.',
+  },
+  {
+    q: 'What is the difference between Davis Cup and Billie Jean King Cup?',
+    a: 'They are the men\'s and women\'s national team competitions, both run by the ITF rather than by the tours. Davis Cup dates back to 1900. The women\'s equivalent began in 1963 as the Federation Cup, became the Fed Cup, and was renamed the Billie Jean King Cup in 2020 — the first major global team competition named after a woman.',
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/rankings/atp-vs-wta-explained/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: {
+    '@type': 'Organization',
+    '@id': 'https://super.tennis/#organization',
+    name: 'SUPER.TENNIS Editorial',
+    url: 'https://super.tennis/about/',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Rankings', item: 'https://super.tennis/rankings/' },
+    { '@type': 'ListItem', position: 3, name: 'ATP vs WTA' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article" alternates={alternates}>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/rankings/">Rankings</a> <span class="sep">/</span>
+      <span class="current">ATP vs WTA</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">⚖️</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/about/">SUPER.TENNIS Editorial</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <div class="article-body">
+      <h2 id="two-tours">Two tours, one sport</h2>
+      <p>
+        Tennis is unusual among global sports in having two entirely separate professional circuits that share the same stages. The ATP organises the men's tour, the WTA the women's, and they were founded within a year of each other in the early 1970s — the ATP in 1972, the WTA in 1973, the latter driven by Billie Jean King and the group of players who became known as the Original Nine.
+      </p>
+      <p>
+        What they do not organise is the part everyone watches most. The four Grand Slams belong to their host federations, which is why a Slam can change its rules without either tour's agreement, and why the four of them moved at such different speeds on equal prize money.
+      </p>
+
+      <h2 id="side-by-side">Side by side</h2>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th></th><th>ATP</th><th>WTA</th></tr></thead>
+          <tbody>
+            {comparisonTable.map(r => <tr><td><strong>{r.aspect}</strong></td><td>{r.atp}</td><td>{r.wta}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="format">The five-set question</h2>
+      <p>
+        The most visible difference is also the narrowest. Men play best-of-five sets at the Grand Slams and nowhere else — every ATP tour event, every Masters 1000, the ATP Finals itself, all best-of-three, exactly like the WTA. So for roughly 44 weeks of the year the two tours play an identical <a href="/rules/how-many-sets-in-tennis/">format</a>.
+      </p>
+      <p>
+        That narrowness is what keeps the argument alive. Because best-of-five survives only at four tournaments, it reads less like a structural feature of men's tennis and more like a tradition that happened not to be reformed. Proposals go in both directions, and neither side has won.
+      </p>
+
+      <h2 id="rankings">Rankings and points</h2>
+      <p>
+        Both tours run a rolling 52-week ranking in which only a fixed number of your best results count, so points earned a year ago fall off and have to be defended. The specifics diverge: the number of counting results, which tournaments are compulsory, and the point values below Slam level are all set separately by each tour.
+      </p>
+      <p>
+        We keep the full tables on their own pages — <a href="/rankings/atp-ranking-points-explained/">ATP points</a> and <a href="/rankings/wta-ranking-points-explained/">WTA points</a> — because those numbers are revised more often than anything else in this article.
+      </p>
+
+      <h2 id="prize-money">When the money became equal</h2>
+      <p>
+        Equal prize money at the Slams took thirty-four years to complete, and the order tells its own story.
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Grand Slam</th><th>Equal prize money from</th><th>Note</th></tr></thead>
+          <tbody>
+            {parityTable.map(r => <tr><td>{r.slam}</td><td><strong>{r.year}</strong></td><td>{r.note}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        The US Open's 1973 decision came after Billie Jean King told organisers the women would not return without it, and made the tournament the first sporting event anywhere to pay men and women the same. Wimbledon, the last holdout, equalised in 2007. Below Slam level the tours are still working through the remaining gaps.
+      </p>
+
+      <h2 id="team-events">Davis Cup and Billie Jean King Cup</h2>
+      <p>
+        The national team competitions belong to the ITF rather than to either tour. Davis Cup, first played in 1900, is one of the oldest international team events in any sport. Its women's counterpart started in 1963 as the Federation Cup, was shortened to Fed Cup, and in 2020 became the Billie Jean King Cup — the first major global team competition to be named after a woman.
+      </p>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/rankings/atp-ranking-points-explained/" class="context-card">
+          <span class="context-label">ATP</span>
+          <span class="context-title">ATP Ranking Points Explained</span>
+        </a>
+        <a href="/rankings/wta-ranking-points-explained/" class="context-card">
+          <span class="context-label">WTA</span>
+          <span class="context-title">WTA Ranking Points Explained</span>
+        </a>
+        <a href="/rankings/tennis-seeding-explained/" class="context-card">
+          <span class="context-label">Draws</span>
+          <span class="context-title">Tennis Seeding Explained</span>
+        </a>
+        <a href="/money/grand-slam-prize-money-breakdown/" class="context-card">
+          <span class="context-label">Money</span>
+          <span class="context-title">Grand Slam Prize Money</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="ATP vs WTA — FAQ" />
+  </article>
+</BaseLayout>
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--gray-800);
+  }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p { font-size: 1rem; line-height: 1.75; margin: 0 0 16px; }
+  .article-body ul, .article-body ol { margin: 0 0 16px; padding-left: 22px; line-height: 1.75; }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+
+  .points-table-wrap { overflow-x: auto; margin: 8px 0 24px; }
+  .points-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  .points-table th, .points-table td {
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .points-table th {
+    background: var(--gray-50);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-700);
+    font-weight: 700;
+  }
+  .points-table td:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--court-green);
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>
