@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PlayerGearBlock from '../../components/PlayerGearBlock.astro';
-import { getPlayerBySlug, getTopPlayerSlugs, getRelatedPlayers, getArticleBySlug } from '../../lib/supabase';
+import { getPlayerBySlug, getTopPlayerSlugs, getRelatedPlayers, getArticleBySlug, getPlayerRanking } from '../../lib/supabase';
 import { fallbackPlayers, countryFlags, countryNames, handLabels, getFlagUrl } from '../../lib/fallback-data';
 import { addInterlinks } from '../../lib/interlinks';
 import {
@@ -47,6 +47,11 @@ if (!player) {
   return Astro.redirect('/players/');
 }
 
+// Current ranking. Since the 2026-08 migration wiped every career stat column,
+// this is the only live number left for a player page — and it was not being
+// shown at all. null for retired players, who hold no current ranking.
+const liveRank = await getPlayerRanking(player.player_id, player.tour);
+
 // Calculate age
 function getAge(birthDate: string | null): number | null {
   if (!birthDate) return null;
@@ -67,6 +72,52 @@ const flagImg = getFlagUrl(player.country_code || '', 40);
 const country = countryNames[player.country_code || ''] || player.country_code || 'Unknown';
 const tourLabel = player.tour === 'atp' ? 'ATP' : 'WTA';
 const tourColor = player.tour === 'atp' ? '#003580' : '#7b2d8e';
+
+// Quick Answer sentence, assembled here rather than in the markup. Built from
+// JSX fragments it picked up a space before every comma and full stop — the
+// newline between an expression and the punctuation that followed it collapses
+// to whitespace — and printed ". ." whenever the career stats it assumed were
+// present came back empty. One string, no stray spaces, no empty clauses.
+const qaParts: string[] = [];
+qaParts.push(
+  ` is ${age ? `a ${age}-year-old` : 'a'} ${tourLabel} tennis player from ${country}` +
+  (liveRank
+    ? `, currently ranked world No. ${liveRank.ranking}` +
+      (liveRank.points ? ` with ${liveRank.points.toLocaleString()} points` : '')
+    : '') +
+  '.',
+);
+if (player.height_cm) {
+  const feet = Math.floor(player.height_cm / 2.54 / 12);
+  const inches = Math.round((player.height_cm / 2.54) % 12);
+  qaParts.push(
+    ` ${player.first_name} stands ${player.height_cm} cm (${feet}'${inches}")` +
+    (player.hand ? ` and plays ${(handLabels[player.hand] || player.hand).toLowerCase()}` : '') +
+    '.',
+  );
+} else if (player.hand) {
+  qaParts.push(` ${player.first_name} plays ${(handLabels[player.hand] || player.hand).toLowerCase()}.`);
+}
+if (player.career_titles) {
+  qaParts.push(
+    ` Career: ${player.career_titles} ATP/WTA singles title${player.career_titles === 1 ? '' : 's'}` +
+    (player.grand_slam_titles
+      ? `, including ${player.grand_slam_titles} Grand Slam title${player.grand_slam_titles === 1 ? '' : 's'}`
+      : '') +
+    '.',
+  );
+}
+if (player.career_win || player.career_loss) {
+  qaParts.push(
+    ` Career win-loss record ${player.career_win || 0}-${player.career_loss || 0}` +
+    (winPct ? ` (${winPct}%)` : '') + '.',
+  );
+}
+if ((player.career_prize_usd || 0) > 0) {
+  qaParts.push(` Career prize money: ${formatPrize(player.career_prize_usd)}.`);
+}
+if (player.turned_pro) qaParts.push(` Turned professional in ${player.turned_pro}.`);
+const quickAnswerRest = qaParts.join('');
 
 // Wikipedia sameAs links for top players (boosts AI entity recognition)
 const playerWikipediaUrls: Record<string, string[]> = {
@@ -320,6 +371,12 @@ const profileArticleHtml = articles['profile'].html;
         <p class="hero-country">{country}</p>
 
         <div class="hero-stats">
+          {liveRank && (
+            <div class="hero-stat rank">
+              <span class="hero-stat-value">#{liveRank.ranking}</span>
+              <span class="hero-stat-label">{player.tour === 'atp' ? 'ATP' : 'WTA'} Ranking</span>
+            </div>
+          )}
           {(player.career_titles != null && player.career_titles > 0) && (
             <div class="hero-stat">
               <span class="hero-stat-value">{player.career_titles}</span>
@@ -357,14 +414,7 @@ const profileArticleHtml = articles['profile'].html;
         <section class="quick-answer" id="quick-answer" aria-label={`Quick facts about ${player.first_name} ${player.last_name}`}>
           <h2 class="qa-label">Quick Answer</h2>
           <p class="qa-text">
-            <strong>{player.first_name} {player.last_name}</strong> is{age ? ` a ${age}-year-old` : ''} {country} {player.tour === 'atp' ? 'ATP' : 'WTA'} tennis player
-            {player.height_cm ? ` standing ${player.height_cm} cm (${Math.floor(player.height_cm / 2.54 / 12)}'${Math.round(player.height_cm / 2.54 % 12)}") tall` : ''}
-            {player.hand ? `, plays ${(handLabels[player.hand] || player.hand).toLowerCase()}` : ''}.
-            {player.career_titles ? ` Career: ${player.career_titles} ATP/WTA singles title${player.career_titles === 1 ? '' : 's'}` : ''}
-            {player.grand_slam_titles ? ` (including ${player.grand_slam_titles} Grand Slam title${player.grand_slam_titles === 1 ? '' : 's'})` : ''}
-            {(player.career_win || player.career_loss) ? `, career win-loss record ${player.career_win || 0}-${player.career_loss || 0}${winPct ? ` (${winPct}%)` : ''}` : ''}.
-            {(player.career_prize_usd || 0) > 0 ? ` Career prize money: ${formatPrize(player.career_prize_usd)}.` : ''}
-            {player.turned_pro ? ` Turned professional in ${player.turned_pro}.` : ''}
+            <strong>{player.first_name} {player.last_name}</strong>{quickAnswerRest}
           </p>
         </section>
 
@@ -512,10 +562,21 @@ const profileArticleHtml = articles['profile'].html;
                     <td class="stat-val gs-val">{player.grand_slam_titles}</td>
                   </tr>
                 )}
-                <tr>
-                  <td>Win-Loss Record</td>
-                  <td class="stat-val">{player.career_win} - {player.career_loss}</td>
-                </tr>
+                {liveRank && (
+                  <tr>
+                    <td>Current {player.tour === 'atp' ? 'ATP' : 'WTA'} Ranking</td>
+                    <td class="stat-val">#{liveRank.ranking}{liveRank.points ? ` (${liveRank.points.toLocaleString()} pts)` : ''}</td>
+                  </tr>
+                )}
+                {/* Gated: this row used to render unconditionally and printed a
+                    flat "0 - 0" on every page once the stat columns were
+                    emptied by the migration. */}
+                {((player.career_win || 0) > 0 || (player.career_loss || 0) > 0) && (
+                  <tr>
+                    <td>Win-Loss Record</td>
+                    <td class="stat-val">{player.career_win} - {player.career_loss}</td>
+                  </tr>
+                )}
                 {winPct && (
                   <tr>
                     <td>Win Percentage</td>
@@ -611,8 +672,8 @@ const profileArticleHtml = articles['profile'].html;
           {/* Data source attribution */}
           {player.stats_updated_at && (
             <p class="data-source">
-              Stats: <a href="https://tennisliveranking.com" target="_blank" rel="noopener nofollow">TennisLiveRanking.com</a>
-              {' · '}Updated {new Date(player.stats_updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              {/* Was a link to tennisliveranking.com, which no longer resolves. */}
+              Stats updated {new Date(player.stats_updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </p>
           )}
 

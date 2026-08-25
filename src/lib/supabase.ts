@@ -393,6 +393,39 @@ export async function getLatestRankings(tour: 'atp' | 'wta', limit = 100) {
   return data.slice(0, limit);
 }
 
+// Current ranking for a single player, read from the rankings cache that is
+// already loaded for their tour. The players table lost every stat column in
+// the 2026-08 migration, so the live ranking is the only hard number left for
+// a player page — and it was not being surfaced on those pages at all.
+const _rankingByPlayer: Map<string, Map<string, { ranking: number; points: number | null }>> = new Map();
+
+export async function getPlayerRanking(
+  playerId: string,
+  tour: 'atp' | 'wta',
+): Promise<{ ranking: number; points: number | null; date: string } | null> {
+  try {
+    const { date, data } = await ensureRankingsCache(tour);
+    if (!date || data.length === 0) return null;
+
+    let byPlayer = _rankingByPlayer.get(tour);
+    if (!byPlayer) {
+      byPlayer = new Map();
+      for (const r of data as any[]) {
+        if (r.player_id != null && !byPlayer.has(r.player_id)) {
+          byPlayer.set(r.player_id, { ranking: r.ranking, points: r.points ?? null });
+        }
+      }
+      _rankingByPlayer.set(tour, byPlayer);
+    }
+
+    const hit = byPlayer.get(playerId);
+    return hit ? { ...hit, date } : null;
+  } catch (e) {
+    console.error('getPlayerRanking error:', e);
+    return null;
+  }
+}
+
 // Helper: get H2H data for two players
 export async function getH2H(player1Id: string, player2Id: string): Promise<H2HData | null> {
   // h2h_cache stores with player1_id < player2_id for consistency
