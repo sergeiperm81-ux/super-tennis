@@ -1,0 +1,374 @@
+---
+/**
+ * /rankings/tennis-seeding-explained/ — evergreen explainer.
+ *
+ * Search intent: "how does tennis seeding work", "why 32 seeds", "can the 1 and
+ * 2 seed meet before the final", "wimbledon seeding formula". Natural companion
+ * to the two ranking-points pages, which are the site's best-performing URLs:
+ * readers who learn how points are earned ask next what those points buy.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+import { getPageAlternates } from '../../lib/i18n';
+
+const title = 'Tennis Seeding Explained — How Seeds Are Decided | SUPER.TENNIS';
+const h1 = 'Tennis Seeding Explained';
+const metaDescription = 'How tennis seeding works in 2026: why Grand Slams seed 32 players, how the draw keeps the top two apart until the final, what happened to the Wimbledon grass-court formula, and where wild cards, qualifiers and protected rankings fit in.';
+const publishedDate = '2026-08-25';
+const alternates = await getPageAlternates('rankings/tennis-seeding-explained', Astro.url.pathname);
+
+const quickAnswer = "Seeds come straight from the world rankings: the highest-ranked player in the draw becomes the No. 1 seed, the next the No. 2 seed, and so on. Grand Slams seed 32 players in a 128-player singles draw, which means no seed can face another seed before the third round. The draw is then built so the top two seeds can only meet in the final, the top four only from the semifinals, and the top eight only from the quarterfinals. Wimbledon used its own grass-court formula for men's seeds from 2002 until it was scrapped in 2020; since 2021 it has seeded from the ATP rankings like every other Grand Slam.";
+
+const seedCountTable = [
+  { event: 'Grand Slam (128 draw)', seeds: '32', firstSeedClash: 'Third round' },
+  { event: 'ATP / WTA 1000 (96 draw)', seeds: '32', firstSeedClash: 'Third round' },
+  { event: 'ATP / WTA 1000 (56 draw)', seeds: '16', firstSeedClash: 'Third round' },
+  { event: 'ATP / WTA 500 (48 draw)', seeds: '16', firstSeedClash: 'Second round' },
+  { event: 'ATP / WTA 500 (32 draw)', seeds: '8', firstSeedClash: 'Second round' },
+  { event: 'ATP / WTA 250 (28-32 draw)', seeds: '8', firstSeedClash: 'Second round' },
+  { event: 'ATP / WTA Finals (8 players)', seeds: 'All 8', firstSeedClash: 'Round robin' },
+];
+
+const meetingTable = [
+  { seeds: 'Seeds 1 and 2', round: 'Final' },
+  { seeds: 'Seeds 1-4', round: 'Semifinals' },
+  { seeds: 'Seeds 1-8', round: 'Quarterfinals' },
+  { seeds: 'Seeds 1-16', round: 'Round of 16' },
+  { seeds: 'Seeds 1-32', round: 'Third round' },
+];
+
+const faqs = [
+  {
+    q: 'How are tennis seeds decided?',
+    a: 'By ranking, almost mechanically. Tournaments take the entry list, sort it by the ATP or WTA ranking published on the cut-off date, and assign seed numbers in that order. The important detail is that seeding reflects the ranking order inside that particular draw, not the world ranking itself: if three top-10 players skip an event, every player below them moves up a seed.',
+  },
+  {
+    q: 'Can the No. 1 and No. 2 seeds meet before the final?',
+    a: 'No. They are placed at opposite ends of the draw, so the only match that can bring them together is the final. The same logic cascades down: seeds 3 and 4 go into the two quarters the top pair do not occupy, so the top four cannot meet before the semifinals and the top eight cannot meet before the quarterfinals.',
+  },
+  {
+    q: 'Why do Grand Slams have 32 seeds?',
+    a: 'A 128-player draw needs five rounds to reach the quarterfinals, and 32 seeds spread across it guarantee that no seed meets another before the third round — protection for the leading players and a more predictable second week for organisers and broadcasters. The Grand Slam Board considered reverting to 16 seeds for 2019 but abandoned the plan, and all four Slams still seed 32 in 2026.',
+  },
+  {
+    q: 'What was the Wimbledon seeding formula?',
+    a: 'From 2002 Wimbledon reordered its men’s seeds with a grass-specific formula: a player’s ranking points, plus 100% of the grass-court points won in the previous 12 months, plus 75% of the grass points from the 12 months before that. It applied only to the top 32 and only to the men. Wimbledon abolished it in July 2020, reasoning that surfaces had converged since it changed its grass in 2002, so the 2021 Championships were the first seeded straight from the ATP rankings. The women’s seeds had always followed the WTA rankings.',
+  },
+  {
+    q: 'Is seeding the same thing as ranking?',
+    a: 'They are close but not identical. A ranking is a season-long, tour-wide number; a seeding is a position inside one draw. A player ranked 40th in the world can be the 12th seed at an event most of the top 30 skipped, and a former top-five player can be unseeded at a Slam if injury pushed the ranking down and only a protected ranking got them into the draw.',
+  },
+  {
+    q: 'Do wild cards and qualifiers get seeded?',
+    a: 'Usually not. Wild cards and qualifiers are normally ranked outside the seeded group, so they are placed into the draw at random once the seeds are positioned — which is why a wild card can land on the No. 1 seed in the first round. A wild card ranked highly enough is seeded on that ranking like anyone else, but that is the exception.',
+  },
+  {
+    q: 'Does a protected ranking affect seeding?',
+    a: 'No. A protected ranking (a special ranking on the WTA) exists to get a player back into draws after a long injury absence or maternity leave, and it governs entry only. Seeding is worked out from the current ranking, so a returning former champion is often unseeded — which is why the early rounds after a comeback can produce such lopsided-looking matchups.',
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/rankings/tennis-seeding-explained/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: {
+    '@type': 'Organization',
+    '@id': 'https://super.tennis/#organization',
+    name: 'SUPER.TENNIS Editorial',
+    url: 'https://super.tennis/about/',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Rankings', item: 'https://super.tennis/rankings/' },
+    { '@type': 'ListItem', position: 3, name: 'Tennis Seeding' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article" alternates={alternates}>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/rankings/">Rankings</a> <span class="sep">/</span>
+      <span class="current">Tennis Seeding</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">🎾</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/about/">SUPER.TENNIS Editorial</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <div class="article-body">
+      <h2 id="how-seeds-are-chosen">How seeds are chosen</h2>
+      <p>
+        Seeding is one of the few parts of tennis with almost no judgement in it. A tournament closes its entry list, sorts the accepted players by their <a href="/rankings/how-tennis-rankings-work/">ATP or WTA ranking</a> on a published cut-off date, and hands out seed numbers in that order. The highest-ranked entrant becomes the No. 1 seed whether they are world No. 1 or world No. 9.
+      </p>
+      <p>
+        That last point is what confuses most viewers. Seeds describe an order <em>inside one draw</em>. When several leading players skip an event — a common sight in the weeks after a Grand Slam — everyone below them slides up, and a player ranked 35th can find themselves seeded 16th. Their ranking has not moved; the field around them has.
+      </p>
+
+      <h2 id="how-many-seeds">How many seeds each event has</h2>
+      <p>
+        The number of seeds scales with the size of the draw, chosen so that seeds do not collide too early. The bigger the draw, the more seeds it can absorb.
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Event</th><th>Seeds</th><th>Earliest seed-vs-seed match</th></tr></thead>
+          <tbody>
+            {seedCountTable.map(r => <tr><td>{r.event}</td><td><strong>{r.seeds}</strong></td><td>{r.firstSeedClash}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="draw-structure">Where the seeds land in the draw</h2>
+      <p>
+        Once the seeds are numbered, the draw places them by rule rather than by chance. The top two go to opposite ends. Seeds 3 and 4 are drawn into the two quarters the top pair do not occupy. Seeds 5 to 8 fill the remaining quarters, seeds 9 to 16 the eighths, and so on down. Only the unseeded players are drawn at random, into whatever slots are left.
+      </p>
+      <p>
+        The result is a tournament that funnels its strongest players towards each other as late as possible:
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>These seeds</th><th>Cannot meet before</th></tr></thead>
+          <tbody>
+            {meetingTable.map(r => <tr><td>{r.seeds}</td><td><strong>{r.round}</strong></td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        This is why a "kind draw" or a "brutal quarter" is worth talking about at all. The rules fix where the seeds sit, but unseeded players fall where they fall — and one quarter can end up holding three dangerous floaters while another holds none.
+      </p>
+
+      <h2 id="wimbledon-formula">The Wimbledon formula, and why it is gone</h2>
+      <p>
+        Wimbledon was the one Grand Slam that refused to seed purely by ranking. From 2002 it reordered the men's top 32 with a grass-court formula: ranking points, plus all of the grass-court points won in the previous 12 months, plus three-quarters of the grass points from the 12 months before that. A grass specialist could climb several places; a clay-courter could slide.
+      </p>
+      <p>
+        The All England Club abolished it in July 2020. Its reasoning was that surfaces had converged — a process that began when Wimbledon changed the composition of its own grass in 2002 — so a separate grass ranking no longer described anything real. With the 2020 Championships cancelled, 2021 became the first edition seeded straight from the ATP rankings. Women's seeds at Wimbledon had always followed the WTA rankings.
+      </p>
+
+      <h2 id="unseeded">Wild cards, qualifiers and lucky losers</h2>
+      <p>
+        Not everyone in a draw arrives through the ranking list. Wild cards are invitations, usually handed to local players, returning champions or teenagers a tournament wants to showcase. Qualifiers fight through a preliminary draw in the days before the main event. A lucky loser is a player who lost in the final qualifying round and gets called up when someone withdraws late.
+      </p>
+      <p>
+        All three groups are normally unseeded, which is exactly why they are dangerous. They are placed at random after the seeds are positioned, so nothing stops a qualifier in form from landing directly on the No. 1 seed in round one.
+      </p>
+
+      <h2 id="why-it-matters">Why seeding matters</h2>
+      <p>
+        Seeding does not award a single point — <a href="/rankings/atp-ranking-points-explained/">points come from rounds won</a>. What it buys is a path. A seeded player is guaranteed to avoid every other seed for at least two rounds, and in a best-of-five Grand Slam that is a meaningful amount of physical work saved before the second week starts.
+      </p>
+      <p>
+        It also shapes what viewers get. The reason a tournament so often delivers the final everyone wanted is not luck; it is a draw deliberately engineered to keep the two best players apart for thirteen days.
+      </p>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/rankings/how-tennis-rankings-work/" class="context-card">
+          <span class="context-label">Hub</span>
+          <span class="context-title">How Tennis Rankings Work</span>
+        </a>
+        <a href="/rankings/atp-ranking-points-explained/" class="context-card">
+          <span class="context-label">ATP</span>
+          <span class="context-title">ATP Ranking Points Explained</span>
+        </a>
+        <a href="/rankings/wta-ranking-points-explained/" class="context-card">
+          <span class="context-label">WTA</span>
+          <span class="context-title">WTA Ranking Points Explained</span>
+        </a>
+        <a href="/rules/how-many-sets-in-tennis/" class="context-card">
+          <span class="context-label">Rules</span>
+          <span class="context-title">How Many Sets in a Match</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Tennis Seeding — FAQ" />
+  </article>
+</BaseLayout>
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--gray-800);
+  }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p { font-size: 1rem; line-height: 1.75; margin: 0 0 16px; }
+  .article-body ul, .article-body ol { margin: 0 0 16px; padding-left: 22px; line-height: 1.75; }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+
+  .points-table-wrap { overflow-x: auto; margin: 8px 0 24px; }
+  .points-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  .points-table th, .points-table td {
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .points-table th {
+    background: var(--gray-50);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-700);
+    font-weight: 700;
+  }
+  .points-table td:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--court-green);
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>

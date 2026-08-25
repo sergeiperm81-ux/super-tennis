@@ -1,0 +1,352 @@
+---
+/**
+ * /rules/how-long-is-a-tennis-match/ — evergreen explainer.
+ *
+ * Search intent: "how long is a tennis match", "how long does a tennis match
+ * last", "longest tennis match ever". Pairs with how-many-sets-in-tennis:
+ * that page answers the format question, this one answers the clock question
+ * people actually ask when planning an evening around a match.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+import { getPageAlternates } from '../../lib/i18n';
+
+const title = 'How Long Is a Tennis Match? Average Times by Format | SUPER.TENNIS';
+const h1 = 'How Long Is a Tennis Match?';
+const metaDescription = 'How long tennis matches actually last: typical times for best-of-three and best-of-five, why Grand Slam matches run longer, what makes a match short, and the record-breaking marathons — including the 11-hour Isner vs Mahut epic.';
+const publishedDate = '2026-08-25';
+const alternates = await getPageAlternates('rules/how-long-is-a-tennis-match', Astro.url.pathname);
+
+const quickAnswer = "A best-of-three-set match — the format for all WTA matches and for men outside the Grand Slams — typically lasts about 1 hour 30 minutes, with most falling between an hour and two hours. Best-of-five matches, played only in men's Grand Slam singles, usually run around 2 hours 45 minutes to 3 hours, and four-hour matches are routine in the later rounds. Tennis has no clock: a match ends when someone wins the required sets, which is why a one-sided contest can finish inside an hour while the longest match in history, John Isner against Nicolas Mahut at Wimbledon 2010, took 11 hours 5 minutes across three days.";
+
+const formatTable = [
+  { format: 'Best of 3 (WTA, ATP tour events)', typical: '~1 h 30 min', range: '55 min - 2 h 30 min' },
+  { format: 'Best of 3 (WTA Grand Slam)', typical: '~1 h 45 min', range: '1 h - 3 h+' },
+  { format: 'Best of 5 (ATP Grand Slam)', typical: '~2 h 45 min - 3 h', range: '1 h 45 min - 5 h+' },
+  { format: 'Doubles (best of 3, match tiebreak)', typical: '~1 h 15 min', range: '50 min - 2 h' },
+];
+
+const marathonTable = [
+  { match: 'Isner vs Mahut, Wimbledon 2010 (R1)', length: '11 h 05 min', note: 'Played over 3 days; final set 70-68' },
+  { match: 'Nelson vs Hepner, Richmond 1984', length: '6 h 31 min', note: 'Longest women’s match; one rally lasted 29 minutes' },
+  { match: 'Djokovic vs Nadal, Australian Open 2012 (F)', length: '5 h 53 min', note: 'Longest Grand Slam singles final' },
+];
+
+const faqs = [
+  {
+    q: 'How long does an average tennis match last?',
+    a: 'Roughly an hour and a half for a best-of-three match, and closer to three hours for a best-of-five. Those are averages across thousands of matches, and the spread around them is wide: a straight-sets win over an overmatched opponent can be done in 55 minutes, while two evenly matched players can push a best-of-three past two and a half hours.',
+  },
+  {
+    q: 'Why do men’s Grand Slam matches take so much longer?',
+    a: 'Because they are the only matches still played best of five. Winning takes three sets instead of two, so a full-length match contains roughly 60-70% more tennis. Everything else compounds it — bigger serves, longer rallies at Slam intensity, and more time between points late in a five-setter.',
+  },
+  {
+    q: 'What is the longest tennis match ever played?',
+    a: 'John Isner beat Nicolas Mahut 70-68 in the fifth set of their Wimbledon first-round match in 2010. It lasted 11 hours 5 minutes and was suspended twice for darkness, finishing on its third day. The final set alone ran 8 hours 11 minutes — longer than any complete match before it. Wimbledon has since introduced a deciding-set tiebreak, so it cannot happen again in that form.',
+  },
+  {
+    q: 'Can a tennis match end in under an hour?',
+    a: 'Yes, and it happens most weeks. A 6-1, 6-0 result in a best-of-three takes about 45 minutes of play. The shortest professional matches on record are under half an hour, though those usually involve one player being injured, badly outclassed, or both.',
+  },
+  {
+    q: 'Do tiebreaks make matches shorter?',
+    a: 'They cap the worst case. Without a tiebreak, a set has to be won by two clear games, so 24-22 sets were possible. A tiebreak at 6-6 ends the set in a few extra minutes instead. All four Grand Slams now use a 10-point tiebreak in the deciding set as well, which is precisely why the Isner-Mahut scoreline is unrepeatable.',
+  },
+  {
+    q: 'How much of a tennis match is actual play?',
+    a: 'A small fraction of it. Studies of professional matches consistently put ball-in-play time at somewhere between 10% and 20% of total match duration. The rest is the time between points, changeovers, towel-downs and set breaks. A three-hour match may contain well under 30 minutes of live tennis.',
+  },
+  {
+    q: 'How long should I allow when buying tickets?',
+    a: 'Plan for three to four hours per session rather than per match. Day sessions usually schedule two or three matches on the main court, and start times after the first are always "not before" estimates — if the opening match goes five sets, everything behind it shifts. Evening sessions are the least predictable for exactly this reason.',
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/rules/how-long-is-a-tennis-match/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: {
+    '@type': 'Organization',
+    '@id': 'https://super.tennis/#organization',
+    name: 'SUPER.TENNIS Editorial',
+    url: 'https://super.tennis/about/',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Rules', item: 'https://super.tennis/rules/' },
+    { '@type': 'ListItem', position: 3, name: 'Match Length' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article" alternates={alternates}>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/rules/">Rules</a> <span class="sep">/</span>
+      <span class="current">Match Length</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">⏱️</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/about/">SUPER.TENNIS Editorial</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <div class="article-body">
+      <h2 id="no-clock">Tennis is the sport without a clock</h2>
+      <p>
+        Football gives you 90 minutes. Basketball gives you four quarters. Tennis gives you nothing — a match runs until somebody has won enough sets, however long that takes. It is the single most useful thing to understand before planning an evening around a match, and the reason broadcasters schedule tennis so nervously.
+      </p>
+      <p>
+        What that means in practice is a wide but predictable spread. Most matches cluster around a familiar length, and the outliers are outliers precisely because they are rare.
+      </p>
+
+      <h2 id="typical-times">Typical times by format</h2>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Format</th><th>Typical length</th><th>Usual range</th></tr></thead>
+          <tbody>
+            {formatTable.map(r => <tr><td>{r.format}</td><td><strong>{r.typical}</strong></td><td>{r.range}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        The single biggest variable is the <a href="/rules/how-many-sets-in-tennis/">format</a>. Best of five is played only in men's Grand Slam singles, and it is why the same two players can need 90 minutes at a tour event in March and four hours at Roland Garros in June.
+      </p>
+
+      <h2 id="what-makes-it-long">What actually makes a match long</h2>
+      <p>
+        Four things, roughly in order of impact. <strong>Closeness</strong> matters most: sets decided by a single break are twice as long as 6-1 sets, and a match that goes the distance contains at least one more set than one that does not. <strong>Surface</strong> comes next — slower courts produce longer rallies and more of them. <strong>Serving</strong> cuts the other way: two big servers can hold serve for an hour without either being troubled, which is how sets reach 12-12. And finally the <strong>pace between points</strong>, now capped by a 25-second shot clock but still a real difference of twenty or thirty minutes across a long match.
+      </p>
+
+      <h2 id="marathons">The marathons</h2>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Match</th><th>Length</th><th>Detail</th></tr></thead>
+          <tbody>
+            {marathonTable.map(r => <tr><td>{r.match}</td><td><strong>{r.length}</strong></td><td>{r.note}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Isner against Mahut is the one everybody remembers, and it deserves the status. Their fifth set alone lasted longer than any complete match in the sport's history, the scoreboard broke, and both players came back on three separate days to keep going. It also ended an era: every Grand Slam now plays a <a href="/rules/tie-break-rules-explained/">10-point tiebreak</a> in the deciding set, so a 70-68 set is no longer possible.
+      </p>
+
+      <h2 id="ball-in-play">How little of it is actual tennis</h2>
+      <p>
+        Here is the statistic that surprises people most: only a small share of a tennis match is live play. Analyses of professional matches repeatedly land somewhere between 10% and 20% ball-in-play time. The rest is walking, bouncing, towelling and sitting down.
+      </p>
+      <p>
+        That is not a criticism of the sport — the rhythm of tension and release is a large part of why tennis works on television. But it does explain why a three-hour match can feel simultaneously exhausting and strangely uneventful, and why a highlights package of the same match runs eight minutes.
+      </p>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/rules/how-many-sets-in-tennis/" class="context-card">
+          <span class="context-label">Format</span>
+          <span class="context-title">How Many Sets in a Match</span>
+        </a>
+        <a href="/rules/tie-break-rules-explained/" class="context-card">
+          <span class="context-label">Rules</span>
+          <span class="context-title">Tiebreak Rules Explained</span>
+        </a>
+        <a href="/rules/tennis-scoring-explained/" class="context-card">
+          <span class="context-label">Scoring</span>
+          <span class="context-title">How Tennis Scoring Works</span>
+        </a>
+        <a href="/records/longest-tennis-matches-history/" class="context-card">
+          <span class="context-label">Records</span>
+          <span class="context-title">Longest Matches in History</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Tennis Match Length — FAQ" />
+  </article>
+</BaseLayout>
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--gray-800);
+  }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p { font-size: 1rem; line-height: 1.75; margin: 0 0 16px; }
+  .article-body ul, .article-body ol { margin: 0 0 16px; padding-left: 22px; line-height: 1.75; }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+
+  .points-table-wrap { overflow-x: auto; margin: 8px 0 24px; }
+  .points-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  .points-table th, .points-table td {
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .points-table th {
+    background: var(--gray-50);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-700);
+    font-weight: 700;
+  }
+  .points-table td:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--court-green);
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>

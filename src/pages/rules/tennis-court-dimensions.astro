@@ -1,0 +1,365 @@
+---
+/**
+ * /rules/tennis-court-dimensions/ — evergreen explainer.
+ *
+ * Search intent: "tennis court dimensions", "how big is a tennis court",
+ * "tennis net height", "service box size", "tennis court surfaces". Pure
+ * reference lookup — the format that already performs best on this site,
+ * and the kind of page AI assistants quote verbatim.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+import { getPageAlternates } from '../../lib/i18n';
+
+const title = 'Tennis Court Dimensions — Size, Net Height, Surfaces | SUPER.TENNIS';
+const h1 = 'Tennis Court Dimensions';
+const metaDescription = 'Official tennis court dimensions in feet and metres: court length and width for singles and doubles, service box size, net height at centre and posts, run-off space, and how the four surfaces change the way the same court plays.';
+const publishedDate = '2026-08-25';
+const alternates = await getPageAlternates('rules/tennis-court-dimensions', Astro.url.pathname);
+
+const quickAnswer = "A tennis court is 78 feet (23.77 m) long for every match ever played, from a public park to a Grand Slam final. Width is the only thing that changes: 27 feet (8.23 m) for singles, and 36 feet (10.97 m) for doubles once the two 4.5-foot alleys are added. The net stands 3 feet (0.914 m) high at the centre and 3.5 feet (1.07 m) at the posts. Each service box is 21 feet (6.40 m) deep and 13.5 feet (4.115 m) wide. Venues are advised to leave run-off space around the lines, giving a recommended total playing area of about 60 by 120 feet.";
+
+const dimensionsTable = [
+  { part: 'Court length (baseline to baseline)', ft: '78 ft', m: '23.77 m' },
+  { part: 'Court width — singles', ft: '27 ft', m: '8.23 m' },
+  { part: 'Court width — doubles', ft: '36 ft', m: '10.97 m' },
+  { part: 'Doubles alley (each side)', ft: '4 ft 6 in', m: '1.37 m' },
+  { part: 'Service line to net', ft: '21 ft', m: '6.40 m' },
+  { part: 'Service box width (each)', ft: '13 ft 6 in', m: '4.115 m' },
+  { part: 'Baseline to service line', ft: '18 ft', m: '5.48 m' },
+  { part: 'Net height at centre', ft: '3 ft', m: '0.914 m' },
+  { part: 'Net height at posts', ft: '3 ft 6 in', m: '1.07 m' },
+  { part: 'Recommended total playing area', ft: '60 x 120 ft', m: '18.29 x 36.58 m' },
+];
+
+const surfaceTable = [
+  { surface: 'Hard', pace: 'Medium to fast', slams: 'Australian Open, US Open', note: 'Consistent, true bounce; hardest on the body' },
+  { surface: 'Clay', pace: 'Slow', slams: 'Roland Garros', note: 'High bounce, long rallies, players slide into shots' },
+  { surface: 'Grass', pace: 'Fast', slams: 'Wimbledon', note: 'Low skidding bounce; rewards serve and forward movement' },
+  { surface: 'Carpet', pace: 'Fast', slams: 'None (retired from tour use)', note: 'Indoor removable surface, largely phased out' },
+];
+
+const faqs = [
+  {
+    q: 'How big is a tennis court?',
+    a: 'A tennis court measures 78 feet (23.77 m) long by 27 feet (8.23 m) wide for singles, or 36 feet (10.97 m) wide for doubles. That gives a playing surface of about 2,106 square feet for singles and 2,808 square feet for doubles. The dimensions are identical at every level of the sport.',
+  },
+  {
+    q: 'How high is a tennis net?',
+    a: 'Three feet (0.914 m) at the centre, rising to 3 feet 6 inches (1.07 m) where it meets the posts. The dip is deliberate: it makes the middle of the court the lowest and safest part of the net to hit over, which is why passing shots down the line are harder than they look.',
+  },
+  {
+    q: 'Are singles and doubles courts different sizes?',
+    a: 'Same court, different width in play. A doubles match uses the two alleys running down each side, adding 4 feet 6 inches per side. The length never changes, and the service boxes are identical in both formats — a serve landing in the doubles alley is out in either game.',
+  },
+  {
+    q: 'How big is the service box?',
+    a: 'Each of the four service boxes is 21 feet (6.40 m) deep, measured from the net to the service line, and 13 feet 6 inches (4.115 m) wide. Together the two boxes on one side span the full 27-foot singles width, split by the centre service line.',
+  },
+  {
+    q: 'How much space do you need to build a tennis court?',
+    a: 'More than the court itself. The lines cover 78 by 36 feet, but players need run-off room behind the baselines and beside the sidelines, so the recommended total area is roughly 60 by 120 feet (18.29 by 36.58 m). Tournament venues leave more; a tight club court may leave less, which is why some courts feel cramped behind the baseline.',
+  },
+  {
+    q: 'Do different surfaces change the court size?',
+    a: 'No. Clay, grass and hard courts share exactly the same measurements — what changes is how the ball behaves on them. Clay slows the ball and pushes the bounce up, grass keeps it low and quick, and hard courts sit between the two. The ITF rates surfaces on a court pace index from slow to fast, and the same player can look like a different athlete moving between them.',
+  },
+  {
+    q: 'Why is the net lower in the middle?',
+    a: 'It is a consequence of construction rather than a rule invented for tactics: the net is strung tight between two posts and held down at the centre by a strap, so it naturally sits lower there. The effect on play is real, though. Every coach teaches hitting over the low middle when under pressure, and accepting the extra risk near the posts only when going for a winner.',
+  },
+];
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: metaDescription,
+  url: 'https://super.tennis/rules/tennis-court-dimensions/',
+  datePublished: publishedDate,
+  dateModified: publishedDate,
+  author: {
+    '@type': 'Organization',
+    '@id': 'https://super.tennis/#organization',
+    name: 'SUPER.TENNIS Editorial',
+    url: 'https://super.tennis/about/',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SUPER.TENNIS',
+    url: 'https://super.tennis',
+    logo: { '@type': 'ImageObject', url: 'https://super.tennis/og/default.png' },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://super.tennis/' },
+    { '@type': 'ListItem', position: 2, name: 'Rules', item: 'https://super.tennis/rules/' },
+    { '@type': 'ListItem', position: 3, name: 'Court Dimensions' },
+  ],
+};
+---
+
+<BaseLayout title={title} description={metaDescription} ogType="article" alternates={alternates}>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+
+  <article class="rules-article">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> <span class="sep">/</span>
+      <a href="/rules/">Rules</a> <span class="sep">/</span>
+      <span class="current">Court Dimensions</span>
+    </nav>
+
+    <header class="article-hero">
+      <div class="hero-emoji">📐</div>
+      <h1>{h1}</h1>
+      <p class="byline">By <a href="/about/">SUPER.TENNIS Editorial</a> · Updated {publishedDate}</p>
+    </header>
+
+    <section class="quick-answer">
+      <h2 class="qa-label">Quick Answer</h2>
+      <p class="qa-text">{quickAnswer}</p>
+    </section>
+
+    <div class="article-body">
+      <h2 id="every-measurement">Every measurement in one table</h2>
+      <p>
+        One of the quiet pleasures of tennis is that the court never changes. The surface under Carlos Alcaraz in a Wimbledon final is measured to the same 78 feet as the cracked municipal court at the end of your road.
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Measurement</th><th>Imperial</th><th>Metric</th></tr></thead>
+          <tbody>
+            {dimensionsTable.map(r => <tr><td>{r.part}</td><td><strong>{r.ft}</strong></td><td>{r.m}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="singles-vs-doubles">Singles and doubles: one court, two widths</h2>
+      <p>
+        The only dimension that changes between formats is width. A singles court is 27 feet across; add the 4-foot-6-inch alley on each side and you have the 36-foot doubles court. Length stays at 78 feet, and — importantly — the service boxes never change. A serve that lands in the doubles alley is a fault in doubles just as it is in singles.
+      </p>
+      <p>
+        That extra nine feet is why doubles looks like a different sport. The same court, widened by a third, turns the angles from decorative into decisive.
+      </p>
+
+      <h2 id="the-net">The net, and why it sags</h2>
+      <p>
+        The net is 3 feet high at the centre and 3 feet 6 inches at the posts. This is not a tactical invention but a physical one: the net is strung between two posts and pinned down in the middle by a centre strap, so it naturally sits six inches lower there.
+      </p>
+      <p>
+        The consequence shapes how the game is played. The middle of the court is the lowest, safest place to hit over, and the margin shrinks the closer you aim to the sidelines. When a commentator praises a player for going "down the line under pressure", part of what they are admiring is a shot hit over the highest part of the net.
+      </p>
+
+      <h2 id="run-off">The space you do not see</h2>
+      <p>
+        The painted lines are only part of a court. Players need room to chase a deep ball or a wide angle, so venues are advised to leave run-off space behind the baselines and outside the sidelines, giving a recommended overall area of about 60 by 120 feet.
+      </p>
+      <p>
+        This is the difference you feel when watching a big stadium court versus a small outside court at the same tournament. The playing surface is identical; the room to run is not, and defenders notice immediately.
+      </p>
+
+      <h2 id="surfaces">Same dimensions, four different games</h2>
+      <p>
+        Surface does not change a single measurement — it changes everything else. The ITF rates surfaces on a court pace index running from slow to fast, and the same court geometry produces four recognisably different sports.
+      </p>
+      <div class="points-table-wrap">
+        <table class="points-table">
+          <thead><tr><th>Surface</th><th>Pace</th><th>Grand Slam</th><th>Character</th></tr></thead>
+          <tbody>
+            {surfaceTable.map(r => <tr><td><strong>{r.surface}</strong></td><td>{r.pace}</td><td>{r.slams}</td><td>{r.note}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Clay lifts the ball and slows it, rewarding patience and the ability to slide. Grass keeps it low and hurried, rewarding the serve and anyone willing to move forward. Hard courts sit between them, which is why they host two of the four <a href="/tournaments/">Grand Slams</a> and most of the tour. Carpet, once common indoors, has effectively disappeared from professional tennis.
+      </p>
+    </div>
+
+    <section class="related-context">
+      <h2 class="section-title">Continue Reading</h2>
+      <div class="context-grid">
+        <a href="/rules/tennis-scoring-explained/" class="context-card">
+          <span class="context-label">Scoring</span>
+          <span class="context-title">How Tennis Scoring Works</span>
+        </a>
+        <a href="/rules/how-many-sets-in-tennis/" class="context-card">
+          <span class="context-label">Format</span>
+          <span class="context-title">How Many Sets in a Match</span>
+        </a>
+        <a href="/rules/how-long-is-a-tennis-match/" class="context-card">
+          <span class="context-label">Timing</span>
+          <span class="context-title">How Long Is a Tennis Match</span>
+        </a>
+        <a href="/gear/best-tennis-shoes-2026/" class="context-card">
+          <span class="context-label">Gear</span>
+          <span class="context-title">Shoes by Court Surface</span>
+        </a>
+      </div>
+    </section>
+
+    <FaqBlock faqs={faqs} title="Tennis Court Dimensions — FAQ" />
+  </article>
+</BaseLayout>
+<style>
+  .rules-article { max-width: 760px; margin: 0 auto; padding: 0 24px 60px; }
+  .breadcrumbs { padding: 20px 0; font-size: 0.82rem; color: var(--gray-500); }
+  .breadcrumbs a { color: var(--gray-600); text-decoration: none; }
+  .breadcrumbs a:hover { color: var(--court-green); }
+  .sep { margin: 0 8px; }
+  .current { color: var(--gray-800); font-weight: 500; }
+
+  .article-hero {
+    text-align: center;
+    padding: 24px 0 28px;
+    border-bottom: 3px solid var(--court-green);
+    margin-bottom: 28px;
+  }
+  .hero-emoji { font-size: 2.6rem; margin-bottom: 8px; }
+  .article-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .byline { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
+  .byline a { color: var(--gray-600); }
+
+  .quick-answer {
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    border-left: 3px solid var(--court-green);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .qa-label {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--court-green);
+    margin: 0 0 8px;
+  }
+  .qa-text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--gray-800);
+  }
+
+  .system-note {
+    margin: 0 0 32px;
+    padding: 12px 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--gray-700);
+  }
+  .system-note-label {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .system-note p { display: inline; margin: 0; }
+  .system-note strong { color: var(--gray-900); }
+
+  .article-body { color: var(--gray-800); }
+  .article-body h2 {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 32px 0 14px;
+    color: var(--gray-900);
+  }
+  .article-body p { font-size: 1rem; line-height: 1.75; margin: 0 0 16px; }
+  .article-body ul, .article-body ol { margin: 0 0 16px; padding-left: 22px; line-height: 1.75; }
+  .article-body ul li, .article-body ol li { margin-bottom: 8px; }
+  .article-body a { color: var(--court-green); }
+  .article-body strong { color: var(--gray-900); }
+
+  .points-table-wrap { overflow-x: auto; margin: 8px 0 24px; }
+  .points-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  .points-table th, .points-table td {
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .points-table th {
+    background: var(--gray-50);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-700);
+    font-weight: 700;
+  }
+  .points-table td:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--court-green);
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-900);
+    margin: 36px 0 18px;
+  }
+  .related-context { margin-top: 44px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .context-card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--gray-800);
+    transition: var(--transition);
+  }
+  .context-card:hover {
+    border-color: var(--court-green);
+    background: white;
+    transform: translateY(-1px);
+  }
+  .context-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--court-green);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .context-title { font-size: 0.86rem; line-height: 1.35; font-weight: 600; color: var(--gray-900); }
+
+  @media (max-width: 1024px) { .context-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .context-grid { grid-template-columns: 1fr; } .article-hero h1 { font-size: 1.6rem; } }
+</style>
