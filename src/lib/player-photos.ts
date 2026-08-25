@@ -445,6 +445,13 @@ export async function getArticlePhotosForCategory(
     } else {
       resolved = playerPhotos.get(mapping.value) || null;
       if (!resolved) {
+        // The mapped player has no photo — e.g. the players table was rebuilt
+        // from stats snapshots that carry no image_url. Fall back to the
+        // article's own picture before giving up, otherwise the card renders
+        // with an empty src even when the article has a perfectly good image.
+        resolved = (art as any).image_url || null;
+      }
+      if (!resolved) {
         console.warn(`[photo-miss] ${category}/${art.slug} — player "${mapping.value}" has no photo`);
       }
     }
