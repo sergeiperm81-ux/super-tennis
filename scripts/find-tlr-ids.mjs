@@ -1,5 +1,13 @@
 #!/usr/bin/env node
 /**
+ * ⚠️ SOURCE DEAD (checked 2026-08-25): tennisliveranking.com no longer
+ * resolves — no A record on public DNS, so every request fails before it
+ * is sent. Rankings already moved off it (update-rankings.mjs now reads
+ * atptour.com/wtatennis.com; the worker reads tennisabstract.com), but
+ * player career stats never got a replacement source. Do not spend time
+ * debugging this script until a new source is wired up.
+ */
+/**
  * Find TLR (TennisLiveRanking) IDs for players that don't have them yet.
  *
  * Targets: players with photos + career titles but no tlr_player_id
@@ -11,7 +19,12 @@
  *   3. Match by name similarity
  *   4. Set tlr_player_id + tlr_slug in Supabase
  *
- * Run: node scripts/find-tlr-ids.mjs [--dry-run] [--limit=50]
+ * Run: node scripts/find-tlr-ids.mjs [--dry-run] [--limit=50] [--ranked]
+ *
+ * --ranked drops the career_titles gate and targets every player that has a
+ * photo. Needed when the stats columns are empty — e.g. after the players
+ * table was rebuilt from stats-free snapshots — because the default gate
+ * then matches nobody and TLR ids are what restore the stats.
  * Requires env: SUPABASE_URL, SUPABASE_SERVICE_KEY
  */
 import { createClient } from '@supabase/supabase-js';
@@ -22,6 +35,7 @@ config();
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const DRY_RUN = process.argv.includes('--dry-run');
+const RANKED = process.argv.includes('--ranked');
 const LIMIT_FLAG = process.argv.find(a => a.startsWith('--limit='));
 const LIMIT = LIMIT_FLAG ? parseInt(LIMIT_FLAG.split('=')[1]) : 50;
 
@@ -153,13 +167,14 @@ async function main() {
   console.log(`\n🔍 TLR ID Finder ${DRY_RUN ? '(DRY RUN)' : ''} — limit ${LIMIT}\n`);
 
   // Get players with pages but no TLR ID
-  const { data: players, error } = await supabase
+  let query = supabase
     .from('players')
     .select('player_id, first_name, last_name, slug, tour, career_titles')
     .is('tlr_player_id', null)
-    .not('image_url', 'is', null)
-    .gt('career_titles', 3)
-    .order('career_titles', { ascending: false })
+    .not('image_url', 'is', null);
+  if (!RANKED) query = query.gt('career_titles', 3);
+  const { data: players, error } = await query
+    .order('career_titles', { ascending: false, nullsFirst: false })
     .limit(LIMIT);
 
   if (error) { console.error('❌ DB error:', error.message); process.exit(1); }
@@ -169,7 +184,7 @@ async function main() {
 
   for (let i = 0; i < players.length; i++) {
     const p = players[i];
-    const label = `[${i + 1}/${players.length}] ${p.first_name} ${p.last_name} (${p.career_titles} titles)`;
+    const label = `[${i + 1}/${players.length}] ${p.first_name} ${p.last_name}${p.career_titles ? ` (${p.career_titles} titles)` : ''}`;
 
     const result = await searchTlrPlayer(p.first_name, p.last_name);
     await sleep(DELAY_MS);

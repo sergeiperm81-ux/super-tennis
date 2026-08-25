@@ -1,5 +1,13 @@
 #!/usr/bin/env node
 /**
+ * ⚠️ SOURCE DEAD (checked 2026-08-25): tennisliveranking.com no longer
+ * resolves — no A record on public DNS, so every request fails before it
+ * is sent. Rankings already moved off it (update-rankings.mjs now reads
+ * atptour.com/wtatennis.com; the worker reads tennisabstract.com), but
+ * player career stats never got a replacement source. Do not spend time
+ * debugging this script until a new source is wired up.
+ */
+/**
  * SUPER.TENNIS — Player Enrichment from TennisLiveRanking.com
  *
  * Fetches player profiles: bio, coach, socials, career stats,
