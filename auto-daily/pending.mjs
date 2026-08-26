@@ -1,122 +1,116 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'us-open-2026-night-session-arthur-ashe-after-dark';
-const stamp = '2026-08-25T05:00:00.000Z';
-const title = 'The Loudest Room in Tennis: What a US Open Night Session Is Actually Like';
+const slug = 'honey-deuce-cocktail-us-open-2026-story-and-recipe';
+const stamp = '2026-08-26T05:00:00.000Z';
+const title = 'The Honey Deuce: How a Melon Ball Cocktail Took Over the US Open';
 const meta_title = title;
-const meta_description = 'Gates at six, first ball at seven, planes overhead and nearly 24,000 people who will not be quiet. Inside the US Open night session at Arthur Ashe Stadium.';
-const excerpt = 'For twelve evenings from 30 August, the biggest stadium in tennis turns into something closer to a rock venue. Here is what really happens at Flushing Meadows after dark, and why it changes the tennis.';
-const image_url = '/images/news/atmo-09.webp';
-const image_alt = 'A tennis court at dusk under a deep blue sky, floodlights beyond the fence';
+const meta_description = 'The Honey Deuce holds at 23 dollars for the 2026 US Open after 738,459 sold last year. The story behind tennis most famous drink, and how to make it at home.';
+const excerpt = 'Three honeydew melon balls, a splash of raspberry liqueur and a souvenir cup: how a drink invented at a farmers market became the loudest brand at Flushing Meadows, and how to build one in your own kitchen.';
+const image_url = '/images/news/atmo-01.webp';
+const image_alt = 'Public tennis courts at golden hour with players and spectators on a warm summer evening';
 
-const body = `At two minutes to seven on an evening in Queens, the lights inside the biggest tennis stadium in the world come up to full, and something in the room changes. You can feel it through a television screen three thousand miles away. The afternoon crowd has gone home. The new crowd has been inside for an hour already. A plane out of LaGuardia drags its noise across the roof. And nearly twenty-four thousand people who have spent sixty minutes talking to each other decide, more or less all at once, to look at the court.
+const body = `You can spot the drink before you can spot the tennis. Walk into the grounds at Flushing Meadows on any afternoon in the last week of August and the first thing you notice is not a scoreboard or a queue or the roar coming out of a side court. It is the colour. Thousands of tall plastic cups moving through the crowd, each one holding a pink-red drink with three pale green spheres floating near the top, catching the light like something a set designer ordered in bulk. That is the Honey Deuce, and by any sensible measure it is now one of the biggest stars at the US Open.
 
-That is a US Open night session, and it starts again on Sunday 30 August. It runs almost every evening after that until Friday 11 September. If you are the kind of tennis fan who watches a few weeks a year rather than plays every weekend, these are the nights worth clearing your calendar for, because this is the fortnight when the sport briefly stops behaving like tennis.
+That sounds like a joke until you look at what it does. In 2025 the tournament sold 738,459 of them across three weeks in New York, a jump of 32 per cent on the year before, which works out at roughly 17 million dollars from a single item on a drinks menu. More than three and a half million have gone out of the serving windows since 2011. For the 2026 tournament, which runs its Fan Week from 23 August and its main draw from 30 August through to the finals on 13 September, the price is holding at 23 dollars, souvenir cup included while supplies last. A cocktail has become a line on a Grand Slam balance sheet.
 
-## Gates at six, first ball at seven
+If you do not play tennis, if you watch it in the evenings with the sound low and a vague sense of who is meant to be winning, the Honey Deuce is possibly the most accessible thing about the sport. You do not need to understand a kick serve to understand a cold drink on a hot day in Queens. So here is the whole story: where it came from, why it works, what it says about the way tennis sells itself now, and how to make a very good one at home without paying stadium prices.
 
-The mechanics matter more than people expect, because they explain the atmosphere.
+## A drink that looks like the sport it belongs to
 
-Arthur Ashe Stadium sells its day and its evening as two completely separate events. If you have a day ticket, it gets you through the turnstiles up until six o'clock in the evening and no later, and it does not hold your seat for what comes next. If you have an evening ticket, it will not let you in before six. At six, the building essentially empties and refills with a different set of people.
+Strip away the mythology and the recipe is almost aggressively simple. Vodka, fresh lemonade, a drizzle of black raspberry liqueur, and three honeydew melon balls skewered and dropped into the glass. The official build is one and a half parts Grey Goose vodka to three parts lemonade with half a part of Chambord poured last so it sinks and blooms through the drink in that sunset gradient everybody photographs.
 
-Think about what that does. Twenty-odd thousand strangers arrive together, in the dark half of a summer day, having finished work, most of them with an hour to spend on the concourses before a ball is struck. By the time the players walk out at seven, the room has already warmed itself up. Nobody has been sitting there since eleven in the morning, sunburnt and quietly wilting through a first-round match on an outside court. Everyone is fresh, and a good number of them are on their second drink.
+The name is the sort of pun you either love or refuse to acknowledge. Honey comes from honeydew. Deuce is the tennis term for forty all, the score that refuses to end, the one piece of tennis vocabulary that even people who have never held a racket seem to know. Put them together and you have a drink that explains itself in two syllables.
 
-The standard format is two matches, back to back, on Ashe: usually one from the women's draw and one from the men's, in an order that changes the entire complexion of somebody's tournament. Louis Armstrong Stadium next door runs its own evening play on some nights. And here is the piece of small print that quietly makes the whole thing worth it: an Ashe ticket also gives you general admission to every other court on the grounds, while no other ticket in the building gets you into Ashe.
+But the reason it works is the garnish, and the garnish was an accident. The melon balls look exactly like tennis balls. Not approximately, not if you squint: they are the right size, the right colour, and they sit at the top of the glass where a photograph will find them. Every person holding one is producing free advertising for the tournament, every hour, for three weeks. No marketing department has ever designed anything that efficient on purpose.
 
-In 2026 the evening sessions begin at seven o'clock New York time on almost every date, with one exception - the men's quarterfinal evening on Wednesday 9 September, which is pushed back half an hour to 7.30. The finals themselves, women's on Saturday 12 September and men's on Sunday 13 September, are afternoon affairs.
+## The farmers market accident that started it
 
-## The biggest room in the sport
+The Honey Deuce was created by Nick Mautone, a restaurateur and drinks writer who was asked to come up with something for Grey Goose in the early years of its sponsorship of the US Open. The version he tells is disarmingly ordinary. He was at a farmers market, saw honeydew melon, thought about what it would look like scooped into balls, and realised he had a tennis ball sitting in his hand. The cocktail was built around the garnish rather than the other way round.
 
-Arthur Ashe Stadium holds 23,771 people. That is not merely large for tennis, it is comfortably the largest tennis stadium anywhere in the world, and it is roughly the population of a small market town poured into concrete tiers around a hard court that measures the same seventy-eight feet as the one at the end of your local park.
+It arrived on the menu at the US Open in 2007 and cost 12 dollars. For years it was a nice touch, a well-made drink at a sporting event, the sort of thing a regular would order out of habit. It was not yet a phenomenon. The phenomenon came later, and it came from the cup.
 
-It opened in 1997 without a roof, which turned out to be an expensive oversight, because rain in New York in early September is not a rare event. After a run of years in which the tournament kept losing days to weather, a retractable roof was finally installed in 2016. It is worth understanding what the roof does to a night session: when it closes, the sound has nowhere to go. A stadium that is loud in the open air becomes something else entirely with a lid on it.
+## Why the cup matters more than the cocktail
 
-The building carries the name of the man who won the very first US Open in 1968 and who spent the rest of his life doing considerably harder things than winning tennis matches. If you have never read the story properly, it is worth an evening of its own - we wrote about [the man whose name is on the biggest stadium in tennis](/lifestyle/arthur-ashe-name-on-biggest-stadium-in-tennis/) earlier this month, and the gap between the dignity of the person and the volume of the place named after him is one of the strange, slightly wonderful things about the US Open.
+At some point the US Open started sending the drink out in a tall commemorative cup printed with the tournament branding and the year. That single decision changed the economics of the thing. You are no longer buying a drink. You are buying a drink and a souvenir, and the souvenir goes home in a tote bag, sits in a kitchen cupboard, and gets used for iced coffee in November while somebody explains to a visitor where it came from.
 
-Novak Djokovic, who has played in every serious tennis venue on earth, has described it simply as the biggest stadium in the sport and the loudest stadium in the sport. He was not complaining.
+Collectors chase the old years. The cups turn up on resale sites after every tournament, listed by people who bought four drinks and kept three cups. Fans stack them by season on a shelf the way other people keep concert tickets. The tournament has effectively convinced hundreds of thousands of visitors to pay for merchandise and then thank it for the privilege, and the merchandise arrives full of something cold.
 
-## The noise is not a bug
+That is also why the price holding at 23 dollars for 2026 became a small news story of its own. In a summer where the cost of a day out has gone one direction only, the USTA left its most visible item untouched. Twenty-three dollars is still a lot for a cocktail. It is a good deal less than the outrage the same drink would have generated at twenty-six.
 
-Every other major in tennis treats silence as a moral position. At Wimbledon, a phone going off during a serve is treated roughly the way a cough is treated at the opera. Roland Garros and Melbourne are looser, but the basic contract holds: the crowd goes quiet, the point happens, the crowd comes back.
+## The numbers behind the pink drink
 
-Flushing Meadows has abandoned that contract on purpose.
+The scale is worth sitting with. Nearly three quarters of a million Honey Deuces in 2025. A third more than the year before. Around 17 million dollars in revenue from a glass of raspberry lemonade with a stick of melon in it.
 
-Music plays between points, loudly, through the stadium speakers. Fans move around the upper tiers during rallies because the walk to a concession stand from row Z is genuinely long. Vendors work the aisles. And then there is the geography, which the tournament cannot do anything about at all: LaGuardia Airport sits less than five miles away, and the departure path runs more or less over the top of the tennis. Planes go over every few minutes, low and still climbing, close enough that first-time visitors physically duck. The 7 train rattles past on its way to Mets-Willets Point. Citi Field is next door, so on a night when the Mets are at home you get car horns as a bonus.
+The effect spills out past the gates too. Retail data shared after last year showed a huge spike in shoppers buying the ingredients together during the fortnight of the tournament, people going home and rebuilding the drink in their own kitchens because they had seen it on television for two weeks. That is the part that should interest anybody who thinks about how sport makes money now. The tournament sold the drink inside the grounds and, at the same time, sold the idea of the drink to everybody watching from a sofa in another time zone.
 
-The sports journalist Molly McElwee, talking to CNN about the place, called it an assault on the senses in every way, and said that comparing it to Wimbledon was chalk and cheese. That is about right. It is also, for a certain kind of fan, precisely the appeal.
+Tennis has spent years trying to work out how to reach people who are not already fans. It turns out one answer was a garnish.
 
-Players split cleanly into two camps about it. Some find it draining - twenty-four thousand people generating a wall of low-level chaos for three hours will sap anyone who needs quiet to think. Others love it, and the reason they give is oddly touching: because the stadium is so vast and so busy, nobody in the top tiers is really watching you at any given moment. You get the energy of an enormous crowd without the airless, pin-drop scrutiny of a Centre Court. You are performing in a city rather than in a cathedral.
+## What the other Slams put in your hand
 
-## Why the tennis itself is different after dark
+Every Grand Slam has its edible signature, and comparing them tells you a lot about the four events.
 
-The physical conditions change, and they change in ways you can see if you know to look.
+Wimbledon has strawberries and cream, priced at 2.85 pounds in 2026, a rise of fifteen pence on the year before and still the most famous bargain in sport. Alongside it sits a glass of Pimms at 13.45 pounds. The first Pimms bar opened at the All England Club in 1971, and the pairing has become so fixed that the strawberries are a scoring system of their own: people measure the fortnight in punnets. Wimbledon sells restraint and tradition, and it prices the strawberries almost as a public service.
 
-New York in late August and early September is genuinely hot, and humid with it. This is the first US Open played under a new ATP heat rule built around wet bulb globe temperature, which measures heat stress in direct sun rather than air temperature alone: cooling measures kick in above 30.1 degrees Celsius in best-of-three matches, and play is suspended above 32.2.
+Roland Garros pours champagne. Moet and Chandon has been part of the furniture in Paris for years, and the mood is exactly what you would expect from a tournament that treats a fortnight on clay as a social season. Nobody is being handed a novelty cup at Roland Garros.
 
-Night play sidesteps most of that. The sun is gone, the court surface has cooled, the air is heavier and more humid. A heavier atmosphere means the ball travels through it more slowly, which sounds like a technicality and is in fact the whole match. Big servers lose a fraction of their free points. Long rallies get longer. Players who win by grinding tend to feel better after dark than players who win by hitting through people.
+The Australian Open, watching the Honey Deuce work, built its own answer: the Lemon Ace, a citrus and passionfruit drink designed to taste like an Australian summer, all fresh lemon, passionfruit and mint. It is a straightforward attempt to bottle the same lightning, and it tells you the Honey Deuce is now a template rather than a curiosity.
 
-There is a psychological layer on top. Under lights, in a closed bowl, there is no horizon and no weather and no sense of time passing. Matches that would feel like they were drifting at two in the afternoon feel enormous at half past eleven at night. Momentum swings harder because the crowd amplifies every one of them, and a New York crowd that has picked a side will not let go of it.
+And New York sells New York: loud, pink, photographable, expensive, and completely unbothered about being any of those things. If you want the full picture of how that atmosphere works after dark, we went deep on the [night sessions at Arthur Ashe](/lifestyle/us-open-2026-night-session-arthur-ashe-after-dark/) earlier this month, and the drink is a supporting character in every one of those evenings.
 
-## The twenty-three dollar cup that pays for a lot of tennis
+## The rest of the 2026 menu
 
-You cannot describe a US Open evening honestly without describing the drink, because at some point in the last decade the Honey Deuce stopped being refreshment and became part of the tournament's identity.
+The Honey Deuce gets the headlines, but the food operation around it has quietly become one of the better restaurant districts in Queens for three weeks a year. The 2026 tournament runs five restaurants, around 70 concession stands and 78 portable carts across the site.
 
-It is vodka, lemonade, a measure of raspberry liqueur, and three balls of honeydew melon skewered and dropped in so they sit there looking like tennis balls. It arrived on the menu in 2007 and stayed. It costs twenty-three dollars in 2026, held flat from last year, and you keep the souvenir cup while supplies last, which is a significant part of why people buy a second one.
+This year the culinary line-up added some serious names. Cosme, the restaurant from chef Enrique Olvera, brings its duck carnitas. Miznon, Eyal Shani's Mediterranean fast-casual chain, is new to the Food Village with its green beans in a paper bag and pitas stuffed with schnitzel and tahini. Salt Hanks, the West Village sandwich shop that grew out of a very large internet following, is serving a prime rib French dip with a pot of jus for dunking. Morimoto is back. COQODAQ turned up with chicken nuggets and caviar, which is either the most New York sentence ever written or a dare. KIMBOP, from restaurateur Simon Kim, is serving a version of his mother's recipe.
 
-The numbers are ridiculous. The tournament sold 738,459 of them last year, up about a third year on year, and made in the region of seventeen million dollars doing it. Seventeen million dollars. From one cocktail. At one tennis tournament.
+On the drinks side the Honey Deuce now has company: the tequila brand Dobel runs a bar with Jose Andres restaurant Oyamel, where the Ace Paloma comes with grapefruit soda and a black salt rim. Nobody is going to dethrone the melon balls, but the menu has stopped being a single trick.
 
-Walk the concourses at half past six and you will see the queue for it before you see anything else, and you will see the cups in the stands all night, three green spheres glowing under the floodlights in row after row. It is a marketing exercise that has become a genuine ritual, and if you are watching at home and want the evening to feel like the evening, it is not a difficult drink to make - we put it in the list when we wrote about [how to host a US Open watch party](/lifestyle/how-to-host-us-open-watch-party-2026/).
+If you are actually going, the free days are the value play. Fan Week runs from 23 August with qualifying, practice sessions and the Mixed Doubles Championship, and grounds access on those days costs nothing at all. We wrote a full guide to [what Fan Week actually gets you](/lifestyle/us-open-2026-fan-week-qualifying-free-week-flushing-meadows/), and the short version is that the same cocktail tastes considerably better when the tennis around it was free. For everything else about the tournament itself, the draws, the courts, the history, our [US Open guide](/tournaments/us-open-guide/) has it.
 
-## Nobody is going home at eleven
+## How to make a Honey Deuce at home
 
-Wimbledon has an eleven o'clock curfew imposed by the local council. Melbourne has scheduling rules that push matches indoors. New York has essentially nothing, and that absence has produced some of the most deranged tennis of the modern era.
+Here is the good news for the several million of us who will be watching from a kitchen rather than a stadium: this is an easy drink. It is a raspberry lemonade with a hat on. If you can pour, you can make it.
 
-The old marker was the 1993 match between Mats Wilander and Mikael Pernfors, which finished at 2.26 in the morning and stood for decades as the latest finish in tournament history. Then, in the 2022 quarterfinals, Carlos Alcaraz and Jannik Sinner played five sets that ended at ten to three in the morning, in front of a stadium that had emptied and half refilled and refused, in its core, to leave. Two years later Zheng Qinwen and Donna Vekic went to 2.15am in a fourth-round match, the latest a women's match has ever finished in New York.
+The build, per glass:
 
-This is not universally admired. Players have pointed out, reasonably, that finishing a Grand Slam match at three in the morning and then being asked to recover for a semifinal is not a serious way to run a sport. Broadcasters like it. Fans, being honest, mostly like it too. There is a specific kind of loyalty that comes from having stayed, and the people still in the building at two in the morning behave like they have earned something, because they have.
+Chill a tall glass properly. Ten minutes in the freezer, or fill it with ice water for five minutes and tip it out. Fill the cold glass with ice, right to the top. Pour in one and a half parts vodka. Top with three parts fresh lemonade. Finish with half a part of black raspberry liqueur, poured gently over the top so it sinks in a slow ribbon rather than mixing straight in. Garnish with three honeydew melon balls on a skewer.
 
-If you are watching from Europe, this is the part of the US Open that costs you. A seven o'clock start in New York is midnight in London and one in the morning in Paris and Rome. The second match on Ashe frequently does not begin until well after ten local time, which is three in the morning in Britain. Every year, a very large number of European tennis fans make a decision at about 2am that they know they will regret, and every year a decent number of them are right to make it.
+Two details separate a decent version from a very good one. The first is the lemonade. Use fresh, properly tart lemonade rather than anything from a bottle labelled lemon drink, because the whole cocktail is balanced against that sourness and a sweet mixer turns it into syrup. The second is the melon. Freeze the honeydew before you scoop it. Cold, firm melon gives you clean spheres instead of sad wet lumps, and frozen balls double as ice that does not water down the glass.
 
-## Who gets the prime-time slot
+## The kit that makes it easy
 
-The night session is the most valuable real estate in tennis, and the question of who gets put on it is not neutral.
+None of this needs a home bar. It needs about four objects, most of which cost less than a single round at the tournament.
 
-The usual pattern on Ashe is one women's match and one men's match. The women's match generally goes first, at seven, in front of a crowd that is still arriving and still finding its seats. The men's match goes second, in a full and lubricated stadium, and typically takes the actual prime-time television window.
+A <a href="https://www.amazon.com/s?k=stainless+steel+melon+baller+scoop&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">stainless steel melon baller</a> is the one non-negotiable item, and it is the cheapest thing on the list. A double-ended one gives you two sizes, which matters more than you would think when the melon is hard and cold.
 
-That arrangement gets tested every year. At the 2025 US Open, the fourth-round meeting between Coco Gauff and Naomi Osaka - two Grand Slam champions with genuine history, arguably the most anticipated match of the middle weekend - was scheduled in a day session rather than at night, and the reaction from fans online was immediate and furious. It sat inside a wider argument that ran all summer, after Roland Garros staged eleven prime-time night sessions and did not give a single one of them to a women's match. WTA chief executive Portia Archer called the scheduling of women's matches a systemic issue across the sport and described the missed prime-time slots as exactly that - a missed opportunity - arguing that fans increasingly expect to see the best matches in the best windows regardless of which draw they come from.
+Serve it in the right shape of glass. The drink is built tall over a lot of ice, so a set of <a href="https://www.amazon.com/s?k=collins+highball+glasses+set&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">collins or highball glasses</a> does the job, and the height is what gives you that layered pink gradient. If you are drinking in the garden, <a href="https://www.amazon.com/s?k=reusable+plastic+tumblers+outdoor&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">reusable plastic tumblers</a> are closer to the stadium experience anyway.
 
-None of that is settled. It is worth knowing about, though, because it means that when a women's quarterfinal does land at seven o'clock on Ashe with the lights on and the place full, it is not an accident. Somebody made a decision.
+Measure it. The ratio is the whole drink, and eyeballing spirits at home always drifts generous. A simple <a href="https://www.amazon.com/s?k=cocktail+jigger+measuring+tool&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">cocktail jigger</a> keeps every glass tasting like the last one.
 
-## The night a first-round match became something else
+For the garnish, a handful of <a href="https://www.amazon.com/s?k=stainless+steel+cocktail+picks+skewers&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">stainless cocktail picks</a> beats a wooden toothpick, and they last for years. If you are making the lemonade properly, a <a href="https://www.amazon.com/s?k=citrus+juicer+lemon+squeezer&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">citrus press</a> turns a bag of lemons into juice in about four minutes.
 
-The best evidence for what this stadium can do arrived on the opening night of the 2022 tournament, for a first-round match.
+Ice is the quiet variable. Small ice melts fast and thins the drink out by the second changeover, so <a href="https://www.amazon.com/s?k=large+ice+cube+trays+silicone&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">large silicone cube trays</a> are worth the freezer space during a two-week tournament. And if people are coming over, batch it: mix the vodka and lemonade in a <a href="https://www.amazon.com/s?k=glass+drink+pitcher+with+lid&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">glass pitcher with a lid</a>, keep it in the fridge, and add the raspberry liqueur and melon to each glass as you pour so the layers stay intact. A <a href="https://www.amazon.com/s?k=serving+tray+with+handles&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">serving tray with handles</a> saves you three trips during a tie-break.
 
-Serena Williams played Danka Kovinic, and because everyone understood it might be one of the last matches of her career, the stadium filled with the sort of crowd that does not normally attend the first round of anything. Hugh Jackman. Mike Tyson. Spike Lee. Bill Clinton. Anna Wintour. Queen Latifah. People who were there described it as feeling less like tennis and more like a heavyweight title fight, and the chair umpire spent the evening struggling to be heard over a noise that would not settle.
+If you are planning the whole evening rather than just the drink, our guide to [hosting a US Open watch party](/lifestyle/how-to-host-us-open-watch-party-2026/) covers the timings, the food and the eternal problem of what to do about the four-hour five-setter that starts at eleven at night.
 
-That is the ceiling of what a night session can be. Most evenings do not get near it. But everyone who walks in at six o'clock is, on some level, hoping for a version of it, and roughly twice a fortnight they get one.
+## The version for people who are not drinking
 
-## What the 2026 nights are going to look like
+The Honey Deuce is easy to build without alcohol, and it comes out better than most virgin cocktails because the drink was never really about the vodka. Fill the glass with ice, top it with fresh lemonade, add a spoonful of raspberry syrup or a splash of thick raspberry cordial poured last so it still sinks, and skewer the three frozen melon balls exactly as before. You get the same colour, the same garnish, the same photograph. Serve it in the same glass and nobody at the table has to announce anything about what they are drinking, which is the entire point.
 
-This year arrives with the draw already rearranged by absence.
+For children, drop the syrup to a drizzle and add a squeeze of lime. Frozen melon balls, it turns out, are the most reliably popular thing you can put in front of a nine-year-old.
 
-Jannik Sinner, the world number one and the reigning Wimbledon champion, withdrew on 21 August with a right knee injury. It is the first Grand Slam he has missed since 2019. He is continuing rehabilitation in Europe without surgery and is aiming to come back for the Asian hard-court swing in Beijing and Shanghai in October. His withdrawal makes Alexander Zverev the top seed.
+## What a melon ball says about modern tennis
 
-The compensating story is a happier one. Carlos Alcaraz is back, having been out since April with a right wrist injury, and confirmed his return in the week before the tournament. Whatever else the evening schedule does in 2026, Alcaraz under the Ashe lights is the match the tournament will want as often as it can get it.
+There is a slightly snobbish argument that goes: a Grand Slam should be remembered for its champions, not its concessions. It is a fair point and it misses something.
 
-On the women's side, Aryna Sabalenka arrives as a two-time defending champion, with Elena Rybakina, Jessica Pegula and Coco Gauff all inside the range where the world number one ranking is genuinely in play. Iga Swiatek, Mirra Andreeva, Linda Noskova and Karolina Muchova are all seeded. It is a deep, unsettled draw of the sort that produces at least one enormous night on Ashe.
+Tennis at the top has a genuine problem holding attention across a long season. Between the four majors there are months where a casual viewer cannot name the tournament being played, and the sport has spent a decade trying to fix that with new formats, new events and louder presentation. The Honey Deuce solves a different version of the same problem, and it solves it sideways. It gives people who are not tennis obsessives a reason to turn up, a thing to hold, a picture to post and a story to tell. Some of them stay for the tennis. A good number come back next year.
 
-Around all of it, the tournament has grown again. The 2026 US Open is the longest edition in its history, with a total prize pool of 101 million dollars, up nineteen per cent on last year and the largest in the sport. The 15-day main draw beginning on a Sunday, introduced in 2025, is here to stay. Before any of that begins, the reinvented [mixed doubles championship](/lifestyle/us-open-2026-mixed-doubles-championship-sabalenka-djokovic/) plays its final in prime time on Wednesday 26 August, and the free-to-attend qualifying rounds and practice courts of [Fan Week](/lifestyle/us-open-2026-fan-week-qualifying-free-week-flushing-meadows/) are running right now.
+The drink also flatters the event honestly. It is bright, unserious, unmistakably New York, sold to a crowd that arrives in the afternoon heat and stays until the floodlights come on. It fits the US Open the way strawberries fit Wimbledon: not because a committee decided it should, but because it turned out to describe the place.
 
-## The last train
+And there is something quietly pleasing about the fact that the whole empire started with a man at a farmers market noticing that a melon ball looked like a tennis ball. Nearly twenty years and three and a half million cups later, that is still the joke at the centre of it. Every one of those drinks is a small visual gag about the sport being played fifty metres away, handed over a counter to somebody who may not know the difference between a slice and a topspin backhand and does not need to.
 
-Here is the detail that stays with people who have actually been.
-
-Some time after midnight, the match finally ends, and twenty thousand people walk out into Corona Park and down the long ramp towards the 7 train. Nobody is quiet. Half the crowd is still arguing about a line call from the third set. The souvenir cups come home in handbags and coat pockets. The platform fills, the train arrives, and a carriage full of people in tennis hats rolls back through Queens towards Manhattan at one in the morning on a Tuesday, next to people going home from shifts in restaurants, who have seen all of this before.
-
-And then, at the end of it all, the tournament that built its reputation on what happens after dark hands out both of its trophies in the middle of the afternoon.
-
-*Photo: a tennis court at dusk, via Unsplash.*`;
+Make one this fortnight. Freeze the melon the night before, get the lemonade properly sharp, and put the glass down somewhere you can see the television. Then keep the cup. In February, when the tennis has moved to the other side of the world and New York is grey, it will be sitting in your cupboard holding pens or orange juice, and it will still smell faintly of a summer evening in Queens.`;
 
 const record = {
   slug, title, excerpt, body,
@@ -125,9 +119,7 @@ const record = {
   published_at: stamp, updated_at: stamp,
   ai_model: 'claude-cloud-auto', ai_generated_at: stamp,
 };
-
 const { data, error } = await supabase.from('articles').upsert(record, { onConflict: 'slug' }).select('id,slug');
 if (error) { console.error('ERROR', error); process.exit(1); }
-console.log('inserted', JSON.stringify(data));
 console.log('PUBLISHED_SLUG=' + slug);
 console.log('PUBLISHED_TITLE=' + title);
