@@ -1,116 +1,112 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'honey-deuce-cocktail-us-open-2026-story-and-recipe';
-const stamp = '2026-08-26T05:00:00.000Z';
-const title = 'The Honey Deuce: How a Melon Ball Cocktail Took Over the US Open';
+const slug = 'sloane-stephens-us-open-2026-wild-card-comeback';
+const stamp = '2026-08-27T05:00:00.000Z';
+const title = 'Sloane Stephens Is Back in the US Open Draw, and She Has Done This Before';
 const meta_title = title;
-const meta_description = 'The Honey Deuce holds at 23 dollars for the 2026 US Open after 738,459 sold last year. The story behind tennis most famous drink, and how to make it at home.';
-const excerpt = 'Three honeydew melon balls, a splash of raspberry liqueur and a souvenir cup: how a drink invented at a farmers market became the loudest brand at Flushing Meadows, and how to build one in your own kitchen.';
-const image_url = '/images/news/atmo-01.webp';
-const image_alt = 'Public tennis courts at golden hour with players and spectators on a warm summer evening';
+const meta_description = 'Sloane Stephens won the 2017 US Open ranked 83rd after 11 months out. In 2026 she has a wild card again, back from a foot fracture she refused to operate on.';
+const excerpt = 'She was ranked 957 in the world in July 2017 and a US Open champion by September. Nine years later Sloane Stephens is back in the Flushing Meadows draw on a wild card, climbing out of another hole, and the numbers are almost as absurd the second time around.';
+const image_url = '/images/news/court-03.webp';
+const image_alt = 'An empty blue hard court at golden hour with the net up and the floodlights waiting';
 
-const body = `You can spot the drink before you can spot the tennis. Walk into the grounds at Flushing Meadows on any afternoon in the last week of August and the first thing you notice is not a scoreboard or a queue or the roar coming out of a side court. It is the colour. Thousands of tall plastic cups moving through the crowd, each one holding a pink-red drink with three pale green spheres floating near the top, catching the light like something a set designer ordered in bulk. That is the Honey Deuce, and by any sensible measure it is now one of the biggest stars at the US Open.
+const body = `In July 2017 Sloane Stephens was the 957th best tennis player in the world, which is a number so far outside the professional game that it is essentially a rounding error. Nine weeks later she was the US Open champion. That is not a comeback story that was polished up afterwards for a documentary. That is what actually happened, in public, on television, in front of a Flushing Meadows crowd that could not quite believe what it was being shown.
 
-That sounds like a joke until you look at what it does. In 2025 the tournament sold 738,459 of them across three weeks in New York, a jump of 32 per cent on the year before, which works out at roughly 17 million dollars from a single item on a drinks menu. More than three and a half million have gone out of the serving windows since 2011. For the 2026 tournament, which runs its Fan Week from 23 August and its main draw from 30 August through to the finals on 13 September, the price is holding at 23 dollars, souvenir cup included while supplies last. A cocktail has become a line on a Grand Slam balance sheet.
+On 18 August this year the USTA published its list of main-draw wild cards for the 2026 US Open, and her name was on it again. Sloane Stephens, 33 years old, back from another injury that swallowed another year of her career, handed a place in the biggest tournament in American tennis. If you only follow the sport loosely, that might read like a nice gesture towards a former champion. It is not. She has spent the whole of 2026 earning it the hard way, and if you know what she did the last time she arrived in New York in this condition, you will want to know where she is playing.
 
-If you do not play tennis, if you watch it in the evenings with the sound low and a vague sense of who is meant to be winning, the Honey Deuce is possibly the most accessible thing about the sport. You do not need to understand a kick serve to understand a cold drink on a hot day in Queens. So here is the whole story: where it came from, why it works, what it says about the way tennis sells itself now, and how to make a very good one at home without paying stadium prices.
+## The list, and who was on it
 
-## A drink that looks like the sport it belongs to
+The wild cards came out ten days before the tournament, which begins on 30 August at the USTA Billie Jean King National Tennis Center and runs to 13 September. Eight singles places in each draw sit outside the ranking system, in the gift of the host federation, and the USTA used two of the women's spots on former champions: [Venus Williams](/players/venus-williams/), who won the title in 2000 and 2001, and Sloane Stephens, who won it in 2017.
 
-Strip away the mythology and the recipe is almost aggressively simple. Vodka, fresh lemonade, a drizzle of black raspberry liqueur, and three honeydew melon balls skewered and dropped into the glass. The official build is one and a half parts Grey Goose vodka to three parts lemonade with half a part of Chambord poured last so it sinks and blooms through the drink in that sunset gradient everybody photographs.
+The rest of the women's list went to Americans Carol Young Suh Lee, Reese Brantmeier and the 17-year-old Thea Frodin, plus Leolia Jeanjean of France and Taylah Preston of Australia. One women's spot was deliberately left empty, held open while Serena Williams decided what she wanted her season to look like. On the men's side the headline name was Gael Monfils, who turns 40 in September and is retiring at the end of the year, alongside Alexei Popyrin and a clutch of young Americans.
 
-The name is the sort of pun you either love or refuse to acknowledge. Honey comes from honeydew. Deuce is the tennis term for forty all, the score that refuses to end, the one piece of tennis vocabulary that even people who have never held a racket seem to know. Put them together and you have a drink that explains itself in two syllables.
+It is a list with a theme, and the theme is time. Two champions from the 2000s and 2010s, a showman playing his last summer, and a 17-year-old who was not born when Venus won her second title here. New York has always leaned into that. It is the Slam most comfortable with sentiment, the one that will put a 46-year-old on a night session and let 23,000 people lose their minds about it.
 
-But the reason it works is the garnish, and the garnish was an accident. The melon balls look exactly like tennis balls. Not approximately, not if you squint: they are the right size, the right colour, and they sit at the top of the glass where a photograph will find them. Every person holding one is producing free advertising for the tournament, every hour, for three weeks. No marketing department has ever designed anything that efficient on purpose.
+But sentiment is not the same as charity, and Stephens is not on this list because someone felt sorry for her.
 
-## The farmers market accident that started it
+## What actually happened in 2017
 
-The Honey Deuce was created by Nick Mautone, a restaurateur and drinks writer who was asked to come up with something for Grey Goose in the early years of its sponsorship of the US Open. The version he tells is disarmingly ordinary. He was at a farmers market, saw honeydew melon, thought about what it would look like scooped into balls, and realised he had a tennis ball sitting in his hand. The cocktail was built around the garnish rather than the other way round.
+To understand why her name matters, you have to sit with the 2017 numbers for a moment, because they still do not look real.
 
-It arrived on the menu at the US Open in 2007 and cost 12 dollars. For years it was a nice touch, a well-made drink at a sporting event, the sort of thing a regular would order out of habit. It was not yet a phenomenon. The phenomenon came later, and it came from the cup.
+She had surgery on her left foot in January 2017 for a stress fracture. She was out for 11 months. When she came back at Wimbledon that summer, having not played a competitive match in almost a year, her ranking had collapsed to 957. Not 95. Not 195. Nine hundred and fifty-seven.
 
-## Why the cup matters more than the cocktail
+She played Toronto. She played Cincinnati. She went deep in both, which lifted her ranking to 83, and she arrived at the US Open unseeded, which meant the draw could hand her anybody at any time and frequently did. Sixty-nine days after her first match back, she beat Venus Williams 6-1, 0-6, 7-5 in a semi-final that swung wildly enough to make the whole stadium feel unwell, and then she beat her friend Madison Keys 6-3, 6-0 in the final. Sixty-one minutes. Two of the most nervous hours anyone has spent watching an American final turned into an hour of the cleanest hitting of Stephens's life.
 
-At some point the US Open started sending the drink out in a tall commemorative cup printed with the tournament branding and the year. That single decision changed the economics of the thing. You are no longer buying a drink. You are buying a drink and a souvenir, and the souvenir goes home in a tote bag, sits in a kitchen cupboard, and gets used for iced coffee in November while somebody explains to a visitor where it came from.
+She became the fifth unseeded woman of the Open era to win a Grand Slam singles title, and the lowest ranked player ever to win the US Open. She had spent most of that year in a medical boot, unable to enter tournaments at all, and she left New York with a cheque for 3.7 million dollars. Her reaction to being handed it, which is worth looking up, was mostly disbelief. If you have ever wondered how the [money in professional tennis](/money/how-much-tennis-players-earn/) actually distributes itself, that fortnight is the extreme version of the answer: nothing at all for most of the year, and then a life-changing sum in one building over two weeks.
 
-Collectors chase the old years. The cups turn up on resale sites after every tournament, listed by people who bought four drinks and kept three cups. Fans stack them by season on a shelf the way other people keep concert tickets. The tournament has effectively convinced hundreds of thousands of visitors to pay for merchandise and then thank it for the privilege, and the merchandise arrives full of something cold.
+That is the run she is walking back into this week. Everyone at Flushing Meadows knows it. She knows it.
 
-That is also why the price holding at 23 dollars for 2026 became a small news story of its own. In a summer where the cost of a day out has gone one direction only, the USTA left its most visible item untouched. Twenty-three dollars is still a lot for a cocktail. It is a good deal less than the outrage the same drink would have generated at twenty-six.
+## The foot, again
 
-## The numbers behind the pink drink
+The reason 2026 is not simply a nostalgia lap is that the past two years took almost everything from her again, and in almost exactly the same way.
 
-The scale is worth sitting with. Nearly three quarters of a million Honey Deuces in 2025. A third more than the year before. Around 17 million dollars in revenue from a glass of raspberry lemonade with a stick of melon in it.
+In 2025 she suffered a stress fracture in her right foot. The mirror image of the injury that cost her 2017. She played five matches all season. She did not compete at all between late February and mid-September, which is the entire clay season, the entire grass season, and most of the American hard-court summer.
 
-The effect spills out past the gates too. Retail data shared after last year showed a huge spike in shoppers buying the ingredients together during the fortnight of the tournament, people going home and rebuilding the drink in their own kitchens because they had seen it on television for two weeks. That is the part that should interest anybody who thinks about how sport makes money now. The tournament sold the drink inside the grounds and, at the same time, sold the idea of the drink to everybody watching from a sofa in another time zone.
+Here is the part that tells you who she is. Her left foot had been operated on. When the right one went, she was told what another surgery at her age would probably mean, and she has since described it plainly: another operation could have ended her career. So she did not have one. She took the slow route instead, rehabilitation rather than the knife, months of doing very little in a sport where doing very little is how rankings die.
 
-Tennis has spent years trying to work out how to reach people who are not already fans. It turns out one answer was a garnish.
+Rankings are a rolling 52-week ledger. Miss a year and it does not just pause, it empties. Stephens began 2026 ranked 1,098 in the world. Lower than the number that made her famous in 2017. A former world No. 3, a Grand Slam champion, a Roland Garros finalist, outside the top thousand players on the planet.
 
-## What the other Slams put in your hand
+## Climbing back through the side door
 
-Every Grand Slam has its edible signature, and comparing them tells you a lot about the four events.
+What she has done since January is the least glamorous and most impressive part of the whole story, and almost nobody outside the sport noticed it happening.
 
-Wimbledon has strawberries and cream, priced at 2.85 pounds in 2026, a rise of fifteen pence on the year before and still the most famous bargain in sport. Alongside it sits a glass of Pimms at 13.45 pounds. The first Pimms bar opened at the All England Club in 1971, and the pairing has become so fixed that the strawberries are a scoring system of their own: people measure the fortnight in punnets. Wimbledon sells restraint and tradition, and it prices the strawberries almost as a public service.
+When your ranking is 1,098, you cannot enter Grand Slams. You cannot enter most tour events. You go to qualifying, which is three extra matches played in the week before the tournament on outside courts in front of a few hundred people, mostly against hungry players ten years younger than you who would like nothing more than to knock over a former champion. Lose one and you fly home with nothing.
 
-Roland Garros pours champagne. Moet and Chandon has been part of the furniture in Paris for years, and the mood is exactly what you would expect from a tournament that treats a fortnight on clay as a social season. Nobody is being handed a novelty cup at Roland Garros.
+Stephens went to Australian Open qualifying in January and won three matches to make the main draw, her first tour-level wins since 2024. She lost in the first round to Karolina Pliskova, and said afterwards that the week had still been a success, which it plainly was. Then she went and did it again at Roland Garros, qualifying for a second Grand Slam in the same season, the year after she barely played at all.
 
-The Australian Open, watching the Honey Deuce work, built its own answer: the Lemon Ace, a citrus and passionfruit drink designed to taste like an Australian summer, all fresh lemon, passionfruit and mint. It is a straightforward attempt to bottle the same lightning, and it tells you the Honey Deuce is now a template rather than a curiosity.
+Through the summer the results started to stack: a second round in Memphis, a second round in Toronto, and then Cincinnati, where she beat Anastasia Potapova to reach the third round. That was her first win over a top-30 player since Madrid in 2024. Marta Kostyuk stopped her in the next round, but by the time the wild-card list was published she had hauled her ranking from 1,098 to around 240 in eight months.
 
-And New York sells New York: loud, pink, photographable, expensive, and completely unbothered about being any of those things. If you want the full picture of how that atmosphere works after dark, we went deep on the [night sessions at Arthur Ashe](/lifestyle/us-open-2026-night-session-arthur-ashe-after-dark/) earlier this month, and the drink is a supporting character in every one of those evenings.
+That is not a gift. That is roughly 30 matches of grinding, most of them in places the television cameras do not go.
 
-## The rest of the 2026 menu
+## The sentence that explains her whole year
 
-The Honey Deuce gets the headlines, but the food operation around it has quietly become one of the better restaurant districts in Queens for three weeks a year. The 2026 tournament runs five restaurants, around 70 concession stands and 78 portable carts across the site.
+After winning her opening match in Cincinnati, Stephens said something that deserves to be pinned above the desk of anyone who has ever tried to get good at something again after a long time away.
 
-This year the culinary line-up added some serious names. Cosme, the restaurant from chef Enrique Olvera, brings its duck carnitas. Miznon, Eyal Shani's Mediterranean fast-casual chain, is new to the Food Village with its green beans in a paper bag and pitas stuffed with schnitzel and tahini. Salt Hanks, the West Village sandwich shop that grew out of a very large internet following, is serving a prime rib French dip with a pot of jus for dunking. Morimoto is back. COQODAQ turned up with chicken nuggets and caviar, which is either the most New York sentence ever written or a dare. KIMBOP, from restaurateur Simon Kim, is serving a version of his mother's recipe.
+"It doesn't look amazing all of the time and it doesn't look like my best form that I've ever had," she said, "but I think that's what makes it kind of cool is that I'm not winning at the best form and looking amazing, but I'm finding a way."
 
-On the drinks side the Honey Deuce now has company: the tequila brand Dobel runs a bar with Jose Andres restaurant Oyamel, where the Ace Paloma comes with grapefruit soda and a black salt rim. Nobody is going to dethrone the melon balls, but the menu has stopped being a single trick.
+There is a particular strain of sports writing that insists comebacks are about belief and hunger and refusing to listen to the doubters. This is better than that, because it is honest. She is not pretending the tennis is what it was in 2018. She is telling you the tennis is patchy, the body is different, the timing comes and goes, and she is winning some matches anyway. Finding a way is not a slogan when you are 33 and your foot has broken twice.
 
-If you are actually going, the free days are the value play. Fan Week runs from 23 August with qualifying, practice sessions and the Mixed Doubles Championship, and grounds access on those days costs nothing at all. We wrote a full guide to [what Fan Week actually gets you](/lifestyle/us-open-2026-fan-week-qualifying-free-week-flushing-meadows/), and the short version is that the same cocktail tastes considerably better when the tennis around it was free. For everything else about the tournament itself, the draws, the courts, the history, our [US Open guide](/tournaments/us-open-guide/) has it.
+If you watch her in New York, that is the thing to watch for. Not whether she looks like the 2017 version. Whether she finds a way.
 
-## How to make a Honey Deuce at home
+## What a wild card actually is
 
-Here is the good news for the several million of us who will be watching from a kitchen rather than a stadium: this is an easy drink. It is a raspberry lemonade with a hat on. If you can pour, you can make it.
+For anyone who watches tennis without playing it, the wild card is one of the quiet oddities of the sport, so it is worth explaining properly.
 
-The build, per glass:
+Almost every place in a Grand Slam draw is allocated by cold arithmetic. The top 104 or so players by ranking get in directly. Sixteen more come through qualifying. That leaves eight seats per draw that the tournament simply gives to whoever it likes, and this year those seats are worth more than they have ever been worth anywhere in the sport. The 2026 US Open is paying out 108 million dollars, the first Grand Slam to cross nine figures, and the cheque for losing in the first round is 140,000 dollars, up 27 per cent on last year. The champion gets 5.5 million.
 
-Chill a tall glass properly. Ten minutes in the freezer, or fill it with ice water for five minutes and tip it out. Fill the cold glass with ice, right to the top. Pour in one and a half parts vodka. Top with three parts fresh lemonade. Finish with half a part of black raspberry liqueur, poured gently over the top so it sinks in a slow ribbon rather than mixing straight in. Garnish with three honeydew melon balls on a skewer.
+Read those two numbers next to each other and the wild card stops being a ceremonial gift. For a player ranked 240, whose year so far has been qualifying draws and outside courts, one free place in a first round is worth more than an entire good season on the tier below. It is the difference between a profitable year and a ruinous one, decided by a committee in a room.
 
-Two details separate a decent version from a very good one. The first is the lemonade. Use fresh, properly tart lemonade rather than anything from a bottle labelled lemon drink, because the whole cocktail is balanced against that sourness and a sweet mixer turns it into syrup. The second is the melon. Freeze the honeydew before you scoop it. Cold, firm melon gives you clean spheres instead of sad wet lumps, and frozen balls double as ice that does not water down the glass.
+Tournaments use them for three reasons. To develop their own young players, which is why Thea Frodin and Michael Zheng are on the list. To reward loyalty and history, which is why Monfils gets to say goodbye to New York properly. And to fill the stadium, which is the honest explanation for the Williams sisters and, partly, for Stephens.
 
-## The kit that makes it easy
+The interesting thing about the Stephens wild card is that it sits in all three categories at once. She is an American who has given the USTA a champion. She sells tickets. And on current form she has a genuine chance of winning matches, which is not always true of the sentimental picks. A player ranked 240 who has just beaten a top-30 opponent is roughly the standard of a solid main-draw entrant. She has not been handed something she cannot use.
 
-None of this needs a home bar. It needs about four objects, most of which cost less than a single round at the tournament.
+## The rest of the fortnight around her
 
-A <a href="https://www.amazon.com/s?k=stainless+steel+melon+baller+scoop&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">stainless steel melon baller</a> is the one non-negotiable item, and it is the cheapest thing on the list. A double-ended one gives you two sizes, which matters more than you would think when the melon is hard and cold.
+She arrives into a tournament with a strange shape this year. Jannik Sinner, the world No. 1, withdrew on 21 August with a right knee injury, his first missed Grand Slam since 2019, and is aiming to return for the Asian swing in October. Carlos Alcaraz is defending his title on almost no match practice after a long layoff of his own. Venus Williams is in the singles draw at 46, and she and Serena have a wild card into the women's doubles, which begins on 3 September.
 
-Serve it in the right shape of glass. The drink is built tall over a lot of ice, so a set of <a href="https://www.amazon.com/s?k=collins+highball+glasses+set&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">collins or highball glasses</a> does the job, and the height is what gives you that layered pink gradient. If you are drinking in the garden, <a href="https://www.amazon.com/s?k=reusable+plastic+tumblers+outdoor&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">reusable plastic tumblers</a> are closer to the stadium experience anyway.
+That is a tournament with more question marks than usual, and question marks favour the sort of player who does not care what the seedings say. Stephens has spent her whole career being unpredictable in exactly that fashion: a semi-finalist at the 2013 Australian Open at 19, having beaten Serena Williams on the way; a champion here in 2017 when nobody had her in the field; a Roland Garros finalist and world No. 3 in 2018; a Miami champion the same spring. She has also had long flat stretches where nothing worked. Both things are true, and the second one is why the first still surprises people.
 
-Measure it. The ratio is the whole drink, and eyeballing spirits at home always drifts generous. A simple <a href="https://www.amazon.com/s?k=cocktail+jigger+measuring+tool&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">cocktail jigger</a> keeps every glass tasting like the last one.
+If you want the full picture of the tournament she is walking into, from the roof over Arthur Ashe to the way the night sessions work, [the complete US Open guide](/tournaments/us-open-guide/) covers it, and if you enjoy the historical end of things, [the all-time list of US Open champions](/records/most-us-open-titles-ever/) is where her 2017 name sits alongside the Williams sisters, Chris Evert and Serena's six.
 
-For the garnish, a handful of <a href="https://www.amazon.com/s?k=stainless+steel+cocktail+picks+skewers&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">stainless cocktail picks</a> beats a wooden toothpick, and they last for years. If you are making the lemonade properly, a <a href="https://www.amazon.com/s?k=citrus+juicer+lemon+squeezer&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">citrus press</a> turns a bag of lemons into juice in about four minutes.
+## How to watch her, if you want to
 
-Ice is the quiet variable. Small ice melts fast and thins the drink out by the second changeover, so <a href="https://www.amazon.com/s?k=large+ice+cube+trays+silicone&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">large silicone cube trays</a> are worth the freezer space during a two-week tournament. And if people are coming over, batch it: mix the vodka and lemonade in a <a href="https://www.amazon.com/s?k=glass+drink+pitcher+with+lid&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">glass pitcher with a lid</a>, keep it in the fridge, and add the raspberry liqueur and melon to each glass as you pour so the layers stay intact. A <a href="https://www.amazon.com/s?k=serving+tray+with+handles&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">serving tray with handles</a> saves you three trips during a tie-break.
+The draw is made in the days before play begins, so nobody knows yet who she gets. What is worth knowing in advance is this.
 
-If you are planning the whole evening rather than just the drink, our guide to [hosting a US Open watch party](/lifestyle/how-to-host-us-open-watch-party-2026/) covers the timings, the food and the eternal problem of what to do about the four-hour five-setter that starts at eleven at night.
+She will almost certainly not be on Arthur Ashe for a first round. Wild cards ranked outside the top 200 tend to land on Court 5 or Court 11 or Louis Armstrong at an awkward hour, and honestly that is the better watch anyway: you can hear the ball, you can hear the coaching box, and you can see a player's face when a point goes wrong. A first-round match on an outside court at the US Open is the single most underrated ticket in tennis.
 
-## The version for people who are not drinking
+Watch her forehand, which is one of the sweetest strokes in the women's game when she is moving well and the first thing to go when she is not. Watch her movement in the first three or four games, because the foot is the whole story and you will know within ten minutes whether she is trusting it. And watch the crowd, who will be entirely on her side and will make more noise than the court capacity should permit.
 
-The Honey Deuce is easy to build without alcohol, and it comes out better than most virgin cocktails because the drink was never really about the vodka. Fill the glass with ice, top it with fresh lemonade, add a spoonful of raspberry syrup or a splash of thick raspberry cordial poured last so it still sinks, and skewer the three frozen melon balls exactly as before. You get the same colour, the same garnish, the same photograph. Serve it in the same glass and nobody at the table has to announce anything about what they are drinking, which is the entire point.
+## The thing about doing it twice
 
-For children, drop the syrup to a drizzle and add a squeeze of lime. Frozen melon balls, it turns out, are the most reliably popular thing you can put in front of a nine-year-old.
+Comeback stories usually come with a tidy shape, which is why they are so satisfying and so often slightly false. The player falls, the player suffers, the player rises, credits roll. What Stephens has now is messier and considerably more interesting. She has done the whole arc once already, to a degree that made her briefly the most talked-about athlete in America, and then life kept going for another nine years and broke her other foot.
 
-## What a melon ball says about modern tennis
+She is not chasing the 2017 story. You cannot chase that; it was lightning, and everyone involved knew it at the time. What she is doing is something a lot of people watching at home will recognise better than they recognise a Grand Slam title: being decent at something she used to be brilliant at, and turning up anyway, and finding that the good days still arrive often enough to be worth the bad ones.
 
-There is a slightly snobbish argument that goes: a Grand Slam should be remembered for its champions, not its concessions. It is a fair point and it misses something.
+On 30 August she walks back into a stadium complex where she once played the best fortnight of her life. She will probably not win it. She might not win a match. But there are perhaps two dozen people alive who know what it feels like to hold that trophy, and she is one of them, and she got there from 957 in the world. Whatever the draw does to her this year, she has already made the interesting version of the argument: that the way back is available, that it is horrible, and that some people take it twice.
 
-Tennis at the top has a genuine problem holding attention across a long season. Between the four majors there are months where a casual viewer cannot name the tournament being played, and the sport has spent a decade trying to fix that with new formats, new events and louder presentation. The Honey Deuce solves a different version of the same problem, and it solves it sideways. It gives people who are not tennis obsessives a reason to turn up, a thing to hold, a picture to post and a story to tell. Some of them stay for the tennis. A good number come back next year.
+---
 
-The drink also flatters the event honestly. It is bright, unserious, unmistakably New York, sold to a crowd that arrives in the afternoon heat and stays until the floodlights come on. It fits the US Open the way strawberries fit Wimbledon: not because a committee decided it should, but because it turned out to describe the place.
-
-And there is something quietly pleasing about the fact that the whole empire started with a man at a farmers market noticing that a melon ball looked like a tennis ball. Nearly twenty years and three and a half million cups later, that is still the joke at the centre of it. Every one of those drinks is a small visual gag about the sport being played fifty metres away, handed over a counter to somebody who may not know the difference between a slice and a topspin backhand and does not need to.
-
-Make one this fortnight. Freeze the melon the night before, get the lemonade properly sharp, and put the glass down somewhere you can see the television. Then keep the cup. In February, when the tennis has moved to the other side of the world and New York is grey, it will be sitting in your cupboard holding pens or orange juice, and it will still smell faintly of a summer evening in Queens.`;
+Related reading on super.tennis: [the complete US Open guide](/tournaments/us-open-guide/), [Venus Williams](/players/venus-williams/), [the most US Open titles in history](/records/most-us-open-titles-ever/), and [how much tennis players actually earn](/money/how-much-tennis-players-earn/).`;
 
 const record = {
   slug, title, excerpt, body,
