@@ -1,112 +1,112 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'sloane-stephens-us-open-2026-wild-card-comeback';
-const stamp = '2026-08-27T05:00:00.000Z';
-const title = 'Sloane Stephens Is Back in the US Open Draw, and She Has Done This Before';
+const slug = 'us-open-2026-draw-nobody-knows-who-wins';
+const stamp = '2026-08-28T05:00:00.000Z';
+const title = 'The US Open draw is out and nobody knows who wins it';
 const meta_title = title;
-const meta_description = 'Sloane Stephens won the 2017 US Open ranked 83rd after 11 months out. In 2026 she has a wild card again, back from a foot fracture she refused to operate on.';
-const excerpt = 'She was ranked 957 in the world in July 2017 and a US Open champion by September. Nine years later Sloane Stephens is back in the Flushing Meadows draw on a wild card, climbing out of another hole, and the numbers are almost as absurd the second time around.';
-const image_url = '/images/news/court-03.webp';
-const image_alt = 'An empty blue hard court at golden hour with the net up and the floodlights waiting';
+const meta_description = 'The 2026 US Open draw landed on Thursday with the world number one missing and the champion back from four months out. A fan guide to the fortnight.';
+const excerpt = 'Sinner is gone, Alcaraz is back after four months away, Zverev carries the top seed and Sabalenka is chasing a three-peat. Here is what the draw sheet actually means for the next fortnight in New York.';
+const image_url = '/images/news/court-12.webp';
+const image_alt = 'A blue hard court with green surround and white lines, the colours of the US Open';
 
-const body = `In July 2017 Sloane Stephens was the 957th best tennis player in the world, which is a number so far outside the professional game that it is essentially a rounding error. Nine weeks later she was the US Open champion. That is not a comeback story that was polished up afterwards for a documentary. That is what actually happened, in public, on television, in front of a Flushing Meadows crowd that could not quite believe what it was being shown.
+const body = `On Thursday afternoon in New York, somebody pulled 128 names out of order and the whole autumn changed shape. That is all a Grand Slam draw is: a piece of admin, a few minutes of ceremony, a sheet of paper. And yet for the next two weeks that sheet decides who plays whom, who gets the kind opener and who gets the nightmare, whose summer ends in tears on an outside court on the first Tuesday.
 
-On 18 August this year the USTA published its list of main-draw wild cards for the 2026 US Open, and her name was on it again. Sloane Stephens, 33 years old, back from another injury that swallowed another year of her career, handed a place in the biggest tournament in American tennis. If you only follow the sport loosely, that might read like a nice gesture towards a former champion. It is not. She has spent the whole of 2026 earning it the hard way, and if you know what she did the last time she arrived in New York in this condition, you will want to know where she is playing.
+Most years you can look at the draw and see the ending from here. Not this one. The 2026 US Open starts on Sunday 30 August without the best player in the world, with a defending champion who has not played a competitive match since April, with a first-time major winner carrying the top seed and a 39-year-old still hunting the record that will not come. On the women's side there is a champion chasing a piece of history nobody has touched in more than a decade, and a bottom half of the draw so heavy it looks like a mistake.
 
-## The list, and who was on it
+If you love watching tennis but have never held a racket in anger, this is the good kind of tournament. Nobody can tell you what happens. Here is what to look for.
 
-The wild cards came out ten days before the tournament, which begins on 30 August at the USTA Billie Jean King National Tennis Center and runs to 13 September. Eight singles places in each draw sit outside the ranking system, in the gift of the host federation, and the USTA used two of the women's spots on former champions: [Venus Williams](/players/venus-williams/), who won the title in 2000 and 2001, and Sloane Stephens, who won it in 2017.
+## The man who is not there
 
-The rest of the women's list went to Americans Carol Young Suh Lee, Reese Brantmeier and the 17-year-old Thea Frodin, plus Leolia Jeanjean of France and Taylah Preston of Australia. One women's spot was deliberately left empty, held open while Serena Williams decided what she wanted her season to look like. On the men's side the headline name was Gael Monfils, who turns 40 in September and is retiring at the end of the year, alongside Alexei Popyrin and a clutch of young Americans.
+Jannik Sinner will not play. He announced it on 21 August, and the language was the flat, careful language players use when they are trying not to cry in public: he had been back on court in Monte Carlo, he had worked with his team and his medical staff, and the right knee still needed more time.
 
-It is a list with a theme, and the theme is time. Two champions from the 2000s and 2010s, a showman playing his last summer, and a 17-year-old who was not born when Venus won her second title here. New York has always leaned into that. It is the Slam most comfortable with sentiment, the one that will put a 46-year-old on a night session and let 23,000 people lose their minds about it.
+The knee has been quietly ruining his summer since Wimbledon. He beat Alexander Zverev in the final at the All England Club to defend that title, and then he simply stopped: no Canada, no Cincinnati, no warm-up matches, nothing. For a player whose whole method is repetition and rhythm, arriving in New York on zero match play was never realistic, and he ran out of road.
 
-But sentiment is not the same as charity, and Stephens is not on this list because someone felt sorry for her.
+The scale of it is easy to miss. Sinner won this title in 2024 and lost the final here last year. He has played every Grand Slam since he made his major debut at the US Open in 2019, through every kind of difficulty. This is the first one he has missed. The world number one will spend the fortnight watching, like you.
 
-## What actually happened in 2017
+You feel his absence everywhere in the men's draw. Take out the person who has won or reached the final at almost every hard-court major of the last three years and the whole thing loosens. Seeds move up. Sections that would have been somebody's death sentence become somebody's opportunity. Half the locker room has quietly recalculated.
 
-To understand why her name matters, you have to sit with the 2017 numbers for a moment, because they still do not look real.
+## Alcaraz, back from four months in the dark
 
-She had surgery on her left foot in January 2017 for a stress fracture. She was out for 11 months. When she came back at Wimbledon that summer, having not played a competitive match in almost a year, her ranking had collapsed to 957. Not 95. Not 195. Nine hundred and fifty-seven.
+The defending champion is here, which is more than anyone expected in June.
 
-She played Toronto. She played Cincinnati. She went deep in both, which lifted her ranking to 83, and she arrived at the US Open unseeded, which meant the draw could hand her anybody at any time and frequently did. Sixty-nine days after her first match back, she beat Venus Williams 6-1, 0-6, 7-5 in a semi-final that swung wildly enough to make the whole stadium feel unwell, and then she beat her friend Madison Keys 6-3, 6-0 in the final. Sixty-one minutes. Two of the most nervous hours anyone has spent watching an American final turned into an hour of the cleanest hitting of Stephens's life.
+Carlos Alcaraz hurt his right wrist in April at the Barcelona Open. He finished the match, won it 6-4, 6-2 against Otto Virtanen, and pulled out of the tournament the next day. Then came the part players hate most: the waiting. He missed Roland Garros. He missed Wimbledon. He missed Cincinnati. On 20 August he announced he would come back in New York, at a Grand Slam, in front of 24,000 people, defending a title, having not played a competitive singles match in four and a half months.
 
-She became the fifth unseeded woman of the Open era to win a Grand Slam singles title, and the lowest ranked player ever to win the US Open. She had spent most of that year in a medical boot, unable to enter tournaments at all, and she left New York with a cheque for 3.7 million dollars. Her reaction to being handed it, which is worth looking up, was mostly disbelief. If you have ever wondered how the [money in professional tennis](/money/how-much-tennis-players-earn/) actually distributes itself, that fortnight is the extreme version of the answer: nothing at all for most of the year, and then a life-changing sum in one building over two weeks.
+That is either magnificent or reckless, and we will find out which by the middle of next week. He is seeded second and opens against Roman Safiullin, which sounds routine and is not. They have met twice and split the two matches, and the one on a hard court went to Safiullin, in Paris in 2023. If your wrist and your timing are anything less than perfect, a big, clean, flat hitter is exactly the wrong first problem to be handed.
 
-That is the run she is walking back into this week. Everyone at Flushing Meadows knows it. She knows it.
+The Spanish press took one look at the rest of his quarter and used the phrase death draw. Ben Shelton, who won the Canadian Open this month, is seeded to meet him in the quarter-finals. And Novak Djokovic is in the same half, which means a potential semi-final that would sell out the stadium twice over.
 
-## The foot, again
+If you want a single reason to watch the first week, it is this: the sport genuinely does not know how much of Alcaraz has come back. Neither does he. You can read the story of his season, injury and all, on his [player page](/players/carlos-alcaraz/).
 
-The reason 2026 is not simply a nostalgia lap is that the past two years took almost everything from her again, and in almost exactly the same way.
+## Zverev at the top, at last
 
-In 2025 she suffered a stress fracture in her right foot. The mirror image of the injury that cost her 2017. She played five matches all season. She did not compete at all between late February and mid-September, which is the entire clay season, the entire grass season, and most of the American hard-court summer.
+At the top of the sheet, for once, is Alexander Zverev.
 
-Here is the part that tells you who she is. Her left foot had been operated on. When the right one went, she was told what another surgery at her age would probably mean, and she has since described it plainly: another operation could have ended her career. So she did not have one. She took the slow route instead, rehabilitation rather than the knife, months of doing very little in a sport where doing very little is how rankings die.
+He won Roland Garros this year, his first major after all those years of being the best player without one, and in doing so became the first man other than Sinner or Alcaraz to win a Grand Slam since 2024. He also lost the Wimbledon final to Sinner. That is a strange, top-heavy season: one enormous breakthrough, one enormous near-miss.
 
-Rankings are a rolling 52-week ledger. Miss a year and it does not just pause, it empties. Stephens began 2026 ranked 1,098 in the world. Lower than the number that made her famous in 2017. A former world No. 3, a Grand Slam champion, a Roland Garros finalist, outside the top thousand players on the planet.
+Now he arrives in New York with the number one beside his name, which brings its own weight. He opens against Lorenzo Sonego, a proper competitor on a fast court and not the gift a top seed hopes for, and is projected to meet Alex de Minaur in the quarter-finals, a man who returns everything and turns matches into endurance tests in exactly the humidity Zverev likes least.
 
-## Climbing back through the side door
+Zverev has reached a US Open final before and lost it from two sets up. He has been coming here for a decade with the same set of gifts and the same set of doubts. The difference this time is that he has finally proved he can close a major out. Watch how he handles being the one everybody else is measuring themselves against.
 
-What she has done since January is the least glamorous and most impressive part of the whole story, and almost nobody outside the sport noticed it happening.
+## Djokovic, 39, still counting
 
-When your ranking is 1,098, you cannot enter Grand Slams. You cannot enter most tour events. You go to qualifying, which is three extra matches played in the week before the tournament on outside courts in front of a few hundred people, mostly against hungry players ten years younger than you who would like nothing more than to knock over a former champion. Lose one and you fly home with nothing.
+And then there is Novak Djokovic, seeded fourth, ranked fifth, 39 years old and one Grand Slam short of the number that would put him alone at the top of the sport forever. Twenty-five majors. He has been stuck on 24 for long enough that the chase has become its own genre of tennis writing.
 
-Stephens went to Australian Open qualifying in January and won three matches to make the main draw, her first tour-level wins since 2024. She lost in the first round to Karolina Pliskova, and said afterwards that the week had still been a success, which it plainly was. Then she went and did it again at Roland Garros, qualifying for a second Grand Slam in the same season, the year after she barely played at all.
+He is not finished, whatever the internet says. He reached the Australian Open final in January, beating Sinner in a five-set semi-final to get there, and made the Wimbledon semi-finals in July. What has changed is the margin. In Cincinnati this month he won the first set comfortably and then came apart in the humidity, and afterwards said the thing that everybody heard and nobody wanted to hear: his body reminds him of his age, particularly in heat and heavy air.
 
-Through the summer the results started to stack: a second round in Memphis, a second round in Toronto, and then Cincinnati, where she beat Anastasia Potapova to reach the third round. That was her first win over a top-30 player since Madrid in 2024. Marta Kostyuk stopped her in the next round, but by the time the wild-card list was published she had hauled her ranking from 1,098 to around 240 in eight months.
+Which is the exact set of conditions New York specialises in. Seven matches, best of five, late-August swelter, the hardest surface on the calendar. He opens against Mariano Navone of Argentina, and if the seeds hold he gets Daniil Medvedev in the quarters, in a rematch of the 2023 final he won and the 2021 final he lost.
 
-That is not a gift. That is roughly 30 matches of grinding, most of them in places the television cameras do not go.
+Watching Djokovic now is a slightly different experience from watching him five years ago. You are not waiting to see whether he wins. You are watching a man manage a body that has done more tennis than almost any body in history, and find out how many days in a row he can still make it obey.
 
-## The sentence that explains her whole year
+## The rest of the men worth your evening
 
-After winning her opening match in Cincinnati, Stephens said something that deserves to be pinned above the desk of anyone who has ever tried to get good at something again after a long time away.
+The seeding order behind the big names tells you where the tour has arrived: Felix Auger-Aliassime third, Flavio Cobolli fifth, de Minaur sixth, Medvedev seventh, Shelton eighth.
 
-"It doesn't look amazing all of the time and it doesn't look like my best form that I've ever had," she said, "but I think that's what makes it kind of cool is that I'm not winning at the best form and looking amazing, but I'm finding a way."
+Auger-Aliassime reached the semi-finals here last year and has a section that opens up nicely for him. Shelton won in Canada and serves the biggest ball in the draw. Arthur Fils, who won Cincinnati a fortnight ago and looked like a different player doing it, is a live threat in the bottom half. Medvedev, who won this title in 2021 and has been sliding ever since, is exactly the kind of player who finds one more fortnight in himself when the surface suits.
 
-There is a particular strain of sports writing that insists comebacks are about belief and hunger and refusing to listen to the doubters. This is better than that, because it is honest. She is not pretending the tennis is what it was in 2018. She is telling you the tennis is patchy, the body is different, the timing comes and goes, and she is winning some matches anyway. Finding a way is not a slogan when you are 33 and your foot has broken twice.
+If the seeds hold, the quarter-finals read Zverev against de Minaur, Auger-Aliassime against Cobolli, Djokovic against Medvedev, Alcaraz against Shelton. The seeds will not hold. They never do here.
 
-If you watch her in New York, that is the thing to watch for. Not whether she looks like the 2017 version. Whether she finds a way.
+## Sabalenka and the history nobody has touched
 
-## What a wild card actually is
+The women's draw has a headline all of its own. Aryna Sabalenka has won the last two US Opens. A third in a row would make her the first woman to do it since Serena Williams took three straight from 2012 to 2014, and the list of people who have managed it in the modern era is short enough to recite over one coffee.
 
-For anyone who watches tennis without playing it, the wild card is one of the quiet oddities of the sport, so it is worth explaining properly.
+She is the top seed and she opens against Camila Osorio. The complication is form. Sabalenka started this year in a hurry, but the middle of the season went sideways, and she comes into New York with a record since April that looks nothing like a player marching towards history. Her defence of the title reads as slightly wobbly, which is a strange sentence to write about somebody who has won this event two years running.
 
-Almost every place in a Grand Slam draw is allocated by cold arithmetic. The top 104 or so players by ranking get in directly. Sixteen more come through qualifying. That leaves eight seats per draw that the tournament simply gives to whoever it likes, and this year those seats are worth more than they have ever been worth anywhere in the sport. The 2026 US Open is paying out 108 million dollars, the first Grand Slam to cross nine figures, and the cheque for losing in the first round is 140,000 dollars, up 27 per cent on last year. The champion gets 5.5 million.
+Her section is not brutal. Linda Noskova, seeded sixth and now a Wimbledon champion carrying that new weight around, is projected to meet her in the quarters, with Jessica Pegula waiting in a possible semi-final. There is a route here. Whether Sabalenka is in the right frame of mind to walk it is the question of her fortnight. Her form and her season are laid out on her [player page](/players/aryna-sabalenka/).
 
-Read those two numbers next to each other and the wild card stops being a ceremonial gift. For a player ranked 240, whose year so far has been qualifying draws and outside courts, one free place in a first round is worth more than an entire good season on the tier below. It is the difference between a profitable year and a ruinous one, decided by a committee in a room.
+## The bottom half is a small horror film
 
-Tournaments use them for three reasons. To develop their own young players, which is why Thea Frodin and Michael Zheng are on the list. To reward loyalty and history, which is why Monfils gets to say goodbye to New York properly. And to fill the stadium, which is the honest explanation for the Williams sisters and, partly, for Stephens.
+The other half of the women's draw is where the tournament actually lives.
 
-The interesting thing about the Stephens wild card is that it sits in all three categories at once. She is an American who has given the USTA a champion. She sells tickets. And on current form she has a genuine chance of winning matches, which is not always true of the sentimental picks. A player ranked 240 who has just beaten a top-30 opponent is roughly the standard of a solid main-draw entrant. She has not been handed something she cannot use.
+Elena Rybakina is seeded second and could meet Naomi Osaka, seeded 13th and a two-time champion here, in the fourth round. That is a last-16 match with two major winners in it, which tells you everything about how the numbers have compressed. Coco Gauff, seeded fourth and the 2024 champion, is projected to face Mirra Andreeva in the quarters, and Iga Swiatek, the eighth seed and the 2022 champion, is in the same half. Karolina Muchova, seventh, is loose in there too.
 
-## The rest of the fortnight around her
+Five former champions are in this draw: Sabalenka, Gauff, Swiatek, Osaka and Emma Raducanu, who won it in 2021 in the most improbable fortnight of the century. Four of them are stacked in the same half.
 
-She arrives into a tournament with a strange shape this year. Jannik Sinner, the world No. 1, withdrew on 21 August with a right knee injury, his first missed Grand Slam since 2019, and is aiming to return for the Asian swing in October. Carlos Alcaraz is defending his title on almost no match practice after a long layoff of his own. Venus Williams is in the singles draw at 46, and she and Serena have a wild card into the women's doubles, which begins on 3 September.
+If you want a story that has nothing to do with the usual names, look for Alexandra Eala. The 21-year-old is seeded 17th, the highest a Filipino singles player has ever been seeded at a major, and she opens against a qualifier. She has spent two years turning firsts into routine: first Filipina to win a main-draw match at a Slam, first to win a WTA title, first into the world top 20. A seeding means something practical as well as symbolic, because it keeps the top players away from her until the third round.
 
-That is a tournament with more question marks than usual, and question marks favour the sort of player who does not care what the seedings say. Stephens has spent her whole career being unpredictable in exactly that fashion: a semi-finalist at the 2013 Australian Open at 19, having beaten Serena Williams on the way; a champion here in 2017 when nobody had her in the field; a Roland Garros finalist and world No. 3 in 2018; a Miami champion the same spring. She has also had long flat stretches where nothing worked. Both things are true, and the second one is why the first still surprises people.
+## What the fortnight actually looks like
 
-If you want the full picture of the tournament she is walking into, from the roof over Arthur Ashe to the way the night sessions work, [the complete US Open guide](/tournaments/us-open-guide/) covers it, and if you enjoy the historical end of things, [the all-time list of US Open champions](/records/most-us-open-titles-ever/) is where her 2017 name sits alongside the Williams sisters, Chris Evert and Serena's six.
+Play starts on Sunday 30 August and runs to the men's final on Sunday 13 September, with the women's final on the Saturday. Fifteen days, seven rounds, two weeks of your evenings if you are in Europe and want to lose some sleep for a good cause.
 
-## How to watch her, if you want to
+The money has moved again. The 2026 tournament carries a total purse of 108 million dollars, a rise of around 20 percent on last year, which makes it the richest event in the sport's history. Each singles champion takes 5.5 million dollars. More interesting, if you care about the people you have never heard of, is the bottom of the sheet: a first-round loser earns 140,000 dollars, up more than a quarter on last year. That is a year of coaching, flights and physiotherapy for a player ranked in the 90s, paid for by two hours of work on court 14 in front of 300 people. The prize money argument in tennis is usually framed around champions. It should be framed around that number.
 
-The draw is made in the days before play begins, so nobody knows yet who she gets. What is worth knowing in advance is this.
+There are 32 players in the main draw this week who were not supposed to be there at all. Qualifying ran from Monday to Thursday at Flushing Meadows, three rounds in four days in the worst of the late-August heat, and it produced 16 men and 16 women who now have a Grand Slam first round and the cheque that comes with it. For most of them this is not a stepping stone to a title run. It is a fortnight that pays for the rest of the season, a locker room they will not see again until January, and one shot at a seeded player on a court with cameras on it.
 
-She will almost certainly not be on Arthur Ashe for a first round. Wild cards ranked outside the top 200 tend to land on Court 5 or Court 11 or Louis Armstrong at an awkward hour, and honestly that is the better watch anyway: you can hear the ball, you can hear the coaching box, and you can see a player's face when a point goes wrong. A first-round match on an outside court at the US Open is the single most underrated ticket in tennis.
+Watch one of those matches early in the week if you can find one. They are played with a different kind of desperation from the ones in the stadium, in front of a few hundred people who have wandered over because the queue for the show court was too long, and they are frequently the best tennis of the day. The qualifiers who came through this week have already won three matches to get here. Whoever they meet on Sunday or Monday has had a week of practice courts and press duty.
 
-Watch her forehand, which is one of the sweetest strokes in the women's game when she is moving well and the first thing to go when she is not. Watch her movement in the first three or four games, because the foot is the whole story and you will know within ten minutes whether she is trusting it. And watch the crowd, who will be entirely on her side and will make more noise than the court capacity should permit.
+The first week is the good week, and casual viewers get this backwards. Everyone tunes in for the second Saturday, but the first four days are where the tournament is decided: sixteen matches happening at once, a seed going down on an outside court while the stadium plays a mismatch, the crowd wandering in from the food village with a drink in hand and no idea they are about to watch a 20-year-old play the match of their life. If you are new to all of this, our [guide to watching tennis](/lifestyle/how-to-watch-tennis/) covers the rhythm of a Slam day, and the [US Open tournament guide](/tournaments/us-open-guide/) has the history and the practical details.
 
-## The thing about doing it twice
+## Why an open draw is better television
 
-Comeback stories usually come with a tidy shape, which is why they are so satisfying and so often slightly false. The player falls, the player suffers, the player rises, credits roll. What Stephens has now is messier and considerably more interesting. She has done the whole arc once already, to a degree that made her briefly the most talked-about athlete in America, and then life kept going for another nine years and broke her other foot.
+There is a version of tennis fandom that wants certainty: the best player wins, the hierarchy holds, order is restored on the final Sunday. It is satisfying in the way a well-run railway is satisfying.
 
-She is not chasing the 2017 story. You cannot chase that; it was lightning, and everyone involved knew it at the time. What she is doing is something a lot of people watching at home will recognise better than they recognise a Grand Slam title: being decent at something she used to be brilliant at, and turning up anyway, and finding that the good days still arrive often enough to be worth the bad ones.
+This is not that tournament. The number one is at home with a knee that will not settle. The defending champion has been off the tour since spring and could be brilliant or badly rusty, possibly both in the same match. The top seed has been a Grand Slam champion for exactly one summer. The most decorated player in history is 39 and negotiating with the weather. On the women's side, half the former champions in the sport are crammed into one half of the draw.
 
-On 30 August she walks back into a stadium complex where she once played the best fortnight of her life. She will probably not win it. She might not win a match. But there are perhaps two dozen people alive who know what it feels like to hold that trophy, and she is one of them, and she got there from 957 in the world. Whatever the draw does to her this year, she has already made the interesting version of the argument: that the way back is available, that it is horrible, and that some people take it twice.
+That is not a flaw in the fortnight. That is the fortnight. Draws like this one produce the matches people still talk about in ten years, precisely because nobody could have called them in advance.
 
----
+So do this: find the draw sheet, look at it properly once before Sunday, pick two players from outside the top eight and follow them. Not the favourites, who will be on television whatever you do. Somebody in the middle of the sheet with a difficult opener and a run in them. By Wednesday one of them will be gone and the other will have a match you did not expect to care about, and you will be shouting at a stranger in a stadium 3,000 miles away.
 
-Related reading on super.tennis: [the complete US Open guide](/tournaments/us-open-guide/), [Venus Williams](/players/venus-williams/), [the most US Open titles in history](/records/most-us-open-titles-ever/), and [how much tennis players actually earn](/money/how-much-tennis-players-earn/).`;
+The sheet that came out on Thursday will look nothing like this in a week. That is exactly why it is worth reading now.`;
 
 const record = {
   slug, title, excerpt, body,
