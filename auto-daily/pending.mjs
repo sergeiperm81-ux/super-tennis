@@ -1,112 +1,110 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'us-open-2026-draw-nobody-knows-who-wins';
-const stamp = '2026-08-28T05:00:00.000Z';
-const title = 'The US Open draw is out and nobody knows who wins it';
+const slug = 'us-open-2026-ball-crew-315-people-on-court';
+const stamp = '2026-08-30T05:00:00.000Z';
+const title = 'The 315 People Who Keep the US Open Moving';
 const meta_title = title;
-const meta_description = 'The 2026 US Open draw landed on Thursday with the world number one missing and the champion back from four months out. A fan guide to the fortnight.';
-const excerpt = 'Sinner is gone, Alcaraz is back after four months away, Zverev carries the top seed and Sabalenka is chasing a three-peat. Here is what the draw sheet actually means for the next fortnight in New York.';
-const image_url = '/images/news/court-12.webp';
-const image_alt = 'A blue hard court with green surround and white lines, the colours of the US Open';
+const meta_description = 'Meet the US Open ball crew: how 315 people were picked from thousands of applicants, what the job pays, and why they are the last humans on court besides the umpire.';
+const excerpt = 'They crouch by the net in Ralph Lauren, sprint through the heat and roll the ball flat and fast down the sideline. Here is how the US Open ball crew is chosen, what the fortnight is actually like, and why you should watch the edges of the picture.';
+const image_url = '/images/news/detail-05.webp';
+const image_alt = 'A tennis net photographed close up against a deep blue hard court, the view the ball crew have all fortnight';
 
-const body = `On Thursday afternoon in New York, somebody pulled 128 names out of order and the whole autumn changed shape. That is all a Grand Slam draw is: a piece of admin, a few minutes of ceremony, a sheet of paper. And yet for the next two weeks that sheet decides who plays whom, who gets the kind opener and who gets the nightmare, whose summer ends in tears on an outside court on the first Tuesday.
+const body = `Somewhere in the first ten minutes of the US Open main draw today, a teenager in a navy Ralph Lauren polo will jog to the base of the net on Arthur Ashe Stadium, fold herself into a crouch, and then do the hardest part of the job: nothing at all. No fidgeting. No scratching an itch. No looking up at the 23,000 people above her. Just stillness, for as long as the rally lasts, while two of the best players alive hit a ball at each other roughly eight feet over her head.
 
-Most years you can look at the draw and see the ending from here. Not this one. The 2026 US Open starts on Sunday 30 August without the best player in the world, with a defending champion who has not played a competitive match since April, with a first-time major winner carrying the top seed and a 39-year-old still hunting the record that will not come. On the women's side there is a champion chasing a piece of history nobody has touched in more than a decade, and a bottom half of the draw so heavy it looks like a mistake.
+You have watched hundreds of hours of tennis and you have probably never once watched her. That is the point. The ball crew is the only group at a Grand Slam whose entire performance is measured by how completely you fail to notice them. And yet they are on court more than anyone. Players come and go in two hours. Umpires rotate. The ball crew is there from the first ball of the qualifying weekend to the last point of the men's final, in the heat, in the rain delays, in the 1am finishes that only New York produces.
 
-If you love watching tennis but have never held a racket in anger, this is the good kind of tournament. Nobody can tell you what happens. Here is what to look for.
+This year there are 315 of them. They were chosen from thousands. Here is what it takes.
 
-## The man who is not there
+## What the job actually is
 
-Jannik Sinner will not play. He announced it on 21 August, and the language was the flat, careful language players use when they are trying not to cry in public: he had been back on court in Monte Carlo, he had worked with his team and his medical staff, and the right knee still needed more time.
+At a Grand Slam, six people work a court at a time. Two crouch at the net, one at each post, and four stand at the back corners behind the baselines, one in each pocket of space between the singles sideline and the doubles alley. They swap positions on a rotation so nobody spends the whole match doing the sprinting or the whole match doing the standing, and each shift runs about an hour before a fresh set of six comes on.
 
-The knee has been quietly ruining his summer since Wimbledon. He beat Alexander Zverev in the final at the All England Club to defend that title, and then he simply stopped: no Canada, no Cincinnati, no warm-up matches, nothing. For a player whose whole method is repetition and rhythm, arriving in New York on zero match play was never realistic, and he ran out of road.
+The net pair have the glamorous half and the terrifying half of the job. They are the ones who dart across the court between points to collect a dead ball, and they are the ones who have to read the game well enough to know when it is safe to move. Get that wrong at a Slam and you are in the frame of a highlight reel for the rest of your life. The back four are the supply line. They feed balls to the server, hold the spares, and cover the corners.
 
-The scale of it is easy to miss. Sinner won this title in 2024 and lost the final here last year. He has played every Grand Slam since he made his major debut at the US Open in 2019, through every kind of difficulty. This is the first one he has missed. The world number one will spend the fortnight watching, like you.
+Then there is the choreography around it. The 90-second changeover, when they run the umbrellas out on a hot afternoon and hold them steady over a seated player who is not looking at them. The towel, handed over and taken back, over and over, for three or four hours. The bin of used balls swapped for fresh ones every nine games. The moment a player's cap comes off and someone has to sprint it back.
 
-You feel his absence everywhere in the men's draw. Take out the person who has won or reached the final at almost every hard-court major of the last three years and the whole thing loosens. Seeds move up. Sections that would have been somebody's death sentence become somebody's opportunity. Half the locker room has quietly recalculated.
+And the roll. When a ball has to go from one end of the court to the other, it does not get thrown across the middle of a live playing surface. It gets rolled, flat and fast and dead straight, right along the ground at the back of the court, usually about 40 feet, ideally without a single wobble. It looks like the easiest thing in the world when it is done well, which is exactly why it is one of the things they test you on before they let you anywhere near a match.
 
-## Alcaraz, back from four months in the dark
+## Twenty minutes that decide your summer
 
-The defending champion is here, which is more than anyone expected in June.
+The route in is not a secret and it is not an invitation. Anyone who is at least 14 and legally allowed to work in the United States can apply, which is why the application list for a New York summer runs into the thousands. Most applicants come from the tri-state area, which gives the crew its particular flavour: Queens teenagers, teachers on their holidays, retirees from Long Island, a lot of people who grew up hearing planes come down over the courts.
 
-Carlos Alcaraz hurt his right wrist in April at the Barcelona Open. He finished the match, won it 6-4, 6-2 against Otto Virtanen, and pulled out of the tournament the next day. Then came the part players hate most: the waiting. He missed Roland Garros. He missed Wimbledon. He missed Cincinnati. On 20 August he announced he would come back in New York, at a Grand Slam, in front of 24,000 people, defending a title, having not played a competitive singles match in four and a half months.
+Applicants who get through the paperwork are invited to an in-person tryout in the middle of June, on the courts at the Billie Jean King National Tennis Center. Around 650 people made it that far this year. Each of them got 20 to 30 minutes on court to prove they could do the job.
 
-That is either magnificent or reckless, and we will find out which by the middle of next week. He is seeded second and opens against Roman Safiullin, which sounds routine and is not. They have met twice and split the two matches, and the one on a hard court went to Safiullin, in Paris in 2023. If your wrist and your timing are anything less than perfect, a big, clean, flat hitter is exactly the wrong first problem to be handed.
+They run line drills, back and forth between the sidelines, scooping up balls at speed, because agility is the single biggest thing the assessors are looking for. They catch and they bounce, to show hand-eye coordination that holds up under nerves. They roll, and the roll is judged on whether it stays flat and straight. And they throw, because a ball person has to be able to send a ball the length of a tennis court on the fly, which is a great deal further than it looks on television. Cathie Delaney, the assistant director of ballpersons, has told rooms full of hopefuls exactly that: you will have to throw the length of the court.
 
-The Spanish press took one look at the rest of his quarter and used the phrase death draw. Ben Shelton, who won the Canadian Open this month, is seeded to meet him in the quarter-finals. And Novak Djokovic is in the same half, which means a potential semi-final that would sell out the stadium twice over.
+Of the 650 who tried, 315 came out the other end onto this year's crew. It is not quite as brutal as it sounds, because a good number of the people on court over the next fortnight are returning veterans who have done this for five, ten, twenty years and know the rhythms better than some of the players. But for a first-timer it is genuinely competitive, and plenty of very fit, very keen people go home from a Sunday in June having been beaten by a ball that would not roll straight.
 
-If you want a single reason to watch the first week, it is this: the sport genuinely does not know how much of Alcaraz has come back. Neither does he. You can read the story of his season, injury and all, on his [player page](/players/carlos-alcaraz/).
+## Fourteen to eighty-two
 
-## Zverev at the top, at last
+The single loveliest thing about the US Open ball crew is a policy that barely gets mentioned: there is no upper age limit. Every other stereotype about this job dissolves the moment you know that.
 
-At the top of the sheet, for once, is Alexander Zverev.
+The youngest members are 14, which is what you expect. The rest is what you do not. Bob Kass, a semi-retired real estate executive from Port Washington, tried out in 2021 at the age of 67 and did not make it. He went away, worked on it, came back, and made the crew at 69, sharing a court rotation with kids who were 55 years younger than him. He said the point was to show that his demographic still had plenty to offer. Spectators recognised him, called out to him, wanted photographs with him.
 
-He won Roland Garros this year, his first major after all those years of being the best player without one, and in doing so became the first man other than Sinner or Alcaraz to win a Grand Slam since 2024. He also lost the Wimbledon final to Sinner. That is a strange, top-heavy season: one enormous breakthrough, one enormous near-miss.
+He is not even the record. That belongs to Manny Hershkowitz, who worked on court at Flushing Meadows in September 1999 at the age of 82, and is listed by Guinness World Records as the oldest ball person at a major championship. Eighty-two. Crouching at the net. In New York, in September.
 
-Now he arrives in New York with the number one beside his name, which brings its own weight. He opens against Lorenzo Sonego, a proper competitor on a fast court and not the gift a top seed hopes for, and is projected to meet Alex de Minaur in the quarter-finals, a man who returns everything and turns matches into endurance tests in exactly the humidity Zverev likes least.
+That mix is the crew's actual identity, and it is visible from the stands if you look for it. On the same court you will see a ninth-grader who was doing algebra homework in May and a man in his sixties who has taken two weeks off work, both wearing the same polo, both moving on the same whistle.
 
-Zverev has reached a US Open final before and lost it from two sets up. He has been coming here for a decade with the same set of gifts and the same set of doubts. The difference this time is that he has finally proved he can close a major out. Watch how he handles being the one everybody else is measuring themselves against.
+## The only Slam that pays
 
-## Djokovic, 39, still counting
+Here is the part that surprises people: this is a job. The US Open is the only Grand Slam that pays its ball crew, at a rate reported this summer at around 19 dollars an hour, with a meal allowance on top. The shifts are long and stack up over the best part of three weeks once qualifying and Fan Week are counted, so it is a real summer wage rather than a token.
 
-And then there is Novak Djokovic, seeded fourth, ranked fifth, 39 years old and one Grand Slam short of the number that would put him alone at the top of the sport forever. Twenty-five majors. He has been stuck on 24 for long enough that the chase has become its own genre of tennis writing.
+Then there is the uniform, which has quietly become one of the most coveted pieces of kit in tennis. Ralph Lauren dresses the crew every year in a specific ball crew collection, they wear it head to toe, and they generally get to keep it. There are people who apply for this job largely because they want to be the person in the room who owns one.
 
-He is not finished, whatever the internet says. He reached the Australian Open final in January, beating Sinner in a five-set semi-final to get there, and made the Wimbledon semi-finals in July. What has changed is the margin. In Cincinnati this month he won the first set comfortably and then came apart in the humidity, and afterwards said the thing that everybody heard and nobody wanted to hear: his body reminds him of his age, particularly in heat and heavy air.
+None of which is really why anyone does it. What you are actually buying with those hours is a vantage point money cannot get you. There is no ticket at Flushing Meadows, at any price, that puts you eight feet from a Novak Djokovic service motion at 9pm under the lights on [a night session at Arthur Ashe](/lifestyle/us-open-2026-night-session-arthur-ashe-after-dark/). The crew gets that for a fortnight, and they get paid for it.
 
-Which is the exact set of conditions New York specialises in. Seven matches, best of five, late-August swelter, the hardest surface on the calendar. He opens against Mariano Navone of Argentina, and if the seeds hold he gets Daniil Medvedev in the quarters, in a rematch of the 2023 final he won and the 2021 final he lost.
+## How the other three majors do it
 
-Watching Djokovic now is a slightly different experience from watching him five years ago. You are not waiting to see whether he wins. You are watching a man manage a body that has done more tennis than almost any body in history, and find out how many days in a row he can still make it obey.
+Every Slam solves the same problem differently, and the differences say a lot about each tournament.
 
-## The rest of the men worth your evening
+Wimbledon runs the most famously rigorous programme in the sport. Its ball boys and girls, universally called BBGs, are not open applicants at all. They are nominated by around 30 schools in the boroughs near the All England Club, mostly Merton, Sutton, Kingston and Wandsworth, plus a handful in Surrey, and the schools put forward pupils in Year 9 and 10 in the autumn. Selection days follow at Raynes Park in the depths of January, testing fitness, coordination, ball skills, concentration and the ability to stand absolutely still. Those who survive train for around five months before the Championships even start. Roughly 280 BBGs make it each year out of about 1,500 candidates, a group that typically splits into around 170 new recruits and 110 returning from previous years. It is a school scheme run to the standards of an elite sports academy, and it has been supplied by local schools since 1969.
 
-The seeding order behind the big names tells you where the tour has arrived: Felix Auger-Aliassime third, Flavio Cobolli fifth, de Minaur sixth, Medvedev seventh, Shelton eighth.
+The Australian Open takes the opposite approach and casts its net across an entire continent. Around 400 ballkids work the tournament each January, chosen from well over 3,000 applicants, with trials run state by state through the spring and summer and a mandatory block of on-court training sessions before an official induction day. Tennis Australia also runs an international strand: a group of ballkids from the China Open, for example, has travelled to Melbourne to work the Australian Open, which is about as good a school trip as exists.
 
-Auger-Aliassime reached the semi-finals here last year and has a section that opens up nicely for him. Shelton won in Canada and serves the biggest ball in the draw. Arthur Fils, who won Cincinnati a fortnight ago and looked like a different player doing it, is a live threat in the bottom half. Medvedev, who won this title in 2021 and has been sliding ever since, is exactly the kind of player who finds one more fortnight in himself when the surface suits.
+Roland Garros, meanwhile, has its own recruitment across France, and the Australian Open has been known to send its best performers there as a reward. Four tournaments, four philosophies, one job.
 
-If the seeds hold, the quarter-finals read Zverev against de Minaur, Auger-Aliassime against Cobolli, Djokovic against Medvedev, Alcaraz against Shelton. The seeds will not hold. They never do here.
+## The last humans on court
 
-## Sabalenka and the history nobody has touched
+There is a reason to pay more attention to the ball crew in 2026 than there was ten years ago, and it is not sentimental. They are almost the only people left.
 
-The women's draw has a headline all of its own. Aryna Sabalenka has won the last two US Opens. A third in a row would make her the first woman to do it since Serena Williams took three straight from 2012 to 2014, and the list of people who have managed it in the modern era is short enough to recite over one coffee.
+The US Open has not used line judges since 2021, when it became the second major to go fully electronic and put Hawk-Eye Live on every competition court. Where there used to be a semicircle of officials in coordinated kit, each with a job and a voice and the occasional catastrophic misjudgement, there is now a camera array and a recorded call. Seventeen courts, a couple of hundred cameras, no humans. Wimbledon followed in 2025. The old drama of a player wheeling around to glare at a line judge is simply gone from the sport.
 
-She is the top seed and she opens against Camila Osorio. The complication is form. Sabalenka started this year in a hurry, but the middle of the season went sideways, and she comes into New York with a record since April that looks nothing like a player marching towards history. Her defence of the title reads as slightly wobbly, which is a strange sentence to write about somebody who has won this event two years running.
+What that leaves on a US Open court is the two players, the chair umpire, and six people in Ralph Lauren. That is the entire human population of the most-watched tennis stadium on earth. The ball crew are not decoration around the edges of a professional match any more. They are, along with the umpire, the last of the working staff you can actually see.
 
-Her section is not brutal. Linda Noskova, seeded sixth and now a Wimbledon champion carrying that new weight around, is projected to meet her in the quarters, with Jessica Pegula waiting in a possible semi-final. There is a route here. Whether Sabalenka is in the right frame of mind to walk it is the question of her fortnight. Her form and her season are laid out on her [player page](/players/aryna-sabalenka/).
+## The towel problem
 
-## The bottom half is a small horror film
+The job has also had its own reckoning, and it is worth knowing about because it changed how some players behave.
 
-The other half of the women's draw is where the tournament actually lives.
+For years the towel ritual sat awkwardly with a lot of viewers: a multimillionaire athlete clicking fingers or gesturing impatiently at a 15-year-old to produce a sweat-soaked towel, several times a game. It came to a head when Fernando Verdasco was widely criticised after video circulated of him snapping at a ball boy who had not moved fast enough. Roger Federer used a press conference to tell his fellow professionals, in plain terms, to respect ball kids.
 
-Elena Rybakina is seeded second and could meet Naomi Osaka, seeded 13th and a two-time champion here, in the fourth round. That is a last-16 match with two major winners in it, which tells you everything about how the numbers have compressed. Coco Gauff, seeded fourth and the 2024 champion, is projected to face Mirra Andreeva in the quarters, and Iga Swiatek, the eighth seed and the 2022 champion, is in the same half. Karolina Muchova, seventh, is loose in there too.
+The ATP experimented with a fix. At the Next Gen Finals in Milan, towel racks were installed in the corners of the court so players had to fetch their own towels rather than have a teenager sprint one over. Reaction split predictably. Andrey Rublev was in favour. Stefanos Tsitsipas, who won the event, hated it, complaining that he was always running for the towel and always thinking about it while he played. The racks never made it to the Slams, so the towel is still handed over at Flushing Meadows this fortnight. But the conversation lingered, and the way most players handle that exchange now, with a nod or a thank you, is noticeably different from ten years ago.
 
-Five former champions are in this draw: Sabalenka, Gauff, Swiatek, Osaka and Emma Raducanu, who won it in 2021 in the most improbable fortnight of the century. Four of them are stacked in the same half.
+## The ball boy who came back with the trophy
 
-If you want a story that has nothing to do with the usual names, look for Alexandra Eala. The 21-year-old is seeded 17th, the highest a Filipino singles player has ever been seeded at a major, and she opens against a qualifier. She has spent two years turning firsts into routine: first Filipina to win a main-draw match at a Slam, first to win a WTA title, first into the world top 20. A seeding means something practical as well as symbolic, because it keeps the top players away from her until the third round.
+If you want the ultimate argument for taking this job seriously, it is a Swiss one.
 
-## What the fortnight actually looks like
+In 1992 and 1993, a skinny local kid rode his bike ten minutes from home to the Swiss Indoors in Basel and worked as a ball boy. In the 1993 final he collected balls for Michael Stich and Stefan Edberg; Stich won it in four sets, and afterwards handed the 12-year-old his ball boy's medal. The kid was Roger Federer. He would go on to win that tournament ten times as a player, and he has said the medal is still among his prized possessions, that he loved being a ball boy there because it let him watch the best players in the world up close and see how they handled the pressure.
 
-Play starts on Sunday 30 August and runs to the men's final on Sunday 13 September, with the women's final on the Saturday. Fifteen days, seven rounds, two weeks of your evenings if you are in Europe and want to lose some sleep for a good cause.
+That is not a fairytale about becoming a champion. It is a fairly precise description of what the job gives you: proximity. You learn what the ball actually sounds like off a professional racket, how much a player sweats in the third set, what the silence before a second serve feels like from inside it. It is the best tennis education available anywhere, and at Flushing Meadows it comes with an hourly rate.
 
-The money has moved again. The 2026 tournament carries a total purse of 108 million dollars, a rise of around 20 percent on last year, which makes it the richest event in the sport's history. Each singles champion takes 5.5 million dollars. More interesting, if you care about the people you have never heard of, is the bottom of the sheet: a first-round loser earns 140,000 dollars, up more than a quarter on last year. That is a year of coaching, flights and physiotherapy for a player ranked in the 90s, paid for by two hours of work on court 14 in front of 300 people. The prize money argument in tennis is usually framed around champions. It should be framed around that number.
+## What to watch for, starting tonight
 
-There are 32 players in the main draw this week who were not supposed to be there at all. Qualifying ran from Monday to Thursday at Flushing Meadows, three rounds in four days in the worst of the late-August heat, and it produced 16 men and 16 women who now have a Grand Slam first round and the cheque that comes with it. For most of them this is not a stepping stone to a title run. It is a fortnight that pays for the rest of the season, a locker room they will not see again until January, and one shot at a seeded player on a court with cameras on it.
+The next fortnight is the best chance you will get all year to see this properly, so here is how to actually watch it.
 
-Watch one of those matches early in the week if you can find one. They are played with a different kind of desperation from the ones in the stadium, in front of a few hundred people who have wandered over because the queue for the show court was too long, and they are frequently the best tennis of the day. The qualifiers who came through this week have already won three matches to get here. Whoever they meet on Sunday or Monday has had a week of practice courts and press duty.
+On changeovers, when the broadcast is showing you a player with a towel over their head, look at the bottom of the frame. That is where the umbrella is being held. Watch how long an arm stays perfectly still. On a hot afternoon at Flushing Meadows, with the court surface radiating heat back up at everyone standing on it, that is a genuinely punishing thing to do for two weeks.
 
-The first week is the good week, and casual viewers get this backwards. Everyone tunes in for the second Saturday, but the first four days are where the tournament is decided: sixteen matches happening at once, a seed going down on an outside court while the stadium plays a mismatch, the crowd wandering in from the food village with a drink in hand and no idea they are about to watch a 20-year-old play the match of their life. If you are new to all of this, our [guide to watching tennis](/lifestyle/how-to-watch-tennis/) covers the rhythm of a Slam day, and the [US Open tournament guide](/tournaments/us-open-guide/) has the history and the practical details.
+At the end of a rally, watch the net pair rather than the ball. You will see them read the point a fraction before it finishes, and the good ones are already rising out of the crouch as the last shot is struck.
 
-## Why an open draw is better television
+Watch a roll. Really watch one. If it stays flat and arrives dead in the other player's hand, that person passed a June audition to be able to do that.
 
-There is a version of tennis fandom that wants certainty: the best player wins, the hierarchy holds, order is restored on the final Sunday. It is satisfying in the way a well-run railway is satisfying.
+And if you are ever at the site in person, go and stand at an outside court during the first week rather than staying in the big stadiums. That is where you can hear the crew working, where the sightlines are close enough that you can see a 14-year-old getting instructions from a supervisor between games. If you have never done the [free week at Flushing Meadows](/lifestyle/us-open-2026-fan-week-qualifying-free-week-flushing-meadows/) before the main draw, it is the same crew, the same drills, no queue and no ticket. For everything else about the fortnight, from the schedule to the surface, our [US Open tournament guide](/tournaments/us-open-guide/) has it, and the story of the man whose name is on the big stadium is worth ten minutes too, because [Arthur Ashe](/lifestyle/arthur-ashe-name-on-biggest-stadium-in-tennis/) had opinions about who tennis was for that the ball crew quietly proves right every year.
 
-This is not that tournament. The number one is at home with a knee that will not settle. The defending champion has been off the tour since spring and could be brilliant or badly rusty, possibly both in the same match. The top seed has been a Grand Slam champion for exactly one summer. The most decorated player in history is 39 and negotiating with the weather. On the women's side, half the former champions in the sport are crammed into one half of the draw.
+Because that is what those 315 people are, in the end. A Queens ninth-grader, a retired executive who failed the audition once and came back, a schoolteacher, a college athlete, all dressed identically and all of them a few feet from the best players on the planet. The tournament sells itself on stars, and the stars deserve it. But the fortnight runs on people who trained for a job you are supposed to look straight through, and who will spend the next two weeks being very good at being invisible.
 
-That is not a flaw in the fortnight. That is the fortnight. Draws like this one produce the matches people still talk about in ten years, precisely because nobody could have called them in advance.
+Look at the edges of the picture tonight. There is a whole cast down there.
 
-So do this: find the draw sheet, look at it properly once before Sunday, pick two players from outside the top eight and follow them. Not the favourites, who will be on television whatever you do. Somebody in the middle of the sheet with a difficult opener and a run in them. By Wednesday one of them will be gone and the other will have a match you did not expect to care about, and you will be shouting at a stranger in a stadium 3,000 miles away.
-
-The sheet that came out on Thursday will look nothing like this in a week. That is exactly why it is worth reading now.`;
+*Photo: a tennis net against a blue hard court, via Unsplash.*`;
 
 const record = {
   slug, title, excerpt, body,
