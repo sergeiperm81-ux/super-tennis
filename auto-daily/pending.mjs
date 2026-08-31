@@ -1,110 +1,112 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'us-open-2026-ball-crew-315-people-on-court';
-const stamp = '2026-08-30T05:00:00.000Z';
-const title = 'The 315 People Who Keep the US Open Moving';
+const slug = 'stan-wawrinka-us-open-2026-final-grand-slam-farewell';
+const stamp = '2026-08-31T05:00:00.000Z';
+const title = 'Stan Wawrinka Says Goodbye to New York, Ten Years After the Title';
 const meta_title = title;
-const meta_description = 'Meet the US Open ball crew: how 315 people were picked from thousands of applicants, what the job pays, and why they are the last humans on court besides the umpire.';
-const excerpt = 'They crouch by the net in Ralph Lauren, sprint through the heat and roll the ball flat and fast down the sideline. Here is how the US Open ball crew is chosen, what the fortnight is actually like, and why you should watch the edges of the picture.';
-const image_url = '/images/news/detail-05.webp';
-const image_alt = 'A tennis net photographed close up against a deep blue hard court, the view the ball crew have all fortnight';
+const meta_description = 'At 41, Stan Wawrinka plays his final US Open on a wild card that almost never came, ten years after he beat Novak Djokovic for the title in New York.';
+const excerpt = 'A late phone call, a wild card he had given up on, and one more walk into Flushing Meadows for the man with the biggest one-handed backhand in tennis.';
+const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Wawrinka_RG19_%2816%29_%2848199015787%29.jpg/500px-Wawrinka_RG19_%2816%29_%2848199015787%29.jpg';
+const image_alt = 'Stan Wawrinka on court at Roland Garros in 2019';
 
-const body = `Somewhere in the first ten minutes of the US Open main draw today, a teenager in a navy Ralph Lauren polo will jog to the base of the net on Arthur Ashe Stadium, fold herself into a crouch, and then do the hardest part of the job: nothing at all. No fidgeting. No scratching an itch. No looking up at the 23,000 people above her. Just stillness, for as long as the rally lasts, while two of the best players alive hit a ball at each other roughly eight feet over her head.
+const body = `Stan Wawrinka had already gone home. The bags were back in Switzerland, the US Open wild card list had been published without his name anywhere on it, and the last summer of a twenty-year career had quietly rearranged itself around an absence. He had said what he needed to say about it, which was not much and was somehow the saddest version of it. "I was just sad not to be able to say goodbye to New York and to the US Open."
 
-You have watched hundreds of hours of tennis and you have probably never once watched her. That is the point. The ball crew is the only group at a Grand Slam whose entire performance is measured by how completely you fail to notice them. And yet they are on court more than anyone. Players come and go in two hours. Umpires rotate. The ball crew is there from the first ball of the qualifying weekend to the last point of the men's final, in the heat, in the rain delays, in the 1am finishes that only New York produces.
+Then, late on a Wednesday, his phone rang.
 
-This year there are 315 of them. They were chosen from thousands. Here is what it takes.
+Patrick Kypson, the young American who had been given that final wild card, had withdrawn injured. The tournament wanted to know whether Wawrinka fancied one more trip to Flushing Meadows. He was, by his own account, already back in Switzerland when the call came. He said yes. He got on a plane. And on Monday, ten years after he stood on Arthur Ashe Stadium with the trophy and a shirt soaked through, the 41-year-old walks out for the last Grand Slam match of his life.
 
-## What the job actually is
+If you only watch tennis a few weeks a year, this is one of the weeks. And this is one of the stories.
 
-At a Grand Slam, six people work a court at a time. Two crouch at the net, one at each post, and four stand at the back corners behind the baselines, one in each pocket of space between the singles sideline and the doubles alley. They swap positions on a rotation so nobody spends the whole match doing the sprinting or the whole match doing the standing, and each shift runs about an hour before a fresh set of six comes on.
+## The wild card that almost never came
 
-The net pair have the glamorous half and the terrifying half of the job. They are the ones who dart across the court between points to collect a dead ball, and they are the ones who have to read the game well enough to know when it is safe to move. Get that wrong at a Slam and you are in the frame of a highlight reel for the rest of your life. The back four are the supply line. They feed balls to the server, hold the spares, and cover the corners.
+Wild cards are the small print of tennis, and they are usually boring. A tournament gets a handful of free main-draw places to hand out, and it hands them to promising local teenagers, to a returning star, to whoever the sponsors and the national federation and the story of the week point towards.
 
-Then there is the choreography around it. The 90-second changeover, when they run the umbrellas out on a hot afternoon and hold them steady over a seated player who is not looking at them. The towel, handed over and taken back, over and over, for three or four hours. The bin of used balls swapped for fresh ones every nine games. The moment a player's cap comes off and someone has to sprint it back.
+The US Open gave its last one to a player ranked around No. 115, which is a perfectly defensible thing to do. Wawrinka is No. 125 and 41 years old. He has won a small number of matches this season and lost a lot more. On paper, there is no argument.
 
-And the roll. When a ball has to go from one end of the court to the other, it does not get thrown across the middle of a live playing surface. It gets rolled, flat and fast and dead straight, right along the ground at the back of the court, usually about 40 feet, ideally without a single wobble. It looks like the easiest thing in the world when it is done well, which is exactly why it is one of the things they test you on before they let you anywhere near a match.
+Except the US Open is not paper. Wawrinka won it. He beat the best player in the world in the final to do it. And he had already announced that 2026 would be his last year, which meant the list, when it came out without him, was not a ranking decision so much as a closed door on a farewell.
 
-## Twenty minutes that decide your summer
+Tennis fans, who are not always right but are frequently loud, said so. Then Kypson pulled out, the door opened again, and a man who thought he had played his final major found himself repacking. There is something very tennis about that: no ceremony, no announcement from on high, just an injury to someone else and a late phone call and a seat on a flight.
 
-The route in is not a secret and it is not an invitation. Anyone who is at least 14 and legally allowed to work in the United States can apply, which is why the application list for a New York summer runs into the thousands. Most applicants come from the tri-state area, which gives the crew its particular flavour: Queens teenagers, teachers on their holidays, retirees from Long Island, a lot of people who grew up hearing planes come down over the courts.
+## Ten years ago, on the biggest court in the sport
 
-Applicants who get through the paperwork are invited to an in-person tryout in the middle of June, on the courts at the Billie Jean King National Tennis Center. Around 650 people made it that far this year. Each of them got 20 to 30 minutes on court to prove they could do the job.
+In September 2016, Wawrinka arrived at the US Open as a player everyone respected and nobody picked. He was 31. He had already won two majors that nobody had picked him for either.
 
-They run line drills, back and forth between the sidelines, scooping up balls at speed, because agility is the single biggest thing the assessors are looking for. They catch and they bounce, to show hand-eye coordination that holds up under nerves. They roll, and the roll is judged on whether it stays flat and straight. And they throw, because a ball person has to be able to send a ball the length of a tennis court on the fly, which is a great deal further than it looks on television. Cathie Delaney, the assistant director of ballpersons, has told rooms full of hopefuls exactly that: you will have to throw the length of the court.
+He came through a semi-final against Kei Nishikori by 4-6, 7-5, 6-4, 6-2, the kind of scoreline that tells you he lost the first set, worked out the problem, and then simply kept hitting harder than the other man could absorb. And in the final he met Novak Djokovic, the defending champion, the world No. 1, the most complete returner the sport has produced.
 
-Of the 650 who tried, 315 came out the other end onto this year's crew. It is not quite as brutal as it sounds, because a good number of the people on court over the next fortnight are returning veterans who have done this for five, ten, twenty years and know the rhythms better than some of the players. But for a first-timer it is genuinely competitive, and plenty of very fit, very keen people go home from a Sunday in June having been beaten by a ball that would not roll straight.
+Wawrinka lost the first set in a tie-break, 7-1. Then he won the next three: 6-4, 7-5, 6-3.
 
-## Fourteen to eighty-two
+Look at that sequence for a second, because it is the whole man. He does not start well. He gets outplayed for stretches. And then somewhere around the middle of the second set, the ball starts leaving his racquet at a speed that changes the negotiation entirely, and the greatest defensive player in history runs out of ways to say no.
 
-The single loveliest thing about the US Open ball crew is a policy that barely gets mentioned: there is no upper age limit. Every other stereotype about this job dissolves the moment you know that.
+That was his third major final. He has never lost one. Australian Open 2014, Roland Garros 2015, US Open 2016: three finals, three wins, and in each of them the man across the net was the world No. 1. If you want a single fact to keep about Stan Wawrinka, keep that one.
 
-The youngest members are 14, which is what you expect. The rest is what you do not. Bob Kass, a semi-retired real estate executive from Port Washington, tried out in 2021 at the age of 67 and did not make it. He went away, worked on it, came back, and made the crew at 69, sharing a court rotation with kids who were 55 years younger than him. He said the point was to show that his demographic still had plenty to offer. Spectators recognised him, called out to him, wanted photographs with him.
+## The backhand you can pick out with your eyes shut
 
-He is not even the record. That belongs to Manny Hershkowitz, who worked on court at Flushing Meadows in September 1999 at the age of 82, and is listed by Guinness World Records as the oldest ball person at a major championship. Eighty-two. Crouching at the net. In New York, in September.
+Here is why people who have never held a racquet love watching him.
 
-That mix is the crew's actual identity, and it is visible from the stands if you look for it. On the same court you will see a ninth-grader who was doing algebra homework in May and a man in his sixties who has taken two weeks off work, both wearing the same polo, both moving on the same whistle.
+The one-handed backhand is going out of the world. It is harder to learn, harder to defend with, and worse against the shoulder-high bounce that modern strings and modern courts produce. There are perhaps a handful of men left on tour who hit one at the top level, and Wawrinka hits the biggest of them all.
 
-## The only Slam that pays
+It does not look efficient. It looks like a decision. He turns his back on you, coils, drops the racquet head somewhere near his ankle, and then unwinds with his whole body committed to a shot that either lands on the line or lands in the third row. There is no half-speed version. There is no safety setting. Fans in the stands can hear the difference between his backhand and everyone else's, a flat crack rather than the modern brushed hum.
 
-Here is the part that surprises people: this is a job. The US Open is the only Grand Slam that pays its ball crew, at a rate reported this summer at around 19 dollars an hour, with a meal allowance on top. The shifts are long and stack up over the best part of three weeks once qualifying and Fan Week are counted, so it is a real summer wage rather than a token.
+That is the thing to watch for if you are new to this. You do not need to follow the score. Wait for a rally where he gets pushed wide to his left, and watch what he does with a ball he has no business attacking. That shot won him three majors and cost him a hundred other matches, and he never once thought about changing it.
 
-Then there is the uniform, which has quietly become one of the most coveted pieces of kit in tennis. Ralph Lauren dresses the crew every year in a specific ball crew collection, they wear it head to toe, and they generally get to keep it. There are people who apply for this job largely because they want to be the person in the room who owns one.
+## A farm in Vaud, and a club five minutes up the road
 
-None of which is really why anyone does it. What you are actually buying with those hours is a vantage point money cannot get you. There is no ticket at Flushing Meadows, at any price, that puts you eight feet from a Novak Djokovic service motion at 9pm under the lights on [a night session at Arthur Ashe](/lifestyle/us-open-2026-night-session-arthur-ashe-after-dark/). The crew gets that for a fortnight, and they get paid for it.
+He did not come out of an academy. His parents, Wolfram and Isabelle, farmed in Saint-Barthelemy in the canton of Vaud, and Stan and his brother grew up doing farm work. When he was eight, his parents told the boys to pick a sport. There was a tennis club about five minutes away. That was the whole selection process for a career that produced three major titles, an Olympic gold in doubles with Roger Federer in Beijing in 2008, and a Davis Cup for Switzerland in 2014.
 
-## How the other three majors do it
+On his left forearm there is a tattoo, a line from Samuel Beckett: Ever tried. Ever failed. No matter. Try again. Fail again. Fail better.
 
-Every Slam solves the same problem differently, and the differences say a lot about each tournament.
+It became a poster quote, and a bit of a joke, and then it became something else. Because the interesting thing about that sentence is what it does not say. It does not say you will win. It does not promise anything. It is a set of instructions for continuing when the evidence is not on your side, which is what a tennis career mostly is, and which is exactly what he has been doing this year, going out to face players half his age in front of crowds who came to say goodbye.
 
-Wimbledon runs the most famously rigorous programme in the sport. Its ball boys and girls, universally called BBGs, are not open applicants at all. They are nominated by around 30 schools in the boroughs near the All England Club, mostly Merton, Sutton, Kingston and Wandsworth, plus a handful in Surrey, and the schools put forward pupils in Year 9 and 10 in the autumn. Selection days follow at Raynes Park in the depths of January, testing fitness, coordination, ball skills, concentration and the ability to stand absolutely still. Those who survive train for around five months before the Championships even start. Roughly 280 BBGs make it each year out of about 1,500 candidates, a group that typically splits into around 170 new recruits and 110 returning from previous years. It is a school scheme run to the standards of an elite sports academy, and it has been supplied by local schools since 1969.
+## The night in Melbourne that turned him into a champion
 
-The Australian Open takes the opposite approach and casts its net across an entire continent. Around 400 ballkids work the tournament each January, chosen from well over 3,000 applicants, with trials run state by state through the spring and summer and a mandatory block of on-court training sessions before an official induction day. Tennis Australia also runs an international strand: a group of ballkids from the China Open, for example, has travelled to Melbourne to work the Australian Open, which is about as good a school trip as exists.
+You do not become Stan the Man by winning. You become him by losing correctly, once, in front of everyone.
 
-Roland Garros, meanwhile, has its own recruitment across France, and the Australian Open has been known to send its best performers there as a reward. Four tournaments, four philosophies, one job.
+The 2013 Australian Open, fourth round, against Djokovic. Wawrinka went ahead 6-1, 5-2. He was two games from beating the world No. 1 and did not do it. Instead they played on for five hours and three minutes, and in the fifth set the games kept going: six all, eight all, ten all, until at twenty past one in the morning Djokovic finally took it 12-10 with a curling backhand pass that missed Wawrinka's outstretched racquet by about an inch.
 
-## The last humans on court
+He lost. He also stopped being a player who could not do this. That season he made his first Roland Garros quarter-final, his first US Open semi-final, and qualified for the season finale for the first time. Twelve months later he beat Djokovic in a quarter-final in Melbourne and Rafael Nadal in the final, and he was a Grand Slam champion at 28, an age at which most players are being described as established.
 
-There is a reason to pay more attention to the ball crew in 2026 than there was ten years ago, and it is not sentimental. They are almost the only people left.
+The other half of that turn was a coach. He began working with the Swede Magnus Norman in 2013, a former world No. 2 who had lost a Roland Garros final himself and who spent his time with Wawrinka doing something quite unfashionable: not rebuilding the technique, but persuading the man holding the racquet that he belonged in the last week of majors. It is a useful thing to know if you are a fan rather than a player. At that level almost nobody wins more matches by learning a new shot. They win them by finally believing the shots they already have will hold up when it is 4-4 in the fourth and the crowd has stopped breathing.
 
-The US Open has not used line judges since 2021, when it became the second major to go fully electronic and put Hawk-Eye Live on every competition court. Where there used to be a semicircle of officials in coordinated kit, each with a job and a voice and the occasional catastrophic misjudgement, there is now a camera array and a recorded call. Seventeen courts, a couple of hundred cameras, no humans. Wimbledon followed in 2025. The old drama of a player wheeling around to glare at a line judge is simply gone from the sport.
+Then, in 2015 in Paris, in a pair of red checked shorts that the internet has never fully recovered from, he beat Djokovic again in a final. Then New York in 2016. Career-high ranking of No. 3. Sixteen tour titles. Fifty consecutive majors played, an iron-man run that only ended when his left knee needed two operations in 2017 and took the better part of two years of his life with it.
 
-What that leaves on a US Open court is the two players, the chair umpire, and six people in Ralph Lauren. That is the entire human population of the most-watched tennis stadium on earth. The ball crew are not decoration around the edges of a professional match any more. They are, along with the umpire, the last of the working staff you can actually see.
+## The long goodbye: Melbourne, Paris, London
 
-## The towel problem
+He announced it last December, in the plainest possible language. "Every book needs an ending. It is time to write the final chapter of my career as a professional tennis player. 2026 will be my last year on tour." Then he added two words that have been on every banner in every crowd since: one last push.
 
-The job has also had its own reckoning, and it is worth knowing about because it changed how some players behave.
+Melbourne came first, and Melbourne was glorious. On a wild card, in his twentieth appearance there, he beat the French qualifier Arthur Gea 4-6, 6-3, 3-6, 7-5, 7-6(3) to become the oldest man into the third round at Melbourne Park since Ken Rosewall. He lost the next one to Taylor Fritz, and then stood on court with a microphone and a beer, thanked the crowd for twenty years, and admitted he was sad to leave.
 
-For years the towel ritual sat awkwardly with a lot of viewers: a multimillionaire athlete clicking fingers or gesturing impatiently at a 15-year-old to produce a sweat-soaked towel, several times a game. It came to a head when Fernando Verdasco was widely criticised after video circulated of him snapping at a ball boy who had not moved fast enough. Roger Federer used a press conference to tell his fellow professionals, in plain terms, to respect ball kids.
+Paris was shorter and no less emotional: a first-round exit to the Dutchman [Jesper de Jong](/lifestyle/jesper-de-jong-roland-garros-2026-lucky-loser-run/), who was in the draw only because he had lost in qualifying and got rescued by a withdrawal, and who went on to have the run of his life. Wawrinka waved at the Paris crowd for the twenty-first and final time. He was not the only French Open regular saying goodbye this year, either, with [Gael Monfils taking his own farewell lap](/lifestyle/gael-monfils-roland-garros-farewell-2026/) in front of the same crowd.
 
-The ATP experimented with a fix. At the Next Gen Finals in Milan, towel racks were installed in the corners of the court so players had to fetch their own towels rather than have a teenager sprint one over. Reaction split predictably. Andrey Rublev was in favour. Stefanos Tsitsipas, who won the event, hated it, complaining that he was always running for the towel and always thinking about it while he played. The racks never made it to the Slams, so the towel is still handed over at Flushing Meadows this fortnight. But the conversation lingered, and the way most players handle that exchange now, with a nod or a thank you, is noticeably different from ten years ago.
+And then Wimbledon, where he ran into Matteo Berrettini on day one and lost four sets that all went to tie-breaks. All four. In the second one he held six set points and did not take any of them, and the breaker crawled to 18-16 before Berrettini finally got out of it. It lasted well over four hours. He cried at the end of it, and so did quite a lot of people watching.
 
-## The ball boy who came back with the trophy
+## Grandstand, and the Italian who has done this to him before
 
-If you want the ultimate argument for taking this job seriously, it is a Swiss one.
+Which brings us to Monday, and the small joke the draw has played.
 
-In 1992 and 1993, a skinny local kid rode his bike ten minutes from home to the Swiss Indoors in Basel and worked as a ball boy. In the 1993 final he collected balls for Michael Stich and Stefan Edberg; Stich won it in four sets, and afterwards handed the 12-year-old his ball boy's medal. The kid was Roger Federer. He would go on to win that tournament ten times as a player, and he has said the medal is still among his prized possessions, that he loved being a ball boy there because it let him watch the best players in the world up close and see how they handled the pressure.
+Wawrinka plays Matteo Berrettini again, in the first round, at the same stage of the same season, eight weeks after the Wimbledon match. It is the only meeting they have ever had, and now it is two. Berrettini is 30, a former Wimbledon finalist himself, and a man whose own career has been chewed up by injuries badly enough that he knows exactly what it is to be handed a wild card and be grateful for it.
 
-That is not a fairytale about becoming a champion. It is a fairly precise description of what the job gives you: proximity. You learn what the ball actually sounds like off a professional racket, how much a player sweats in the third set, what the silence before a second serve feels like from inside it. It is the best tennis education available anywhere, and at Flushing Meadows it comes with an hourly rate.
+"It is a rematch, of course," Wawrinka said in New York. "Wimbledon was a tough battle, was a great match. I think we both played well. More than four hours, four tie-breaks, so it was really special."
 
-## What to watch for, starting tonight
+That is worth sitting with for a moment, because it is not a one-sided piece of sentiment. Berrettini reached a Wimbledon final in 2021 and then spent years being taken apart by his own body, one abdominal or hand or foot problem after another, dropping out of the rankings and climbing back and dropping out again. He knows precisely what it costs to walk on court not knowing how many more times you get to do it. Whatever happens on Monday, these two are not strangers to the same weather.
 
-The next fortnight is the best chance you will get all year to see this properly, so here is how to actually watch it.
+They are scheduled on the Grandstand, not on the stadium where he won the title. That is either a shame or exactly right, depending on your taste. The Grandstand is the court where the noise sits right on top of the players, where a crowd of a few thousand can sound like a football match, and where the atmosphere does not need a night session and a celebrity row to get going. If the last act of a beloved player is going to be played anywhere, a packed outside stadium in Queens is not the worst theatre in the world.
 
-On changeovers, when the broadcast is showing you a player with a towel over their head, look at the bottom of the frame. That is where the umbrella is being held. Watch how long an arm stays perfectly still. On a hot afternoon at Flushing Meadows, with the court surface radiating heat back up at everyone standing on it, that is a genuinely punishing thing to do for two weeks.
+And if he wins, the reward is absurd. The winner of this match goes into the second round to play the fourth seed, Novak Djokovic, assuming Djokovic gets past Mariano Navone. The man Wawrinka beat in two Grand Slam finals. The man who broke his heart in Melbourne in 2013 and made his career by doing it. In a [draw that nobody can call with any confidence](/lifestyle/us-open-2026-draw-nobody-knows-who-wins/), that is the storyline sitting one win away.
 
-At the end of a rally, watch the net pair rather than the ball. You will see them read the point a fraction before it finishes, and the good ones are already rising out of the crouch as the last shot is struck.
+## What he is actually leaving behind
 
-Watch a roll. Really watch one. If it stays flat and arrives dead in the other player's hand, that person passed a June audition to be able to do that.
+There is a version of tennis history that only remembers the men at the very top of it, and Wawrinka does not fit into it neatly. He never held the No. 1 ranking. He never won Wimbledon. He was the second-best Swiss player of his own era, and he spent a decade being introduced as the other one.
 
-And if you are ever at the site in person, go and stand at an outside court during the first week rather than staying in the big stadiums. That is where you can hear the crew working, where the sightlines are close enough that you can see a 14-year-old getting instructions from a supervisor between games. If you have never done the [free week at Flushing Meadows](/lifestyle/us-open-2026-fan-week-qualifying-free-week-flushing-meadows/) before the main draw, it is the same crew, the same drills, no queue and no ticket. For everything else about the fortnight, from the schedule to the surface, our [US Open tournament guide](/tournaments/us-open-guide/) has it, and the story of the man whose name is on the big stadium is worth ten minutes too, because [Arthur Ashe](/lifestyle/arthur-ashe-name-on-biggest-stadium-in-tennis/) had opinions about who tennis was for that the ball crew quietly proves right every year.
+But look at what he did with that. In an age when three or four men divided the majors between them for twenty years, Wawrinka took three away from them, and he took every single one by beating the world No. 1 in a final. He did not sneak them. He did not catch anyone on a bad week. He walked into the biggest matches of his life against the best players in the world and hit through them.
 
-Because that is what those 315 people are, in the end. A Queens ninth-grader, a retired executive who failed the audition once and came back, a schoolteacher, a college athlete, all dressed identically and all of them a few feet from the best players on the planet. The tournament sells itself on stars, and the stars deserve it. But the fortnight runs on people who trained for a job you are supposed to look straight through, and who will spend the next two weeks being very good at being invisible.
+Add the Olympic gold in doubles, the Davis Cup, sixteen titles, fifty straight majors, two knee operations and two foot operations and a return from all of it. Add the fact that at 40 he became the first player in his forties to be ranked inside the top 100 since Federer. And add the thing you cannot count, which is that in twenty years on tour nobody seems to have a bad word about him.
 
-Look at the edges of the picture tonight. There is a whole cast down there.
+He plans to finish at home, in Basel, in October, on the indoor court where he watched Swiss tennis as a kid. That is the real ending. What happens in New York this week is the last chapter of the major-championship part of the story, which for a player of his kind is the part that mattered most.
 
-*Photo: a tennis net against a blue hard court, via Unsplash.*`;
+If you want a way into this sport, and you do not play it and are not going to, start here. Watch a 41-year-old with a bad knee and a wild card he almost did not get, in a stadium full of people who understand exactly what they are looking at, hitting the most beautiful shot in tennis until somebody stops him. He has been telling us for twenty years how he wanted to be judged, and it is inked on his arm: not by whether he won, but by how he kept going. Monday is one more go. If you are anywhere near a screen at Flushing Meadows time, give it an hour of your life. You can watch the rest of the fortnight around it, and you can read our [guide to the tournament itself](/tournaments/us-open-guide/) while you wait for the first ball.
+
+*Photo: Stan Wawrinka at Roland Garros 2019 by si.robi, CC BY-SA 2.0, via Wikimedia Commons.*`;
 
 const record = {
   slug, title, excerpt, body,
