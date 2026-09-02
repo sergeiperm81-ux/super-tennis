@@ -1,120 +1,146 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'mariano-navone-us-open-2026-djokovic-first-round-upset';
-const stamp = '2026-09-01T05:00:00.000Z';
-const title = 'Mariano Navone: The Man From Nueve de Julio Who Sent Djokovic Home';
+const slug = 'lilli-tagger-us-open-2026-austria-one-handed-backhand';
+const stamp = '2026-09-02T05:00:00.000Z';
+const title = 'Lilli Tagger: The 18-Year-Old Austrian With the Rarest Shot in Tennis';
 const meta_title = title;
-const meta_description = 'Mariano Navone was ranked 582 in the world five years ago. At the 2026 US Open he beat Novak Djokovic in five sets. Meet the Argentine they call La Navoneta.';
-const excerpt = 'A 25-year-old from a farming town in Buenos Aires province walked onto Arthur Ashe and ended the most reliable streak in tennis. This is who he is.';
-const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Road_2_Australia_-_Navone_V_Burruchaga_Final_-_BugWarp_206_%28cropped%29.jpg/500px-Road_2_Australia_-_Navone_V_Burruchaga_Final_-_BugWarp_206_%28cropped%29.jpg';
-const image_alt = 'Mariano Navone of Argentina on court during a tournament final';
+const meta_description = 'At 18, Lilli Tagger won her first Grand Slam match at the 2026 US Open playing a one-handed backhand that has almost vanished from the womens game.';
+const excerpt = 'She left a valley town in East Tyrol at 13, learned the game in Italy, and arrived in New York as the youngest player in the top 50 with the prettiest shot in the draw.';
+const image_url = 'https://upload.wikimedia.org/wikipedia/commons/6/60/French_Open_Juniors_Champion_Lilli_Tagger_%28cropped%29.jpg';
+const image_alt = 'Lilli Tagger of Austria at Roland Garros after winning the junior girls singles title';
 
-const body = `Late on Sunday night at Flushing Meadows, a 25-year-old from a farming town four hours west of Buenos Aires stood in the middle of Arthur Ashe Stadium with his hands on top of his head, trying to make the arithmetic work. Twenty-four major titles on the other side of the net. Four US Open trophies in that man's cabinet. A first-round record at this tournament that had never once cracked in twenty visits. And there, on the scoreboard, in numbers that would not go away: 7-6(5), 5-7, 4-6, 6-2, 6-1.
+const body = `There is a sound that has very nearly disappeared from women's tennis. It is the sound of a one-handed backhand: a slightly hollower, later, more resonant knock than the two-handed version, the noise of a ball struck by a player whose whole body has to arrive at the right place at the right instant, because there is no second hand to bail her out.
 
-Mariano Navone had just beaten Novak Djokovic.
+On Monday afternoon at Flushing Meadows, on an outside court with a few hundred people leaning on the railings, you could hear it again. An 18-year-old from a valley town in the Austrian Alps was hitting it, over and over, and by the end of the first set the small crowd had grown into a large one, because word travels quickly at the US Open when something on court is worth looking at.
 
-If you watch tennis rather than play it, this is exactly why you keep the television on past midnight. Not for the perfect match — the perfect match is often quite boring — but for the night when the order of things stops holding. Four hours and 36 minutes of it, in this case. And when it was over, most of the world had the same reaction, which was to open a search window and type: who is Mariano Navone?
+Her name is Lilli Tagger. She won 6-0, 7-6(4), against the German Tamara Korpatsch, and it was the first main-draw win of her life at a Grand Slam. If you follow tennis rather than play it, she is about to become one of your favourites, and it will take you roughly one backhand to work out why.
 
-Here is the answer, and it is a much better story than "unknown Argentine".
+## Two hours on a side court
 
-## What actually happened on Ashe
+The first set took barely half an hour. Tagger did not so much beat Korpatsch as remove her from the equation: 6-0, no argument, the kind of set that makes an experienced pro look up at her box with a face that says, what exactly am I supposed to do about this.
 
-Let us be honest about the shape of it, because the shape matters.
+The second set was the education. Korpatsch is 31 and has spent a decade grinding out a living in a sport that does not hand out free weeks. She started finding the lines. She dragged Tagger into longer rallies. And Tagger, who had been playing as if the whole thing were a training drill, suddenly had to hold serve under pressure at a major for the first time in her career, in a stadium that was filling up specifically to watch her fail.
 
-Djokovic was not well. He has not been well for most of this season, by his own account. He was vomiting courtside more than once, he took a medical timeout for his back before the fifth set, and by the end he was moving like a man carrying furniture up a staircase. Afterwards he said the thing that no 39-year-old wants to hear come out of his own mouth: that the sickness was "something that I've been carrying, unfortunately, pretty much every match this year", and that in the closing stages "my whole body starts to collapse, basically cramping and pain". He said he had, in effect, hated being out there. "I pretty much despised every moment that I spent on the court."
+She did not fail. She got to a tie-break and won it 7-4. The whole thing took nearly two hours, which is a long time for a 6-0, 7-6 scoreline, and that is rather the point: the numbers say routine, the tennis said anything but.
 
-That is a genuinely sad thing to read from the most physically indestructible athlete tennis has produced.
+Afterwards she talked about the wobble like a much older player. "I think she started playing well," Tagger said of Korpatsch. "She also played very well at the beginning of the second set. Maybe I made some more mistakes, and she started to play a little bit better. It can happen. I think the most important thing to learn from it is how fast you come out of it."
 
-But look at the middle of the match and you will find something else, something that gets lost when a result is filed under "the great man was ill". Navone won the first set in a tie-break. Then Djokovic, doing what Djokovic has always done, took the next two and looked to be turning the whole thing into an admin task. Third set, 6-4. It was over. Everyone in the building thought it was over.
+How fast you come out of it. Not a bad philosophy for eighteen.
 
-Navone did not fold. He kept the rally lengths long, which is the one thing a defensive clay-courter can do to a struggling body, and he stayed clean while the match got ugly: 34 unforced errors to Djokovic's 70 by the finish, and eight break points saved along the way. Sets four and five went 6-2, 6-1. You can call that a collapse if you like. You can also call it a young man refusing to let a legend rest, for two solid hours, until the legend ran out of road.
+## A town at the end of a valley
 
-Both things are true at once. Grown-up sport usually works like that.
+Tagger was born on 17 February 2008 in Lienz, which sits in East Tyrol, a piece of Austria that is cut off from the rest of Tyrol by mountains and looks south towards Italy rather than north towards Innsbruck. It is beautiful and it is small. It is not, on any reasonable reading, a place that produces top-50 tennis players.
 
-The numbers around it are almost hard to believe. Djokovic arrived in New York on a streak of 78 consecutive first-round wins at Grand Slam tournaments. His last opening-round loss at a major came at the 2006 Australian Open, which is to say two decades ago, back when the man who beat him on Sunday was four years old.
+Except that tennis was already in the house. Her mother, Sabine, played in the Austrian Bundesliga. Her father, Stephan, is a keen club player. There are two siblings, Emma and Ben, who also grew up with rackets in their hands. This was not a family that had to be sold on the sport; it was a family that had to work out what to do when one of the children turned out to be unusually good at it.
 
-## The town, the club, and a boy aged three
+Austria is a country that knows exactly how to develop a downhill skier and has far less of a production line for tennis. Every step Tagger took after the age of about eleven involved leaving somewhere.
 
-Mariano Navone was born on 27 February 2001 in Nueve de Julio, a town in Buenos Aires province that most Argentines could not place on a map without thinking about it first. Flat country. Grain silos. The kind of place where the sporting club is the social centre and everybody's cousin plays for one of its teams.
+## The bet she had to win
 
-His parents are Luis Navone and Analia Vizzon. He has two sisters, Lucia and Pilar. The family has Italian roots, which in Argentina is less a fact than a default setting. He picked up a racquet at the Escuela de Tenis del Club Atletico Nueve de Julio at the age of three, and if that sounds like the standard prodigy line, it is worth pausing on what it actually means in a town like that: not an academy, not a pathway, not a scholarship. A club. Nets on the clay behind the football pitch. A coach who also teaches the ten-year-olds and does the paperwork.
+Here is the story that tells you most about her, and it happened when she was ten.
 
-The idol was David Nalbandian, which tells you a lot about him as a player. Nalbandian was Argentina's great counter-puncher, a man who never won a major and yet is spoken about with more affection than several who did, because he hit a two-handed backhand as clean as anything the sport has seen and because he beat everybody at least once.
+She wanted a one-handed backhand. Not because a coach recommended it, not because it suited her build, but because she had been watching Roger Federer and she had been watching Dominic Thiem, the Austrian who hit perhaps the most violent one-hander the men's game has ever seen. She wanted that shot. She asked to switch.
 
-The other idol, and this is the part that makes Sunday night faintly ridiculous, was Novak Djokovic. Navone watched him win his first Grand Slam at the 2008 Australian Open. He was not yet seven. He remembers thinking that this guy was very special.
+Her coach said no. What her coach said, in effect, was: prove it. It took two years of asking, and it took winning a bet with him, before she was allowed to play the shot she wanted to play. Two years is an eternity when you are ten. Most children would have shrugged and gone back to the two-hander, which is easier to learn and far more likely to keep you employed.
 
-Eighteen years later he sent that guy home in the first round.
+She did not shrug. And when she talks about the shot now, she does not describe it as a stylistic choice or a throwback or a marketing asset. Asked about it earlier this year after a loss to Maria Sakkari in Rome, she called it simply the most natural shot she has.
 
-## Ranked 582, and the nickname that stuck
+That is worth sitting with for a moment. In the entire top 50 of women's tennis you can count the one-handed backhands on the fingers of one hand and have fingers left over. The shot has been engineered out of the women's game by coaches for perfectly rational reasons: it is harder to hit above shoulder height, harder to block back a 190 km/h serve with, harder to teach. What Tagger is doing is not nostalgia. It is a bet that the shot's ceiling is higher than its floor is low, and at six foot one, with the reach and the leverage to hit it, she may well be right.
 
-Here is the detail that reframes everything.
+## Leaving home at thirteen
 
-In October 2021, Navone was given a wild card into a Challenger event in Buenos Aires. His ranking at the time was No. 582 in the world.
+At 13 she began travelling regularly to Vicenza, in northern Italy, to train. There was no boarding facility, so she moved in with her trainer's family. Consider that as a parent rather than as a fan: a thirteen-year-old, a different country, a different language, somebody else's kitchen table.
 
-If you do not follow the sport closely, that number needs translating. The top 100 is roughly where a player can make a living. The top 250 is where you can travel and mostly break even if you are careful. At 582 you are paying to work. You are in qualifying draws in cities you have never heard of, sharing rooms, losing money most weeks, and the honest question — the one every player at that level has had at 2am in a bad hotel — is whether the whole thing is a hobby that has got out of hand.
+Alex Vittur, a figure from the Pustertal on the Italian side of those same mountains, was instrumental in the next move, which was the one that mattered most. He helped arrange her transition to the academy of Francesca Schiavone, near Varese, north of Milan.
 
-He won his first Challenger match at that event. The local crowd, being Argentine and therefore incapable of watching sport without inventing a chant, started calling him La Navoneta.
+If you were designing a coach for Lilli Tagger in a laboratory, you would design Francesca Schiavone.
 
-The joke is football, of course. Lionel Scaloni manages the Argentina national team, and the team under him is universally known as La Scaloneta — roughly, the Scaloni bus, the thing that keeps rolling and does not stop. Navone explained the borrowing with the exact self-deprecation you would want: "In Argentina, the national football team's manager is Lionel Scaloni. La Scaloneta is the nickname of the team that all of the people in Argentina use. So La Navoneta is like the same, but with less people because I'm not very famous."
+## The woman who won Roland Garros with the same shot
 
-Fewer people as of Saturday. Rather more as of Monday morning.
+Schiavone won the French Open in 2010. She was 29, and she beat Samantha Stosur in the final to become the first Italian woman to win a Grand Slam singles title. She did it with a one-handed backhand, a slice that could take the paint off a line, and a competitive streak that occasionally frightened people.
 
-## The year he simply refused to lose
+She is now the person telling an 18-year-old Austrian how to use the same shot, alongside coach Lorenzo Frigerio. There is something quite moving about that pairing. Schiavone spent a career being told her backhand was a liability against the biggest hitters, and then she won a major with it on the surface where it was supposed to be least effective. She is uniquely qualified to tell a teenager to ignore the noise.
 
-Then came 2023, and one of the more absurd seasons anyone has had on the second tier of men's tennis.
+You can see the influence in Tagger's court positioning: she takes the ball early, comes forward when the point invites it, and uses the slice as a weapon rather than an apology. That is a coaching fingerprint.
 
-Navone went 40-18 on the Challenger Tour and won five titles — Poznan, Santa Fe, Santa Cruz, Buenos Aires, and then Santa Fe again — leading every player in the world at that level. He closed the season by winning 14 of his final 15 matches, including back-to-back titles at home, in front of his family, his girlfriend and his friends. He has said it was really, really special, and you can hear that he means it in the ordinary way rather than the press-release way.
+## Paris, 2025
 
-That is what a breakthrough looks like from the inside. It is not one magic tournament. It is a year of winning small things in unglamorous places until the ranking has no choice but to move.
+In June 2025 she went to Roland Garros for the junior event and produced one of the more emphatic weeks the juniors have seen in years.
 
-It moved. By June 2024 he was No. 29 in the world, a career high, having gone from 582 to the fringe of the top 25 in roughly two and a half years. He was suddenly a name in the clay-court section of every draw, the man nobody wanted at a French Open, and if you like watching a specific type of tennis — long points, heavy topspin, a player who treats a rally as a negotiation — he was excellent value.
+Unseeded. Six matches. Four seeded players beaten, including the No. 1 and the No. 3. Not a single set dropped along the way. In the final she beat Britain's Hannah Klugman 6-2, 6-0, which is not a scoreline you often see in a Grand Slam junior final, and became the first Austrian to win the girls' singles title in Paris.
 
-## And then the part nobody puts in the highlight reel
+Junior titles are a notoriously unreliable predictor; for every champion who becomes a household name there are three who never translate it. What made Tagger's week different was the manner. She did not scrap her way through. She overwhelmed people.
 
-Careers do not go up in a straight line, and Navone's stopped going up.
+## Thirteen points in Jiujiang
 
-By February 2025 he had dropped out of the top 50, and he stayed out. That is a brutally quiet kind of setback. Nobody writes about a player falling from 29 to the mid-70s; there is no dramatic injury, no scandal, just a run of first-round losses and a ranking sliding downward while the points from your good year expire one by one. He lost his first two tour-level finals along the way, including one in Bucharest in 2024, which is the sort of thing that starts to feel like a pattern rather than bad luck.
+Four months later she got a wild card into the Jiangxi Open in Jiujiang, China. It was her first WTA main draw. She was 17.
 
-The way back took most of a season. This year he finally won a tour title, and he won it in Bucharest — the same place he had lost a final two years earlier — beating the Spanish qualifier Daniel Merida 6-2, 4-6, 7-5 at the Tiriac Open. It was not a clean, comfortable win. It went the distance and it went sideways in the middle, and then he closed it out. That result pushed him up 18 places to No. 42 and back into the top 50 for the first time since that drop in early 2025. He added a run to the final in Geneva.
+In the semi-final she played Viktorija Golubic, the defending champion and a fellow one-hander, which made it, briefly, the best-looking match on the planet. Tagger trailed 5-2 in the deciding set. She then went down triple match point at 5-4.
 
-He arrived at the US Open ranked somewhere around No. 48, unseeded, with exactly one previous main-draw win at this tournament in his career. His draw gave him the four seed. It gave him Djokovic, on Ashe, in the first round.
+She won thirteen consecutive points.
 
-There are worse ways to spend a Sunday night.
+Thirteen points from triple match point down, at 17, in your first tour-level event, to reach your first final. She lost that final to Anna Blinkova 6-3, 6-3, and by then it hardly mattered. She had become the first player born in 2008 to reach a WTA final, and everyone who watches the sport closely had written the name down.
 
-## A clay player, on a hard court, in New York
+If you enjoy this particular flavour of story, the unranked outsider crashing a party they were not invited to, we wrote about a similar one in Paris this year when [Jesper de Jong turned a lucky-loser slot into the run of his life](/lifestyle/jesper-de-jong-roland-garros-2026-lucky-loser-run/).
 
-The thing that ought to have made this impossible is the surface.
+## The year she stopped being a prospect
 
-Navone is a clay-court specialist in the most traditional South American sense: 1.78m, right-handed, two-handed backhand, built to slide and grind and outlast rather than to blast people off the court. His best results have come on red dirt. New York is the opposite environment — fast, low-bouncing, loud, played under floodlights in front of 23,000 people who arrived with cocktails and opinions.
+2026 is the year the label changed from talent to player.
 
-And yet the style travelled, because the style is really about patience, and patience is surface-agnostic. Against a compromised opponent, the clay-courter's toolkit becomes the cruellest one available: make him hit another ball, and then another. Djokovic needed the points to be short. Navone made sure they were not.
+It started slowly. At the Australian Open she lost in the final round of qualifying, which stings more than a first-round exit because you can see the main draw from there. At Roland Garros she made her Grand Slam main-draw debut and ran the 32nd seed, Wang Xinyu, extremely close before going out in the first round. At Wimbledon she lost in the first round again, in three sets. Three majors, three exits, no wins, and a pile of encouraging reviews that do not pay for anything.
 
-Argentina has a long habit of producing this kind of player and a long habit of watching them run into a wall at the majors. Earlier this season, at Roland Garros, [Juan Manuel Cerundolo beat Jannik Sinner](/lifestyle/juan-manuel-cerundolo-beat-sinner-roland-garros-2026/) in one of the results of the clay season — another Argentine, another giant felled, another reminder that the depth in that country runs far deeper than the rankings suggest. There are 13 Argentines in this US Open main draw. Francisco Cerundolo is the national No. 1 at No. 25 in the world; Tomas Etcheverry, ranked around 31, won his first tour title in Rio this year and came through his opener in straight sets.
+Then came July, and Prague.
 
-What Argentina has not had, since Juan Martin del Potro beat Roger Federer in the 2009 final on this very court, is a men's Grand Slam champion. Before del Potro you have to go back to Guillermo Vilas in 1977. Nobody sensible is suggesting Navone ends that drought over the next ten days. But the noise that went up in Buenos Aires on Sunday night was not really about a trophy. It was about a Nueve de Julio kid on the biggest stage in the sport, beating the best player who ever lived, at the tournament where their one modern hero got it done.
+At the Livesport Prague Open she won her first WTA title in only her tenth tour-level main draw. She came through a first-set tie-break against Ukraine's Daria Snigur in the final and closed it out in straight sets. In doing so she became the first player born in 2008 or later to win a WTA singles title, which is the sort of record that sounds like trivia until you realise what it actually measures: she got there before an entire generation did.
 
-## What he said, and what happens now
+The ranking followed immediately. On 27 July 2026 she reached a career high of No. 45 in the world, making her the youngest player in the top 50. She arrived in New York unseeded, because only the top 32 get seeds, which is why a 10th seed found her in the second round rather than in the fourth.
 
-His own account of it was unfussy and rather lovely. "It's unbelievable. It means a lot for me," he said of playing Djokovic for the first time. "It's a dream come true, I mean seriously, 100 per cent." And then, on the match itself: "It's amazing. The way we played, five sets against the GOAT."
+## What Austria has been waiting for
 
-Not a word of it engineered. He beat his childhood idol and he sounded like someone who had beaten his childhood idol.
+Austrian tennis has had two great modern chapters and both of them are closed.
 
-Next comes Matteo Berrettini, who reached the second round by beating Stan Wawrinka in straight sets on Monday — the end of a farewell we wrote about [when Wawrinka arrived in New York for the last time](/lifestyle/stan-wawrinka-us-open-2026-final-grand-slam-farewell/). It is a winnable match and Navone knows it: he beat Berrettini in Montreal only weeks ago, 6-3, 6-7, 6-3, on a hard court, which rather undercuts the idea that Sunday came from nowhere.
+Barbara Schett reached No. 7 in the world in September 1999 and became, for a generation of Austrians, the face of the sport. Sybille Bammer, a late bloomer who came back after having a child, peaked at No. 19 in December 2007. Since then Austrian women's tennis has been near-misses and small breakthroughs rather than sustained presence at the top.
 
-Beyond that, the draw has opened in a way that suits absolutely nobody's predictions. This was already the [most genuinely unreadable men's field in years](/lifestyle/us-open-2026-draw-nobody-knows-who-wins/) before the four seed went out on day one. Alexander Zverev, top seed and still riding the confidence of [his first major title at Roland Garros](/lifestyle/roland-garros-2026-recap-zverev-andreeva-first-time-champions/), is the nominal favourite in a tournament that has just demonstrated how little that word is worth.
+The men had Thiem, of course, and Thiem had New York. In 2020 he came back from two sets down against Alexander Zverev in the final to win the US Open, the only Grand Slam title of his career, hit with the same one-handed backhand a ten-year-old girl in Lienz had been begging her coach to let her copy. He retired in 2024, and Austrian tennis has been quiet ever since.
 
-There is also a September to think about. Davis Cup captain Javier Frana has picked Navone for Argentina's tie against Turkey on 19 and 20 September in Neuquen. Home crowd, home surface, a national team, and a player who now arrives with the words "beat Djokovic at the US Open" permanently attached to his name.
+It is not quiet this week.
 
-## The bit that will last
+## Next: the woman who nearly won this thing
 
-In a year, the record books will show a first-round result and a set score, and they will not show that Djokovic was ill, and they will not show that a 25-year-old had to hold his nerve for two hours after losing two sets in a row to a man who had never lost this particular match in his life.
+Tagger's reward for that first Slam win is Amanda Anisimova.
 
-That is the small injustice of tennis records. It is also, in a way, the mercy of them. What Nueve de Julio will keep is not the caveats. It is a Sunday night in New York when the boy who learned to play on the courts behind their club, the one they started calling La Navoneta as a joke because he was not very famous, walked off Arthur Ashe Stadium having beaten the greatest of all time.
+The American is the No. 10 seed here and she was standing on Arthur Ashe last September as the runner-up, having lost the 2025 final to Aryna Sabalenka 6-3, 7-6(3). She came back this year saying plainly that she intends to go one better. She opened her tournament on her 25th birthday by hitting 25 winners past her compatriot Ashlyn Krueger, which is either an excellent omen or an extremely well-organised coincidence.
 
-They will be telling that one in the clubhouse for fifty years, and they will be right to.
+Anisimova is, in the most literal sense, the worst possible match-up for a young one-hander. She hits flat, she hits early, and she hits the ball at a height that is designed by physics to hurt a single-handed backhand. She takes time away. She will not give Tagger the shoulder-high loopy ball that lets a one-hander step in and produce the shot you came to watch.
 
-*Photo: Mariano Navone by BugWarp, CC BY-SA 4.0, via Wikimedia Commons.*`;
+Which is exactly why it is worth your evening. Nobody sensible expects Tagger to win. Every teenager who becomes a champion has a first match like this one, and most of them lose it and learn more than they would have from a win.
+
+For context on how fast this can move, [Mirra Andreeva was a 19-year-old dark horse in Paris this spring](/lifestyle/mirra-andreeva-19-year-old-roland-garros-2026-dark-horse/) and is now the No. 5 seed here. The gap between prospect and contender in the women's game is currently about eighteen months wide.
+
+## Why the shot matters, even if the result does not go her way
+
+Let us be honest about why this player is getting attention out of proportion to her ranking.
+
+Partly it is the age and the trajectory. Mostly it is the backhand, and the reason it matters is what it does to the people watching. A two-handed backhand is an efficient, powerful, entirely admirable piece of engineering. A one-hander is a gesture. It has follow-through. It leaves the player standing in a shape you could photograph and hang on a wall, arm extended, racket high, weight still moving forward. Tennis is a sport that people watch partly for how it looks, and this shot looks like nothing else in the modern women's game.
+
+There is a practical argument too. Variety is what makes a match a contest of ideas rather than of ball speed. Tagger can slice, come forward, and change the height and pace of a rally in a way a pure baseline hitter cannot. If she becomes what her coaches believe she can, she will be an awkward opponent for the flat hitters who dominate now, and awkward players have always been the ones who spring surprises at majors.
+
+And there is a third thing, which is harder to write down. Somewhere at this moment there is a nine-year-old at a club in Graz or Bristol or Ohio, hitting two-handed because that is what everyone is taught, who is going to see this Austrian on television and ask her coach the same question Lilli Tagger asked hers. Some of those coaches will say no. One of them will say yes.
+
+## What to look for when they play
+
+Watch her feet, not her hands. The one-hander only works when she has time to set up sideways, and Anisimova's entire game is built on denying opponents time. If Tagger is arriving at the ball early and hitting through it, she is in the match. If she is stretching, or hitting it off the back foot, or slicing when she does not want to, she is in trouble.
+
+Watch her second serve. At six foot one she has genuine serve potential, and the first serve already gets her free points. Against a returner as clean as Anisimova, the second serve is where the match will actually be decided.
+
+And watch how she handles the noise. Flushing Meadows is the loudest, rudest, most gloriously distracted Grand Slam on earth, and that is a lot of stadium for a girl from a town of 12,000 people facing an American who spent last September becoming a national story.
+
+The last time she felt properly uncomfortable on a tennis court, in the second set on Monday, she was asked what she took from it, and she talked about how quickly you come out of it. She will find out this week, in front of an audience that will not be entirely on her side, whether that holds up at the level above.
+
+Whatever the scoreboard says at the end of it, one thing is already settled. For one week at the end of an American summer, the most beautiful shot in tennis has a teenager hitting it on the biggest stage the sport has, and the rest of us get to watch her decide what to do with it. You can follow the rest of her fortnight on her [player page](/players/lilli-tagger/), and her opponent's story so far on [Amanda Anisimova](/players/amanda-anisimova/).
+
+*Photo: Lilli Tagger by Karney Hatch, CC BY 2.0, via Wikimedia Commons.*`;
 
 const record = {
   slug, title, excerpt, body,
