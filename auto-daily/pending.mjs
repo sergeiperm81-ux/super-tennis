@@ -1,146 +1,116 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'lilli-tagger-us-open-2026-austria-one-handed-backhand';
-const stamp = '2026-09-02T05:00:00.000Z';
-const title = 'Lilli Tagger: The 18-Year-Old Austrian With the Rarest Shot in Tennis';
+const slug = 'what-to-pack-day-at-us-open-2026';
+const stamp = '2026-09-03T05:00:00.000Z';
+const title = 'What to Pack for a Day at the US Open 2026';
 const meta_title = title;
-const meta_description = 'At 18, Lilli Tagger won her first Grand Slam match at the 2026 US Open playing a one-handed backhand that has almost vanished from the womens game.';
-const excerpt = 'She left a valley town in East Tyrol at 13, learned the game in Italy, and arrived in New York as the youngest player in the top 50 with the prettiest shot in the draw.';
-const image_url = 'https://upload.wikimedia.org/wikipedia/commons/6/60/French_Open_Juniors_Champion_Lilli_Tagger_%28cropped%29.jpg';
-const image_alt = 'Lilli Tagger of Austria at Roland Garros after winning the junior girls singles title';
+const meta_description = 'A fan-first guide to a day at Flushing Meadows in 2026: the one bag rule that decides everything, sun kit, water, shoes, and what to leave at home.';
+const excerpt = 'The US Open runs to 13 September. If you are going, here is what to put in the single bag they let you carry through the gate, and what actually makes the day.';
+const image_url = '/images/news/court-10.webp';
+const image_alt = 'A close view of a hard court surface showing the green apron, a white line and the deep blue playing area, the colours of the US Open';
 
-const body = `There is a sound that has very nearly disappeared from women's tennis. It is the sound of a one-handed backhand: a slightly hollower, later, more resonant knock than the two-handed version, the noise of a ball struck by a player whose whole body has to arrive at the right place at the right instant, because there is no second hand to bail her out.
+const body = `You hear Flushing Meadows before you see it. Coming down the ramp from the 7 train, before the gates are even in view, there is a wall of sound made of nothing in particular: ball on strings from a dozen courts at once, a PA announcement bouncing off concrete, suitcase wheels, someone laughing at a queue. That noise is the first thing that tells you the television version of the US Open was a very small window onto a very large day.
 
-On Monday afternoon at Flushing Meadows, on an outside court with a few hundred people leaning on the railings, you could hear it again. An 18-year-old from a valley town in the Austrian Alps was hitting it, over and over, and by the end of the first set the small crowd had grown into a large one, because word travels quickly at the US Open when something on court is worth looking at.
+The 2026 tournament runs to 13 September, which means there are still ten days of tennis left at the USTA Billie Jean King National Tennis Center in Queens. If you have a ticket for one of them, or you are still deciding whether to grab one, this is the guide nobody hands you at the gate: what goes in the bag, what the rules actually allow, and which small decisions turn a long day on hot concrete into one of the best days you will have as a tennis fan.
 
-Her name is Lilli Tagger. She won 6-0, 7-6(4), against the German Tamara Korpatsch, and it was the first main-draw win of her life at a Grand Slam. If you follow tennis rather than play it, she is about to become one of your favourites, and it will take you roughly one backhand to work out why.
+None of this requires you to play tennis. It requires you to stand up for nine hours, in the sun, in New York, in early September. Different sport entirely.
 
-## Two hours on a side court
+## The rule that decides your whole day
 
-The first set took barely half an hour. Tagger did not so much beat Korpatsch as remove her from the equation: 6-0, no argument, the kind of set that makes an experienced pro look up at her box with a face that says, what exactly am I supposed to do about this.
+Start here, because it overrides everything else you might plan.
 
-The second set was the education. Korpatsch is 31 and has spent a decade grinding out a living in a sport that does not hand out free weeks. She started finding the lines. She dragged Tagger into longer rallies. And Tagger, who had been playing as if the whole thing were a training drill, suddenly had to hold serve under pressure at a major for the first time in her career, in a stadium that was filling up specifically to watch her fail.
+You get **one bag**. It cannot be bigger than 12 inches wide by 12 inches high by 16 inches long. And multi-compartment backpacks are not admitted, no matter how small they are. A single-compartment drawstring bag within those dimensions is fine. Totes are fine. Purses and small crossbody bags are fine. The rucksack you take everywhere, the one with the laptop sleeve and four zip pockets, is not, and there is no free bag check to rescue you when you find that out at security.
 
-She did not fail. She got to a tie-break and won it 7-4. The whole thing took nearly two hours, which is a long time for a 6-0, 7-6 scoreline, and that is rather the point: the numbers say routine, the tennis said anything but.
+This is the single most common way a day at the US Open starts badly. People arrive with a normal day bag, get turned around at the gate, and spend the first hour of their session solving a logistics problem instead of watching Grandstand.
 
-Afterwards she talked about the wobble like a much older player. "I think she started playing well," Tagger said of Korpatsch. "She also played very well at the beginning of the second set. Maybe I made some more mistakes, and she started to play a little bit better. It can happen. I think the most important thing to learn from it is how fast you come out of it."
+So the bag is the first purchase, not an afterthought. A soft, single-compartment <a href="https://www.amazon.com/s?k=stadium+approved+clear+tote+bag&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">stadium-approved tote</a> that folds flat in a suitcase is the low-drama option, and although clear bags are not required at the US Open, a clear one moves through screening noticeably faster because the security team can see everything without opening it. If you would rather not advertise your possessions to the whole of Queens, a small crossbody bag that sits under the size limit does the same job and keeps your hands free, which matters more than you think when you are carrying a drink and a phone and trying to clap.
 
-How fast you come out of it. Not a bad philosophy for eighteen.
+Measure it before you go. Actually measure it. The dimensions are not a suggestion.
 
-## A town at the end of a valley
+## Sun is the opponent
 
-Tagger was born on 17 February 2008 in Lienz, which sits in East Tyrol, a piece of Austria that is cut off from the rest of Tyrol by mountains and looks south towards Italy rather than north towards Innsbruck. It is beautiful and it is small. It is not, on any reasonable reading, a place that produces top-50 tennis players.
+Flushing Meadows is a concrete site. That is not a criticism, it is a description: the grounds between the stadiums are wide, pale, hard surfaces that hold heat and throw light back up at you. On a bright day the glare comes from above and below at the same time, and by three in the afternoon the shade on the outer courts has thinned to a strip along one wall that already has forty people standing in it.
 
-Except that tennis was already in the house. Her mother, Sabine, played in the Austrian Bundesliga. Her father, Stephan, is a keen club player. There are two siblings, Emma and Ben, who also grew up with rackets in their hands. This was not a family that had to be sold on the sport; it was a family that had to work out what to do when one of the children turned out to be unusually good at it.
+Three things fix this, and all three are small enough to live in the one bag.
 
-Austria is a country that knows exactly how to develop a downhill skier and has far less of a production line for tennis. Every step Tagger took after the age of about eleven involved leaving somewhere.
+A hat with an actual brim, first. Not a cap, if you can help it. A <a href="https://www.amazon.com/s?k=wide+brim+packable+sun+hat&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">packable wide-brim sun hat</a> protects your ears and the back of your neck, which is where the burn always shows up, and it crushes into a bag without dying. Second, sunscreen, and here the rules matter: pack it as a lotion rather than an aerosol can. A high-factor <a href="https://www.amazon.com/s?k=mineral+sunscreen+lotion+spf+50&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">mineral sunscreen in lotion form</a> travels cleanly and reapplies without becoming everyone else's problem in a packed stand.
 
-## The bet she had to win
+Third, and this is the one people skip: proper sunglasses. Watching tennis is watching a small fast object against a bright background for hours, and squinting at that is genuinely exhausting. A pair of <a href="https://www.amazon.com/s?k=polarized+sport+sunglasses&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">polarised sport sunglasses</a> is the difference between leaving with a headache and leaving without one. If you want the longer version of that argument, we went through the options in our guide to the [best tennis sunglasses](/gear/best-tennis-sunglasses/).
 
-Here is the story that tells you most about her, and it happened when she was ten.
+## Water, and the bottle rule
 
-She wanted a one-handed backhand. Not because a coach recommended it, not because it suited her build, but because she had been watching Roger Federer and she had been watching Dominic Thiem, the Austrian who hit perhaps the most violent one-hander the men's game has ever seen. She wanted that shot. She asked to switch.
+Water at the US Open is free. There are refill stations across the grounds, and using them is the easiest money you will save all day, because everything else inside a Grand Slam is priced like everything else inside a Grand Slam.
 
-Her coach said no. What her coach said, in effect, was: prove it. It took two years of asking, and it took winning a bet with him, before she was allowed to play the shot she wanted to play. Two years is an eternity when you are ten. Most children would have shrugged and gone back to the two-hander, which is easier to learn and far more likely to keep you employed.
+The catch is that you have to bring the vessel, and it has to be right. You can carry in an **empty** reusable bottle, metal or plastic, up to 24 ounces. Empty is the operative word, so drink it or dump it before the queue. Glass is not permitted at all.
 
-She did not shrug. And when she talks about the shot now, she does not describe it as a stylistic choice or a throwback or a marketing asset. Asked about it earlier this year after a loss to Maria Sakkari in Rome, she called it simply the most natural shot she has.
+An <a href="https://www.amazon.com/s?k=insulated+water+bottle+24+oz&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">insulated 24oz bottle</a> is worth the small extra weight for one reason: on a September afternoon in Queens, an uninsulated bottle goes from cold to lukewarm in about forty minutes, and lukewarm water is water you stop drinking. Insulated, it is still cold at the changeover four hours later, and you keep sipping without thinking about it.
 
-That is worth sitting with for a moment. In the entire top 50 of women's tennis you can count the one-handed backhands on the fingers of one hand and have fingers left over. The shot has been engineered out of the women's game by coaches for perfectly rational reasons: it is harder to hit above shoulder height, harder to block back a 190 km/h serve with, harder to teach. What Tagger is doing is not nostalgia. It is a bet that the shot's ceiling is higher than its floor is low, and at six foot one, with the reach and the leverage to hit it, she may well be right.
+While we are on supplies: you are allowed to bring your own food in, as long as it fits inside that one bag and it is not alcohol. A sandwich and a bag of something salty in the bottom of the tote is not a sad compromise. It is what lets you spend the lunch hour on court eight watching a doubles match that nobody has scheduled to be memorable, instead of standing in a food queue.
 
-## Leaving home at thirteen
+## Heat management, September edition
 
-At 13 she began travelling regularly to Vicenza, in northern Italy, to train. There was no boarding facility, so she moved in with her trainer's family. Consider that as a parent rather than as a fan: a thirteen-year-old, a different country, a different language, somebody else's kitchen table.
+Late-summer New York does what it likes. This fortnight alone has already served humidity, thunderstorm warnings and a cool snap, sometimes across the same forty-eight hours, and the second week can hand you an afternoon in the seventies just as easily as a swampy one.
 
-Alex Vittur, a figure from the Pustertal on the Italian side of those same mountains, was instrumental in the next move, which was the one that mattered most. He helped arrange her transition to the academy of Francesca Schiavone, near Varese, north of Milan.
+Which means you dress for the day you get, not the day you booked. Two very small items earn their space in the bag:
 
-If you were designing a coach for Lilli Tagger in a laboratory, you would design Francesca Schiavone.
+A <a href="https://www.amazon.com/s?k=cooling+towel+for+sports&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">cooling towel</a> weighs almost nothing dry, soaks at a water station in ten seconds, and around the back of the neck it does more for your afternoon than any drink. And a small <a href="https://www.amazon.com/s?k=rechargeable+portable+neck+fan&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">rechargeable neck fan</a> looks faintly ridiculous right up until the moment you are sitting in full sun in the Armstrong general admission section, at which point it stops looking ridiculous and starts looking like foresight.
 
-## The woman who won Roland Garros with the same shot
+Then there is rain, which at the US Open is less catastrophic than it used to be, because Arthur Ashe and Louis Armstrong both have roofs. The outer courts do not. When a shower comes through, play on the field courts stops, and several thousand people all discover simultaneously that they want to be indoors. A <a href="https://www.amazon.com/s?k=packable+rain+poncho+adult&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">packable poncho</a> folds down to the size of a phone and means you can simply stay where you are seated and wait it out. Worth knowing: umbrellas are not banned from the grounds, but opening one during play is not permitted, for the obvious reason that the person behind you would like to see the tennis too.
 
-Schiavone won the French Open in 2010. She was 29, and she beat Samantha Stosur in the final to become the first Italian woman to win a Grand Slam singles title. She did it with a one-handed backhand, a slice that could take the paint off a line, and a competitive streak that occasionally frightened people.
+## Your feet, and your phone
 
-She is now the person telling an 18-year-old Austrian how to use the same shot, alongside coach Lorenzo Frigerio. There is something quite moving about that pairing. Schiavone spent a career being told her backhand was a liability against the biggest hitters, and then she won a major with it on the surface where it was supposed to be least effective. She is uniquely qualified to tell a teenager to ignore the noise.
+Two failures ruin more Grand Slam days than weather does.
 
-You can see the influence in Tagger's court positioning: she takes the ball early, comes forward when the point invites it, and uses the slice as a weapon rather than an apology. That is a coaching fingerprint.
+The first is feet. You will walk further than you expect. Flushing Meadows is a big site and the whole point of a grounds ticket is that you roam it: outer courts, practice courts, back to Grandstand, up to Armstrong, across for food, back again. People routinely clock five or six miles without ever leaving the tennis. Wear shoes you have already broken in, not the new ones, and if you know your feet are prone to it, put a strip of blister protection in the bag before you leave the hotel. Nobody has ever regretted that. Plenty of people have limped to the 7 train.
 
-## Paris, 2025
+The second is your phone, and this one is worse, because your ticket is probably on it. A full day of photos, a stadium full of people all fighting for the same cell signal, and a screen turned up to maximum brightness so you can see it in sunlight, will empty a modern phone battery by mid-afternoon. Carry a <a href="https://www.amazon.com/s?k=portable+phone+charger+power+bank&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">power bank</a> and a short cable. It is the least glamorous item in this article and the one you will be gladdest about.
 
-In June 2025 she went to Roland Garros for the junior event and produced one of the more emphatic weeks the juniors have seen in years.
+## The one thing that genuinely changes what you see
 
-Unseeded. Six matches. Four seeded players beaten, including the No. 1 and the No. 3. Not a single set dropped along the way. In the final she beat Britain's Hannah Klugman 6-2, 6-0, which is not a scoreline you often see in a Grand Slam junior final, and became the first Austrian to win the girls' singles title in Paris.
+If you are in the upper reaches of Arthur Ashe, you are a long way from the tennis. It is a 23,000-seat stadium, the biggest in the sport, and the view from the top is magnificent as spectacle and unhelpful as tennis. You can follow the rally. You cannot see a grip change, or where a player is standing to return, or the little flinch after a missed forehand.
 
-Junior titles are a notoriously unreliable predictor; for every champion who becomes a household name there are three who never translate it. What made Tagger's week different was the manner. She did not scrap her way through. She overwhelmed people.
+A pair of <a href="https://www.amazon.com/s?k=compact+binoculars+8x25&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">compact binoculars</a> fixes that, and this is the recommendation people are most sceptical about until they try it. Eight-by-twenty-five is plenty. Suddenly you are watching faces. You can see a player check the towel, look at their box, decide something. Tennis is a psychological sport played at distance, and binoculars are the cheapest way to be closer to it. On the cameras question, for anyone tempted to bring something serious: phones are fine, and SLRs with lenses up to 300mm are fine, but tripods, monopods and dedicated video recording devices are not.
 
-## Thirteen points in Jiujiang
+## What to leave at home
 
-Four months later she got a wild card into the Jiangxi Open in Jiujiang, China. It was her first WTA main draw. She was 17.
+Shorter list, and it saves you time at the gate.
 
-In the semi-final she played Viktorija Golubic, the defending champion and a fellow one-hander, which made it, briefly, the best-looking match on the planet. Tagger trailed 5-2 in the deciding set. She then went down triple match point at 5-4.
+Leave the multi-compartment backpack. Leave glass bottles of any kind. Leave anything full of liquid, since your bottle has to arrive empty. Leave the tripod and the long lens. Leave the aerosol can of sunscreen and take the lotion instead. And leave, honestly, the idea that you need to bring more than the list above, because everything you carry you carry all day, up and down stairs, in the heat, for nine hours.
 
-She won thirteen consecutive points.
+## How to actually spend the day
 
-Thirteen points from triple match point down, at 17, in your first tour-level event, to reach your first final. She lost that final to Anna Blinkova 6-3, 6-3, and by then it hardly mattered. She had become the first player born in 2008 to reach a WTA final, and everyone who watches the sport closely had written the name down.
+Gear gets you comfortable. Planning gets you the memories, and the way most people plan a Slam is backwards.
 
-If you enjoy this particular flavour of story, the unranked outsider crashing a party they were not invited to, we wrote about a similar one in Paris this year when [Jesper de Jong turned a lucky-loser slot into the run of his life](/lifestyle/jesper-de-jong-roland-garros-2026-lucky-loser-run/).
+The instinct is to build the day around the biggest name on the schedule. The better instinct, especially with a grounds pass, is to build it around the courts. A grounds ticket gets you everything except Arthur Ashe: general admission seating in Louis Armstrong Stadium and the Grandstand on a first-come, first-served basis, plus every outer court on the site. Those outer courts are where a Grand Slam is at its most extraordinary, because you are ten feet from professional tennis with no barrier of scale in the way. You hear the actual sound of the ball. You hear coaches. You hear players muttering. In a stadium you watch tennis; on court seventeen you are practically in it.
 
-## The year she stopped being a prospect
+Go early. The gates open long before the marquee matches and the first hours are the calmest the site will be all day: shorter queues, empty seats on the show courts, and the practice courts busy with players you have watched on television for years, hitting from fifteen feet away with nobody in front of you. It is the closest thing tennis has to a backstage pass and it is included in the cheapest ticket on the site.
 
-2026 is the year the label changed from talent to player.
+Then think about doubles, which is the great unclaimed pleasure of any Slam. It is faster, funnier, more tactical than singles, and it plays out in front of crowds a fraction of the size. If you have never sat through a full doubles match live, a US Open outer court in the second week is the ideal place to find out why the people around you are so devoted to it.
 
-It started slowly. At the Australian Open she lost in the final round of qualifying, which stings more than a first-round exit because you can see the main draw from there. At Roland Garros she made her Grand Slam main-draw debut and ran the 32nd seed, Wang Xinyu, extremely close before going out in the first round. At Wimbledon she lost in the first round again, in three sets. Three majors, three exits, no wins, and a pile of encouraging reviews that do not pay for anything.
+One scheduling detail worth knowing: a day-session ticket does not carry into the Ashe night session. Those are sold separately, the grounds change hands in the early evening, and if the night session is what you want, that is the ticket you buy. Grounds passes also get scarcer as the second week goes on and the number of matches shrinks, so if you are still deciding, deciding sooner is better.
 
-Then came July, and Prague.
+## Getting there without losing an hour
 
-At the Livesport Prague Open she won her first WTA title in only her tenth tour-level main draw. She came through a first-set tie-break against Ukraine's Daria Snigur in the final and closed it out in straight sets. In doing so she became the first player born in 2008 or later to win a WTA singles title, which is the sort of record that sounds like trivia until you realise what it actually measures: she got there before an entire generation did.
+The subway is genuinely the best way in. The 7 train runs to Mets-Willets Point, which puts you a short walk from the gates, and the MTA adds service for the tournament. The Long Island Rail Road also stops at Mets-Willets Point, with a transfer at Woodside for most Long Island journeys and a useful connection for anyone coming through Penn Station.
 
-The ranking followed immediately. On 27 July 2026 she reached a career high of No. 45 in the world, making her the youngest player in the top 50. She arrived in New York unseeded, because only the top 32 get seeds, which is why a 10th seed found her in the second round rather than in the fourth.
+Driving is possible and mostly a mistake. Parking around Flushing Meadows on a big session day is its own event, and the queue to leave afterwards is longer than the queue to get in.
 
-## What Austria has been waiting for
+Give yourself more time than the journey planner says. Not because the trains are unreliable, but because arriving unhurried and arriving flustered produce two completely different days, and you have already spent the money.
 
-Austrian tennis has had two great modern chapters and both of them are closed.
+## What the bag cannot do
 
-Barbara Schett reached No. 7 in the world in September 1999 and became, for a generation of Austrians, the face of the sport. Sybille Bammer, a late bloomer who came back after having a child, peaked at No. 19 in December 2007. Since then Austrian women's tennis has been near-misses and small breakthroughs rather than sustained presence at the top.
+Here is what none of the gear covers.
 
-The men had Thiem, of course, and Thiem had New York. In 2020 he came back from two sets down against Alexander Zverev in the final to win the US Open, the only Grand Slam title of his career, hit with the same one-handed backhand a ten-year-old girl in Lienz had been begging her coach to let her copy. He retired in 2024, and Austrian tennis has been quiet ever since.
+At some point on your day, probably on an outer court with a hundred people watching, a match will turn into something. A player two sets down will hold serve from 0-40 and the crowd will find its voice, and a hundred strangers who did not know each other's names an hour ago will be leaning in together. That is the thing that people who go to Slams keep going back for, and it is never on the schedule. The US Open crowd has a particular reputation for this, loud and involved in a way that other Grand Slams are not, and we have written about [why the crowds at some tournaments sound so different](/lifestyle/tennis-fan-culture-loudest-crowds/).
 
-It is not quiet this week.
+If this is your first Slam and you want the wider view of how the four majors compare as places to actually visit, our [Grand Slam travel guide](/lifestyle/tennis-travel-guide-grand-slams/) covers the differences in atmosphere, cost and timing. And if you are going with someone who is new to the sport and slightly baffled by the scoring, [how to watch tennis](/lifestyle/how-to-watch-tennis/) is the friendliest possible primer to send them on the train ride out.
 
-## Next: the woman who nearly won this thing
+But the packing list is the bit that gets skipped, and it is the bit that decides whether you are still enjoying yourself at seven in the evening or counting the minutes to the train. One bag, under 12 by 12 by 16. An empty bottle. A hat, lotion, sunglasses. Shoes that have already forgiven you. A power bank. Binoculars if you are up high.
 
-Tagger's reward for that first Slam win is Amanda Anisimova.
+Ten days of tennis left in Queens. Pack light, arrive early, and let the schedule surprise you.
 
-The American is the No. 10 seed here and she was standing on Arthur Ashe last September as the runner-up, having lost the 2025 final to Aryna Sabalenka 6-3, 7-6(3). She came back this year saying plainly that she intends to go one better. She opened her tournament on her 25th birthday by hitting 25 winners past her compatriot Ashlyn Krueger, which is either an excellent omen or an extremely well-organised coincidence.
-
-Anisimova is, in the most literal sense, the worst possible match-up for a young one-hander. She hits flat, she hits early, and she hits the ball at a height that is designed by physics to hurt a single-handed backhand. She takes time away. She will not give Tagger the shoulder-high loopy ball that lets a one-hander step in and produce the shot you came to watch.
-
-Which is exactly why it is worth your evening. Nobody sensible expects Tagger to win. Every teenager who becomes a champion has a first match like this one, and most of them lose it and learn more than they would have from a win.
-
-For context on how fast this can move, [Mirra Andreeva was a 19-year-old dark horse in Paris this spring](/lifestyle/mirra-andreeva-19-year-old-roland-garros-2026-dark-horse/) and is now the No. 5 seed here. The gap between prospect and contender in the women's game is currently about eighteen months wide.
-
-## Why the shot matters, even if the result does not go her way
-
-Let us be honest about why this player is getting attention out of proportion to her ranking.
-
-Partly it is the age and the trajectory. Mostly it is the backhand, and the reason it matters is what it does to the people watching. A two-handed backhand is an efficient, powerful, entirely admirable piece of engineering. A one-hander is a gesture. It has follow-through. It leaves the player standing in a shape you could photograph and hang on a wall, arm extended, racket high, weight still moving forward. Tennis is a sport that people watch partly for how it looks, and this shot looks like nothing else in the modern women's game.
-
-There is a practical argument too. Variety is what makes a match a contest of ideas rather than of ball speed. Tagger can slice, come forward, and change the height and pace of a rally in a way a pure baseline hitter cannot. If she becomes what her coaches believe she can, she will be an awkward opponent for the flat hitters who dominate now, and awkward players have always been the ones who spring surprises at majors.
-
-And there is a third thing, which is harder to write down. Somewhere at this moment there is a nine-year-old at a club in Graz or Bristol or Ohio, hitting two-handed because that is what everyone is taught, who is going to see this Austrian on television and ask her coach the same question Lilli Tagger asked hers. Some of those coaches will say no. One of them will say yes.
-
-## What to look for when they play
-
-Watch her feet, not her hands. The one-hander only works when she has time to set up sideways, and Anisimova's entire game is built on denying opponents time. If Tagger is arriving at the ball early and hitting through it, she is in the match. If she is stretching, or hitting it off the back foot, or slicing when she does not want to, she is in trouble.
-
-Watch her second serve. At six foot one she has genuine serve potential, and the first serve already gets her free points. Against a returner as clean as Anisimova, the second serve is where the match will actually be decided.
-
-And watch how she handles the noise. Flushing Meadows is the loudest, rudest, most gloriously distracted Grand Slam on earth, and that is a lot of stadium for a girl from a town of 12,000 people facing an American who spent last September becoming a national story.
-
-The last time she felt properly uncomfortable on a tennis court, in the second set on Monday, she was asked what she took from it, and she talked about how quickly you come out of it. She will find out this week, in front of an audience that will not be entirely on her side, whether that holds up at the level above.
-
-Whatever the scoreboard says at the end of it, one thing is already settled. For one week at the end of an American summer, the most beautiful shot in tennis has a teenager hitting it on the biggest stage the sport has, and the rest of us get to watch her decide what to do with it. You can follow the rest of her fortnight on her [player page](/players/lilli-tagger/), and her opponent's story so far on [Amanda Anisimova](/players/amanda-anisimova/).
-
-*Photo: Lilli Tagger by Karney Hatch, CC BY 2.0, via Wikimedia Commons.*`;
+*Photo: a hard court in US Open colours, via Unsplash.*`;
 
 const record = {
   slug, title, excerpt, body,
