@@ -1,116 +1,116 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'what-to-pack-day-at-us-open-2026';
-const stamp = '2026-09-03T05:00:00.000Z';
-const title = 'What to Pack for a Day at the US Open 2026';
+const slug = 'dane-sweeny-us-open-2026-wildcard-beats-musetti';
+const stamp = '2026-09-04T05:00:00.000Z';
+const title = 'Dane Sweeny, the wildcard who took down the 13th seed at the US Open';
 const meta_title = title;
-const meta_description = 'A fan-first guide to a day at Flushing Meadows in 2026: the one bag rule that decides everything, sun kit, water, shoes, and what to leave at home.';
-const excerpt = 'The US Open runs to 13 September. If you are going, here is what to put in the single bag they let you carry through the gate, and what actually makes the day.';
-const image_url = '/images/news/court-10.webp';
-const image_alt = 'A close view of a hard court surface showing the green apron, a white line and the deep blue playing area, the colours of the US Open';
+const meta_description = 'Ranked 123 in the world, Dane Sweeny arrived in New York on a spare wildcard and beat Lorenzo Musetti. Meet the Australian nobody at the US Open planned for.';
+const excerpt = 'He was not meant to be in the draw at all. Two weeks later he is the last Australian man at the US Open, and the 13th seed is on a plane home.';
+const image_url = '/images/news/court-06.webp';
+const image_alt = 'A blue hard court seen from directly above with two players at opposite baselines, the view that suits a US Open underdog story';
 
-const body = `You hear Flushing Meadows before you see it. Coming down the ramp from the 7 train, before the gates are even in view, there is a wall of sound made of nothing in particular: ball on strings from a dozen courts at once, a PA announcement bouncing off concrete, suitcase wheels, someone laughing at a queue. That noise is the first thing that tells you the television version of the US Open was a very small window onto a very large day.
+const body = `The best story at this US Open belongs to a man who was not supposed to be in the tournament at all.
 
-The 2026 tournament runs to 13 September, which means there are still ten days of tennis left at the USTA Billie Jean King National Tennis Center in Queens. If you have a ticket for one of them, or you are still deciding whether to grab one, this is the guide nobody hands you at the gate: what goes in the bag, what the rules actually allow, and which small decisions turn a long day on hot concrete into one of the best days you will have as a tennis fan.
+His name is Dane Sweeny. He is 25, he is from the Sunshine Coast in Queensland, and on Thursday night he beat [Lorenzo Musetti](/players/lorenzo-musetti/) — the 13th seed, a two-time Grand Slam semi-finalist, a player whose backhand gets shown in slow motion on television — by three sets to one. The score was 3-6, 6-1, 6-2, 6-2. It was not a fluke, a rain-affected mess or a five-set war of attrition. Sweeny simply got better as the night went on, and one of the most gifted players in the sport could not do anything about it.
 
-None of this requires you to play tennis. It requires you to stand up for nine hours, in the sun, in New York, in early September. Different sport entirely.
+If you have never heard of him, that is not a gap in your tennis knowledge. It is the point. Sweeny was ranked No. 123 in the world when the draw was made. He had never won a match in the main draw at Flushing Meadows, because he had never been in the main draw at Flushing Meadows. And he only got a place in it because of a small piece of administrative luck that had nothing to do with him.
 
-## The rule that decides your whole day
+## The wildcard that was meant for somebody else
 
-Start here, because it overrides everything else you might plan.
+Every year the US Open and Tennis Australia swap a wildcard. The Americans hand one to an Australian in New York, the Australians hand one to an American in Melbourne, and everybody shakes hands. It is one of the quiet acts of diplomacy that keeps the tennis calendar civil.
 
-You get **one bag**. It cannot be bigger than 12 inches wide by 12 inches high by 16 inches long. And multi-compartment backpacks are not admitted, no matter how small they are. A single-compartment drawstring bag within those dimensions is fine. Totes are fine. Purses and small crossbody bags are fine. The rucksack you take everywhere, the one with the laptop sleeve and four zip pockets, is not, and there is no free bag check to rescue you when you find that out at security.
+This year the Australian half of that deal was earmarked for Alexei Popyrin — a bigger name, a former Masters champion, exactly the sort of player these gifts usually go to. Then Alejandro Davidovich Fokina withdrew from the tournament. One withdrawal moves the cut-off line by one place, and one place was all Popyrin needed to get into the draw on his own ranking. The wildcard came free. It slid down the list, and at the bottom of that list, in late August, was Dane Sweeny.
 
-This is the single most common way a day at the US Open starts badly. People arrive with a normal day bag, get turned around at the gate, and spend the first hour of their session solving a logistics problem instead of watching Grandstand.
+So he did not earn his place with a heroic qualifying run or a giant summer. He got it the way you get the last seat on an overbooked flight: by being next in line when somebody else did not need theirs. He has since turned that seat into the fortnight of his life.
 
-So the bag is the first purchase, not an afterthought. A soft, single-compartment <a href="https://www.amazon.com/s?k=stadium+approved+clear+tote+bag&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">stadium-approved tote</a> that folds flat in a suitcase is the low-drama option, and although clear bags are not required at the US Open, a clear one moves through screening noticeably faster because the security team can see everything without opening it. If you would rather not advertise your possessions to the whole of Queens, a small crossbody bag that sits under the size limit does the same job and keeps your hands free, which matters more than you think when you are carrying a drink and a phone and trying to clap.
+There is something wonderful about that if you watch tennis rather than play it. We are trained by the sport to think of the draw as a hierarchy — seeds at the top, ranking numbers next to every name, an order of merit printed on the wall. Then a bureaucratic accident lets a man in through a side door and he knocks over the 13th best player in the world. The hierarchy is real, and it is also thinner than it looks.
 
-Measure it before you go. Actually measure it. The dimensions are not a suggestion.
+## A first Grand Slam win that nobody enjoyed
 
-## Sun is the opponent
+Sweeny's first main-draw win in New York, on the Tuesday, was one of the strangest matches of the week — and he barely got to celebrate it.
 
-Flushing Meadows is a concrete site. That is not a criticism, it is a description: the grounds between the stadiums are wide, pale, hard surfaces that hold heat and throw light back up at you. On a bright day the glare comes from above and below at the same time, and by three in the afternoon the shade on the outer courts has thinned to a strip along one wall that already has forty people standing in it.
+He was playing Corentin Moutet, the French left-hander who does not go quietly anywhere. Sweeny won the first set in a tie-break, 7-6 with a 4 in the shoot-out, took the second 6-4, and then broke twice to lead 3-0 in the third. At that point Moutet, struggling with a wrist, told the chair umpire he wanted to retire.
 
-Three things fix this, and all three are small enough to live in the one bag.
+What followed was pure tennis theatre. The umpire queried it. Moutet insisted he did not want a trainer, did not want treatment, just wanted to stop. There was a standoff of the kind that only happens in a sport where the rules were written by committees a long time ago. Eventually the retirement was accepted, the handshake happened, and Dane Sweeny had won his first Grand Slam match at Flushing Meadows in the least satisfying way available.
 
-A hat with an actual brim, first. Not a cap, if you can help it. A <a href="https://www.amazon.com/s?k=wide+brim+packable+sun+hat&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">packable wide-brim sun hat</a> protects your ears and the back of your neck, which is where the burn always shows up, and it crushes into a bag without dying. Second, sunscreen, and here the rules matter: pack it as a lotion rather than an aerosol can. A high-factor <a href="https://www.amazon.com/s?k=mineral+sunscreen+lotion+spf+50&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">mineral sunscreen in lotion form</a> travels cleanly and reapplies without becoming everyone else's problem in a packed stand.
+If you have ever had a win at work land in your lap because somebody else dropped out, you will recognise the feeling exactly: relief, a little embarrassment, and the private worry that people will file it under luck rather than under you. Two days later he removed all doubt.
 
-Third, and this is the one people skip: proper sunglasses. Watching tennis is watching a small fast object against a bright background for hours, and squinting at that is genuinely exhausting. A pair of <a href="https://www.amazon.com/s?k=polarized+sport+sunglasses&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">polarised sport sunglasses</a> is the difference between leaving with a headache and leaving without one. If you want the longer version of that argument, we went through the options in our guide to the [best tennis sunglasses](/gear/best-tennis-sunglasses/).
+## Ninety minutes when the match turned
 
-## Water, and the bottle rule
+Musetti started the way seeds are supposed to start. He took the first set 6-3, doing the things that make him such a lovely player to watch: the one-handed backhand, the changes of pace, the sense that he is playing a slightly different sport to everybody else on the court.
 
-Water at the US Open is free. There are refill stations across the grounds, and using them is the easiest money you will save all day, because everything else inside a Grand Slam is priced like everything else inside a Grand Slam.
+And then it went away, and it went away fast. Sweeny won the second set 6-1. He broke early in the third and went to 3-0, at which point Musetti called for a medical timeout. He came back, retrieved one break, and spent much of the rest of the night talking animatedly in the direction of his coaching box, the way players do when the problem is not the opponent but the whole evening.
 
-The catch is that you have to bring the vessel, and it has to be right. You can carry in an **empty** reusable bottle, metal or plastic, up to 24 ounces. Empty is the operative word, so drink it or dump it before the queue. Glass is not permitted at all.
+The third set went 6-2. The fourth went 6-2. From the middle of the second set onwards Sweeny won 18 of the last 23 games, which is not the arithmetic of a hot streak. It is the arithmetic of a man who worked out what he needed to do and then did it for two hours while a stadium full of New Yorkers slowly adopted him.
 
-An <a href="https://www.amazon.com/s?k=insulated+water+bottle+24+oz&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">insulated 24oz bottle</a> is worth the small extra weight for one reason: on a September afternoon in Queens, an uninsulated bottle goes from cold to lukewarm in about forty minutes, and lukewarm water is water you stop drinking. Insulated, it is still cold at the changeover four hours later, and you keep sipping without thinking about it.
+Sweeny's own explanation of how he plays is the least glamorous self-assessment you will hear all fortnight. "I think I am kind of mastering the art of diving," he said afterwards. "But I think I have a bit of a point-starter serve and I am not hitting too many winners, so it makes for a few more rallies, and hopefully that is entertaining."
 
-While we are on supplies: you are allowed to bring your own food in, as long as it fits inside that one bag and it is not alcohol. A sandwich and a bag of something salty in the bottom of the tote is not a sad compromise. It is what lets you spend the lunch hour on court eight watching a doubles match that nobody has scheduled to be memorable, instead of standing in a food queue.
+Take that seriously as a strategy rather than as a joke. He is telling you he has no free points, no ace count to hide behind, and no way of ending a rally early. His entire game is built on making the other man play one more ball. Against a top-15 player with a delicate touch and a long history of finding matches emotionally exhausting, that turned out to be the perfect plan.
 
-## Heat management, September edition
+## The Sunshine Coast kid with the point-starter serve
 
-Late-summer New York does what it likes. This fortnight alone has already served humidity, thunderstorm warnings and a cool snap, sometimes across the same forty-eight hours, and the second week can hand you an afternoon in the seventies just as easily as a swampy one.
+Sweeny was born in Penrith, in the western suburbs of Sydney, in February 2001, but he grew up on the Queensland coast. The origin story is almost too Australian to be true: he learned to hit balls on the beach with his father, Clay, before joining the Mooloolaba Tennis Club as a junior.
 
-Which means you dress for the day you get, not the day you booked. Two very small items earn their space in the bag:
+There is no academy in that sentence. No relocation to Florida at 13, no famous coach, no equipment deal at 15. Mooloolaba is a beach town with a surf club and a fish market. It is the kind of place that produces good club players and, occasionally, someone who will not stop.
 
-A <a href="https://www.amazon.com/s?k=cooling+towel+for+sports&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">cooling towel</a> weighs almost nothing dry, soaks at a water station in ten seconds, and around the back of the neck it does more for your afternoon than any drink. And a small <a href="https://www.amazon.com/s?k=rechargeable+portable+neck+fan&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">rechargeable neck fan</a> looks faintly ridiculous right up until the moment you are sitting in full sun in the Armstrong general admission section, at which point it stops looking ridiculous and starts looking like foresight.
+He turned professional and did what almost every player outside the top 100 does: he disappeared into the second division of tennis, the ATP Challenger Tour, and stayed there for years. He also, for a long time, went nowhere. As recently as last season he was outside the world's top 500.
 
-Then there is rain, which at the US Open is less catastrophic than it used to be, because Arthur Ashe and Louis Armstrong both have roofs. The outer courts do not. When a shower comes through, play on the field courts stops, and several thousand people all discover simultaneously that they want to be indoors. A <a href="https://www.amazon.com/s?k=packable+rain+poncho+adult&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">packable poncho</a> folds down to the size of a phone and means you can simply stay where you are seated and wait it out. Worth knowing: umbrellas are not banned from the grounds, but opening one during play is not permitted, for the obvious reason that the person behind you would like to see the tennis too.
+If you only watch the Grand Slams — and most people who love tennis only watch the Grand Slams, which is a perfectly respectable way to be a fan — that gap is invisible. You see 128 names in a draw and assume they all arrived by roughly the same road. They did not. Roughly a hundred of them arrived by Sweeny's road, and it is worth understanding what that road actually costs.
 
-## Your feet, and your phone
+## What 63 wins and 73 losses actually looks like
 
-Two failures ruin more Grand Slam days than weather does.
+Sweeny's Challenger record going into this summer was 63 wins and 73 losses. Take a second with that. Nine years of professional tennis, and at the level where he has spent most of his career he has lost more matches than he has won.
 
-The first is feet. You will walk further than you expect. Flushing Meadows is a big site and the whole point of a grounds ticket is that you roam it: outer courts, practice courts, back to Grandstand, up to Armstrong, across for food, back again. People routinely clock five or six miles without ever leaving the tennis. Wear shoes you have already broken in, not the new ones, and if you know your feet are prone to it, put a strip of blister protection in the bag before you leave the hotel. Nobody has ever regretted that. Plenty of people have limped to the 7 train.
+Challengers are held in sports centres in provincial cities. The crowds are family, local members and a few retirees who have brought their own chairs. Players share hotel rooms to make the week affordable, travel without coaches because a coach costs more than the tournament pays, and lose in the second round on a Wednesday to somebody ranked 240 who is having a good week. The winner of an event at that level collects a cheque that a Grand Slam first-round loser would consider a rounding error.
 
-The second is your phone, and this one is worse, because your ticket is probably on it. A full day of photos, a stadium full of people all fighting for the same cell signal, and a screen turned up to maximum brightness so you can see it in sunlight, will empty a modern phone battery by mid-afternoon. Carry a <a href="https://www.amazon.com/s?k=portable+phone+charger+power+bank&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">power bank</a> and a short cable. It is the least glamorous item in this article and the one you will be gladdest about.
+Sweeny lost two Challenger finals before he ever won one — Burnie in 2024, Playford in 2025 — which is its own particular torture. Then, in February this year, at the Queensland International in Brisbane, he finally got over the line. He beat his compatriot Tristan Schoolkate 3-6, 7-6, 7-6, saving the tournament in two tie-breaks, on home soil, four days before his 25th birthday.
 
-## The one thing that genuinely changes what you see
+That was his first professional title. He was 24 years old and had been at it for the best part of a decade.
 
-If you are in the upper reaches of Arthur Ashe, you are a long way from the tennis. It is a 23,000-seat stadium, the biggest in the sport, and the view from the top is magnificent as spectacle and unhelpful as tennis. You can follow the rally. You cannot see a grip change, or where a player is standing to return, or the little flinch after a missed forehand.
+His career prize money, across all of it, is a little under a million US dollars. That sounds like a lot until you remember it is a gross figure covering nine years, out of which come flights, hotels, entry fees, racket stringing, physio, tax in whichever country he happened to be earning in, and any coaching he could afford. We wrote a whole piece on [what players actually keep from prize money](/lifestyle/what-tennis-players-actually-keep-prize-money-reality/), and the short version is: far less than the headline.
 
-A pair of <a href="https://www.amazon.com/s?k=compact+binoculars+8x25&tag=supertennis0b-20" target="_blank" rel="sponsored noopener noreferrer">compact binoculars</a> fixes that, and this is the recommendation people are most sceptical about until they try it. Eight-by-twenty-five is plenty. Suddenly you are watching faces. You can see a player check the towel, look at their box, decide something. Tennis is a psychological sport played at distance, and binoculars are the cheapest way to be closer to it. On the cameras question, for anyone tempted to bring something serious: phones are fine, and SLRs with lenses up to 300mm are fine, but tripods, monopods and dedicated video recording devices are not.
+Which is why the money on offer here matters. The US Open has put up 108 million dollars this year, a 20 per cent rise, and it deliberately loaded the increase into the early rounds — a first-round loser now takes home 140,000 dollars, up more than a quarter on last year, and the tournament has added a two-million-dollar player support fund on top. The champion will get 5.5 million and the photographs. But for the men and women ranked between 100 and 250, the first three rounds of a Grand Slam are not a stepping stone to anything. They are the year.
 
-## What to leave at home
+Dane Sweeny has now won two matches in that draw. Whatever happens next, this fortnight has changed his accounting for the next twelve months.
 
-Shorter list, and it saves you time at the gate.
+## Suddenly the only Australian left
 
-Leave the multi-compartment backpack. Leave glass bottles of any kind. Leave anything full of liquid, since your bottle has to arrive empty. Leave the tripod and the long lens. Leave the aerosol can of sunscreen and take the lotion instead. And leave, honestly, the idea that you need to bring more than the list above, because everything you carry you carry all day, up and down stairs, in the heat, for nine hours.
+The other thing that happened this week is that Australia's tournament fell apart around him.
 
-## How to actually spend the day
+Alex de Minaur went out in the second round, beaten in straight sets by Botic van de Zandschulp, the Dutchman ranked 70th in the world, 6-4, 7-5, 6-2. De Minaur was the sixth seed. He is the player Australia expects to see in the second week, the one whose matches get the good slot on the schedule at home. Thanasi Kokkinakis never made it to New York at all after picking up an ankle and calf problem in Cincinnati. Popyrin — the man whose wildcard this originally was — is gone. Schoolkate is gone, beaten by Flavio Cobolli.
 
-Gear gets you comfortable. Planning gets you the memories, and the way most people plan a Slam is backwards.
+So the last Australian man in the singles draw is the one who got in by accident. On a continent where tennis is followed with genuine national attention for two weeks in January and then observed from a distance for the rest of the year, that is a story with legs. Australian breakfast television has a new name to learn, and by the sound of the crowd in New York on Thursday night, so does everyone else.
 
-The instinct is to build the day around the biggest name on the schedule. The better instinct, especially with a grounds pass, is to build it around the courts. A grounds ticket gets you everything except Arthur Ashe: general admission seating in Louis Armstrong Stadium and the Grandstand on a first-come, first-served basis, plus every outer court on the site. Those outer courts are where a Grand Slam is at its most extraordinary, because you are ten feet from professional tennis with no barrier of scale in the way. You hear the actual sound of the ball. You hear coaches. You hear players muttering. In a stadium you watch tennis; on court seventeen you are practically in it.
+Sweeny sounded, afterwards, like a man who has spent long enough at the other end of the sport to know exactly what he has been handed. "I am so grateful to even be able to compete in Grand Slams," he said. "I have put a lot of work in. The tennis journey is such a rollercoaster. I am so incredibly grateful to play in front of such an awesome crowd, and to soak up this moment and get a couple of wins, it is awesome."
 
-Go early. The gates open long before the marquee matches and the first hours are the calmest the site will be all day: shorter queues, empty seats on the show courts, and the practice courts busy with players you have watched on television for years, hitting from fifteen feet away with nobody in front of you. It is the closest thing tennis has to a backstage pass and it is included in the cheapest ticket on the site.
+You can hear the years in that. Nobody who has spent their career winning talks about being grateful to be allowed in.
 
-Then think about doubles, which is the great unclaimed pleasure of any Slam. It is faster, funnier, more tactical than singles, and it plays out in front of crowds a fraction of the size. If you have never sat through a full doubles match live, a US Open outer court in the second week is the ideal place to find out why the people around you are so devoted to it.
+## Darderi next, and the maths of a good fortnight
 
-One scheduling detail worth knowing: a day-session ticket does not carry into the Ashe night session. Those are sold separately, the grounds change hands in the early evening, and if the night session is what you want, that is the ticket you buy. Grounds passes also get scarcer as the second week goes on and the number of matches shrinks, so if you are still deciding, deciding sooner is better.
+The third round brings [Luciano Darderi](/players/luciano-darderi/), and the seeding sheet says this is where it should stop. Darderi is Italian, born in Argentina, ranked around the low twenties, and has five tour titles to his name. Every single one of them came on clay.
 
-## Getting there without losing an hour
+That last detail is the whole match. Darderi is a serious player who has built his career on high, heavy topspin and long rallies on slow dirt, and he reached the third round here last year, so this is not foreign territory. But New York in September is fast and low, and Sweeny has spent his life on Australian hard courts. The tie is closer than the ranking gap suggests.
 
-The subway is genuinely the best way in. The 7 train runs to Mets-Willets Point, which puts you a short walk from the gates, and the MTA adds service for the tournament. The Long Island Rail Road also stops at Mets-Willets Point, with a transfer at Woodside for most Long Island journeys and a useful connection for anyone coming through Penn Station.
+There is also the ranking to play for. Sweeny went into the fortnight at 123 and Thursday's win moved him to around 109 in the live rankings — inside touching distance of the top 100, which is the line that separates one professional life from another. Inside it, you get into Grand Slam main draws automatically. Outside it, you play three qualifying matches in the week before the tournament starts and hope. That single number decides whether you spend your year in stadiums or in sports halls.
 
-Driving is possible and mostly a mistake. Parking around Flushing Meadows on a big session day is its own event, and the queue to leave afterwards is longer than the queue to get in.
+He has been close before. His career-high, set in late July, was 121. He qualified for the Australian Open in January and beat Gael Monfils in the first round before running into Ben Shelton, and he qualified for Wimbledon in June. This is not a man appearing from nowhere; it is a man who has been knocking on the door for two seasons and finally found it unlocked.
 
-Give yourself more time than the journey planner says. Not because the trains are unreliable, but because arriving unhurried and arriving flustered produce two completely different days, and you have already spent the money.
+## The bit that makes the sport worth watching
 
-## What the bag cannot do
+Here is what a fan actually gets out of a night like Thursday.
 
-Here is what none of the gear covers.
+For two weeks a year, tennis puts its whole professional class into one building. The famous ones and the anonymous ones use the same locker room, the same practice courts and the same physio table, and they play under the same lights. Almost every other week of the season, those two groups never meet. The Grand Slams are the only place where the 123rd best player in the world can walk on court against the 13th and find out, in public, exactly how far apart they really are.
 
-At some point on your day, probably on an outer court with a hundred people watching, a match will turn into something. A player two sets down will hold serve from 0-40 and the crowd will find its voice, and a hundred strangers who did not know each other's names an hour ago will be leaning in together. That is the thing that people who go to Slams keep going back for, and it is never on the schedule. The US Open crowd has a particular reputation for this, loud and involved in a way that other Grand Slams are not, and we have written about [why the crowds at some tournaments sound so different](/lifestyle/tennis-fan-culture-loudest-crowds/).
+Usually the answer is: quite far. That is why seeds exist and why the same faces reach the second week. But every so often the answer is that they are not far apart at all — that the gap between a top-15 seed and a man who lost a Challenger final in Burnie two years ago is a couple of loose service games and one bad evening.
 
-If this is your first Slam and you want the wider view of how the four majors compare as places to actually visit, our [Grand Slam travel guide](/lifestyle/tennis-travel-guide-grand-slams/) covers the differences in atmosphere, cost and timing. And if you are going with someone who is new to the sport and slightly baffled by the scoring, [how to watch tennis](/lifestyle/how-to-watch-tennis/) is the friendliest possible primer to send them on the train ride out.
+Dane Sweeny may lose in the third round. He may lose badly. It will not undo anything. He has already produced the version of this sport that no draw sheet can predict and no amount of money can manufacture: a player nobody was watching, in a match nobody circled, doing something that will follow him for the rest of his life.
 
-But the packing list is the bit that gets skipped, and it is the bit that decides whether you are still enjoying yourself at seven in the evening or counting the minutes to the train. One bag, under 12 by 12 by 16. An empty bottle. A hat, lotion, sunglasses. Shoes that have already forgiven you. A power bank. Binoculars if you are up high.
+If you want to know when tennis is at its best, it is not the final. It is a Thursday night in the first week, when the man who got in on somebody else's wildcard refuses to go home.
 
-Ten days of tennis left in Queens. Pack light, arrive early, and let the schedule surprise you.
+---
 
-*Photo: a hard court in US Open colours, via Unsplash.*`;
+Related reading on super.tennis: [the complete US Open guide](/tournaments/us-open-guide/).`;
 
 const record = {
   slug, title, excerpt, body,
