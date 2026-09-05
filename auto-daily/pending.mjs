@@ -1,116 +1,124 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'dane-sweeny-us-open-2026-wildcard-beats-musetti';
-const stamp = '2026-09-04T05:00:00.000Z';
-const title = 'Dane Sweeny, the wildcard who took down the 13th seed at the US Open';
+const slug = 'us-open-2026-no-line-judges-electronic-line-calling';
+const stamp = '2026-09-05T05:00:00.000Z';
+const title = 'Nobody Shouts OUT Anymore: Tennis Without Line Judges';
 const meta_title = title;
-const meta_description = 'Ranked 123 in the world, Dane Sweeny arrived in New York on a spare wildcard and beat Lorenzo Musetti. Meet the Australian nobody at the US Open planned for.';
-const excerpt = 'He was not meant to be in the draw at all. Two weeks later he is the last Australian man at the US Open, and the 13th seed is on a plane home.';
-const image_url = '/images/news/court-06.webp';
-const image_alt = 'A blue hard court seen from directly above with two players at opposite baselines, the view that suits a US Open underdog story';
+const meta_description = 'Line judges have vanished from the US Open. How a recorded voice replaced nine people on court, what tennis gained by it, and what quietly went missing.';
+const excerpt = 'Nine people once ringed a Grand Slam court, frozen at the back fence, waiting to bark a single syllable. At the 2026 US Open not one of them is there. This is how tennis handed its lines to a machine, and what the sport traded away when the arguing stopped.';
+const image_url = '/images/news/court-02.webp';
+const image_alt = 'The corner of a hard court where the baseline meets the sideline, the kind of line a human being once watched for four hours at a time';
 
-const body = `The best story at this US Open belongs to a man who was not supposed to be in the tournament at all.
+const body = `The strangest sound at the US Open this week is a voice that belongs to nobody.
 
-His name is Dane Sweeny. He is 25, he is from the Sunshine Coast in Queensland, and on Thursday night he beat [Lorenzo Musetti](/players/lorenzo-musetti/) — the 13th seed, a two-time Grand Slam semi-finalist, a player whose backhand gets shown in slow motion on television — by three sets to one. The score was 3-6, 6-1, 6-2, 6-2. It was not a fluke, a rain-affected mess or a five-set war of attrition. Sweeny simply got better as the night went on, and one of the most gifted players in the sport could not do anything about it.
+It arrives from a speaker somewhere above the court, half a beat after the ball lands, and it says one word. Out. Sharp, clipped, a little louder when the ball was close. The player nods, or does not, and walks back to the baseline. Nobody argues. Nobody turns to the chair with their arms spread wide. The point ends the way a light switch ends a room.
 
-If you have never heard of him, that is not a gap in your tennis knowledge. It is the point. Sweeny was ranked No. 123 in the world when the draw was made. He had never won a match in the main draw at Flushing Meadows, because he had never been in the main draw at Flushing Meadows. And he only got a place in it because of a small piece of administrative luck that had nothing to do with him.
+If you started watching tennis in the last five years, that is simply what tennis sounds like. If you have been watching longer, some stubborn part of your brain is still waiting for the person who used to make that noise: a human being crouched at the back fence in a branded polo, one of nine ringed around the court, holding themselves perfectly still for four hours in order to shout a single syllable perhaps forty times.
 
-## The wildcard that was meant for somebody else
+Those nine people are gone from Flushing Meadows. They have been gone for a while now, and this fortnight is a good moment to notice, because the third round finishes today, the fourth round starts tomorrow, and for the whole of the second week the closest thing to a line call you will hear is a recording made in a studio by somebody who is not in New York.
 
-Every year the US Open and Tennis Australia swap a wildcard. The Americans hand one to an Australian in New York, the Australians hand one to an American in Melbourne, and everybody shakes hands. It is one of the quiet acts of diplomacy that keeps the tennis calendar civil.
+## The nine people you stopped noticing
 
-This year the Australian half of that deal was earmarked for Alexei Popyrin — a bigger name, a former Masters champion, exactly the sort of player these gifts usually go to. Then Alejandro Davidovich Fokina withdrew from the tournament. One withdrawal moves the cut-off line by one place, and one place was all Popyrin needed to get into the draw on his own ranking. The wildcard came free. It slid down the list, and at the bottom of that list, in late August, was Dane Sweeny.
+A full officiating crew at a Grand Slam used to be a chair umpire plus as many as nine line umpires, and the geometry of where they stood was the first thing that told you tennis was a serious sport. Two at the back, one behind each baseline, deep enough to see the whole line but close enough to be sure. One on each sideline at each end. Two watching the service lines and the centre line, which was the fast and horrible job, because a first serve arrives at 130mph and lands in a box you are staring down the length of.
 
-So he did not earn his place with a heroic qualifying run or a giant summer. He got it the way you get the last seat on an overbooked flight: by being next in line when somebody else did not need theirs. He has since turned that seat into the fortnight of his life.
+They had a language. Palms flat and low, sweeping down and away, meant the ball was good and you should stop looking at me. An arm shot out straight to the side meant out, and it came with the shout, which had to be loud enough to cut through a crowd and stop two professionals mid rally. Hands over the eyes meant the worst admission in officiating: I did not see it, the call is yours.
 
-There is something wonderful about that if you watch tennis rather than play it. We are trained by the sport to think of the draw as a hierarchy — seeds at the top, ranking numbers next to every name, an order of merit printed on the wall. Then a bureaucratic accident lets a man in through a side door and he knocks over the 13th best player in the world. The hierarchy is real, and it is also thinner than it looks.
+Mostly, though, the job was stillness. You were not allowed to move while the ball was live. You were not allowed to flinch when a forehand came at you at chest height. On changeovers you walked, in step, to your next position, and the crew rotated so nobody spent two hours squinting into the sun on the same line.
 
-## A first Grand Slam win that nobody enjoyed
+Being one of them was a serious ambition. Line umpiring was the bottom rung of a ladder that ran up through badge levels toward the chair, and getting to a Slam meant years of qualifying events in the rain. Wimbledon alone employed around 300 of them, most with normal jobs the rest of the year, coming back every summer for the privilege of standing very still fifteen feet from the best tennis in the world.
 
-Sweeny's first main-draw win in New York, on the Tuesday, was one of the strangest matches of the week — and he barely got to celebrate it.
+## The quarterfinal that broke the old system
 
-He was playing Corentin Moutet, the French left-hander who does not go quietly anywhere. Sweeny won the first set in a tie-break, 7-6 with a 4 in the shoot-out, took the second 6-4, and then broke twice to lead 3-0 in the third. At that point Moutet, struggling with a wrist, told the chair umpire he wanted to retire.
+The unravelling has a date, and it is the 2004 US Open.
 
-What followed was pure tennis theatre. The umpire queried it. Moutet insisted he did not want a trainer, did not want treatment, just wanted to stop. There was a standoff of the kind that only happens in a sport where the rules were written by committees a long time ago. Eventually the retirement was accepted, the handshake happened, and Dane Sweeny had won his first Grand Slam match at Flushing Meadows in the least satisfying way available.
+Serena Williams played Jennifer Capriati in the quarterfinals, and in the deciding set a run of calls went against Williams that were not close and not defensible. The most notorious was an overrule: a ball that had landed inside the line, called good, then taken away from her by the chair. There were others. Watching at home, you could see all of it, because television had been running Hawk-Eye since 2003 as a broadcast toy, drawing an animated ball landing on an animated line for the viewers while the people on court had nothing but their eyes.
 
-If you have ever had a win at work land in your lap because somebody else dropped out, you will recognise the feeling exactly: relief, a little embarrassment, and the private worry that people will file it under luck rather than under you. Two days later he removed all doubt.
+That gap was the whole problem. For the first time, everyone in the world knew the truth of a call except the two people it was being done to. The USTA apologised to Williams. The chair umpire did not work another of her matches at that tournament. And the sport was left holding a very awkward fact: it now owned a machine that could see better than its officials, and it was using it to entertain the audience rather than to get the score right.
 
-## Ninety minutes when the match turned
+## The challenge years, which were secretly wonderful
 
-Musetti started the way seeds are supposed to start. He took the first set 6-3, doing the things that make him such a lovely player to watch: the one-handed backhand, the changes of pace, the sense that he is playing a slightly different sport to everybody else on the court.
+Hawk-Eye was the work of a British engineer, Paul Hawkins, who built it at the end of the 1990s for cricket. Tennis borrowed it for broadcast, tested it, argued about it, and finally let players use it in a match at a tour event in Miami in March 2006. The US Open became the first Grand Slam to run the challenge system later that same year.
 
-And then it went away, and it went away fast. Sweeny won the second set 6-1. He broke early in the third and went to 3-0, at which point Musetti called for a medical timeout. He came back, retrieved one break, and spent much of the rest of the night talking animatedly in the direction of his coaching box, the way players do when the problem is not the opponent but the whole evening.
+The rules were simple enough to explain to somebody who had wandered into the room. Three unsuccessful challenges per set, one extra in a tiebreak, and if you were right you kept the ones you had. What nobody predicted was how good the theatre would be.
 
-The third set went 6-2. The fourth went 6-2. From the middle of the second set onwards Sweeny won 18 of the last 23 games, which is not the arithmetic of a hot streak. It is the arithmetic of a man who worked out what he needed to do and then did it for two hours while a stadium full of New Yorkers slowly adopted him.
+A player would raise a finger. The chair would say the word. And then, for four or five seconds, twenty thousand people would clap in unison, faster and faster, while a cartoon ball rolled across a giant screen toward a cartoon line. The replay always paused a fraction longer than it needed to. The graphic always landed on the line with a millimetre of drama. Then either a roar or a groan, and the crowd had, briefly, been part of the officiating.
 
-Sweeny's own explanation of how he plays is the least glamorous self-assessment you will hear all fortnight. "I think I am kind of mastering the art of diving," he said afterwards. "But I think I have a bit of a point-starter serve and I am not hitting too many winners, so it makes for a few more rallies, and hopefully that is entertaining."
+It also made the audience numerate. Fans kept count of a player's challenges the way they kept count of break points, and you could read someone's mental state from how they spent them: the player who burned two in the first three games out of irritation, the one who hoarded them into the third set like a survivalist.
 
-Take that seriously as a strategy rather than as a joke. He is telling you he has no free points, no ace count to hide behind, and no way of ending a rally early. His entire game is built on making the other man play one more ball. Against a top-15 player with a delicate touch and a long history of finding matches emotionally exhausting, that turned out to be the perfect plan.
+And crucially, the human was still the default. The call came from a person. The machine was the appeal.
 
-## The Sunshine Coast kid with the point-starter serve
+## September 6, 2020
 
-Sweeny was born in Penrith, in the western suburbs of Sydney, in February 2001, but he grew up on the Queensland coast. The origin story is almost too Australian to be true: he learned to hit balls on the beach with his father, Clay, before joining the Mooloolaba Tennis Club as a junior.
+The pivot happened during the strangest tournament any of us have watched.
 
-There is no academy in that sentence. No relocation to Florida at 13, no famous coach, no equipment deal at 15. Mooloolaba is a beach town with a surf club and a fish market. It is the kind of place that produces good club players and, occasionally, someone who will not stop.
+The 2020 US Open was played in an empty park. No fans, no queues, no noise, and electronic line calling on every court except the two biggest, where line judges still worked because Arthur Ashe Stadium and Louis Armstrong Stadium had the space to keep officials spread out.
 
-He turned professional and did what almost every player outside the top 100 does: he disappeared into the second division of tennis, the ATP Challenger Tour, and stayed there for years. He also, for a long time, went nowhere. As recently as last season he was outside the world's top 500.
+On September 6, six years ago tomorrow, Novak Djokovic was serving at 5-5 in the first set of his fourth round match against Pablo Carreno Busta on Ashe. He had just been broken. He turned, and he hit a spare ball away behind him without looking, the way players have done ten thousand times without consequence, and it struck a line judge in the throat. The official went down at the back of the court and needed help getting up. Djokovic was defaulted. The world number one was out of the tournament, in an empty stadium, over a ball hit in irritation at somebody whose job was to stand still.
 
-If you only watch the Grand Slams — and most people who love tennis only watch the Grand Slams, which is a perfectly respectable way to be a fan — that gap is invisible. You see 128 names in a draw and assume they all arrived by roughly the same road. They did not. Roughly a hundred of them arrived by Sweeny's road, and it is worth understanding what that road actually costs.
+It was an accident, and it should not carry the weight of an argument. But it did become a strange marker, because the following spring the USTA announced that every court at the US Open would use electronic line calling, and the sport more or less stopped debating it after that. The 2021 Australian Open ran an entire Grand Slam with no line judges at all, the first to do so. Wimbledon held out until 2025, then retired around 300 line judges after 147 years and replaced them with a camera system and roughly eighty on-court assistants doing everything except calling lines.
 
-## What 63 wins and 73 losses actually looks like
+By this year, the human line judge has become a thing you have to explain to a teenager.
 
-Sweeny's Challenger record going into this summer was 63 wins and 73 losses. Take a second with that. Nine years of professional tennis, and at the level where he has spent most of his career he has lost more matches than he has won.
+## How the machine actually calls a ball
 
-Challengers are held in sports centres in provincial cities. The crowds are family, local members and a few retirees who have brought their own chairs. Players share hotel rooms to make the week affordable, travel without coaches because a coach costs more than the tournament pays, and lose in the second round on a Wednesday to somebody ranked 240 who is having a good week. The winner of an event at that level collects a cheque that a Grand Slam first-round loser would consider a rounding error.
+There is no mystery in it, which is part of why nobody argues.
 
-Sweeny lost two Challenger finals before he ever won one — Burnie in 2024, Playford in 2025 — which is its own particular torture. Then, in February this year, at the Queensland International in Brisbane, he finally got over the line. He beat his compatriot Tristan Schoolkate 3-6, 7-6, 7-6, saving the tournament in two tie-breaks, on home soil, four days before his 25th birthday.
+Around a dozen cameras sit high around each court, synchronised, tracking the ball hundreds of frames a second. Software triangulates the ball in three dimensions, models how it squashes on impact, and works out the patch of court it touched. A further set of cameras watches feet at the baseline for foot faults, monitored by a review official, because that is the one call the system is not left entirely alone with.
 
-That was his first professional title. He was 24 years old and had been at it for the best part of a decade.
+Then it speaks. And here is the detail most people miss: the voice is a real person. Officials were recorded in a studio saying out and fault over and over, in several takes, at different levels of urgency, so a ball that misses by a hair sounds tighter than a ball that misses by a foot. The Australian Open has gone further and used voices of front-line workers who worked through the pandemic and the bushfires, and once, memorably, the actress Rebel Wilson.
 
-His career prize money, across all of it, is a little under a million US dollars. That sounds like a lot until you remember it is a gross figure covering nine years, out of which come flights, hotels, entry fees, racket stringing, physio, tax in whichever country he happened to be earning in, and any coaching he could afford. We wrote a whole piece on [what players actually keep from prize money](/lifestyle/what-tennis-players-actually-keep-prize-money-reality/), and the short version is: far less than the headline.
+So when you hear a call at Flushing Meadows this week, you are hearing a human being who is somewhere else, saying a word they said months ago into a microphone, played back by software that has decided your favourite player just lost the point.
 
-Which is why the money on offer here matters. The US Open has put up 108 million dollars this year, a 20 per cent rise, and it deliberately loaded the increase into the early rounds — a first-round loser now takes home 140,000 dollars, up more than a quarter on last year, and the tournament has added a two-million-dollar player support fund on top. The champion will get 5.5 million and the photographs. But for the men and women ranked between 100 and 250, the first three rounds of a Grand Slam are not a stepping stone to anything. They are the year.
+As for accuracy: on the tight calls, the ones close enough to be worth reviewing, USTA data found human line umpires were right roughly three times in four. The system misses by millimetres, and it misses consistently, which matters more than it sounds. A machine that is wrong the same way every time is still fair to both players. A tired official at the end of a fourth set is not wrong the same way every time.
 
-Dane Sweeny has now won two matches in that draw. Whatever happens next, this fortnight has changed his accounting for the next twelve months.
+## What the sport actually gained
 
-## Suddenly the only Australian left
+Start with the obvious. No career now turns on a stranger blinking.
 
-The other thing that happened this week is that Australia's tournament fell apart around him.
+Think about what used to be possible. A semifinal decided by a foot fault call at 15-30, as happened to Serena Williams in 2009, where the disputed call was the spark and the argument that followed ended the match on a point penalty. A quarterfinal in which the losing player had a legitimate grievance that could never be answered because there was no evidence, only two accounts. Whole rivalries carried a subplot of who got the calls.
 
-Alex de Minaur went out in the second round, beaten in straight sets by Botic van de Zandschulp, the Dutchman ranked 70th in the world, 6-4, 7-5, 6-2. De Minaur was the sixth seed. He is the player Australia expects to see in the second week, the one whose matches get the good slot on the schedule at home. Thanasi Kokkinakis never made it to New York at all after picking up an ankle and calf problem in Cincinnati. Popyrin — the man whose wildcard this originally was — is gone. Schoolkate is gone, beaten by Flavio Cobolli.
+That is gone, and its disappearance has been quietly good for the sport's temper. Players have almost nothing left to shout at. There is no person in a polo shirt at the back fence absorbing a tirade because they had a clear view of something a professional did not want to be true. Officiating abuse has not vanished from tennis, but the easiest target for it has.
 
-So the last Australian man in the singles draw is the one who got in by accident. On a continent where tennis is followed with genuine national attention for two weeks in January and then observed from a distance for the rest of the year, that is a story with legs. Australian breakfast television has a new name to learn, and by the sound of the crowd in New York on Thursday night, so does everyone else.
+Matches also move faster. No challenge, no replay, no theatrical pause. And on the outside courts, where a handful of officials once covered the whole surface, the standard did not just improve, it changed category. If you have ever wandered [the free week at Flushing Meadows](/lifestyle/us-open-2026-fan-week-qualifying-free-week-flushing-meadows/) and watched a match with eleven people in the stands, you were watching the same technology that will decide the title next weekend.
 
-Sweeny sounded, afterwards, like a man who has spent long enough at the other end of the sport to know exactly what he has been handed. "I am so grateful to even be able to compete in Grand Slams," he said. "I have put a lot of work in. The tennis journey is such a rollercoaster. I am so incredibly grateful to play in front of such an awesome crowd, and to soak up this moment and get a couple of wins, it is awesome."
+## What quietly went missing
 
-You can hear the years in that. Nobody who has spent their career winning talks about being grateful to be allowed in.
+The ritual, first. There is no equivalent now of the clap-along, no shared four seconds where a crowd and two players wait for the same answer. Tennis gave up one of the very few moments in sport where the audience got to participate in a decision rather than react to one.
 
-## Darderi next, and the maths of a good fortnight
+The jobs, second, and this is a real thing rather than nostalgia. Line umpiring was where chair umpires came from. You learned the rhythm of a match from the back fence for a decade before you were trusted with the chair. Take away hundreds of those posts, at every level from junior events upward, and you have removed the training ground for the officials who still make every judgement the cameras cannot: hindrance, a double bounce, a time violation, whether a player is genuinely injured or buying four minutes. Nobody has fully solved where the next generation of chair umpires is supposed to be trained.
 
-The third round brings [Luciano Darderi](/players/luciano-darderi/), and the seeding sheet says this is where it should stop. Darderi is Italian, born in Argentina, ranked around the low twenties, and has five tour titles to his name. Every single one of them came on clay.
+And third, the failure mode moved. It did not disappear.
 
-That last detail is the whole match. Darderi is a serious player who has built his career on high, heavy topspin and long rallies on slow dirt, and he reached the third round here last year, so this is not foreign territory. But New York in September is fast and low, and Sweeny has spent his life on Australian hard courts. The tie is closer than the ranking gap suggests.
+At Wimbledon last year, in a fourth round match on Centre Court between Sonay Kartal and Anastasia Pavlyuchenkova, the system was switched off in error on part of one side of the court for a single game. Three calls went uncalled. The chair umpire, unaware anything was wrong, made two of them himself, then stopped a point that should have been Pavlyuchenkova's game and ordered it replayed, because the tracking had not recorded it. She said afterwards that a game had been stolen from her. Wimbledon apologised, called it human error, and removed the operators' ability to pause the tracking at all.
 
-There is also the ranking to play for. Sweeny went into the fortnight at 123 and Thursday's win moved him to around 109 in the live rankings — inside touching distance of the top 100, which is the line that separates one professional life from another. Inside it, you get into Grand Slam main draws automatically. Outside it, you play three qualifying matches in the week before the tournament starts and hope. That single number decides whether you spend your year in stadiums or in sports halls.
+Read that carefully. The cameras did not fail. A person at a console did. We have not removed human error from line calling; we have moved it off the court and into a room, where it is harder to see and much harder to argue with in real time.
 
-He has been close before. His career-high, set in late July, was 121. He qualified for the Australian Open in January and beat Gael Monfils in the first round before running into Ben Shelton, and he qualified for Wimbledon in June. This is not a man appearing from nowhere; it is a man who has been knocking on the door for two seasons and finally found it unlocked.
+## The last place where a human still calls a line
 
-## The bit that makes the sport worth watching
+There is one holdout, and it is not a museum piece.
 
-Here is what a fan actually gets out of a night like Thursday.
+Roland Garros will keep human line judges again, the only Grand Slam that does. The tournament director Amelie Mauresmo has argued that electronic tracking is not fully reliable on clay, a surface that shifts and dries and changes hour by hour, and the French federation framed the decision partly as a matter of pride in French officiating. It came after a line-call controversy in Casper Ruud's loss in Paris this year, which is to say they made the decision with the argument still ringing.
 
-For two weeks a year, tennis puts its whole professional class into one building. The famous ones and the anonymous ones use the same locker room, the same practice courts and the same physio table, and they play under the same lights. Almost every other week of the season, those two groups never meet. The Grand Slams are the only place where the 123rd best player in the world can walk on court against the 13th and find out, in public, exactly how far apart they really are.
+They also have something no hard court has: evidence. On clay, the ball leaves a mark. The umpire climbs down from the chair, walks over, points at an oval smudge, and the whole stadium leans in to look at a piece of dirt. That is now the last live officiating drama left anywhere in professional tennis, and it survives not because the French are sentimental but because the surface keeps a receipt.
 
-Usually the answer is: quite far. That is why seeds exist and why the same faces reach the second week. But every so often the answer is that they are not far apart at all — that the gap between a top-15 seed and a man who lost a Challenger final in Burnie two years ago is a couple of loose service games and one bad evening.
+## What to listen for in the second week
 
-Dane Sweeny may lose in the third round. He may lose badly. It will not undo anything. He has already produced the version of this sport that no draw sheet can predict and no amount of money can manufacture: a player nobody was watching, in a match nobody circled, doing something that will follow him for the rest of his life.
+The fourth round is tomorrow and Monday, the quarterfinals are Tuesday and Wednesday, and the finals are next weekend. Which gives you a week to hear a sport that has changed its soundtrack.
 
-If you want to know when tennis is at its best, it is not the final. It is a Thursday night in the first week, when the man who got in on somebody else's wildcard refuses to go home.
+Listen for the delay. The call is not instant; there is a beat while the software resolves the bounce, and good players have learned to play through it rather than stop.
 
----
+Watch for the glance. Players who came up in the challenge era still look at the chair for a fraction of a second after a close ball, out of pure habit, and find nobody looking back.
 
-Related reading on super.tennis: [the complete US Open guide](/tournaments/us-open-guide/).`;
+Notice how rallies end now. There is no shout, no gesture, no human argument to freeze the frame. There is a flat electronic word and then two people walking. It is cleaner and it is colder, and both of those are true at once.
+
+And keep an eye on everything the chair still does, because the job did not shrink as much as it looks. The score, the clock, the code violations, the double bounce, the hindrance, the medical timeout, the crowd. When Aryna Sabalenka is chasing a third US Open title in a row and the stadium will not settle, the person who quiets 23,000 people is still a person. So are [the 315 people who work the court itself](/lifestyle/us-open-2026-ball-crew-315-people-on-court/), and so is everybody who makes [a night session on Arthur Ashe](/lifestyle/us-open-2026-night-session-arthur-ashe-after-dark/) run to time. Tennis has automated exactly one job, and it happens to be the one that used to generate all of the shouting. If you enjoy the sport arguing with itself about its own equipment, [the fight over the balls](/lifestyle/new-balls-please-why-tennis-argues-about-the-ball-2026/) is very much still open.
+
+The old system was human and unfair and it produced arguments people still relitigate twenty years later. The new one is fair and quiet and produces nothing to talk about at all, which is what fairness is supposed to look like when it is working properly. You are allowed to prefer the accuracy and still miss the noise.
+
+So listen for that voice tomorrow, on the biggest court, at a moment that matters. It belongs to somebody real. They stood in a studio on an ordinary afternoon and said one word into a microphone, over and over, until there was a version for every kind of close. They are not in New York. They may well be asleep. And their voice is going to decide a Grand Slam.
+
+*Photo: the corner of a hard court where the baseline meets the sideline, via Unsplash.*`;
 
 const record = {
   slug, title, excerpt, body,
