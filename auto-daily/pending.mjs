@@ -1,124 +1,110 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'us-open-2026-no-line-judges-electronic-line-calling';
-const stamp = '2026-09-05T05:00:00.000Z';
-const title = 'Nobody Shouts OUT Anymore: Tennis Without Line Judges';
+const slug = 'us-open-flushing-meadows-valley-of-ashes-queens-history';
+const stamp = '2026-09-06T05:00:00.000Z';
+const title = 'The Valley of Ashes: How a Queens Rubbish Dump Became the Home of the US Open';
 const meta_title = title;
-const meta_description = 'Line judges have vanished from the US Open. How a recorded voice replaced nine people on court, what tennis gained by it, and what quietly went missing.';
-const excerpt = 'Nine people once ringed a Grand Slam court, frozen at the back fence, waiting to bark a single syllable. At the 2026 US Open not one of them is there. This is how tennis handed its lines to a machine, and what the sport traded away when the arguing stopped.';
-const image_url = '/images/news/court-02.webp';
-const image_alt = 'The corner of a hard court where the baseline meets the sideline, the kind of line a human being once watched for four hours at a time';
+const meta_description = 'Flushing Meadows was a mountain of ash in The Great Gatsby. Today it holds the biggest tennis stadium on earth. The strange history of the US Open ground.';
+const excerpt = 'Before Arthur Ashe Stadium, before Louis Armstrong, before the 7 train filled up with sunhats, Flushing Meadows was where New York dumped its ashes. This is how the ugliest ground in Queens became the loudest fortnight in tennis.';
+const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Arthur_Ashe_Stadium_View.JPG/500px-Arthur_Ashe_Stadium_View.JPG';
+const image_alt = 'Arthur Ashe Stadium at the USTA Billie Jean King National Tennis Center in Flushing Meadows, Queens';
 
-const body = `The strangest sound at the US Open this week is a voice that belongs to nobody.
+const body = `There is a moment on the 7 train, somewhere out past Junction Boulevard, when the carriage stops being a commuter train and becomes a tennis crowd. The suits thin out. Sunhats appear. Somebody is holding a rolled-up draw sheet like a treasure map. And then the elevated track swings and the whole thing arrives at once through the window: a giant white bowl, a silver globe, a baseball park, and beyond all of it the flat grey shine of Flushing Bay with planes lifting off LaGuardia every ninety seconds.
 
-It arrives from a speaker somewhere above the court, half a beat after the ball lands, and it says one word. Out. Sharp, clipped, a little louder when the ball was close. The player nods, or does not, and walks back to the baseline. Nobody argues. Nobody turns to the chair with their arms spread wide. The point ends the way a light switch ends a room.
+That is the US Open. Not the tennis yet, just the arrival. And the strangest thing about it is that almost nobody on that train knows they are standing on top of one of the great civic transformations in American history.
 
-If you started watching tennis in the last five years, that is simply what tennis sounds like. If you have been watching longer, some stubborn part of your brain is still waiting for the person who used to make that noise: a human being crouched at the back fence in a branded polo, one of nine ringed around the court, holding themselves perfectly still for four hours in order to shout a single syllable perhaps forty times.
+Today is day eight in New York. The round of 16 opens on Arthur Ashe Stadium, and the ground is finally down to the players who look like they might win it. But before the first ball goes up, it is worth knowing what is underneath the concrete. Because this place — this loud, hot, brilliant, unlovely, unforgettable place — used to be where New York City took its rubbish.
 
-Those nine people are gone from Flushing Meadows. They have been gone for a while now, and this fortnight is a good moment to notice, because the third round finishes today, the fourth round starts tomorrow, and for the whole of the second week the closest thing to a line call you will hear is a recording made in a studio by somebody who is not in New York.
+## Fitzgerald saw it first
 
-## The nine people you stopped noticing
+If you read *The Great Gatsby* at school and remember one image from it that was not a green light, it is probably this one: the valley of ashes. A desolate stretch between the money of Long Island and the money of Manhattan, where ash-grey men move dimly through powdered air, and a faded billboard for an optician watches over everything with enormous, unblinking eyes.
 
-A full officiating crew at a Grand Slam used to be a chair umpire plus as many as nine line umpires, and the geometry of where they stood was the first thing that told you tennis was a serious sport. Two at the back, one behind each baseline, deep enough to see the whole line but close enough to be sure. One on each sideline at each end. Two watching the service lines and the centre line, which was the fast and horrible job, because a first serve arrives at 130mph and lands in a box you are staring down the length of.
+Fitzgerald did not make it up. He was describing the Corona Ash Dumps, a real and enormous heap of burnt coal residue in the marshland south of Flushing Bay, right in the middle of Queens. New York in the 1920s heated itself with coal, and all that coal left ash, and the ash had to go somewhere. The Brooklyn Ash Removal Company carted it out to Corona and piled it up, year after year, until there were hills of the stuff — hills tall enough to be landmarks, tall enough to have names.
 
-They had a language. Palms flat and low, sweeping down and away, meant the ball was good and you should stop looking at me. An arm shot out straight to the side meant out, and it came with the shout, which had to be loud enough to cut through a crowd and stop two professionals mid rally. Hands over the eyes meant the worst admission in officiating: I did not see it, the call is yours.
+It stank. It smoked. It was, by every account of the period, one of the most miserable landscapes in the city. And Fitzgerald, driving past it on the road between Great Neck and Manhattan, turned it into the moral centre of the most famous American novel of the century.
 
-Mostly, though, the job was stillness. You were not allowed to move while the ball was live. You were not allowed to flinch when a forehand came at you at chest height. On changeovers you walked, in step, to your next position, and the crew rotated so nobody spent two hours squinting into the sun on the same line.
+You are, right now, watching Grand Slam tennis on top of it.
 
-Being one of them was a serious ambition. Line umpiring was the bottom rung of a ladder that ran up through badge levels toward the chair, and getting to a Slam meant years of qualifying events in the rain. Wimbledon alone employed around 300 of them, most with normal jobs the rest of the year, coming back every summer for the privilege of standing very still fifteen feet from the best tennis in the world.
+## Robert Moses moves eight million cubic yards
 
-## The quarterfinal that broke the old system
+The man who erased the ash was Robert Moses, the parks commissioner who spent four decades rearranging New York with a bulldozer and a very sharp elbow. Moses wanted a World Fair, and he wanted it in Queens, and he decided that the ash dumps were going to become a park whether or not anybody thought it was possible.
 
-The unravelling has a date, and it is the 2004 US Open.
+Between 1936 and 1937, crews moved somewhere between seven and eight million cubic yards of material to level the Corona dump — well over a thousand acres of it. It remains one of the largest land reclamation projects the city has ever attempted. What rose in its place was the 1939 World Fair: the Trylon and the Perisphere, the World of Tomorrow, futuristic optimism built on a foundation of literal soot.
 
-Serena Williams played Jennifer Capriati in the quarterfinals, and in the deciding set a run of calls went against Williams that were not close and not defensible. The most notorious was an overrule: a ball that had landed inside the line, called good, then taken away from her by the chair. There were others. Watching at home, you could see all of it, because television had been running Hawk-Eye since 2003 as a broadcast toy, drawing an animated ball landing on an animated line for the viewers while the people on court had nothing but their eyes.
+Moses knew exactly what he had done, and he was not shy about it. Decades later he was still boasting about reclaiming the fetid meadow blocked by the biggest ash dump in municipal history — and he cited Fitzgerald by name when he did it. He had read the book. He had taken it personally.
 
-That gap was the whole problem. For the first time, everyone in the world knew the truth of a call except the two people it was being done to. The USTA apologised to Williams. The chair umpire did not work another of her matches at that tournament. And the sport was left holding a very awkward fact: it now owned a machine that could see better than its officials, and it was using it to entertain the audience rather than to get the score right.
+That is the first thing to hold onto about Flushing Meadows: it is not a natural landscape and it never pretended to be. Every blade of grass out there is an argument that a place can be changed.
 
-## The challenge years, which were secretly wonderful
+## The Singer Bowl, and a trumpeter from Corona
 
-Hawk-Eye was the work of a British engineer, Paul Hawkins, who built it at the end of the 1990s for cricket. Tennis borrowed it for broadcast, tested it, argued about it, and finally let players use it in a match at a tour event in Miami in March 2006. The US Open became the first Grand Slam to run the challenge system later that same year.
+The fair came back in 1964, and this time it left behind two things that matter to tennis.
 
-The rules were simple enough to explain to somebody who had wandered into the room. Three unsuccessful challenges per set, one extra in a tiebreak, and if you were right you kept the ones you had. What nobody predicted was how good the theatre would be.
+The first is the Unisphere, the enormous stainless-steel globe that sits at the heart of the park and that you will see in roughly every establishing shot the US Open broadcast cuts to. It was built for the 1964 fair as a symbol of a shrinking world, and it has been quietly rusting into beloved-landmark status ever since. If you have ever wondered why the tennis keeps showing you a giant metal Earth, that is why. It was there first.
 
-A player would raise a finger. The chair would say the word. And then, for four or five seconds, twenty thousand people would clap in unison, faster and faster, while a cartoon ball rolled across a giant screen toward a cartoon line. The replay always paused a fraction longer than it needed to. The graphic always landed on the line with a millimetre of drama. Then either a roar or a groan, and the crowd had, briefly, been part of the officiating.
+The second thing the 1964 fair left behind was a stadium called the Singer Bowl, put up by the Singer sewing machine company. Its very first concert, on 30 June 1964, was headlined by a trumpet player who was then at the absolute peak of his fame, riding the ridiculous global success of *Hello, Dolly!*
 
-It also made the audience numerate. Fans kept count of a player's challenges the way they kept count of break points, and you could read someone's mental state from how they spent them: the player who burned two in the first three games out of irritation, the one who hoarded them into the third set like a survivalist.
+His name was Louis Armstrong, and he did not have far to travel. He lived about five minutes away, in a modest brick house on 107th Street in Corona, where he and his wife Lucille had settled in 1943 and where he stayed for the rest of his life. He could have lived anywhere. He was one of the most famous human beings on the planet. He chose a working-class block in Queens with neighbours who called him Pops and kids who came to the door for ice cream.
 
-And crucially, the human was still the default. The call came from a person. The machine was the appeal.
+Armstrong died in 1971. Lucille, who spent the rest of her life protecting his legacy and his neighbourhood, pushed for the stadium down the road to carry his name — and on 4 July 1973 the Singer Bowl officially became Louis Armstrong Memorial Stadium.
 
-## September 6, 2020
+So when you hear a commentator say a match has been moved to Armstrong, that is what they are saying. A jazz musician from Corona, honoured by his widow, on a piece of ground reclaimed from an ash heap, at a fair about the future. Tennis simply moved into the building afterwards.
 
-The pivot happened during the strangest tournament any of us have watched.
+## 1978: tennis leaves the garden party
 
-The 2020 US Open was played in an empty park. No fans, no queues, no noise, and electronic line calling on every court except the two biggest, where line judges still worked because Arthur Ashe Stadium and Louis Armstrong Stadium had the space to keep officials spread out.
+For sixty-odd years the US Championships had been played at the West Side Tennis Club in Forest Hills, a few miles south. Forest Hills was gorgeous and Tudor and hushed, a garden party with a scoreboard, and by the 1970s it was also far too small for what tennis was turning into.
 
-On September 6, six years ago tomorrow, Novak Djokovic was serving at 5-5 in the first set of his fourth round match against Pablo Carreno Busta on Ashe. He had just been broken. He turned, and he hit a spare ball away behind him without looking, the way players have done ten thousand times without consequence, and it struck a line judge in the throat. The official went down at the back of the court and needed help getting up. Djokovic was defaulted. The world number one was out of the tournament, in an empty stadium, over a ball hit in irritation at somebody whose job was to stand still.
+The move happened in 1978. The United States Tennis Association took over the derelict Singer Bowl site in Flushing Meadows, built courts around it, and on 29 August 1978 the US Open opened at what was then simply the National Tennis Center. Armstrong Stadium became the main court. The tournament went from a private club to a public park, from grass and clay to hard courts, from genteel to loud.
 
-It was an accident, and it should not carry the weight of an argument. But it did become a strange marker, because the following spring the USTA announced that every court at the US Open would use electronic line calling, and the sport more or less stopped debating it after that. The 2021 Australian Open ran an entire Grand Slam with no line judges at all, the first to do so. Wimbledon held out until 2025, then retired around 300 line judges after 147 years and replaced them with a camera system and roughly eighty on-court assistants doing everything except calling lines.
+It is fashionable to be sentimental about Forest Hills, and the old place really was beautiful. But the move to Flushing was the single most important decision in the modern history of American tennis. It swapped exclusivity for capacity, and it put the tournament in a park that anybody can walk into for eleven months of the year, next to a subway line that runs to the middle of Manhattan for the price of a single fare. If you want to understand why the US Open sounds different from every other Slam, start there. The building was always meant to let people in.
 
-By this year, the human line judge has become a thing you have to explain to a teenager.
+## 1997: the biggest room in tennis
 
-## How the machine actually calls a ball
+By the mid-1990s Armstrong was too small in its turn, and the USTA built something that nobody has yet matched. Arthur Ashe Stadium opened in 1997 with a capacity of 23,771 — still, nearly thirty years later, the largest tennis stadium in the world by a distance.
 
-There is no mystery in it, which is part of why nobody argues.
+Numbers do not really convey it. What conveys it is the walk. You come up the ramps, you turn into your section, and the bowl simply keeps going up beyond where your brain expects a stadium to stop. From the very top rows, players are small enough that you track the rally by watching the crowd turn its heads. On a still afternoon the place can feel cavernous and slightly absurd. On a night session it is the most intimidating room in the sport, and we have written before about [what Ashe becomes after dark](/lifestyle/us-open-2026-night-session-arthur-ashe-after-dark/) — the noise, the late finishes, the strange collective mania of twenty-three thousand New Yorkers who have had a long day.
 
-Around a dozen cameras sit high around each court, synchronised, tracking the ball hundreds of frames a second. Software triangulates the ball in three dimensions, models how it squashes on impact, and works out the patch of court it touched. A further set of cameras watches feet at the baseline for foot faults, monitored by a review official, because that is the one call the system is not left entirely alone with.
+The name matters too. Ashe won the first US Open in 1968, and then spent the rest of his life on work that had very little to do with forehands: desegregating tennis, campaigning against apartheid, writing history, and finally speaking publicly about AIDS in a decade that punished people for it. He died in 1993. Four years later they put his name on the biggest arena in the sport, and if you want the full story of the man rather than the building, [we told it here](/lifestyle/arthur-ashe-name-on-biggest-stadium-in-tennis/).
 
-Then it speaks. And here is the detail most people miss: the voice is a real person. Officials were recorded in a studio saying out and fault over and over, in several takes, at different levels of urgency, so a ball that misses by a hair sounds tighter than a ball that misses by a foot. The Australian Open has gone further and used voices of front-line workers who worked through the pandemic and the bushfires, and once, memorably, the actress Rebel Wilson.
+## 2006: a woman gets her name on the gate
 
-So when you hear a call at Flushing Meadows this week, you are hearing a human being who is somewhere else, saying a word they said months ago into a microphone, played back by software that has decided your favourite player just lost the point.
+In 2006, the whole complex was rededicated as the USTA Billie Jean King National Tennis Center — making King the first woman in the United States to have a major sporting venue named for her.
 
-As for accuracy: on the tight calls, the ones close enough to be worth reviewing, USTA data found human line umpires were right roughly three times in four. The system misses by millimetres, and it misses consistently, which matters more than it sounds. A machine that is wrong the same way every time is still fair to both players. A tired official at the end of a fourth set is not wrong the same way every time.
+Put that alongside everything above and it lands harder. This is a site built on a landfill by a man who thought in bulldozers, named in part for a Black champion who spent his life on causes bigger than tennis, and in part for a jazz musician from the neighbourhood, and in whole for a woman who fought the sport she dominated until it started paying women properly. There are worse ways for a piece of ground to spend a century.
 
-## What the sport actually gained
+## The roofs, and the reason August in New York is unbearable
 
-Start with the obvious. No career now turns on a stranger blinking.
+The most recent chapter is architectural, and it is the reason today looks the way it does on television.
 
-Think about what used to be possible. A semifinal decided by a foot fault call at 15-30, as happened to Serena Williams in 2009, where the disputed call was the spark and the argument that followed ended the match on a point penalty. A quarterfinal in which the losing player had a legitimate grievance that could never be answered because there was no evidence, only two accounts. Whole rivalries carried a subplot of who got the calls.
+For decades the US Open was tormented by rain. Finals slid into Mondays. Whole days vanished. So between 2013 and 2016 the USTA built a retractable roof over Ashe — a genuine engineering problem, because the stadium had been constructed on reclaimed marshland that could not support the weight of a conventional roof, so the whole structure sits on its own set of columns driven deep into the ground beside the bowl. It cost around 150 million dollars and it was finished for the 2016 tournament.
 
-That is gone, and its disappearance has been quietly good for the sport's temper. Players have almost nothing left to shout at. There is no person in a polo shirt at the back fence absorbing a tirade because they had a clear view of something a professional did not want to be true. Officiating abuse has not vanished from tennis, but the easiest target for it has.
+Then came the rest. A new Grandstand, an intimate 8,000-seat court tucked into the south-west corner, opened in 2016. And the old Armstrong — beloved, crumbling, famously the court with the best atmosphere and the worst seats — was demolished, replaced by a new 14,000-seat Louis Armstrong Stadium that opened in 2018. That building did something no tennis venue had done: it paired a retractable roof with a naturally ventilated bowl, so that when the roof is open the stadium breathes through louvred openings instead of being sealed and air-conditioned.
 
-Matches also move faster. No challenge, no replay, no theatrical pause. And on the outside courts, where a handful of officials once covered the whole surface, the standard did not just improve, it changed category. If you have ever wandered [the free week at Flushing Meadows](/lifestyle/us-open-2026-fan-week-qualifying-free-week-flushing-meadows/) and watched a match with eleven people in the stands, you were watching the same technology that will decide the title next weekend.
+Which brings us to the weather, because you cannot write about this ground honestly without it. Flushing Meadows in late August and early September is a heat trap: humid air off the bay, acres of hard court soaking up sun all day and radiating it back all evening, and very little shade for spectators on the outside courts. Court-level temperatures routinely run well above whatever the forecast says. It is the single most physically punishing environment of the four Slams, and it is why the tournament has an extreme heat policy at all. If you are heading out there this week, our guide to [what to actually pack for a day at the grounds](/lifestyle/what-to-pack-day-at-us-open-2026/) will save you a lot of misery.
 
-## What quietly went missing
+## What it is like now
 
-The ritual, first. There is no equivalent now of the clap-along, no shared four seconds where a crowd and two players wait for the same answer. Tennis gave up one of the very few moments in sport where the audience got to participate in a decision rather than react to one.
+Here is the part the history books do not capture.
 
-The jobs, second, and this is a real thing rather than nostalgia. Line umpiring was where chair umpires came from. You learned the rhythm of a match from the back fence for a decade before you were trusted with the chair. Take away hundreds of those posts, at every level from junior events upward, and you have removed the training ground for the officials who still make every judgement the cameras cannot: hindrance, a double bounce, a time violation, whether a player is genuinely injured or buying four minutes. Nobody has fully solved where the next generation of chair umpires is supposed to be trained.
+The grounds hold twenty-two courts across roughly forty-six acres, with more out in the surrounding parkland, and on the early days of the tournament almost all of them are live at once. That is the great secret of the US Open as a spectator experience: the show courts are for television, but the tournament happens on the outside courts, where you can stand two metres from a top-fifty player and hear the sound a ball makes when it is hit properly. Nothing on a screen prepares you for that sound.
 
-And third, the failure mode moved. It did not disappear.
+The park never really lets you forget where you are, either. Planes climb out of LaGuardia directly overhead, close enough to read the airline. Citi Field sits across the boardwalk, so on a September evening you can get the roar of a tennis crowd and a baseball crowd within a minute of each other. The 7 train rattles past on the elevated track. Somewhere behind you the Unisphere is lit up, a monument to a version of the future that had flying cars in it.
 
-At Wimbledon last year, in a fourth round match on Centre Court between Sonay Kartal and Anastasia Pavlyuchenkova, the system was switched off in error on part of one side of the court for a single game. Three calls went uncalled. The chair umpire, unaware anything was wrong, made two of them himself, then stopped a point that should have been Pavlyuchenkova's game and ordered it replayed, because the tracking had not recorded it. She said afterwards that a game had been stolen from her. Wimbledon apologised, called it human error, and removed the operators' ability to pause the tracking at all.
+And the food queues are enormous, and the drinks are absurdly expensive, and the whole place smells like sunscreen and grilled onions, and the crowd talks through points in a way that would get you removed from Wimbledon. It is not elegant. It has never once tried to be elegant. Roland Garros has its terre battue and its Parisian hauteur; Wimbledon has its all-white dress code and its queue; Melbourne has its summer-festival ease. New York has volume. If you want the practical version of all this — dates, courts, tickets, how the fortnight is structured — our [full US Open guide](/tournaments/us-open-guide/) lays it out.
 
-Read that carefully. The cameras did not fail. A person at a console did. We have not removed human error from line calling; we have moved it off the court and into a room, where it is harder to see and much harder to argue with in real time.
+## Back to today
 
-## The last place where a human still calls a line
+So: the round of 16, day eight, the tournament narrowing.
 
-There is one holdout, and it is not a museum piece.
+Aryna Sabalenka and Taylor Townsend are scheduled on Ashe, which is the kind of matchup that arena was built for — the world number one against a New York crowd that will adopt an American opponent within about four minutes. Carlos Alcaraz meets Tommy Paul under the lights. Anna Kalinskaya faces Emma Navarro. Daniil Medvedev and Frances Tiafoe are somewhere in the evening, which historically has ended with at least one of them shouting at something.
 
-Roland Garros will keep human line judges again, the only Grand Slam that does. The tournament director Amelie Mauresmo has argued that electronic tracking is not fully reliable on clay, a surface that shifts and dries and changes hour by hour, and the French federation framed the decision partly as a matter of pride in French officiating. It came after a line-call controversy in Casper Ruud's loss in Paris this year, which is to say they made the decision with the argument still ringing.
+By tonight, half of them will be finished for the year. That is what the second week does. The draw stops being a bracket and starts being a countdown.
 
-They also have something no hard court has: evidence. On clay, the ball leaves a mark. The umpire climbs down from the chair, walks over, points at an oval smudge, and the whole stadium leans in to look at a piece of dirt. That is now the last live officiating drama left anywhere in professional tennis, and it survives not because the French are sentimental but because the surface keeps a receipt.
+But before the first serve, look at the wide shot when the broadcast takes it — the bowl, the globe, the water, the planes. A hundred years ago a novelist stood roughly there and saw a wasteland so bleak he used it to explain what money does to people. Then a city decided the wasteland could be something else, and built a fair on it, and a stadium, and named the stadium after a trumpet player from down the road, and then handed the whole thing to tennis.
 
-## What to listen for in the second week
+Grand Slams like to talk about tradition, and usually they mean ivy and dress codes and the way things have always been done. Flushing Meadows means something different by it. Its tradition is that nothing here was inherited. The ground was made. That is worth thinking about while you watch someone chase down a drop shot on television tonight.
 
-The fourth round is tomorrow and Monday, the quarterfinals are Tuesday and Wednesday, and the finals are next weekend. Which gives you a week to hear a sport that has changed its soundtrack.
-
-Listen for the delay. The call is not instant; there is a beat while the software resolves the bounce, and good players have learned to play through it rather than stop.
-
-Watch for the glance. Players who came up in the challenge era still look at the chair for a fraction of a second after a close ball, out of pure habit, and find nobody looking back.
-
-Notice how rallies end now. There is no shout, no gesture, no human argument to freeze the frame. There is a flat electronic word and then two people walking. It is cleaner and it is colder, and both of those are true at once.
-
-And keep an eye on everything the chair still does, because the job did not shrink as much as it looks. The score, the clock, the code violations, the double bounce, the hindrance, the medical timeout, the crowd. When Aryna Sabalenka is chasing a third US Open title in a row and the stadium will not settle, the person who quiets 23,000 people is still a person. So are [the 315 people who work the court itself](/lifestyle/us-open-2026-ball-crew-315-people-on-court/), and so is everybody who makes [a night session on Arthur Ashe](/lifestyle/us-open-2026-night-session-arthur-ashe-after-dark/) run to time. Tennis has automated exactly one job, and it happens to be the one that used to generate all of the shouting. If you enjoy the sport arguing with itself about its own equipment, [the fight over the balls](/lifestyle/new-balls-please-why-tennis-argues-about-the-ball-2026/) is very much still open.
-
-The old system was human and unfair and it produced arguments people still relitigate twenty years later. The new one is fair and quiet and produces nothing to talk about at all, which is what fairness is supposed to look like when it is working properly. You are allowed to prefer the accuracy and still miss the noise.
-
-So listen for that voice tomorrow, on the biggest court, at a moment that matters. It belongs to somebody real. They stood in a studio on an ordinary afternoon and said one word into a microphone, over and over, until there was a version for every kind of close. They are not in New York. They may well be asleep. And their voice is going to decide a Grand Slam.
-
-*Photo: the corner of a hard court where the baseline meets the sideline, via Unsplash.*`;
+*Photo: Arthur Ashe Stadium by Alexisrael, CC BY-SA, via Wikimedia Commons.*`;
 
 const record = {
   slug, title, excerpt, body,
