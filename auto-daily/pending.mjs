@@ -1,138 +1,110 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'alex-michelsen-us-open-2026-first-grand-slam-quarterfinal';
-const stamp = '2026-09-07T05:00:00.000Z';
-const title = 'Nobody Was Watching Alex Michelsen. Now He Is in a US Open Quarterfinal.';
+const slug = 'us-open-2026-wheelchair-championships-oda-vink-grand-slam';
+const stamp = '2026-09-08T05:30:00.000Z';
+const title = 'The US Open Wheelchair Championships: Two Grand Slams on the Line';
 const meta_title = title;
-const meta_description = 'Alex Michelsen is 22, unseeded and has not dropped a set at the US Open. Meet the Californian who gave up college and now plays Tiafoe in the quarterfinals.';
-const excerpt = 'He turned 22 six days before the tournament began, arrived ranked outside the top 40, and has not lost a set in four rounds. Alex Michelsen is one win from a US Open semifinal, and most of the crowd is only now learning who he is.';
-const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Alex_Michelsen_%282023_US_Open%29_25_%28cropped%29.jpg/500px-Alex_Michelsen_%282023_US_Open%29_25_%28cropped%29.jpg';
-const image_alt = 'Alex Michelsen of the United States playing at the US Open in New York';
+const meta_description = 'Wheelchair tennis begins at Flushing Meadows this week, with Tokito Oda and Niels Vink each one title from a calendar Grand Slam. Here is why it is worth watching.';
+const excerpt = 'A second tournament starts at the US Open this week, away from the big stadium. Two men arrive holding all four majors, the women have had three different champions in three Slams, and only one rule changes.';
+const image_url = '/images/news/court-13.webp';
+const image_alt = 'An aerial view of a block of blue outdoor hard courts with matches in progress, the kind of courts where the US Open wheelchair event is played';
 
-const body = `Every Grand Slam produces one player the television commentators have to introduce twice. The first time is a polite half-sentence in the first week, spoken over a wide shot while the crowd is still finding its seats. The second time comes later, in the second week, and it sounds different, because by then the producer has cut to a graphic and somebody in the booth is saying a name they did not expect to be saying at all.
+const body = `There is a second tournament happening at the US Open this week, and most people watching the tennis on television will never see a point of it.
 
-At this US Open, that name is Alex Michelsen.
+It starts today. While the quarter-finals fill Arthur Ashe Stadium and the cameras follow the names you already know, the wheelchair championships begin on the courts out beyond the crowds, and they run all the way to Saturday. Doubles gets going first, on Tuesday. Singles starts on Wednesday. The doubles finals are on Friday, the singles finals on Saturday, and by the time the last ball is struck at Flushing Meadows two men may have done something that has not been done in this sport very often at all.
 
-He is 22 years old. He turned 22 on the 25th of August, six days before the main draw started, which means he has spent his entire birthday month quietly dismantling a section of the men's draw while everyone else looked at the top of it. He came into the tournament ranked No. 46 in the world. He was not seeded. He has now played four matches at Flushing Meadows and won all twelve sets he has contested.
+If you have never watched a wheelchair match, this is the week to fix that, and not out of duty. The tennis is genuinely brilliant. It is also, right now, sitting on two of the best storylines anywhere in the game.
 
-On Tuesday he plays Frances Tiafoe for a place in the semifinals of a Grand Slam.
+## One rule, and only one
 
-## The match that made people look up
+What surprises people most is how little is different.
 
-The fourth round is where anonymity usually ends, and it ended for Michelsen against Tomas Martin Etcheverry, the No. 27 seed, a big Argentine with a forehand that can put a hole in a wall. It should have been the day the run got complicated. Instead Michelsen won it 7-6 (6), 6-4, 6-4.
+Same court. Same net, at the same height. Same balls, same lines, same scoring, same tiebreaks, same coin toss. A set is still six games, a match is still best of three. When you tune in mid-rally you are watching tennis, full stop.
 
-Read the shape of that scoreline rather than the numbers. The first set went to a tiebreak, and tiebreaks are where nervous 22-year-olds hand matches back. He won it. Then he did not let the match wobble again. He hit twelve aces. He won 82 percent of the points behind his first serve. When he got a look at a break point, he took three out of four.
+The single change is the bounce. In wheelchair tennis the ball is allowed to bounce twice before it is returned, and the second bounce is permitted to land outside the court. That is it. That is the whole rulebook difference.
 
-That is not the profile of a kid getting lucky. That is somebody serving well enough to stay unbothered and returning ruthlessly enough to punish one loose game per set. It is the least dramatic way to win a tennis match, and by a distance the most repeatable.
+And once you know it, you start to see what it actually does to the sport, because it is not a concession. It is the thing that makes the geometry work. A player who is chasing a ball across the court has to arrive, set the chair, and hit, and the second bounce is what buys them the fraction of a second to do all three. Watch a few games and you will notice that the best players almost never use it. Taking the ball on the first bounce is the aggressive option, the way stepping inside the baseline is in the running game, and the moment somebody is forced into that second bounce you can see the point tilting. It is a live scoreboard of who is in control, and it is right there in front of you.
 
-The stat that travelled fastest afterwards was this one: he is the first unseeded man this century to reach the US Open quarterfinals without dropping a set. A quarter of a century of unseeded runs in New York, and none of them arrived this cleanly.
+## The chair is the equipment
 
-## Aliso Viejo, and the decision that everyone told him not to make
+The other thing worth knowing before you watch is that the chair is not a wheelchair in the sense you are picturing. It is built for one job.
 
-Michelsen grew up in Aliso Viejo, in Orange County, California, which is about as far from Flushing Meadows as American tennis geography gets. Warm mornings, hard courts, junior tournaments in the sun. It produces a particular kind of player: comfortable in the heat, unhurried, unromantic about the sport, allergic to fuss.
+The wheels lean inward at the top, a camber that looks strange for about four minutes and then looks obvious, because it makes the chair pivot on a coin and stops it tipping through a turn. There is usually a small castor at the back to catch the chair when a player leans into a serve. Players are strapped in at the legs and hips, because the chair has to move as one piece with the body rather than under it. None of this is comfortable furniture. It is closer to a racing bike than to anything you would find in a hospital corridor.
 
-In the summer of 2023 he was 18 and had a place waiting for him at the University of Georgia, one of the strongest college programmes in the country. That was the plan. Play in Athens, develop for two or three years, turn pro at 20 or 21 with a degree half-finished and a body that had grown up.
+Which leads to the part that takes the longest to appreciate: everything a player does with their hands, they are also doing with their hands. There is no running. There is pushing, and the push has to end before the swing begins, and then it has to start again immediately after the follow-through. The rhythm of the whole sport is push, brake, hit, push. Once you hear it, matches sound completely different, and the players who are best at it are the ones who seem to arrive early to balls that should have beaten them.
 
-Then he entered the tournament in Newport, Rhode Island, on the grass by the Tennis Hall of Fame. It was only his second ATP main draw. He reached the final. Along the way he beat John Isner, who happens to be one of the most famous players Georgia has ever produced, in the semifinals.
+It changes what a good shot even is. On foot, an opponent stranded in the corner is in trouble but recoverable; a couple of hard strides and they are back. In a chair, recovery costs pushes, and pushes cost time you cannot borrow back later in the rally. So the winning play is often not the outright winner at all. It is the ball hit somewhere slightly awkward, one metre from where the other player wants to be, forcing a turn and a reset and then another turn. Points are built rather than blasted. When a rally does end abruptly, it is usually because three shots earlier somebody quietly won the argument about position.
 
-You can imagine the phone calls that week. He lost the final to Adrian Mannarino, went home, talked it through with his family and his coaches, and gave up his college eligibility to turn professional. He was careful about how he said it at the time, and the careful bit was the honest bit: this was not an easy decision, especially because of what was waiting for him at Georgia.
+## Tokito Oda is twenty years old and holds everything
 
-He went back to Newport the following year and lost the final again, this time to Marcos Giron. That is one of the small cruelties in his story so far. Two tour finals, both at the same little grass-court event, both lost. Three years into his professional career he still does not have an ATP title.
+The story of the men's draw is a Japanese player who is not yet old enough to have a long career behind him and already has one.
 
-He does have a Grand Slam quarterfinal now, which is a strange and lopsided kind of CV, and completely typical of how modern tennis careers actually unfold rather than how we imagine them.
+Tokito Oda turned twenty in May. Last September, on these same courts, he beat Gustavo Fernandez to win the US Open for the first time, and that title completed a career Golden Slam: all four majors plus Paralympic gold, gathered up before his twentieth birthday. Most players spend a career failing to assemble that set. He did it as a teenager.
 
-If you want to know what the road he did not take looks like, it is worth reading about [the college tennis route that produced the Montreal final this summer](/lifestyle/montreal-2026-final-college-tennis-route-shelton-nakashima/) — a Masters 1000 final contested by two men who both went through the American university system. Michelsen skipped it. The three of them ended up in the same place anyway.
+Then he kept going. He won the Australian Open in January, beating Martin de la Puente 3-6, 6-2, 6-2 to hold all four majors at once. He won Roland Garros in June, beating Alfie Hewett 6-3, 6-3. He won Wimbledon in July, beating Hewett again, 6-1, 6-1, for a third title there and a tenth major singles title in total.
 
-## A season that was going the wrong way
+So do the arithmetic on what he is walking into this week. Australian Open, Roland Garros, Wimbledon, all won this calendar year. One tournament left. If Oda wins in New York on Saturday he completes a calendar-year Grand Slam, and he does it having also held the previous US Open, which would mean five consecutive majors. That is the level of thing you tell people you saw.
 
-Here is the part that makes this run worth more than a fortnight of highlights.
+He is worth watching for the tennis alone, incidentally, not just the ledger. He plays with his chest almost over the front wheels, absurdly low and forward, and he hits a backhand that most players in the draw cannot get near. He is also visibly, unmistakably enjoying himself, which after eighteen months of being the man everyone is trying to beat is not nothing.
 
-Michelsen was ranked No. 30 in the world in July 2025. That is a career high, and at 20 years old it looked like a floor rather than a ceiling. Everything about the trajectory said top 20 by 22, top 10 not long after.
+## The man on the other side of it
 
-It did not happen like that. He arrived in New York ranked No. 46, which sounds like a small slide and is not. It is the difference between being seeded at a major and having to play a seed in the second round. It is the difference between arriving as somebody the draw protects and arriving as somebody the draw punishes.
+Alfie Hewett has been in both of those finals this year, and that framing is unfair to him, so let us do it properly.
 
-The grass season went badly, cut short by an oblique injury, which for a server is one of the more miserable things that can go wrong. And the numbers against the best players were bleak: going into the US Open he had beaten a top-20 opponent just once all season, in ten attempts.
+The 28-year-old from Norfolk has won the US Open singles title four times, in 2018, 2019, 2022 and 2023. He lost the 2021 final to Shingo Kunieda, which in that era was not a criticism of anybody. For most of a decade he has been either the best player in the world or the man half a step behind whoever was, and he is now running into a twenty-year-old at the peak of a run. Sport does that to people. It does not diminish them.
 
-Ten attempts, one win. That is the record of a player being told, repeatedly and in public, that he is not quite there yet.
+And then there is the doubles, which is where the British story becomes something close to absurd. Hewett and Gordon Reid have been playing together for years, and in June at Roland Garros they won a record-extending seventh straight title in Paris, their twenty-fourth Grand Slam title as a partnership. Reid, in the same match, collected the thirtieth major title of his own career. A month later they added another Wimbledon, their seventh there.
 
-So when he drew Brandon Nakashima in the second round, the seeded American, No. 16, a man who three weeks earlier had reached the final of the Masters 1000 in Montreal, there was nothing in the form book to suggest an upset. Michelsen beat him. In straight sets. It was the second top-20 win of his season, and it arrived at the exact moment when everybody would see it.
+Doubles in wheelchair tennis is the format nobody warns you about, because the court fills up. Four chairs in a space designed for two people on foot, angles that should not exist, players covering for each other in ways that are obvious only after they have worked. If you have half an hour on Friday, this is the thing to spend it on. Hewett and Reid have made an entire second career out of turning up.
 
-## The draw he actually played
+## The quiet streak nobody is talking about
 
-Runs like this get flattened into a headline, so it is worth laying out what he had to do.
+While everyone counts Oda, Niels Vink has been doing exactly the same thing in the quad division and getting a fraction of the attention.
 
-Round one: Federico Cina, the young Italian. Straight sets.
+The quad draw is for players whose impairment affects three or more limbs, which for many of them means the racket is taped or strapped to the hand, and the serve is built around the grip they can hold rather than the one they would choose. It is a mixed division: men and women compete in the same draw. It also produces some of the most inventive tennis at the whole tournament, because when a stroke is unavailable, players build a different one.
 
-Round two: [Brandon Nakashima](/players/brandon-nakashima/), the No. 16 seed and a Montreal finalist a fortnight earlier. Straight sets.
+Vink, from the Netherlands, won the Australian Open in January by beating his countryman Sam Schroder 6-3, 7-6(5), which completed his own career Golden Slam alongside the Paralympic gold he won in Paris in 2024. He won Roland Garros in June over Ahmet Kaplan, 6-3, 6-4. He defended Wimbledon in July past Schroder, a fifth consecutive major singles title and a tenth overall. He arrives in New York in precisely the same position as Oda: three majors this year, one to go, a calendar Grand Slam sitting there.
 
-Round three: Daniel Merida Aguilar of Spain, who had done his own damage to get there. Straight sets.
+Two calendar Grand Slams, in one week, at one tournament. It seems worth somebody mentioning.
 
-Round four: Tomas Martin Etcheverry, the No. 27 seed. Straight sets.
+## The draw that actually opened up
 
-Nobody has taken him past the twelfth game of any set except in that one opening tiebreak against Etcheverry. He has not spent a single evening trailing two sets to one, staring at the roof, wondering whether his legs will still be there in an hour. In a two-week tournament in New York humidity, the fresh player in the quarterfinals is not a footnote. It is an advantage you can measure in the fifth game of the third set on Tuesday night.
+The women, meanwhile, have spent 2026 doing the opposite of what everybody expected, which is the best possible reason to watch.
 
-## The under-the-radar thing
+For years the answer was Diede de Groot and there was no follow-up question. The Dutch player won six US Open titles in a row from 2018 to 2023 and put together records that read like typing errors. Then came injury, and surgery, and the strange experience of being the greatest player in your sport while losing matches you used to win without thinking.
 
-Michelsen has said something that sits oddly with how professional sport usually talks about itself: "I love being under the radar. It's great."
+This year has been a proper argument. In January, Li Xiaohui of China beat de Groot 6-1, 6-2 in the Australian Open final for the first major title of her life. In June, de Groot answered in Paris, beating Ksenia Chasteau 6-1, 6-0 for a sixth French Open title, her twenty-fourth major singles title, and her first in nearly two years. It also made her the first player ever to win all four majors at least six times each, which is a sentence you have to read twice.
 
-Most 22-year-old athletes say the opposite, or say the right modest thing while very obviously wanting the camera. He seems to actually mean it. Watch him between points and there is not much to watch — no big self-directed speeches, no theatrical stare into the box, no fist pump that lasts longer than the point did. He plays like somebody doing a job he happens to be extremely good at.
+Then in July, at Wimbledon, Yui Kamiji beat her 6-0, 6-0. That is not a misprint. The Japanese player, who has been in the top of this sport for a decade, took her first Wimbledon title without dropping a game in the final, sealed a career Golden Slam of her own, and collected a twelfth major.
 
-He has worked in recent seasons with Kristof Vliegen, the former Belgian tour player, and the team around him has been notably low-key. That calm is not a personality quirk in this context. It is a competitive asset. New York is the loudest tournament in the sport, a place where the crowd will happily adopt you and then, half an hour later, roar for the man breaking your serve. It rewards players who are not moved much by weather, and Michelsen has the emotional weather system of a man waiting for a bus.
+Three Slams this year, three different champions. And Kamiji is the defending champion in New York, having beaten Li 0-6, 6-1, 6-3 in last year's final here, a scoreline that tells you everything about how that match went and how it turned. Whatever happens in this draw is not written yet, which is exactly the appeal of any underdog run, the way [an unheralded lucky loser can take over a Grand Slam](/lifestyle/jesper-de-jong-roland-garros-2026-lucky-loser-run/) when the door opens for a week.
 
-The flip side arrives this week. The radar has found him. Tuesday is a night on one of the big courts against a home favourite whom this crowd genuinely loves. He will not be under anything.
+## The summer they tried to cancel it
 
-That transition is harder than it sounds, and it is where a lot of promising careers get a dent in them. In the first week of a major an unseeded player is essentially invisible: an early court, a modest crowd, a scoreboard nobody is refreshing. By the quarterfinals everything is inverted. The warm-up is televised. Somebody asks you, on camera, what it would mean to reach a Grand Slam semifinal, and you have to answer it in a sentence while pretending you have not thought about it. Then you walk out into a stadium that has been drinking since six o'clock.
+None of this was inevitable, and it is worth remembering how recently it nearly went the other way.
 
-Players talk about this shift more than they talk about opponents, because the tennis does not change but everything around it does. The ones who cope tend to be the ones who were never performing for the room in the first place.
+In June 2020, planning a pandemic US Open with a shrunken footprint, the USTA announced there would be no wheelchair event that year. No juniors, no mixed doubles, no wheelchair. The Australian Dylan Alcott called it disgusting discrimination in public and did not soften it. Britain's Andy Lapthorne said the same. Andy Murray backed them. Within about a week the decision had been reversed and the wheelchair competition was restored to its usual slot in the calendar, played that September.
 
-## What a quarterfinal actually changes
+That is five years ago, not fifty. The reason the draws are here this week, and the reason they are bigger than they were, is that players spent a decade being loud about it and refusing to be the part of the schedule that gets cut first when the tournament needs space.
 
-For someone ranked in the forties, a second week like this is not just a nice memory. It reorganises a year.
+You can see the shift in the money, too. Wheelchair prize money at this year's US Open is a record 2,309,200 dollars, up more than forty per cent on last year. That is a rounding error against what the singles champions on Ashe will take home, and if you want the [full breakdown of how a Grand Slam divides its cheque](/money/grand-slam-prize-money-breakdown/), the shape of it is instructive. But the trajectory is the point. Ten years ago these numbers were not in that conversation at all. There are junior wheelchair events at this tournament now, which means the pipeline exists, which means the players coming up will not have to argue for a spot on the schedule the way Alcott and Lapthorne did.
 
-The ranking points from a Grand Slam quarterfinal are the kind of chunk that lifts a player back towards the seeded bracket, and being seeded at a major is worth more than the number suggests. It means no top-ten opponent until the third round. It means a first week you can survive on a bad day rather than one where a single flat afternoon ends your tournament. Michelsen has spent this season on the wrong side of that line, drawing seeds early and being asked to produce his best tennis before he had found it.
+## How to watch it, if you are new
 
-There is a scheduling dividend too. Deep runs at the biggest events buy entry, confidence and choice: which autumn tournaments to play, which to skip, whether to chase indoor points in Europe or protect a body that has already had one injury scare this year. A player at No. 46 takes what he is given. A player who has just made the last eight in New York starts making decisions.
+Two practical things, and neither requires you to become an expert.
 
-And there is the least measurable thing of all, which is what the rest of the locker room now believes about him. Tennis is a small world with a long memory. Beating a seed in the second round and then not blinking for two more matches is the sort of fortnight that changes how opponents prepare for you next February.
+The first: watch the chair, not the ball, for one whole game. It feels wrong and it works. You will start to see the positioning battle underneath the rally, the way one player is repeatedly turning square and pushing forward while the other is being spun and dragged behind their own baseline. It is the same fight over court position that decides every match on [the main show courts at Flushing Meadows](/tournaments/us-open-guide/), just made visible.
 
-## Three Americans, one drought, and a quarterfinal that guarantees something
+The second: go early in the day and get close. These matches are played on the smaller courts, where you can stand a few metres from the action rather than watching from a stand two hundred feet up. You can hear the wheels. You can hear players talking to themselves, and to each other, in a way the microphones in the big stadium never quite catch. It is the same reason the outside courts are the best-kept secret of the first week of any Slam, and it comes with all the ordinary joys of a day at this tournament, [oversized cocktail included](/lifestyle/honey-deuce-cocktail-us-open-2026-story-and-recipe/).
 
-Zoom out from Michelsen for a second, because the wider picture is the reason this quarterfinal is such a big deal in the United States.
+## Saturday
 
-Three American men reached the last eight here: Ben Shelton, who beat Stefanos Tsitsipas in straight sets; [Frances Tiafoe](/players/frances-tiafoe/), who came through a genuinely excellent match against the No. 7 seed Daniil Medvedev, 7-6 (1), 6-4, 7-6 (6); and Michelsen.
+By Saturday afternoon this will have resolved one way or another. Oda will have a calendar Grand Slam or a loss he did not expect. Vink will have the same, in a division most people cannot name. Hewett will have another title, another final, or another year of being asked about somebody else. One of Kamiji, de Groot, Li or someone nobody has picked will be holding a trophy in the New York heat.
 
-Shelton has drawn Carlos Alcaraz, the defending champion, who moved past Tommy Paul in straight sets and currently looks like the most complete player in the building.
+The tennis will have been superb either way, played by people who are among the best in the world at a game the rest of us cannot play, on a court a few steps from where you are standing. That is a very short walk for the amount you get back. Take it this week, while there are two Grand Slams sitting on the table and hardly anyone at the fence.
 
-Tiafoe has drawn Michelsen. Which means one of them is in the semifinals on Friday, whatever else happens.
-
-The context underneath all this is a number that American tennis has been carrying around for a very long time: no American man has won a Grand Slam singles title since Andy Roddick at the 2003 US Open. Twenty-three years. In that time American women have won majors, American men have won Masters titles and Olympic medals and Davis Cup ties, and the biggest trophies in the sport have gone almost everywhere else.
-
-The closest anyone has come recently was Taylor Fritz in 2024, right here, reaching the final and running into Jannik Sinner. Tiafoe himself has been to the semifinals in New York twice and lost both. Every year the question comes back, and every year the answer is politely deferred.
-
-Michelsen is not the man who was supposed to answer it. He is the fourth or fifth name on most lists of American hopes, behind Fritz and Shelton and Tiafoe and probably a couple of others. Which is precisely why his week is interesting. Droughts do not usually end the way the preview articles predict. They end when somebody unbothered by the weight of the thing walks into it without noticing.
-
-## What to watch on Tuesday, if you are new to him
-
-You do not need to know a forehand from a backhand to enjoy this one. Three things to look for.
-
-The serve. Michelsen is tall and hits a first serve that arrives flatter and heavier than his frame suggests. Twelve aces against Etcheverry was not a fluke; it is how he keeps matches simple. If he is winning a high share of first-serve points, the match stays on his terms and Tiafoe has to invent something.
-
-The stillness. Tiafoe is one of the great showmen in tennis, a player who genuinely feeds on a New York crowd and can turn a set around on atmosphere alone. The question of the night is whether Michelsen keeps doing his very boring, very effective thing while 20,000 people try to lift somebody else. If you see him still walking at the same pace at 4-4 in the third, that is the tell.
-
-The break points. Seventy-five percent conversion against Etcheverry is absurd and will not repeat. But the underlying habit — creating one or two openings a set and being unafraid when they arrive — is the difference between a nice story and a semifinalist.
-
-For the full picture of the draw he has come through and the ground he is playing on, [his player page](/players/alex-michelsen/) has the numbers, and the second week at Flushing Meadows has a rhythm all of its own once the field thins out.
-
-## The part nobody can plan for
-
-There is a version of this week where Michelsen loses on Tuesday, goes back to being ranked in the thirties, and this fortnight becomes a paragraph in his biography. That is the likeliest version. Tiafoe is the better player on paper, the more experienced player by a distance, and the one the building will be shouting for.
-
-But something has already happened here that cannot be taken back. A 22-year-old who spent a season being told he was stalling has walked through four rounds of a Grand Slam without losing a set, in a year when the sport is more crowded at the top than it has been in a decade. Whatever Tuesday does to him, he now knows what that feels like from the inside, and knowing it is the whole game. Players do not usually improve in a straight line. They improve in one fortnight that rearranges what they think is possible, and then spend two years catching up to it.
-
-So if you are watching on Tuesday and you find yourself pulling for the quieter one, you are not backing a fairytale. You are backing a player who has been better than his ranking all summer and finally got a draw where it showed. The tennis will tell you the rest.
-
-*Photo: Alex Michelsen by Hameltion, CC BY-SA 4.0, via Wikimedia Commons.*`;
+*Photo: an aerial view of outdoor hard courts with matches in progress, via Unsplash.*`;
 
 const record = {
   slug, title, excerpt, body,
