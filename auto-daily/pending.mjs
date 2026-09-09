@@ -1,110 +1,118 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'us-open-2026-wheelchair-championships-oda-vink-grand-slam';
-const stamp = '2026-09-08T05:30:00.000Z';
-const title = 'The US Open Wheelchair Championships: Two Grand Slams on the Line';
+const slug = 'botic-van-de-zandschulp-us-open-2026-quarterfinal-five-hour-comeback';
+const stamp = '2026-09-09T05:30:00.000Z';
+const title = 'Botic van de Zandschulp, Five Hours and the Match Point That Never Landed';
 const meta_title = title;
-const meta_description = 'Wheelchair tennis begins at Flushing Meadows this week, with Tokito Oda and Niels Vink each one title from a calendar Grand Slam. Here is why it is worth watching.';
-const excerpt = 'A second tournament starts at the US Open this week, away from the big stadium. Two men arrive holding all four majors, the women have had three different champions in three Slams, and only one rule changes.';
-const image_url = '/images/news/court-13.webp';
-const image_alt = 'An aerial view of a block of blue outdoor hard courts with matches in progress, the kind of courts where the US Open wheelchair event is played';
+const meta_description = 'The Dutchman came back from two sets down, saved a match point and outlasted Arthur Gea over five hours and 13 minutes. Now Zverev waits in the last eight.';
+const excerpt = 'He is 30, ranked around No. 70, and almost nobody had him on their list. Then Botic van de Zandschulp survived the fourth-longest match in US Open history and walked into the quarter-finals with barely a change of expression.';
+const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Van_de_Zandschulp_MCM22_%2811%29_%2852036444288%29.jpg/500px-Van_de_Zandschulp_MCM22_%2811%29_%2852036444288%29.jpg';
+const image_alt = 'Botic van de Zandschulp on court at the Monte-Carlo Masters';
 
-const body = `There is a second tournament happening at the US Open this week, and most people watching the tennis on television will never see a point of it.
+const body = `There is a single point at the heart of this story, and it lasted about four seconds.
 
-It starts today. While the quarter-finals fill Arthur Ashe Stadium and the cameras follow the names you already know, the wheelchair championships begin on the courts out beyond the crowds, and they run all the way to Saturday. Doubles gets going first, on Tuesday. Singles starts on Wednesday. The doubles finals are on Friday, the singles finals on Saturday, and by the time the last ball is struck at Flushing Meadows two men may have done something that has not been done in this sport very often at all.
+Third-set tie-break. Botic van de Zandschulp had lost the first two sets. He was two points, then one point, from going home. Arthur Gea, a French lucky loser who was not even supposed to be in the tournament, had a match point on his own serve. Gea served and came forward, the way you are taught to on the biggest point of your life. Van de Zandschulp went for the forehand pass, hard and flat and slightly desperate. Gea got a backhand volley on it.
 
-If you have never watched a wheelchair match, this is the week to fix that, and not out of duty. The tennis is genuinely brilliant. It is also, right now, sitting on two of the best storylines anywhere in the game.
+And missed.
 
-## One rule, and only one
+Everything that has happened to Dutch tennis this fortnight hangs off that volley. Van de Zandschulp went on to win that tie-break, then the fourth, then the fifth set, and by the time he shook hands he had been on court for five hours and 13 minutes: the fourth-longest match in the history of the US Open. He is 30 years old, he was ranked around No. 70 in the world when the tournament started, and he is now in the quarter-finals at Flushing Meadows for the second time in his life.
 
-What surprises people most is how little is different.
+If you only watch tennis when the big names are on, you will have missed almost all of this. That is a shame, because it is the best story of the second week.
 
-Same court. Same net, at the same height. Same balls, same lines, same scoring, same tiebreaks, same coin toss. A set is still six games, a match is still best of three. When you tune in mid-rally you are watching tennis, full stop.
+## The scoreline is a novel
 
-The single change is the bounce. In wheelchair tennis the ball is allowed to bounce twice before it is returned, and the second bounce is permitted to land outside the court. That is it. That is the whole rulebook difference.
+Write it out and it looks like a typing error: 3-6, 6-7(0), 7-6(7), 7-6(3), 6-4.
 
-And once you know it, you start to see what it actually does to the sport, because it is not a concession. It is the thing that makes the geometry work. A player who is chasing a ball across the court has to arrive, set the chair, and hit, and the second bounce is what buys them the fraction of a second to do all three. Watch a few games and you will notice that the best players almost never use it. Taking the ball on the first bounce is the aggressive option, the way stepping inside the baseline is in the running game, and the moment somebody is forced into that second bounce you can see the point tilting. It is a live scoreboard of who is in control, and it is right there in front of you.
+Read it slowly. He lost the first set. He lost a second-set tie-break to love, which is about as demoralising a way to lose a set as tennis has invented; seven straight points, no argument, no foothold. At that stage the match was, by any reasonable measure, over. Players ranked outside the top 50 do not come back from two sets down in a Grand Slam fourth round against an opponent who is serving well and playing without fear.
 
-## The chair is the equipment
+Then he won a tie-break 9-7, the one with the match point in it. Then he won another one. Then, in a fifth set that both men had every physical reason to lose, he broke once and served it out.
 
-The other thing worth knowing before you watch is that the chair is not a wheelchair in the sense you are picturing. It is built for one job.
+Five hours and 13 minutes. Only three matches in the tournament history have run longer: Daniel Evans against Karen Khachanov in 2024 at five hours and 35 minutes, Stefan Edberg against Michael Chang in the 1992 semi-final at five hours and 26 minutes, and Carlos Alcaraz against Jannik Sinner in the 2022 quarter-final at five hours and 15 minutes. That last one is regarded as one of the great matches of the modern era and finished at nearly three in the morning. Van de Zandschulp against Gea is now sitting on the same shelf, two minutes behind it, and hardly anyone outside the Netherlands and a few thousand very tired people in New York has noticed.
 
-The wheels lean inward at the top, a camber that looks strange for about four minutes and then looks obvious, because it makes the chair pivot on a coin and stops it tipping through a turn. There is usually a small castor at the back to catch the chair when a player leans into a serve. Players are strapped in at the legs and hips, because the chair has to move as one piece with the body rather than under it. None of this is comfortable furniture. It is closer to a racing bike than to anything you would find in a hospital corridor.
+Asked afterwards how on earth he had come back, he said: "I have no clue, actually."
 
-Which leads to the part that takes the longest to appreciate: everything a player does with their hands, they are also doing with their hands. There is no running. There is pushing, and the push has to end before the swing begins, and then it has to start again immediately after the follow-through. The rhythm of the whole sport is push, brake, hit, push. Once you hear it, matches sound completely different, and the players who are best at it are the ones who seem to arrive early to balls that should have beaten them.
+He also said, and this is the line that tells you the most about him, that he thought this was probably better than the first quarter-final he made in New York.
 
-It changes what a good shot even is. On foot, an opponent stranded in the corner is in trouble but recoverable; a couple of hard strides and they are back. In a chair, recovery costs pushes, and pushes cost time you cannot borrow back later in the rally. So the winning play is often not the outright winner at all. It is the ball hit somewhere slightly awkward, one metre from where the other player wants to be, forcing a turn and a reset and then another turn. Points are built rather than blasted. When a rally does end abruptly, it is usually because three shots earlier somebody quietly won the argument about position.
+## The other side of the net deserves a paragraph
 
-## Tokito Oda is twenty years old and holds everything
+Arthur Gea should not have been playing at all. He is a lucky loser, which means he lost in the final round of qualifying and then got handed a main-draw place when somebody else withdrew. Lucky losers arrive with no expectations, no seeding, no pressure and, quite often, nothing to lose, and every so often one of them takes a fortnight and runs with it. If you enjoyed the Jesper de Jong story at Roland Garros this year, you already know the shape of it: we wrote about [the lucky loser who kept winning in Paris](/lifestyle/jesper-de-jong-roland-garros-2026-lucky-loser-run/) and about how strange it is to watch a player outperform an entire draw on a technicality.
 
-The story of the men's draw is a Japanese player who is not yet old enough to have a long career behind him and already has one.
+Gea did all of that, and then had a match point at the US Open in the fourth round, and then lost anyway after another two and a half hours. He will get a lot of sympathy and a decent cheque and, one hopes, a proper night of sleep. He also gave van de Zandschulp the best possible present: a match so long and so brutal that nobody can now describe the Dutchman as somebody who got a soft draw.
 
-Tokito Oda turned twenty in May. Last September, on these same courts, he beat Gustavo Fernandez to win the US Open for the first time, and that title completed a career Golden Slam: all four majors plus Paralympic gold, gathered up before his twentieth birthday. Most players spend a career failing to assemble that set. He did it as a teenager.
+## Who is this man, actually?
 
-Then he kept going. He won the Australian Open in January, beating Martin de la Puente 3-6, 6-2, 6-2 to hold all four majors at once. He won Roland Garros in June, beating Alfie Hewett 6-3, 6-3. He won Wimbledon in July, beating Hewett again, 6-1, 6-1, for a third title there and a tenth major singles title in total.
+Here is the short version. Botic van de Zandschulp is Dutch, he is 30, and he has one of the least demonstrative faces in professional sport. He does not do the fist pump that goes on for three seconds too long. He does not scream at his box. Spanish outlets have taken to calling him the ice man, which is a little dramatic but not wrong; he plays big points with the expression of someone checking a train timetable.
 
-So do the arithmetic on what he is walking into this week. Australian Open, Roland Garros, Wimbledon, all won this calendar year. One tournament left. If Oda wins in New York on Saturday he completes a calendar-year Grand Slam, and he does it having also held the previous US Open, which would mean five consecutive majors. That is the level of thing you tell people you saw.
+His tennis is old-fashioned in the best way. Flat, clean groundstrokes off both wings, a serve that is more accurate than enormous, and an ability to take the ball early and rush people who like time. He does not have a weapon that makes highlight reels. What he has is a very high floor, which is why big names keep tripping over him and why the trip is always a surprise.
 
-He is worth watching for the tennis alone, incidentally, not just the ledger. He plays with his chest almost over the front wheels, absurdly low and forward, and he hits a backhand that most players in the draw cannot get near. He is also visibly, unmistakably enjoying himself, which after eighteen months of being the man everyone is trying to beat is not nothing.
+The longer version is more interesting, because it has a middle section where everything went wrong.
 
-## The man on the other side of it
+## 2021: the qualifier who would not go away
 
-Alfie Hewett has been in both of those finals this year, and that framing is unfair to him, so let us do it properly.
+The first time he did this he had to win three matches just to get into the main draw. At the 2021 US Open he came through qualifying and then kept going, beating Casper Ruud and Diego Schwartzman, both top-20 players at the time, on his way to the quarter-finals. He became only the third male qualifier in the Open era to reach the last eight in New York, and the first Dutchman to reach any Grand Slam quarter-final since 2004.
 
-The 28-year-old from Norfolk has won the US Open singles title four times, in 2018, 2019, 2022 and 2023. He lost the 2021 final to Shingo Kunieda, which in that era was not a criticism of anybody. For most of a decade he has been either the best player in the world or the man half a step behind whoever was, and he is now running into a twenty-year-old at the peak of a run. Sport does that to people. It does not diminish them.
+In that quarter-final he ran into Daniil Medvedev, who was in the middle of the most ruthless fortnight of his career and would go on to beat Novak Djokovic in the final and deny him the calendar Grand Slam. Medvedev lost one set in the entire tournament. It was to van de Zandschulp.
 
-And then there is the doubles, which is where the British story becomes something close to absurd. Hewett and Gordon Reid have been playing together for years, and in June at Roland Garros they won a record-extending seventh straight title in Paris, their twenty-fourth Grand Slam title as a partnership. Reid, in the same match, collected the thirtieth major title of his own career. A month later they added another Wimbledon, their seventh there.
+That fortnight rewrote his career. He climbed to a career-high No. 22 in August 2022 and put together his best season, 38 wins, with victories over Cameron Norrie, Taylor Fritz and Alexander Bublik, dragging the Netherlands through Davis Cup ties along the way. For a couple of years he was, quietly, a very good top-30 player.
 
-Doubles in wheelchair tennis is the format nobody warns you about, because the court fills up. Four chairs in a space designed for two people on foot, angles that should not exist, players covering for each other in ways that are obvious only after they have worked. If you have half an hour on Friday, this is the thing to spend it on. Hewett and Reid have made an entire second career out of turning up.
+## Then it stopped working
 
-## The quiet streak nobody is talking about
+Ranking points expire. Confidence goes with them. Van de Zandschulp slid out of the top 50, then the top 80, and spent a long stretch playing the kind of tennis where you lose in three sets to people you used to beat and cannot explain why. In 2026 he has won 20 matches and lost 16 and has not won a title. Nothing about that record says quarter-finalist.
 
-While everyone counts Oda, Niels Vink has been doing exactly the same thing in the quad division and getting a fraction of the attention.
+What he said after surviving five sets tells you what that period actually felt like from the inside: "It is important for me to be in this position at 30 years old after the tough times I have gone through."
 
-The quad draw is for players whose impairment affects three or more limbs, which for many of them means the racket is taped or strapped to the hand, and the serve is built around the grip they can hold rather than the one they would choose. It is a mixed division: men and women compete in the same draw. It also produces some of the most inventive tennis at the whole tournament, because when a stroke is unavailable, players build a different one.
+That is as close to an emotional statement as he gets, and it is worth sitting with. The tour does not have a retirement age; it has a slow, humiliating filtering process where the results stop coming and the flights get longer and the tournaments get smaller and nobody tells you it is over. Plenty of former top-30 players are grinding away on the Challenger tour right now, three time zones from home, playing for prize money that barely covers the coach. Coming back from that at 30, in a sport that keeps producing 19-year-olds who hit the ball harder than you, is not a small thing. It is arguably harder than the first breakthrough, because the first time you did not know what you were missing.
 
-Vink, from the Netherlands, won the Australian Open in January by beating his countryman Sam Schroder 6-3, 7-6(5), which completed his own career Golden Slam alongside the Paralympic gold he won in Paris in 2024. He won Roland Garros in June over Ahmet Kaplan, 6-3, 6-4. He defended Wimbledon in July past Schroder, a fifth consecutive major singles title and a tenth overall. He arrives in New York in precisely the same position as Oda: three majors this year, one to go, a calendar Grand Slam sitting there.
+## The two upsets in between
 
-Two calendar Grand Slams, in one week, at one tournament. It seems worth somebody mentioning.
+Even in the lean years, van de Zandschulp had a habit of ambushing the sport at its most public moments.
 
-## The draw that actually opened up
+At the 2024 US Open he beat Carlos Alcaraz in the second round, 6-1, 7-5, 6-4, when Alcaraz was the reigning Wimbledon champion and world No. 3. It was not close and it was not lucky. The Dutchman took the ball early, hit through the court and gave Alcaraz nothing to feed off, and one of the most watchable players in the world was out of the tournament before the first Friday.
 
-The women, meanwhile, have spent 2026 doing the opposite of what everybody expected, which is the best possible reason to watch.
+Then, in November of that year, he did something that will be in his obituary. At the Davis Cup Finals in Malaga he played Rafael Nadal in the tie between the Netherlands and Spain, and won 6-4, 6-4. Nadal had already announced that those Finals would be the end of his career. That match turned out to be the last singles match Rafael Nadal ever played. The man on the other side of the net, the last opponent of the greatest clay-courter who ever lived, was Botic van de Zandschulp.
 
-For years the answer was Diede de Groot and there was no follow-up question. The Dutch player won six US Open titles in a row from 2018 to 2023 and put together records that read like typing errors. Then came injury, and surgery, and the strange experience of being the greatest player in your sport while losing matches you used to win without thinking.
+The Netherlands won the tie 2-1 and went on to reach the first Davis Cup final in their history. Think about that for a second: a country of 18 million people with no great tennis tradition, no Slam champion in the men's game, reaching a Davis Cup final, and the man doing the heavy lifting is a player most casual fans could not pick out of a line-up.
 
-This year has been a proper argument. In January, Li Xiaohui of China beat de Groot 6-1, 6-2 in the Australian Open final for the first major title of her life. In June, de Groot answered in Paris, beating Ksenia Chasteau 6-1, 6-0 for a sixth French Open title, her twenty-fourth major singles title, and her first in nearly two years. It also made her the first player ever to win all four majors at least six times each, which is a sentence you have to read twice.
+## The road through this US Open
 
-Then in July, at Wimbledon, Yui Kamiji beat her 6-0, 6-0. That is not a misprint. The Japanese player, who has been in the top of this sport for a decade, took her first Wimbledon title without dropping a game in the final, sealed a career Golden Slam of her own, and collected a twelfth major.
+Nothing about this run has been handed to him.
 
-Three Slams this year, three different champions. And Kamiji is the defending champion in New York, having beaten Li 0-6, 6-1, 6-3 in last year's final here, a scoreline that tells you everything about how that match went and how it turned. Whatever happens in this draw is not written yet, which is exactly the appeal of any underdog run, the way [an unheralded lucky loser can take over a Grand Slam](/lifestyle/jesper-de-jong-roland-garros-2026-lucky-loser-run/) when the door opens for a week.
+He opened against Jan Choinski and won in straight sets, 6-3, 6-1, 7-6(5). Then, in the second round, he beat Alex de Minaur, one of the fittest and most stubborn players in the game, 6-4, 7-5, 6-2. That was his first win over de Minaur in five attempts, and it was his second top-10 win of the American hard-court summer after beating Daniil Medvedev in Montreal in August. The de Minaur match was over in straight sets in front of a crowd that had come expecting the opposite result.
 
-## The summer they tried to cancel it
+The third round against Zizou Bergs went five sets: 3-6, 7-6(3), 4-6, 7-6(6), 6-3. Two tie-breaks, one of them saved at 6-6 in the fourth. Then came Gea and the marathon. Back-to-back five-setters in the second week of a Slam is a physical proposition that ends most players in their thirties.
 
-None of this was inevitable, and it is worth remembering how recently it nearly went the other way.
+He is also, now, the last Dutch player left in the draw. The Netherlands sent a proper contingent to New York this year and he is the one still standing, which is a very Botic outcome.
 
-In June 2020, planning a pandemic US Open with a shrunken footprint, the USTA announced there would be no wheelchair event that year. No juniors, no mixed doubles, no wheelchair. The Australian Dylan Alcott called it disgusting discrimination in public and did not soften it. Britain's Andy Lapthorne said the same. Andy Murray backed them. Within about a week the decision had been reversed and the wheelchair competition was restored to its usual slot in the calendar, played that September.
+The other thing that run has done is fix his ranking. He arrived around No. 70; by the end of this fortnight he will be somewhere in the region of No. 40, with a seeding at the next Slam back within reach. Points from a Grand Slam quarter-final are worth a season of Challenger finals, and they last a year.
 
-That is five years ago, not fifty. The reason the draws are here this week, and the reason they are bigger than they were, is that players spent a decade being loud about it and refusing to be the part of the schedule that gets cut first when the tournament needs space.
+## Wednesday: Zverev, and a first meeting
 
-You can see the shift in the money, too. Wheelchair prize money at this year's US Open is a record 2,309,200 dollars, up more than forty per cent on last year. That is a rounding error against what the singles champions on Ashe will take home, and if you want the [full breakdown of how a Grand Slam divides its cheque](/money/grand-slam-prize-money-breakdown/), the shape of it is instructive. But the trajectory is the point. Ten years ago these numbers were not in that conversation at all. There are junior wheelchair events at this tournament now, which means the pipeline exists, which means the players coming up will not have to argue for a spot on the schedule the way Alcott and Lapthorne did.
+The quarter-final is against Alexander Zverev, and the gap between the two men is the whole point.
 
-## How to watch it, if you are new
+Zverev is the top seed here, playing a major as the No. 1 seed for the first time in his career, and he arrives as the reigning Roland Garros champion. That title finally came in June after three Grand Slam finals lost, and we covered [the fortnight in Paris where he and Mirra Andreeva both broke through](/lifestyle/roland-garros-2026-recap-zverev-andreeva-first-time-champions/). It changed how he plays the big weeks. A player who has never won a major and a player who has won one are different animals, and this year Zverev has reached the quarter-finals at all four of them, which nobody else has managed.
 
-Two practical things, and neither requires you to become an expert.
+He got here by beating Luciano Darderi 6-2, 6-2, 7-6(3), which is about as comfortable as the second week gets. He also survived a first-round scare against Lorenzo Sonego that ran four hours and 53 minutes, so he knows exactly what a long night in New York feels like.
 
-The first: watch the chair, not the ball, for one whole game. It feels wrong and it works. You will start to see the positioning battle underneath the rally, the way one player is repeatedly turning square and pushing forward while the other is being spun and dragged behind their own baseline. It is the same fight over court position that decides every match on [the main show courts at Flushing Meadows](/tournaments/us-open-guide/), just made visible.
+The strange detail: these two have never played each other on tour. Not once. Zverev has been on the circuit since 2013 and van de Zandschulp since the middle of the last decade, and their paths have never crossed in a main draw. There is no head-to-head, no pattern, no comfortable memory for either man to reach for.
 
-The second: go early in the day and get close. These matches are played on the smaller courts, where you can stand a few metres from the action rather than watching from a stand two hundred feet up. You can hear the wheels. You can hear players talking to themselves, and to each other, in a way the microphones in the big stadium never quite catch. It is the same reason the outside courts are the best-kept secret of the first week of any Slam, and it comes with all the ordinary joys of a day at this tournament, [oversized cocktail included](/lifestyle/honey-deuce-cocktail-us-open-2026-story-and-recipe/).
+What that means practically is that Zverev will have spent Tuesday watching video of a player who does not do anything spectacular but does everything early. Van de Zandschulp will try to take time away from him, stand on the baseline, and make the German hit one more ball than he wants to on every rally. Zverev, at his best, will simply out-serve that plan and hit through it. On paper this ends in three or four sets.
 
-## Saturday
+On paper the Gea match ended in three, too.
 
-By Saturday afternoon this will have resolved one way or another. Oda will have a calendar Grand Slam or a loss he did not expect. Vink will have the same, in a division most people cannot name. Hewett will have another title, another final, or another year of being asked about somebody else. One of Kamiji, de Groot, Li or someone nobody has picked will be holding a trophy in the New York heat.
+The thing worth watching for is the point where van de Zandschulp is behind. He will be behind at some stage. He always is. And what happens in his face at that moment is nothing at all, which is the most useful skill he has and the reason he keeps turning up in these matches when better players do not. If you want to understand how much of this sport lives between the ears, [the way players handle pressure](/lifestyle/tennis-players-deal-with-pressure/) is the whole subject, and he is a walking case study in refusing to perform your own panic.
 
-The tennis will have been superb either way, played by people who are among the best in the world at a game the rest of us cannot play, on a court a few steps from where you are standing. That is a very short walk for the amount you get back. Take it this week, while there are two Grand Slams sitting on the table and hardly anyone at the fence.
+## Why this one is worth your evening
 
-*Photo: an aerial view of outdoor hard courts with matches in progress, via Unsplash.*`;
+Tennis has plenty of stories about teenagers arriving. They are lovely and they are everywhere. What the sport has far fewer of is the story of a man who was good, then was not, then found a way back at 30 in front of 20,000 people who came to watch somebody else.
+
+There is no fairy tale attached to it. He is not going to win this tournament; you would need a very generous view of the draw to argue otherwise. He will probably lose on Wednesday, and if he does, the fortnight will still have been the best two weeks of tennis he has played in four years, and his ranking will still have doubled back on itself, and somewhere in the Netherlands a generation of kids will have stayed up far too late watching a man from Wageningen refuse to lose a tennis match.
+
+And if he does not lose, if the serve holds and Zverev gets tight the way he has been known to, then a 30-year-old who spent two years being politely ignored will be in a Grand Slam semi-final, and the neutrals will have found their player for the rest of the week.
+
+Either way, you can find [his player page here](/players/botic-van-de-zandschulp/) and follow the rest of it. The match is on Wednesday. Bring something to eat: on recent evidence, it may take a while.
+
+*Photo: Botic van de Zandschulp at the Monte-Carlo Masters, via Wikimedia Commons.*`;
 
 const record = {
   slug, title, excerpt, body,
