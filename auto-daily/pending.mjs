@@ -1,118 +1,108 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'botic-van-de-zandschulp-us-open-2026-quarterfinal-five-hour-comeback';
-const stamp = '2026-09-09T05:30:00.000Z';
-const title = 'Botic van de Zandschulp, Five Hours and the Match Point That Never Landed';
+const slug = 'us-open-2026-women-semifinals-top-four-seeds-1975';
+const stamp = '2026-09-10T05:00:00.000Z';
+const title = 'Four Seeds, One Night: The US Open Semifinal That Has Not Happened Since 1975';
 const meta_title = title;
-const meta_description = 'The Dutchman came back from two sets down, saved a match point and outlasted Arthur Gea over five hours and 13 minutes. Now Zverev waits in the last eight.';
-const excerpt = 'He is 30, ranked around No. 70, and almost nobody had him on their list. Then Botic van de Zandschulp survived the fourth-longest match in US Open history and walked into the quarter-finals with barely a change of expression.';
-const image_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Van_de_Zandschulp_MCM22_%2811%29_%2852036444288%29.jpg/500px-Van_de_Zandschulp_MCM22_%2811%29_%2852036444288%29.jpg';
-const image_alt = 'Botic van de Zandschulp on court at the Monte-Carlo Masters';
+const meta_description = 'For the first time since 1975 the top four women in the world all reached the US Open semifinals. How Sabalenka, Pegula, Rybakina and Gauff got there.';
+const excerpt = 'Tennis spends most of the year telling you that anything can happen, and most of the year it is right. Then a Thursday night in New York arrives with the four best women in the world still standing, and the sport has not done that at this tournament in 51 years.';
+const image_url = '/images/news/court-11.webp';
+const image_alt = 'A deep blue hard court with crisp white lines, the playing surface of the US Open';
 
-const body = `There is a single point at the heart of this story, and it lasted about four seconds.
+const body = `Look at the four names left in the women's draw at the US Open tonight and something will feel slightly off, the way a room feels when someone has quietly straightened every picture on the wall. Aryna Sabalenka. Jessica Pegula. Elena Rybakina. Coco Gauff. One, three, two, four. The top four seeds in the tournament, all of them still here on the second Thursday, all of them playing on Arthur Ashe Stadium tonight for two places in Saturday's final.
 
-Third-set tie-break. Botic van de Zandschulp had lost the first two sets. He was two points, then one point, from going home. Arthur Gea, a French lucky loser who was not even supposed to be in the tournament, had a match point on his own serve. Gea served and came forward, the way you are taught to on the biggest point of your life. Van de Zandschulp went for the forehand pass, hard and flat and slightly desperate. Gea got a backhand volley on it.
+That is not how this is supposed to go. Not in 2026, not in women's tennis, not at a tournament that has spent the last decade specialising in beautiful chaos. And it has not gone this way at the US Open since 1975, which is to say since before the tournament moved to its current home, before the stadium these four are about to walk into existed, before three of the four semifinalists' parents were old enough to buy a ticket.
 
-And missed.
+Fifty-one years. That is the number under tonight. Here is what it means, who these four women are, and why the next two nights in New York are worth clearing your evening for even if you have never held a racket in your life.
 
-Everything that has happened to Dutch tennis this fortnight hangs off that volley. Van de Zandschulp went on to win that tie-break, then the fourth, then the fifth set, and by the time he shook hands he had been on court for five hours and 13 minutes: the fourth-longest match in the history of the US Open. He is 30 years old, he was ranked around No. 70 in the world when the tournament started, and he is now in the quarter-finals at Flushing Meadows for the second time in his life.
+## The stat, and why it is genuinely strange
 
-If you only watch tennis when the big names are on, you will have missed almost all of this. That is a shame, because it is the best story of the second week.
+Seeding is a promise the sport makes and almost never keeps. The idea is simple enough: the organisers rank the best players, spread them across the draw so they cannot meet early, and if form holds you get the best possible semifinals. Everybody nods along. Then the draw starts and a 19-year-old you have never heard of takes out the third seed in two sets on a side court at eleven in the morning and the whole tidy structure collapses.
 
-## The scoreline is a novel
+That collapse is usually the fun part. It is why we wrote before this fortnight began that [nobody had any idea who was going to win this thing](/lifestyle/us-open-2026-draw-nobody-knows-who-wins/), and it is why women's tennis has been the most reliably thrilling product in the sport for years. The last few seasons have handed the biggest trophies to players ranked outside the top ten, to first-time major winners, to teenagers who had never been past the fourth round. Only two months ago the Wimbledon title went to Linda Noskova, whose [breakthrough summer](/lifestyle/linda-noskova-wimbledon-champion-first-summer-cincinnati-2026/) had already been one of the stories of the year before she got her hands on a Venus Rosewater Dish.
 
-Write it out and it looks like a typing error: 3-6, 6-7(0), 7-6(7), 7-6(3), 6-4.
+So for all four top seeds to survive seven rounds between them without a single upset is not a boring outcome. It is a freak one. In the modern game, with the depth on tour and the physical demands of a two-week hard court major in New York heat, getting the four best players in the world into the same Thursday is roughly as likely as four different weather forecasts agreeing on a Tuesday.
 
-Read it slowly. He lost the first set. He lost a second-set tie-break to love, which is about as demoralising a way to lose a set as tennis has invented; seven straight points, no argument, no foothold. At that stage the match was, by any reasonable measure, over. Players ranked outside the top 50 do not come back from two sets down in a Grand Slam fourth round against an opponent who is serving well and playing without fear.
+The last time it happened at Flushing Meadows, the tournament was not even at Flushing Meadows. In 1975 the US Open was played at the West Side Tennis Club at Forest Hills, a mile or so from where tonight's matches will be staged, and that was the first year the event was held on clay rather than grass. The four semifinalists were Chris Evert seeded one, Virginia Wade seeded two, Martina Navratilova seeded three and Evonne Goolagong Cawley seeded four. Evert beat Goolagong Cawley in the final, 5-7, 6-4, 6-2, for the first of what would become four consecutive US Open titles. Navratilova was 18 and had defected from Czechoslovakia weeks earlier. Wade would wait two more years for her Wimbledon fairytale.
 
-Then he won a tie-break 9-7, the one with the match point in it. Then he won another one. Then, in a fifth set that both men had every physical reason to lose, he broke once and served it out.
+That is the company tonight's four are keeping. Four names, all of whom ended up in the Hall of Fame, in a semifinal line-up nobody has managed to replicate for half a century.
 
-Five hours and 13 minutes. Only three matches in the tournament history have run longer: Daniel Evans against Karen Khachanov in 2024 at five hours and 35 minutes, Stefan Edberg against Michael Chang in the 1992 semi-final at five hours and 26 minutes, and Carlos Alcaraz against Jannik Sinner in the 2022 quarter-final at five hours and 15 minutes. That last one is regarded as one of the great matches of the modern era and finished at nearly three in the morning. Van de Zandschulp against Gea is now sitting on the same shelf, two minutes behind it, and hardly anyone outside the Netherlands and a few thousand very tired people in New York has noticed.
+## The chaos was there. It just happened underneath them
 
-Asked afterwards how on earth he had come back, he said: "I have no clue, actually."
+This is the part that gets missed when a statistic like tonight's goes round the internet. The seeds holding at the top does not mean the fortnight was quiet. It means the wreckage happened one floor down.
 
-He also said, and this is the line that tells you the most about him, that he thought this was probably better than the first quarter-final he made in New York.
+Iga Swiatek, a player who has spent most of the last five years winning majors, went out in the fourth round to Zheng Qinwen, who came from a set down to do it. Naomi Osaka, a two-time champion here and one of the biggest draws in the sport, ran into Rybakina and got the full flat-hitting treatment. Noskova arrived as the reigning Wimbledon champion and took Sabalenka to a deciding tie-break before losing a match she will think about for months. Mirra Andreeva, 19 years old and seeded fifth, held two match points against Gauff and could not convert either.
 
-## The other side of the net deserves a paragraph
+Any of those four results tipping the other way and we are not writing this piece. That is the thin margin the stat sits on, and it is worth holding on to while you watch tonight, because it tells you something true about the level: the four women left are not here because the draw was kind. They are here because in a fortnight full of players capable of beating anybody, they were the ones who kept finding a way out. The bracket looks tidy. Getting through it was not.
 
-Arthur Gea should not have been playing at all. He is a lucky loser, which means he lost in the final round of qualifying and then got handed a main-draw place when somebody else withdrew. Lucky losers arrive with no expectations, no seeding, no pressure and, quite often, nothing to lose, and every so often one of them takes a fortnight and runs with it. If you enjoyed the Jesper de Jong story at Roland Garros this year, you already know the shape of it: we wrote about [the lucky loser who kept winning in Paris](/lifestyle/jesper-de-jong-roland-garros-2026-lucky-loser-run/) and about how strange it is to watch a player outperform an entire draw on a technicality.
+## Aryna Sabalenka is going for something only two women have done
 
-Gea did all of that, and then had a match point at the US Open in the fourth round, and then lost anyway after another two and a half hours. He will get a lot of sympathy and a decent cheque and, one hopes, a proper night of sleep. He also gave van de Zandschulp the best possible present: a match so long and so brutal that nobody can now describe the Dutchman as somebody who got a soft draw.
+Start with the champion, because she is the reason the top of this draw has felt so immovable. Sabalenka has won this title the last two years running. She is 28. She has spent 99 consecutive weeks as the world number one, a run that is about to end for reasons that have nothing to do with her form and which we will get to shortly. And if she wins two more matches she becomes only the third woman in the Open era to win three straight US Open singles titles.
 
-## Who is this man, actually?
+The other two are Chris Evert, who won four in a row from 1975 to 1978, and Serena Williams, who won three in a row from 2012 to 2014. That is the entire list. There is no fourth name. Fifty-eight years of professional tennis at this tournament and two women have managed to be the best player in New York three Septembers running.
 
-Here is the short version. Botic van de Zandschulp is Dutch, he is 30, and he has one of the least demonstrative faces in professional sport. He does not do the fist pump that goes on for three seconds too long. He does not scream at his box. Spanish outlets have taken to calling him the ice man, which is a little dramatic but not wrong; he plays big points with the expression of someone checking a train timetable.
+She got here the hard way on Wednesday. Her quarter-final against Noskova was the best women's match of the tournament so far, two and a bit hours of enormous ball-striking that came down to a first-set tie-break, a second set that got away from her, and a third set in which she was down 4-2 and looked, briefly, like a champion running out of road. She got it back. The match ended in a deciding tie-break, 10-7, and she finished it with an ace on a second serve, which is either magnificent or unhinged depending on your nerves.
 
-His tennis is old-fashioned in the best way. Flat, clean groundstrokes off both wings, a serve that is more accurate than enormous, and an ability to take the ball early and rush people who like time. He does not have a weapon that makes highlight reels. What he has is a very high floor, which is why big names keep tripping over him and why the trip is always a surprise.
+Tonight she plays Jessica Pegula. She has beaten Pegula in the final here in 2024 and in the semifinals here last year. If you are counting, that means the two of them have now met at the business end of this tournament in three consecutive years, something only three other pairs of women have done in the Open era.
 
-The longer version is more interesting, because it has a middle section where everything went wrong.
+## Jessica Pegula keeps arriving at the same door
 
-## 2021: the qualifier who would not go away
+Pegula is 32 and has been one of the best players in the world for the better part of five years without ever winning a major. She has now reached the US Open semifinals three years in a row, which sounds like a triumph until you look at what happened in each of the previous two and remember that the woman standing in her way both times is standing in her way again tonight.
 
-The first time he did this he had to win three matches just to get into the main draw. At the 2021 US Open he came through qualifying and then kept going, beating Casper Ruud and Diego Schwartzman, both top-20 players at the time, on his way to the quarter-finals. He became only the third male qualifier in the Open era to reach the last eight in New York, and the first Dutchman to reach any Grand Slam quarter-final since 2004.
+Her quarter-final was an all-American afternoon against Emma Navarro, and it went the way Pegula's matches often go: she lost the first set 6-3, looked outplayed for 40 minutes, and then simply stopped missing. 3-6, 6-4, 6-3. There is no single shot in her game that will make a highlight reel by itself. What she has instead is the ability to take an opponent's best pattern and give it back slightly better, over and over, until the other player runs out of ideas. It is a deeply unglamorous superpower and it has taken her to the top four in the world.
 
-In that quarter-final he ran into Daniil Medvedev, who was in the middle of the most ruthless fortnight of his career and would go on to beat Novak Djokovic in the final and deny him the calendar Grand Slam. Medvedev lost one set in the entire tournament. It was to van de Zandschulp.
+Home crowd, third semifinal in three years, a 2024 final that she lost in straight sets and has clearly not forgotten. There is a version of tonight where the whole Sabalenka story stops right here.
 
-That fortnight rewrote his career. He climbed to a career-high No. 22 in August 2022 and put together his best season, 38 wins, with victories over Cameron Norrie, Taylor Fritz and Alexander Bublik, dragging the Netherlands through Davis Cup ties along the way. For a couple of years he was, quietly, a very good top-30 player.
+## Elena Rybakina has already won something before she hits a ball
 
-## Then it stopped working
+Here is the quirk that makes tonight so unusual. One of the four semifinalists has already had her biggest news of the week confirmed. When Rybakina came back to beat Zheng Qinwen 3-6, 6-1, 6-4 on Wednesday in two hours and 14 minutes, she did more than reach her first US Open semifinal. She guaranteed that she will be the world number one when the rankings are published on Monday, ending Sabalenka's 99-week reign, whatever happens over the next three days.
 
-Ranking points expire. Confidence goes with them. Van de Zandschulp slid out of the top 50, then the top 80, and spent a long stretch playing the kind of tennis where you lose in three sets to people you used to beat and cannot explain why. In 2026 he has won 20 matches and lost 16 and has not won a title. Nothing about that record says quarter-finalist.
+Rybakina has been the most under-discussed great player of her generation, which is why we called her [the quietest superstar in the sport](/lifestyle/elena-rybakina-quietest-superstar-toronto-2026-world-number-one/) back in the summer. She won Wimbledon in 2022 at 23 and the coverage largely moved on within a week. She won the WTA Finals last year and the Australian Open in January, back-to-back big-title weeks that only one player in the previous eight years had managed. And through all of that she has played with the same flat expression, the same enormous unhurried serve, the same refusal to give a crowd anything to grab hold of.
 
-What he said after surviving five sets tells you what that period actually felt like from the inside: "It is important for me to be in this position at 30 years old after the tough times I have gone through."
+Zheng, for the record, had earned that quarter-final the hard way, coming from a set down to knock out Iga Swiatek in the fourth round. Rybakina beat her anyway, from a set down herself, on the biggest court in the sport.
 
-That is as close to an emotional statement as he gets, and it is worth sitting with. The tour does not have a retirement age; it has a slow, humiliating filtering process where the results stop coming and the flights get longer and the tournaments get smaller and nobody tells you it is over. Plenty of former top-30 players are grinding away on the Challenger tour right now, three time zones from home, playing for prize money that barely covers the coach. Coming back from that at 30, in a sport that keeps producing 19-year-olds who hit the ball harder than you, is not a small thing. It is arguably harder than the first breakthrough, because the first time you did not know what you were missing.
+Now she plays Gauff for a place in her first US Open final. The number one ranking is hers on Monday. She would quite obviously prefer to arrive at it holding a trophy.
 
-## The two upsets in between
+## Coco Gauff was two points from being on a plane
 
-Even in the lean years, van de Zandschulp had a habit of ambushing the sport at its most public moments.
+And then there is the one who very nearly was not here at all. Gauff, the 2023 champion, playing in front of a New York crowd that adopted her when she was 15, lost the first set of her quarter-final against Mirra Andreeva 6-2 and then went down two match points in a second-set tie-break. Two points from a straight-sets exit in front of 23,000 people who have watched her grow up.
 
-At the 2024 US Open he beat Carlos Alcaraz in the second round, 6-1, 7-5, 6-4, when Alcaraz was the reigning Wimbledon champion and world No. 3. It was not close and it was not lucky. The Dutchman took the ball early, hit through the court and gave Alcaraz nothing to feed off, and one of the most watchable players in the world was out of the tournament before the first Friday.
+She saved both. She won the tie-break 9-7. She won the third set 6-2, and by the end of it Andreeva, one of the most gifted 19-year-olds in the world, was the one who looked young.
 
-Then, in November of that year, he did something that will be in his obituary. At the Davis Cup Finals in Malaga he played Rafael Nadal in the tie between the Netherlands and Spain, and won 6-4, 6-4. Nadal had already announced that those Finals would be the end of his career. That match turned out to be the last singles match Rafael Nadal ever played. The man on the other side of the net, the last opponent of the greatest clay-courter who ever lived, was Botic van de Zandschulp.
+That is the second great skill in tennis, after hitting the ball well: the ability to be losing badly and still be entirely present. Gauff has had it since she was a teenager, and it is the reason she now has two majors at 22 while people are still describing her game as a work in progress. It is also the reason nobody in the locker room enjoys being ahead of her.
 
-The Netherlands won the tie 2-1 and went on to reach the first Davis Cup final in their history. Think about that for a second: a country of 18 million people with no great tennis tradition, no Slam champion in the men's game, reaching a Davis Cup final, and the man doing the heavy lifting is a player most casual fans could not pick out of a line-up.
+## Four players, four completely different things at stake
 
-## The road through this US Open
+What makes tonight rare is not just the seeding. It is that the four stories do not overlap at all.
 
-Nothing about this run has been handed to him.
+Sabalenka is chasing history that only Evert and Serena have. Pegula is chasing the first major of a career that is running out of prime years. Rybakina, who has already secured the ranking, is chasing the one big American trophy her cabinet does not have. Gauff is chasing a second US Open title on the court where she became famous.
 
-He opened against Jan Choinski and won in straight sets, 6-3, 6-1, 7-6(5). Then, in the second round, he beat Alex de Minaur, one of the fittest and most stubborn players in the game, 6-4, 7-5, 6-2. That was his first win over de Minaur in five attempts, and it was his second top-10 win of the American hard-court summer after beating Daniil Medvedev in Montreal in August. The de Minaur match was over in straight sets in front of a crowd that had come expecting the opposite result.
+Nobody is playing for the same prize, which is why nobody is going to hold anything back.
 
-The third round against Zizou Bergs went five sets: 3-6, 7-6(3), 4-6, 7-6(6), 6-3. Two tie-breaks, one of them saved at 6-6 in the fourth. Then came Gea and the marathon. Back-to-back five-setters in the second week of a Slam is a physical proposition that ends most players in their thirties.
+## How to watch tonight if you do not play
 
-He is also, now, the last Dutch player left in the draw. The Netherlands sent a proper contingent to New York this year and he is the one still standing, which is a very Botic outcome.
+You do not need to understand a kick serve to enjoy this. A few things to watch for that will make the evening richer:
 
-The other thing that run has done is fix his ranking. He arrived around No. 70; by the end of this fortnight he will be somewhere in the region of No. 40, with a seeding at the next Slam back within reach. Points from a Grand Slam quarter-final are worth a season of Challenger finals, and they last a year.
+**In Sabalenka against Pegula, watch the first four shots of each point.** Sabalenka wants the rally over inside four shots. Pegula wants it to last twelve. Whichever pattern is winning by the middle of the second set is almost certainly the pattern that decides the match, and you can track it without knowing a single technical term.
 
-## Wednesday: Zverev, and a first meeting
+**In Rybakina against Gauff, watch the second serve.** Rybakina has one of the great first serves in the women's game, but the second serve is where the pressure lands, and Gauff is one of the best returners alive at stepping in and taking that ball early. Every second serve is a small argument between two enormous strengths.
 
-The quarter-final is against Alexander Zverev, and the gap between the two men is the whole point.
+**Watch the body language at changeovers.** Not for drama, but because at this stage of a major, the towel and the chair are where matches quietly turn. Pegula in particular gives almost nothing away, which is itself information.
 
-Zverev is the top seed here, playing a major as the No. 1 seed for the first time in his career, and he arrives as the reigning Roland Garros champion. That title finally came in June after three Grand Slam finals lost, and we covered [the fortnight in Paris where he and Mirra Andreeva both broke through](/lifestyle/roland-garros-2026-recap-zverev-andreeva-first-time-champions/). It changed how he plays the big weeks. A player who has never won a major and a player who has won one are different animals, and this year Zverev has reached the quarter-finals at all four of them, which nobody else has managed.
+And if you can, watch late. The Ashe night session under the closed roof or the New York sky is a genuinely different sporting experience from the same match in daylight, something we have written about at [length and with affection](/lifestyle/us-open-2026-night-session-arthur-ashe-after-dark/). The noise gets trapped. The court looks like a stage. Nothing in tennis sounds like 23,000 people realising at the same moment that a match has turned.
 
-He got here by beating Luciano Darderi 6-2, 6-2, 7-6(3), which is about as comfortable as the second week gets. He also survived a first-round scare against Lorenzo Sonego that ran four hours and 53 minutes, so he knows exactly what a long night in New York feels like.
+## What happens next
 
-The strange detail: these two have never played each other on tour. Not once. Zverev has been on the circuit since 2013 and van de Zandschulp since the middle of the last decade, and their paths have never crossed in a main draw. There is no head-to-head, no pattern, no comfortable memory for either man to reach for.
+The winners meet on Saturday for the title. Whoever it is, the story lines up almost too neatly: a Sabalenka victory makes her the third woman in the Open era to win three straight here, a Pegula victory ends the longest wait in the top ten, a Rybakina victory pairs the number one ranking with the trophy in the same week, and a Gauff victory gives her a second title on the court that made her.
 
-What that means practically is that Zverev will have spent Tuesday watching video of a player who does not do anything spectacular but does everything early. Van de Zandschulp will try to take time away from him, stand on the baseline, and make the German hit one more ball than he wants to on every rally. Zverev, at his best, will simply out-serve that plan and hit through it. On paper this ends in three or four sets.
+The men have their own version of this on Friday, with an all-American semifinal between Ben Shelton and Frances Tiafoe guaranteeing a home player in Sunday's final, and Alexander Zverev meeting the unseeded Karen Khachanov in the other half. That draw broke the ordinary way, full of upsets and surprises. The women's draw did not break at all, and that is precisely what makes it worth your attention.
 
-On paper the Gea match ended in three, too.
+Tennis usually asks you to fall in love with the underdog, and it is very good at producing them. Once in a long while it does the opposite. It sends the four best players in the world to the same building on the same night, refuses to let anyone hide behind a bad draw, and asks a simple question that the sport almost never gets to ask cleanly: on the biggest court there is, in the last week of the season's last major, who is actually the best?
 
-The thing worth watching for is the point where van de Zandschulp is behind. He will be behind at some stage. He always is. And what happens in his face at that moment is nothing at all, which is the most useful skill he has and the reason he keeps turning up in these matches when better players do not. If you want to understand how much of this sport lives between the ears, [the way players handle pressure](/lifestyle/tennis-players-deal-with-pressure/) is the whole subject, and he is a walking case study in refusing to perform your own panic.
+We get the answer over two nights. Forty-eight hours from now the argument will be settled, and it will be the first time in 51 years that nobody can say the draw did it for them.
 
-## Why this one is worth your evening
-
-Tennis has plenty of stories about teenagers arriving. They are lovely and they are everywhere. What the sport has far fewer of is the story of a man who was good, then was not, then found a way back at 30 in front of 20,000 people who came to watch somebody else.
-
-There is no fairy tale attached to it. He is not going to win this tournament; you would need a very generous view of the draw to argue otherwise. He will probably lose on Wednesday, and if he does, the fortnight will still have been the best two weeks of tennis he has played in four years, and his ranking will still have doubled back on itself, and somewhere in the Netherlands a generation of kids will have stayed up far too late watching a man from Wageningen refuse to lose a tennis match.
-
-And if he does not lose, if the serve holds and Zverev gets tight the way he has been known to, then a 30-year-old who spent two years being politely ignored will be in a Grand Slam semi-final, and the neutrals will have found their player for the rest of the week.
-
-Either way, you can find [his player page here](/players/botic-van-de-zandschulp/) and follow the rest of it. The match is on Wednesday. Bring something to eat: on recent evidence, it may take a while.
-
-*Photo: Botic van de Zandschulp at the Monte-Carlo Masters, via Wikimedia Commons.*`;
+*Photo: a deep blue hard court with white lines, via Unsplash.*`;
 
 const record = {
   slug, title, excerpt, body,
