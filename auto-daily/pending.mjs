@@ -1,108 +1,114 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'us-open-2026-women-semifinals-top-four-seeds-1975';
-const stamp = '2026-09-10T05:00:00.000Z';
-const title = 'Four Seeds, One Night: The US Open Semifinal That Has Not Happened Since 1975';
+const slug = 'ben-shelton-us-open-2026-final-zverev-american-drought';
+const stamp = '2026-09-12T05:00:00.000Z';
+const title = 'Twenty-Three Years and One More Sunday: Ben Shelton Reaches the US Open Final';
 const meta_title = title;
-const meta_description = 'For the first time since 1975 the top four women in the world all reached the US Open semifinals. How Sabalenka, Pegula, Rybakina and Gauff got there.';
-const excerpt = 'Tennis spends most of the year telling you that anything can happen, and most of the year it is right. Then a Thursday night in New York arrives with the four best women in the world still standing, and the sport has not done that at this tournament in 51 years.';
-const image_url = '/images/news/court-11.webp';
-const image_alt = 'A deep blue hard court with crisp white lines, the playing surface of the US Open';
+const meta_description = 'Ben Shelton beat Frances Tiafoe to reach his first Grand Slam final. On Sunday he plays Alexander Zverev with 23 years of American waiting behind him.';
+const excerpt = 'There is a number sitting underneath Sunday afternoon in New York, and the number is twenty-three. That is how long American men have waited for a Grand Slam title, and a 23-year-old left-hander from Florida is now one match away from ending it.';
+const image_url = '/images/tournaments/us-open.webp';
+const image_alt = 'Fans walking through the grounds at Flushing Meadows with Arthur Ashe Stadium rising behind the US Open banners';
 
-const body = `Look at the four names left in the women's draw at the US Open tonight and something will feel slightly off, the way a room feels when someone has quietly straightened every picture on the wall. Aryna Sabalenka. Jessica Pegula. Elena Rybakina. Coco Gauff. One, three, two, four. The top four seeds in the tournament, all of them still here on the second Thursday, all of them playing on Arthur Ashe Stadium tonight for two places in Saturday's final.
+const body = `There is a number sitting underneath Sunday afternoon in New York, and the number is twenty-three.
 
-That is not how this is supposed to go. Not in 2026, not in women's tennis, not at a tournament that has spent the last decade specialising in beautiful chaos. And it has not gone this way at the US Open since 1975, which is to say since before the tournament moved to its current home, before the stadium these four are about to walk into existed, before three of the four semifinalists' parents were old enough to buy a ticket.
+That is how many years it has been since an American man won a Grand Slam singles title. Andy Roddick beat Juan Carlos Ferrero at this tournament in 2003, held the trophy over his head on a warm September evening in Queens, and nobody from his country has done it since. Twenty-three years is long enough that a child born the week Roddick won it is now old enough to have graduated, moved cities and started complaining about rent. It is long enough that an entire generation of American tennis fans has grown up without ever seeing one of their own lift a major.
 
-Fifty-one years. That is the number under tonight. Here is what it means, who these four women are, and why the next two nights in New York are worth clearing your evening for even if you have never held a racket in your life.
+On Friday night, in front of a home crowd that spent four sets shouting itself hoarse for both men, Ben Shelton beat Frances Tiafoe 4-6, 6-3, 6-3, 7-5 and put himself one match away from ending it. He is 23 years old. He is left-handed, absurdly powerful, coached by his father, and on Sunday at two o'clock he walks onto Arthur Ashe Stadium to play Alexander Zverev for the US Open title.
 
-## The stat, and why it is genuinely strange
+You do not need to know a forehand from a backhand to feel what is stacked up behind that sentence. Here is the story of how Shelton got here, who is standing in his way, and why Sunday is worth rearranging your afternoon for.
 
-Seeding is a promise the sport makes and almost never keeps. The idea is simple enough: the organisers rank the best players, spread them across the draw so they cannot meet early, and if form holds you get the best possible semifinals. Everybody nods along. Then the draw starts and a 19-year-old you have never heard of takes out the third seed in two sets on a side court at eleven in the morning and the whole tidy structure collapses.
+## The night it turned, and the game that decided it
 
-That collapse is usually the fun part. It is why we wrote before this fortnight began that [nobody had any idea who was going to win this thing](/lifestyle/us-open-2026-draw-nobody-knows-who-wins/), and it is why women's tennis has been the most reliably thrilling product in the sport for years. The last few seasons have handed the biggest trophies to players ranked outside the top ten, to first-time major winners, to teenagers who had never been past the fourth round. Only two months ago the Wimbledon title went to Linda Noskova, whose [breakthrough summer](/lifestyle/linda-noskova-wimbledon-champion-first-summer-cincinnati-2026/) had already been one of the stories of the year before she got her hands on a Venus Rosewater Dish.
+For about forty minutes on Friday, this did not look like Shelton's night at all.
 
-So for all four top seeds to survive seven rounds between them without a single upset is not a boring outcome. It is a freak one. In the modern game, with the depth on tour and the physical demands of a two-week hard court major in New York heat, getting the four best players in the world into the same Thursday is roughly as likely as four different weather forecasts agreeing on a Tuesday.
+Tiafoe, seeded eleventh and playing the kind of loose, joyful tennis that has made him one of the most watchable men in the sport, was the sharper player from the start. He broke in the ninth game of the first set, held to love to close it out, and Shelton spent that opening half hour making fourteen unforced errors and looking like a man trying to hit the ball through the back wall of the stadium rather than past the person in front of him.
 
-The last time it happened at Flushing Meadows, the tournament was not even at Flushing Meadows. In 1975 the US Open was played at the West Side Tennis Club at Forest Hills, a mile or so from where tonight's matches will be staged, and that was the first year the event was held on clay rather than grass. The four semifinalists were Chris Evert seeded one, Virginia Wade seeded two, Martina Navratilova seeded three and Evonne Goolagong Cawley seeded four. Evert beat Goolagong Cawley in the final, 5-7, 6-4, 6-2, for the first of what would become four consecutive US Open titles. Navratilova was 18 and had defected from Czechoslovakia weeks earlier. Wade would wait two more years for her Wimbledon fairytale.
+Then he settled. Not dramatically, not with a roar, but the way a big serve settles: one clean hold, then another, then the sense creeping across the court that Tiafoe was going to have to play a perfect point to win an ordinary one. Shelton started leaning on the serve. He started making Tiafoe run to the forehand corner over and over, and eventually that forehand, the shot Tiafoe plays with such flair when he is comfortable, began to break down under the weight of it.
 
-That is the company tonight's four are keeping. Four names, all of whom ended up in the Hall of Fame, in a semifinal line-up nobody has managed to replicate for half a century.
+The whole match funnelled into one game at the end of the third set. Fifteen minutes long. Nineteen points. Shelton had to earn the break four or five different ways before he finally got it, and when he did, something went out of the match. Tiafoe still needed to break serve to survive, and against 20 aces and a man hitting through the court the way Shelton was by then, that was a tall order in the fourth set. Shelton finished with 47 winners to Tiafoe's 27, which is the statistical way of saying he was the one making things happen.
 
-## The chaos was there. It just happened underneath them
+Afterwards, Shelton dedicated the win to his grandmother, who died earlier this year. She was the one, he said, who got his father into tennis in the first place. Every family in this sport has a person like that somewhere in the story, the one who drove to the courts or paid for the lessons or simply said yes when it would have been easier to say no. Most of them never get mentioned on a microphone in front of 23,000 people.
 
-This is the part that gets missed when a statistic like tonight's goes round the internet. The seeds holding at the top does not mean the fortnight was quiet. It means the wreckage happened one floor down.
+## What twenty-three years actually looks like
 
-Iga Swiatek, a player who has spent most of the last five years winning majors, went out in the fourth round to Zheng Qinwen, who came from a set down to do it. Naomi Osaka, a two-time champion here and one of the biggest draws in the sport, ran into Rybakina and got the full flat-hitting treatment. Noskova arrived as the reigning Wimbledon champion and took Sabalenka to a deciding tie-break before losing a match she will think about for months. Mirra Andreeva, 19 years old and seeded fifth, held two match points against Gauff and could not convert either.
+It is worth being precise about the American wait, because the numbers get muddled in the telling.
 
-Any of those four results tipping the other way and we are not writing this piece. That is the thin margin the stat sits on, and it is worth holding on to while you watch tonight, because it tells you something true about the level: the four women left are not here because the draw was kind. They are here because in a fortnight full of players capable of beating anybody, they were the ones who kept finding a way out. The bracket looks tidy. Getting through it was not.
+The title drought is 23 years: Roddick, here, 2003. That is the last major won by an American man, and it has now outlived Roddick's entire playing career, his broadcasting career and a fair chunk of his coaching one.
 
-## Aryna Sabalenka is going for something only two women have done
+The finals drought is shorter and more recent. Taylor Fritz reached this final in 2024, losing to Jannik Sinner, and in doing so became the first American man in a US Open final since Roddick himself in 2006. So Shelton is not breaking new ground simply by being here. What he would be breaking, if he wins on Sunday, is the thing that has actually hurt: not the reaching, but the finishing.
 
-Start with the champion, because she is the reason the top of this draw has felt so immovable. Sabalenka has won this title the last two years running. She is 28. She has spent 99 consecutive weeks as the world number one, a run that is about to end for reasons that have nothing to do with her form and which we will get to shortly. And if she wins two more matches she becomes only the third woman in the Open era to win three straight US Open singles titles.
+There is one more line in the record book that landed on Friday, and it is the one that gives the weekend its weight. Shelton is the first Black American man to reach the US Open final since Arthur Ashe in 1972, and the first to reach any major final since MaliVai Washington at Wimbledon in 1996. Ashe, of course, is the reason the enormous blue building Shelton will walk into on Sunday has the name it does, a story about far more than tennis that we have [written about at length before](/lifestyle/arthur-ashe-name-on-biggest-stadium-in-tennis/). There is a neatness to it that nobody planned and everybody noticed: an American who looks like Ashe, playing for the title, in the stadium named after him, fifty-four years after Ashe last stood in a final on this ground.
 
-The other two are Chris Evert, who won four in a row from 1975 to 1978, and Serena Williams, who won three in a row from 2012 to 2014. That is the entire list. There is no fourth name. Fifty-eight years of professional tennis at this tournament and two women have managed to be the best player in New York three Septembers running.
+Shelton is also the youngest American man in a US Open final since a 21-year-old Roddick in 2003, which is the sort of statistic that tells you how thin the pipeline has been at the very top, even in years when American men have filled the second week.
 
-She got here the hard way on Wednesday. Her quarter-final against Noskova was the best women's match of the tournament so far, two and a bit hours of enormous ball-striking that came down to a first-set tie-break, a second set that got away from her, and a third set in which she was down 4-2 and looked, briefly, like a champion running out of road. She got it back. The match ended in a deciding tie-break, 10-7, and she finished it with an ace on a second serve, which is either magnificent or unhinged depending on your nerves.
+## Six matches, and one that ended at 3:33 in the morning
 
-Tonight she plays Jessica Pegula. She has beaten Pegula in the final here in 2024 and in the semifinals here last year. If you are counting, that means the two of them have now met at the business end of this tournament in three consecutive years, something only three other pairs of women have done in the Open era.
+Nobody hands you a run like this. Look at the list of players Shelton had to get past.
 
-## Jessica Pegula keeps arriving at the same door
+Round one: Tallon Griekspoor, a top-fifty Dutchman with a flat, heavy ball, who took the opening set 6-1 before Shelton found his range and won 1-6, 6-1, 7-6(3), 6-2. Round two: Hubert Hurkacz, a former Wimbledon semifinalist whose serve is one of the few in the sport that genuinely stands comparison with Shelton's, in four sets. Round three: Denis Shapovalov, the shot-maker, another lefty, another man capable of playing forty minutes of unplayable tennis. Round four: Stefanos Tsitsipas, twice a major finalist.
 
-Pegula is 32 and has been one of the best players in the world for the better part of five years without ever winning a major. She has now reached the US Open semifinals three years in a row, which sounds like a triumph until you look at what happened in each of the previous two and remember that the woman standing in her way both times is standing in her way again tonight.
+And then the quarterfinal, which is the match this fortnight will be remembered for.
 
-Her quarter-final was an all-American afternoon against Emma Navarro, and it went the way Pegula's matches often go: she lost the first set 6-3, looked outplayed for 40 minutes, and then simply stopped missing. 3-6, 6-4, 6-3. There is no single shot in her game that will make a highlight reel by itself. What she has instead is the ability to take an opponent's best pattern and give it back slightly better, over and over, until the other player runs out of ideas. It is a deeply unglamorous superpower and it has taken her to the top four in the world.
+Carlos Alcaraz arrived in New York as the defending champion and the second seed, carrying an 18-match winning streak at Grand Slam level. He and Shelton went five sets and four hours and 28 minutes on Arthur Ashe, and the thing did not finish until 3:33 in the morning, the latest finish in the history of the US Open, breaking a record that had stood since Alcaraz and Sinner played until ten to three in 2022. Shelton won 6-7(5), 6-1, 6-3, 1-6, 7-6(7). A tie-break in the fifth, at half past three in the morning, against the best hard court player of his generation.
 
-Home crowd, third semifinal in three years, a 2024 final that she lost in straight sets and has clearly not forgotten. There is a version of tonight where the whole Sabalenka story stops right here.
+You can argue, as plenty have this week, that a tournament should not be finishing matches at that hour, that it is bad for the players and worse for the people who buy tickets and have to work on Wednesday. Those are fair arguments and the sport should probably listen to them. But if you were awake, you saw something you will describe to people for years.
 
-## Elena Rybakina has already won something before she hits a ball
+It matters, too, that the draw around Shelton had already been torn up. Sinner, the Wimbledon champion, withdrew before the tournament with a knee injury. Novak Djokovic went out in the first round. When this fortnight began we wrote that [nobody had the faintest idea who was going to win it](/lifestyle/us-open-2026-draw-nobody-knows-who-wins/), and that turned out to be the most accurate thing anyone said all summer. Alcaraz losing in the quarters guaranteed that this tournament would crown a first-time US Open champion, whatever happened next.
 
-Here is the quirk that makes tonight so unusual. One of the four semifinalists has already had her biggest news of the week confirmed. When Rybakina came back to beat Zheng Qinwen 3-6, 6-1, 6-4 on Wednesday in two hours and 14 minutes, she did more than reach her first US Open semifinal. She guaranteed that she will be the world number one when the rankings are published on Monday, ending Sabalenka's 99-week reign, whatever happens over the next three days.
+## The serve that was not 158 miles per hour
 
-Rybakina has been the most under-discussed great player of her generation, which is why we called her [the quietest superstar in the sport](/lifestyle/elena-rybakina-quietest-superstar-toronto-2026-world-number-one/) back in the summer. She won Wimbledon in 2022 at 23 and the coverage largely moved on within a week. She won the WTA Finals last year and the Australian Open in January, back-to-back big-title weeks that only one player in the previous eight years had managed. And through all of that she has played with the same flat expression, the same enormous unhurried serve, the same refusal to give a crowd anything to grab hold of.
+One small, delightful subplot from Friday, because it says something about how tennis now works.
 
-Zheng, for the record, had earned that quarter-final the hard way, coming from a set down to knock out Iga Swiatek in the fourth round. Rybakina beat her anyway, from a set down herself, on the biggest court in the sport.
+Midway through the third set, the stadium screen flashed up a Shelton serve at 158 miles per hour. Arthur Ashe went up like a firework. That would have been the fastest serve in the history of the tournament by a distance, past the 153 mph Taylor Dent hit here in 2004, and quite possibly the fastest ever struck at a Grand Slam.
 
-Now she plays Gauff for a place in her first US Open final. The number one ranking is hers on Monday. She would quite obviously prefer to arrive at it holding a trophy.
+It was not real. Hawk-Eye reviewed the reading and corrected it to 144 mph, a radar misread rather than a record. Shelton's genuine fastest of the match was 149 mph, which remains a preposterous thing for a human being to do with a piece of graphite while standing still.
 
-## Coco Gauff was two points from being on a plane
+The correction is a footnote, but a telling one. This is a tournament that has handed its line calls over to the machines entirely, and we now trust the tracking system so completely that when the stadium gun said 158 and the computer said 144, nobody seriously argued for the gun. The number on the big screen is not the truth any more. The number in the system is.
 
-And then there is the one who very nearly was not here at all. Gauff, the 2023 champion, playing in front of a New York crowd that adopted her when she was 15, lost the first set of her quarter-final against Mirra Andreeva 6-2 and then went down two match points in a second-set tie-break. Two points from a straight-sets exit in front of 23,000 people who have watched her grow up.
+## The college kid who skipped the queue
 
-She saved both. She won the tie-break 9-7. She won the third set 6-2, and by the end of it Andreeva, one of the most gifted 19-year-olds in the world, was the one who looked young.
+If you have not followed Shelton closely, the short version is that he took a route almost nobody at this level takes any more.
 
-That is the second great skill in tennis, after hitting the ball well: the ability to be losing badly and still be entirely present. Gauff has had it since she was a teenager, and it is the reason she now has two majors at 22 while people are still describing her game as a work in progress. It is also the reason nobody in the locker room enjoys being ahead of her.
+Most players in a Grand Slam final left school early, moved to an academy at 13 or 14, and spent their teenage years in airports. Shelton went to university. He played for the Florida Gators, where his father Bryan, a former professional who spent years on tour himself, was the head coach. In 2022 he won the NCAA singles title, and only then did he turn professional, at an age when most of his rivals had already been on tour for four or five years. It is a path we spent some time on this summer when he reached [a Masters 1000 final against another product of the American college system](/lifestyle/montreal-2026-final-college-tennis-route-shelton-nakashima/) and then won the thing.
 
-## Four players, four completely different things at stake
+The catching up was fast. Within a year he had reached the Australian Open quarterfinals and then the semifinals here in 2023, beating Tiafoe in that quarterfinal too. This season has been the best of his life: four titles, including the Masters 1000 in Montreal, a 2026 record of 38 wins and 13 losses, and a ranking of world No. 9 that made him the eighth seed in New York.
 
-What makes tonight rare is not just the seeding. It is that the four stories do not overlap at all.
+And through all of it, the man in his box has been his father. Bryan Shelton is still the coach. That is rarer than it sounds at this altitude of the sport, where family members are usually eased out and replaced by specialists somewhere around the top twenty. On Sunday a father whose own playing career never came close to an afternoon like this will sit in the corner of Arthur Ashe Stadium and watch his son play for a major title.
 
-Sabalenka is chasing history that only Evert and Serena have. Pegula is chasing the first major of a career that is running out of prime years. Rybakina, who has already secured the ranking, is chasing the one big American trophy her cabinet does not have. Gauff is chasing a second US Open title on the court where she became famous.
+## The man on the other side of the net
 
-Nobody is playing for the same prize, which is why nobody is going to hold anything back.
+Alexander Zverev has been almost champion for so long that it became the defining fact about him. Then this June it stopped being true.
 
-## How to watch tonight if you do not play
+The German won Roland Garros, beating Flavio Cobolli 6-1, 4-6, 6-4, 6-7(5), 6-1 in the final, and became the first German man to win a major since Boris Becker three decades earlier. He had been to three major finals before that and lost all three. He had, most famously, led Dominic Thiem by two sets in the 2020 US Open final on this very court and lost in a fifth-set tie-break, 8-6, after both men served for the championship and both were broken. If you want to understand why Zverev spent five years carrying a slightly haunted look into big matches, that is the reason.
 
-You do not need to understand a kick serve to enjoy this. A few things to watch for that will make the evening richer:
+Since Paris, he has been the most consistent man in the sport. He reached the Wimbledon final in July and lost to Sinner in four. He has reached the quarterfinals of all four majors this year and the semifinals of all four, a run of 24 wins against two defeats at Grand Slam level in 2026. Sunday is his third consecutive major final and the sixth of his career. He is the top seed. He turns up here at 29 having finally answered the only question anyone ever asked him, which is the kind of thing that can free a player or flatten him, and so far it has clearly freed him. We wrote in August, when he arrived in Cincinnati as the man everyone was chasing, that [the pressure on him had changed shape rather than disappeared](/lifestyle/alexander-zverev-cincinnati-2026-top-seed-first-slam-champion/). It still has.
 
-**In Sabalenka against Pegula, watch the first four shots of each point.** Sabalenka wants the rally over inside four shots. Pegula wants it to last twelve. Whichever pattern is winning by the middle of the second set is almost certainly the pattern that decides the match, and you can track it without knowing a single technical term.
+His route here was less theatrical than Shelton's and no less effective. He beat Luciano Darderi 6-2, 6-2, 7-6(3) in the fourth round, took apart the unseeded Botic van de Zandschulp 6-2, 7-5, 6-1 in the quarters, and then in Friday's semifinal came through against Karen Khachanov 6-3, 7-6(7), 7-6(6), surviving two tie-breaks in which Khachanov held the advantage and could not cash it. Straight sets on the scoreboard, nothing like straight sets in the living.
 
-**In Rybakina against Gauff, watch the second serve.** Rybakina has one of the great first serves in the women's game, but the second serve is where the pressure lands, and Gauff is one of the best returners alive at stepping in and taking that ball early. Every second serve is a small argument between two enormous strengths.
+## Five-nil
 
-**Watch the body language at changeovers.** Not for drama, but because at this stage of a major, the towel and the chair are where matches quietly turn. Pegula in particular gives almost nothing away, which is itself information.
+Here is the sentence that should temper everyone's enthusiasm in the United States this weekend: Zverev has played Ben Shelton five times and won all five, four of them in straight sets.
 
-And if you can, watch late. The Ashe night session under the closed roof or the New York sky is a genuinely different sporting experience from the same match in daylight, something we have written about at [length and with affection](/lifestyle/us-open-2026-night-session-arthur-ashe-after-dark/). The noise gets trapped. The court looks like a stage. Nothing in tennis sounds like 23,000 people realising at the same moment that a match has turned.
+That is not a coincidence or a run of bad luck. It is a stylistic problem. Shelton's game is built on overwhelming force, on serves that arrive before you have finished thinking and forehands hit at a speed that makes the geometry of the court feel smaller. That works beautifully against players who need time. Zverev does not need time. He is 6ft 6in, he stands well behind the baseline, he has one of the best returns of serve in the game precisely because he is content to block the first ball back and start the rally from there, and he has the rally tolerance of a man who could play tennis until Tuesday.
 
-## What happens next
+So the shape of Sunday is fairly clear. Shelton has to find a way to end points before Zverev gets comfortable, which means first serves, which means the second serve becomes the entire match. Zverev has to absorb, extend, and make Shelton play one more ball than he wants to, over and over, until the errors start arriving in clusters the way they did in the first set on Friday.
 
-The winners meet on Saturday for the title. Whoever it is, the story lines up almost too neatly: a Sabalenka victory makes her the third woman in the Open era to win three straight here, a Pegula victory ends the longest wait in the top ten, a Rybakina victory pairs the number one ranking with the trophy in the same week, and a Gauff victory gives her a second title on the court that made her.
+What Shelton has that the head-to-head does not capture is this fortnight. Nothing in those five previous meetings involved a 23-year-old who had just gone toe to toe with the defending champion for four and a half hours and won a fifth-set tie-break in the dark. Players change. Some of them change in a single week.
 
-The men have their own version of this on Friday, with an all-American semifinal between Ben Shelton and Frances Tiafoe guaranteeing a home player in Sunday's final, and Alexander Zverev meeting the unseeded Karen Khachanov in the other half. That draw broke the ordinary way, full of upsets and surprises. The women's draw did not break at all, and that is precisely what makes it worth your attention.
+## What Sunday looks like
 
-Tennis usually asks you to fall in love with the underdog, and it is very good at producing them. Once in a long while it does the opposite. It sends the four best players in the world to the same building on the same night, refuses to let anyone hide behind a bad draw, and asks a simple question that the sport almost never gets to ask cleanly: on the biggest court there is, in the last week of the season's last major, who is actually the best?
+Two o'clock in the afternoon, Arthur Ashe Stadium, Flushing Meadows. Best of five sets. A stadium that holds nearly 24,000 people and will be, for the first time in a men's final in two years, loudly and unashamedly partisan.
 
-We get the answer over two nights. Forty-eight hours from now the argument will be settled, and it will be the first time in 51 years that nobody can say the draw did it for them.
+If you are watching with people who do not follow tennis, the things to point out are these. Watch Shelton's second serve, because that is where the match will be decided. Watch how far behind the baseline Zverev stands to receive, and how quickly Shelton is willing to come forward to cut the rally short. Watch the scoreboard in the second and third sets rather than the first; Zverev is a slow starter who wins matches in the middle, and Shelton lost the opening set in both the quarterfinal and the semifinal here and won them anyway.
 
-*Photo: a deep blue hard court with white lines, via Unsplash.*`;
+And watch the crowd, which in New York is a participant rather than an audience. Tiafoe against Shelton was already a party. Shelton on his own, with a nation's 23 years riding along, will be something else again.
+
+What we know for certain is that one of them will be holding something on Sunday evening that he has never held before. For Zverev it is the trophy that got away from him on this court six years ago, the one that would confirm that Paris was a beginning rather than a release. For Shelton it is the first major of a career that has not yet had a serious setback, and a piece of history his country has waited most of his lifetime to see.
+
+The wait ends or it does not. Either way, at two o'clock on Sunday, somebody finds out something about himself in front of 24,000 people who will not be sitting down.
+
+*Photo: the grounds at the Billie Jean King National Tennis Center during the US Open.*`;
 
 const record = {
   slug, title, excerpt, body,
