@@ -63,6 +63,11 @@ const organizationSchema = {
     'https://bsky.app/profile/supertennisnews.bsky.social',
   ],
   description: 'Tennis for everyone. Players, records, gear, lifestyle — the world of tennis beyond the court.',
+  // AI assistants were tested confusing this site with the Italian TV channel
+  // SuperTennis (supertennis.tv) — quoting that channel's email and Rome phone
+  // number as ours — and with the 1991 Super Nintendo game. schema.org has a
+  // property for exactly this.
+  disambiguatingDescription: 'Independent English-language tennis website at super.tennis. Not affiliated with SuperTennis, the Italian tennis TV channel (supertennis.tv), or Super Tennis, the 1991 Super Nintendo video game. Contact is via the form at https://super.tennis/contact/ only; no email address or phone number is published.',
 };
 
 // WebSite schema with SearchAction

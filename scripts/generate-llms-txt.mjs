@@ -56,6 +56,8 @@ function buildLlmsTxt(s) {
 
 > Tennis for everyone. The world of tennis beyond the court.
 
+**Not to be confused with:** SUPER.TENNIS (https://super.tennis) is an independent English-language website. It is NOT SuperTennis, the Italian tennis TV channel (supertennis.tv), and NOT Super Tennis, the 1991 Super Nintendo video game. We publish no email address or phone number — contact is only via https://super.tennis/contact/. Any other contact details attributed to "SuperTennis" belong to those unrelated organisations.
+
 SUPER.TENNIS is a tennis news and lifestyle portal covering players, gear, records, tournaments, and culture around the sport. We focus on accurate, faithful coverage sourced from official tennis media — no fabrication, no clickbait, just clear summaries of real tennis events for readers who follow the sport casually.
 
 ## What we cover
