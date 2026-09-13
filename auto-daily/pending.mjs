@@ -1,114 +1,100 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'ben-shelton-us-open-2026-final-zverev-american-drought';
-const stamp = '2026-09-12T05:00:00.000Z';
-const title = 'Twenty-Three Years and One More Sunday: Ben Shelton Reaches the US Open Final';
+const slug = 'laver-cup-2026-london-o2-red-against-blue';
+const stamp = '2026-09-13T05:00:00.000Z';
+const title = 'Red Against Blue: The Laver Cup Comes Back to London';
 const meta_title = title;
-const meta_description = 'Ben Shelton beat Frances Tiafoe to reach his first Grand Slam final. On Sunday he plays Alexander Zverev with 23 years of American waiting behind him.';
-const excerpt = 'There is a number sitting underneath Sunday afternoon in New York, and the number is twenty-three. That is how long American men have waited for a Grand Slam title, and a 23-year-old left-hander from Florida is now one match away from ending it.';
-const image_url = '/images/tournaments/us-open.webp';
-const image_alt = 'Fans walking through the grounds at Flushing Meadows with Arthur Ashe Stadium rising behind the US Open banners';
+const meta_description = 'The Laver Cup returns to the O2 in London from 25 to 27 September 2026. What the event is, who is playing, and why a trophy with no ranking points still lands.';
+const excerpt = 'Twelve days after the US Open ends, tennis reconvenes in a dark arena on the Thames: six Europeans against six from the rest of the world, for a trophy that awards no ranking points and still makes grown professionals cry.';
+const image_url = '/images/tournaments/laver-cup.webp';
+const image_alt = 'A packed indoor arena lit in red and blue for the Laver Cup, with Team Europe and Team World banners ringing the court';
 
-const body = `There is a number sitting underneath Sunday afternoon in New York, and the number is twenty-three.
+const body = `By this evening there will be a new US Open champion, the gates at Flushing Meadows will start closing behind the last of the crowd, and the tennis season will do the thing it always does in the middle of September. It will pack up and vanish.
 
-That is how many years it has been since an American man won a Grand Slam singles title. Andy Roddick beat Juan Carlos Ferrero at this tournament in 2003, held the trophy over his head on a warm September evening in Queens, and nobody from his country has done it since. Twenty-three years is long enough that a child born the week Roddick won it is now old enough to have graduated, moved cities and started complaining about rent. It is long enough that an entire generation of American tennis fans has grown up without ever seeing one of their own lift a major.
+Except it does not vanish, not quite. Twelve days after the last ball is struck in New York, a dozen of the men who were there will walk into a dark arena on the eastern edge of London, sit down on two long benches, and play for something that does not exist anywhere on a ranking list.
 
-On Friday night, in front of a home crowd that spent four sets shouting itself hoarse for both men, Ben Shelton beat Frances Tiafoe 4-6, 6-3, 6-3, 7-5 and put himself one match away from ending it. He is 23 years old. He is left-handed, absurdly powerful, coached by his father, and on Sunday at two o'clock he walks onto Arthur Ashe Stadium to play Alexander Zverev for the US Open title.
+The Laver Cup is back at the O2 from Friday 25 to Sunday 27 September. If you have never watched it, or you watched once and could not work out whether it counted, this is the guide. It is one of the strangest and warmest three days in the sport, and this year it comes home to the building where it produced the most-watched goodbye tennis has ever staged.
 
-You do not need to know a forehand from a backhand to feel what is stacked up behind that sentence. Here is the story of how Shelton got here, who is standing in his way, and why Sunday is worth rearranging your afternoon for.
+## The Ryder Cup idea, borrowed
 
-## The night it turned, and the game that decided it
+Start with the shape of it, because the shape is the whole point.
 
-For about forty minutes on Friday, this did not look like Shelton's night at all.
+Six players from Europe. Six from everywhere else. Three days, one court, twelve matches: three singles and one doubles each day. Everybody sits together on a bench like a football squad, which means that a 19-year-old from Madrid spends his weekend a metre away from a man who has won a Grand Slam, and the man who has won a Grand Slam is allowed to shout advice at him during changeovers. That is not how tennis normally works. Tennis normally leaves you alone out there with your own head for three hours, and the loneliness is half of what makes it hard to watch.
 
-Tiafoe, seeded eleventh and playing the kind of loose, joyful tennis that has made him one of the most watchable men in the sport, was the sharper player from the start. He broke in the ninth game of the first set, held to love to close it out, and Shelton spent that opening half hour making fourteen unforced errors and looking like a man trying to hit the ball through the back wall of the stadium rather than past the person in front of him.
+The scoring is the clever bit. A win on Friday is worth one point. A win on Saturday is worth two. A win on Sunday is worth three. First team to 13 takes the trophy. Do the arithmetic and you find the design: a team could win all eight matches on Friday and Saturday, arrive at Sunday with twelve points, and still have to go out and win one more. The event is built so that it almost never finishes early, which is either shameless or brilliant, depending on how cynical you are feeling.
 
-Then he settled. Not dramatically, not with a roar, but the way a big serve settles: one clean hold, then another, then the sense creeping across the court that Tiafoe was going to have to play a perfect point to win an ordinary one. Shelton started leaning on the serve. He started making Tiafoe run to the forehand corner over and over, and eventually that forehand, the shot Tiafoe plays with such flair when he is comfortable, began to break down under the weight of it.
+No ranking points are awarded. The prize money is real and substantial, the head-to-head records count, and the trophy is named after Rod Laver, who turned 88 in August and who remains the only man to have won all four majors in a single calendar year twice over, in 1962 and 1969. He has been a fixture at the event that carries his name since it started in 2017, usually somewhere just behind the benches, watching the sport he shaped being played by people young enough to be his great-grandchildren.
 
-The whole match funnelled into one game at the end of the third set. Fifteen minutes long. Nineteen points. Shelton had to earn the break four or five different ways before he finally got it, and when he did, something went out of the match. Tiafoe still needed to break serve to survive, and against 20 aces and a man hitting through the court the way Shelton was by then, that was a tall order in the fourth set. Shelton finished with 47 winners to Tiafoe's 27, which is the statistical way of saying he was the one making things happen.
+## Why this building, of all buildings
 
-Afterwards, Shelton dedicated the win to his grandmother, who died earlier this year. She was the one, he said, who got his father into tennis in the first place. Every family in this sport has a person like that somewhere in the story, the one who drove to the courts or paid for the lessons or simply said yes when it would have been easier to say no. Most of them never get mentioned on a microphone in front of 23,000 people.
+The Laver Cup moves. Prague, Chicago, Geneva, Boston, London, Vancouver, Berlin, San Francisco. Europe one year, the rest of the world the next. Nine editions in, London gets it for the second time, and there is no way to write about the O2 hosting this event without writing about a Friday night in September 2022.
 
-## What twenty-three years actually looks like
+That was the night Roger Federer played his last match. He had announced eight days earlier that the Laver Cup would be the end, and he chose doubles, and he chose Rafael Nadal as his partner, and the two of them lost a match tie-break to Jack Sock and Frances Tiafoe in front of an arena that had stopped caring about the score some time in the second set. Afterwards Federer sat on the bench and cried, and Nadal, sitting beside him, cried too, and the photograph of the two of them holding hands went round the world in about ninety seconds.
 
-It is worth being precise about the American wait, because the numbers get muddled in the telling.
+Whatever you think of the Laver Cup as a competition, that hour is now part of the sport permanently, and it happened here. There is something worth noticing in that. Federer could have said goodbye at Wimbledon, on the grass he practically owned. He could have done it at the Australian Open or in Basel. He chose a team event he had helped invent, in a concert venue on the Thames, because he wanted his last match to be a doubles with the people he had spent twenty years playing against.
 
-The title drought is 23 years: Roddick, here, 2003. That is the last major won by an American man, and it has now outlived Roddick's entire playing career, his broadcasting career and a fair chunk of his coaching one.
+The O2 will not manufacture that again. Nobody could. But arenas keep things, and this one is going to feel different on the Friday night for anyone who was watching four years ago.
 
-The finals drought is shorter and more recent. Taylor Fritz reached this final in 2024, losing to Jannik Sinner, and in doing so became the first American man in a US Open final since Roddick himself in 2006. So Shelton is not breaking new ground simply by being here. What he would be breaking, if he wins on Sunday, is the thing that has actually hurt: not the reaching, but the finishing.
+## Team Europe: a French captain, a Spanish teenager
 
-There is one more line in the record book that landed on Friday, and it is the one that gives the weekend its weight. Shelton is the first Black American man to reach the US Open final since Arthur Ashe in 1972, and the first to reach any major final since MaliVai Washington at Wimbledon in 1996. Ashe, of course, is the reason the enormous blue building Shelton will walk into on Sunday has the name it does, a story about far more than tennis that we have [written about at length before](/lifestyle/arthur-ashe-name-on-biggest-stadium-in-tennis/). There is a neatness to it that nobody planned and everybody noticed: an American who looks like Ashe, playing for the title, in the stadium named after him, fifty-four years after Ashe last stood in a final on this ground.
+Bjorn Borg and John McEnroe captained the first eight editions, which was a piece of casting so obvious it was almost a joke, and a very good joke for eight years. They stood down after Berlin in 2024. Since 2025 the benches have belonged to Yannick Noah for Europe and Andre Agassi for the World, with Tim Henman and Patrick Rafter as their deputies, and if you grew up watching tennis in the 1980s and 1990s that is a sentence with a lot of nostalgia packed into it.
 
-Shelton is also the youngest American man in a US Open final since a 21-year-old Roddick in 2003, which is the sort of statistic that tells you how thin the pipeline has been at the very top, even in years when American men have filled the second week.
+Noah brings six players to London. Carlos Alcaraz is the headline, and he arrives from a New York fortnight that ended in a quarterfinal against Ben Shelton that did not finish until 3.33 in the morning, which is the kind of match that gets talked about for a decade and probably felt, to the man who lost it, like being hit by a bus in slow motion.
 
-## Six matches, and one that ended at 3:33 in the morning
+Alexander Zverev is the second name, and depending on how his afternoon goes today he will land in London either as a two-time major champion or as a man who has now lost a US Open final twice. Either way he is the top seed in New York and the most decorated European in this team, and his season deserves the run-out it has had here: we wrote about [the shape of his year back in Cincinnati](/lifestyle/alexander-zverev-cincinnati-2026-top-seed-first-slam-champion/), before any of this.
 
-Nobody hands you a run like this. Look at the list of players Shelton had to get past.
+Then it gets interesting. Casper Ruud, the Norwegian who has been to three Grand Slam finals and who is one of the very few players in the locker room that nobody has a bad word about. Jakub Mensik, the Czech who beat Novak Djokovic in a Masters final at 19 and has the serve of somebody much older and much ruder. Flavio Cobolli, the Italian, who celebrates a won point the way most people celebrate a job offer.
 
-Round one: Tallon Griekspoor, a top-fifty Dutchman with a flat, heavy ball, who took the opening set 6-1 before Shelton found his range and won 1-6, 6-1, 7-6(3), 6-2. Round two: Hubert Hurkacz, a former Wimbledon semifinalist whose serve is one of the few in the sport that genuinely stands comparison with Shelton's, in four sets. Round three: Denis Shapovalov, the shot-maker, another lefty, another man capable of playing forty minutes of unplayable tennis. Round four: Stefanos Tsitsipas, twice a major finalist.
+And Rafael Jodar, who is the story of this team. He is from Madrid, he is 6ft 3in, he spent one season playing college tennis at the University of Virginia, and he turned professional in 2025 with almost nobody outside Spain paying attention. This year he won his first tour title in Marrakech, made a semifinal in Barcelona, reached quarterfinals in Madrid, Rome and at Roland Garros, beat Alex de Minaur for his first top-ten win and pushed the world No. 1 in a match that had people sitting up. He has climbed to a career high inside the top 15. He turns 20 on 17 September, eight days before the Laver Cup begins.
 
-And then the quarterfinal, which is the match this fortnight will be remembered for.
+Put him next to Alcaraz on that bench and you have a picture of where Spanish tennis is: not waiting for the next one, already holding him.
 
-Carlos Alcaraz arrived in New York as the defending champion and the second seed, carrying an 18-match winning streak at Grand Slam level. He and Shelton went five sets and four hours and 28 minutes on Arthur Ashe, and the thing did not finish until 3:33 in the morning, the latest finish in the history of the US Open, breaking a record that had stood since Alcaraz and Sinner played until ten to three in 2022. Shelton won 6-7(5), 6-1, 6-3, 1-6, 7-6(7). A tie-break in the fifth, at half past three in the morning, against the best hard court player of his generation.
+## Team World: the side that stopped being the underdog
 
-You can argue, as plenty have this week, that a tournament should not be finishing matches at that hour, that it is bad for the players and worse for the people who buy tickets and have to work on Wednesday. Those are fair arguments and the sport should probably listen to them. But if you were awake, you saw something you will describe to people for years.
+For four years the Laver Cup had a problem, and the problem was that Europe kept winning. 2017, 2018, 2019, 2021. Federer, Nadal and Djokovic were all European, all available, and all still at or near their peak, and the event that had been designed as a contest kept turning into an exhibition of continental superiority.
 
-It matters, too, that the draw around Shelton had already been torn up. Sinner, the Wimbledon champion, withdrew before the tournament with a knee injury. Novak Djokovic went out in the first round. When this fortnight began we wrote that [nobody had the faintest idea who was going to win it](/lifestyle/us-open-2026-draw-nobody-knows-who-wins/), and that turned out to be the most accurate thing anyone said all summer. Alcaraz losing in the quarters guaranteed that this tournament would crown a first-time US Open champion, whatever happened next.
+Then 2022 happened at this same arena, and Team World won for the first time, 13-8. They won again in Vancouver in 2023. Europe took Berlin back in 2024, Alcaraz beating Taylor Fritz to seal it, and then last year in San Francisco Team World won again, 15-9, with Fritz landing the decisive blow against Alcaraz on the Sunday. The all-time score is Europe five, World three, and the last four editions have gone World, World, Europe, World.
 
-## The serve that was not 158 miles per hour
+Agassi brings a squad to London that has no obvious weak seam. Ben Shelton, who is playing for a Grand Slam title as you read this and whose week in New York we followed all the way through to [his first major final](/lifestyle/ben-shelton-us-open-2026-final-zverev-american-drought/). Taylor Fritz, who has now clinched this thing twice and treats it with a seriousness that ought to settle the exhibition argument on its own. Alex de Minaur, the fastest man in the sport and the one who makes every match a physical negotiation, [profiled here in the summer](/lifestyle/alex-de-minaur-demon-fastest-man-tennis-2026/). Alexander Bublik, on debut, who is capable of hitting an underarm serve on a break point and then laughing at himself for the next three games. Learner Tien, the young American left-hander with the anti-gravity defence. And Tommy Paul, who has been a semifinalist at a major and who is, on the evidence of every team event he has played, precisely the sort of person you want on a bench.
 
-One small, delightful subplot from Friday, because it says something about how tennis now works.
+At the time the team was announced, four of those six were inside the world top eleven. That is not a plucky insurgency any more. That is a favourite with a captain who has won eight majors.
 
-Midway through the third set, the stadium screen flashed up a Shelton serve at 158 miles per hour. Arthur Ashe went up like a firework. That would have been the fastest serve in the history of the tournament by a distance, past the 153 mph Taylor Dent hit here in 2004, and quite possibly the fastest ever struck at a Grand Slam.
+The absences are worth a sentence too. There is no Novak Djokovic and no Jannik Sinner among the twelve. That is partly the calendar, partly personal scheduling, and it will be used by anyone who wants to argue the event has a status problem. It is also how team tennis has always worked: nobody fields a full-strength roster every year, and the Davis Cup has lived with the same gaps for a century.
 
-It was not real. Hawk-Eye reviewed the reading and corrected it to 144 mph, a radar misread rather than a record. Shelton's genuine fastest of the match was 149 mph, which remains a preposterous thing for a human being to do with a piece of graphite while standing still.
+## So does it actually count?
 
-The correction is a footnote, but a telling one. This is a tournament that has handed its line calls over to the machines entirely, and we now trust the tracking system so completely that when the stadium gun said 158 and the computer said 144, nobody seriously argued for the gun. The number on the big screen is not the truth any more. The number in the system is.
+This is the fair question, and it deserves an honest answer rather than a defensive one.
 
-## The college kid who skipped the queue
+No, it does not count in the way a Slam counts. Nobody moves up the rankings. Nobody puts it on the mantelpiece in the same place as Wimbledon. The event is a commercial product, part-owned by a player who retired in this building, scheduled in a crowded autumn that already asks a great deal of the people who have to play it. We have written before about [how much tennis the calendar demands](/lifestyle/montreal-2026-missing-stars-masters-1000-calendar-crunch/), and the Laver Cup sits squarely inside that argument, not outside it.
 
-If you have not followed Shelton closely, the short version is that he took a route almost nobody at this level takes any more.
+And yet.
 
-Most players in a Grand Slam final left school early, moved to an academy at 13 or 14, and spent their teenage years in airports. Shelton went to university. He played for the Florida Gators, where his father Bryan, a former professional who spent years on tour himself, was the head coach. In 2022 he won the NCAA singles title, and only then did he turn professional, at an age when most of his rivals had already been on tour for four or five years. It is a path we spent some time on this summer when he reached [a Masters 1000 final against another product of the American college system](/lifestyle/montreal-2026-final-college-tennis-route-shelton-nakashima/) and then won the thing.
+Watch what happens to a player on that bench when a teammate saves a break point. Watch Fritz in San Francisco last year, or Alcaraz in Berlin in 2024, playing a third-set tie-break with an entire team standing up behind him. Watch a 19-year-old debutant get the crowd going while someone else does the hitting. The stakes are invented, which is the standard objection, but every stake in every sport is invented. A line on a court is invented. A trophy is a piece of metal somebody decided to care about. What makes something matter is whether the people inside it behave as though it does, and for three days in September these people reliably do.
 
-The catching up was fast. Within a year he had reached the Australian Open quarterfinals and then the semifinals here in 2023, beating Tiafoe in that quarterfinal too. This season has been the best of his life: four titles, including the Masters 1000 in Montreal, a 2026 record of 38 wins and 13 losses, and a ranking of world No. 9 that made him the eighth seed in New York.
+There is also a quieter case. For eleven months of the year, tennis is the loneliest of the big sports. You cannot be substituted, you cannot pass to someone else, and you cannot be told anything useful by your coach while you are drowning. The Laver Cup switches all of that off. You get a bench, you get a captain crouching by your chair, you get somebody handing you a towel who actually needs you to win. For a lot of these players it is the only weekend of the year that feels like being on a team, and you can see it in their faces from the first Friday afternoon match.
 
-And through all of it, the man in his box has been his father. Bryan Shelton is still the coach. That is rarer than it sounds at this altitude of the sport, where family members are usually eased out and replaced by specialists somewhere around the top twenty. On Sunday a father whose own playing career never came close to an afternoon like this will sit in the corner of Arthur Ashe Stadium and watch his son play for a major title.
+## Watching it, if you do not play
 
-## The man on the other side of the net
+A few practical things, because the event is oddly easy to enjoy cold.
 
-Alexander Zverev has been almost champion for so long that it became the defining fact about him. Then this June it stopped being true.
+It is one court, indoors, under stage lighting, with the surface laid dark so the ball reads bright on television. Five sessions across three days, two each on Friday and Saturday, one long one on Sunday. The crowd is split by colour, red for the World and blue for Europe, and unlike the polite quiet of a Grand Slam nobody is asked to behave.
 
-The German won Roland Garros, beating Flavio Cobolli 6-1, 4-6, 6-4, 6-7(5), 6-1 in the final, and became the first German man to win a major since Boris Becker three decades earlier. He had been to three major finals before that and lost all three. He had, most famously, led Dominic Thiem by two sets in the 2020 US Open final on this very court and lost in a fifth-set tie-break, 8-6, after both men served for the championship and both were broken. If you want to understand why Zverev spent five years carrying a slightly haunted look into big matches, that is the reason.
+The best reason to watch, if you are not a tennis person, is the sound. Coaching is permitted and audible. You hear what a captain actually says to a player who is losing, which turns out to be far less tactical and far more human than you would imagine. You hear teammates arguing about whether to challenge. It is the closest the sport comes to letting you inside the huddle, and it makes the players legible in a way that four hours of Grand Slam silence never quite does.
 
-Since Paris, he has been the most consistent man in the sport. He reached the Wimbledon final in July and lost to Sinner in four. He has reached the quarterfinals of all four majors this year and the semifinals of all four, a run of 24 wins against two defeats at Grand Slam level in 2026. Sunday is his third consecutive major final and the sixth of his career. He is the top seed. He turns up here at 29 having finally answered the only question anyone ever asked him, which is the kind of thing that can free a player or flatten him, and so far it has clearly freed him. We wrote in August, when he arrived in Cincinnati as the man everyone was chasing, that [the pressure on him had changed shape rather than disappeared](/lifestyle/alexander-zverev-cincinnati-2026-top-seed-first-slam-champion/). It still has.
+The doubles are the other reason. Every day ends with one, and the pairings are often ridiculous on purpose: two enormous servers who have never played together, a veteran and a debutant, whoever the captain thinks will enjoy themselves. The quality can be scruffy. The entertainment almost never is.
 
-His route here was less theatrical than Shelton's and no less effective. He beat Luciano Darderi 6-2, 6-2, 7-6(3) in the fourth round, took apart the unseeded Botic van de Zandschulp 6-2, 7-5, 6-1 in the quarters, and then in Friday's semifinal came through against Karen Khachanov 6-3, 7-6(7), 7-6(6), surviving two tie-breaks in which Khachanov held the advantage and could not cash it. Straight sets on the scoreboard, nothing like straight sets in the living.
+## Three days, and then the season keeps going
 
-## Five-nil
+Between now and then there is one more thing on the calendar: the Davis Cup qualifiers on 18, 19 and 20 September, when fourteen national teams play for seven places in the Finals in Bologna in November. Some of the men who will be sitting on those benches at the O2 will have spent the previous weekend playing for their countries in half-full arenas in places the tour never visits. That is a good week for team tennis, and a hard one for anybody hoping these players get a rest.
 
-Here is the sentence that should temper everyone's enthusiasm in the United States this weekend: Zverev has played Ben Shelton five times and won all five, four of them in straight sets.
+After London the sport heads east for the autumn swing, the indoor season starts grinding towards the year-end finals, and the whole thing accelerates towards November. The Laver Cup sits in that gap deliberately: late enough that the Slam is done, early enough that everybody is still sharp, in a building that seats around 17,000 for tennis and treats the sport like a concert.
 
-That is not a coincidence or a run of bad luck. It is a stylistic problem. Shelton's game is built on overwhelming force, on serves that arrive before you have finished thinking and forehands hit at a speed that makes the geometry of the court feel smaller. That works beautifully against players who need time. Zverev does not need time. He is 6ft 6in, he stands well behind the baseline, he has one of the best returns of serve in the game precisely because he is content to block the first ball back and start the rally from there, and he has the rally tolerance of a man who could play tennis until Tuesday.
+Go into it without expecting a Grand Slam and it gives you something a Grand Slam cannot. Twelve of the best players in the world, in one room, for three days, with nothing on the line except each other.
 
-So the shape of Sunday is fairly clear. Shelton has to find a way to end points before Zverev gets comfortable, which means first serves, which means the second serve becomes the entire match. Zverev has to absorb, extend, and make Shelton play one more ball than he wants to, over and over, until the errors start arriving in clusters the way they did in the first set on Friday.
+Four years ago in this arena that arrangement produced a man in a dark blue jacket weeping on a bench while the person he had spent his whole career trying to beat wept beside him. That is what happens when you put tennis players on a team and tell them the result matters. They believe you.
 
-What Shelton has that the head-to-head does not capture is this fortnight. Nothing in those five previous meetings involved a 23-year-old who had just gone toe to toe with the defending champion for four and a half hours and won a fifth-set tie-break in the dark. Players change. Some of them change in a single week.
-
-## What Sunday looks like
-
-Two o'clock in the afternoon, Arthur Ashe Stadium, Flushing Meadows. Best of five sets. A stadium that holds nearly 24,000 people and will be, for the first time in a men's final in two years, loudly and unashamedly partisan.
-
-If you are watching with people who do not follow tennis, the things to point out are these. Watch Shelton's second serve, because that is where the match will be decided. Watch how far behind the baseline Zverev stands to receive, and how quickly Shelton is willing to come forward to cut the rally short. Watch the scoreboard in the second and third sets rather than the first; Zverev is a slow starter who wins matches in the middle, and Shelton lost the opening set in both the quarterfinal and the semifinal here and won them anyway.
-
-And watch the crowd, which in New York is a participant rather than an audience. Tiafoe against Shelton was already a party. Shelton on his own, with a nation's 23 years riding along, will be something else again.
-
-What we know for certain is that one of them will be holding something on Sunday evening that he has never held before. For Zverev it is the trophy that got away from him on this court six years ago, the one that would confirm that Paris was a beginning rather than a release. For Shelton it is the first major of a career that has not yet had a serious setback, and a piece of history his country has waited most of his lifetime to see.
-
-The wait ends or it does not. Either way, at two o'clock on Sunday, somebody finds out something about himself in front of 24,000 people who will not be sitting down.
-
-*Photo: the grounds at the Billie Jean King National Tennis Center during the US Open.*`;
+*Photo: the Laver Cup arena during the opening ceremony, Team Europe in blue on one side of the court and Team World in red on the other.*`;
 
 const record = {
   slug, title, excerpt, body,
