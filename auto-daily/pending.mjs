@@ -1,110 +1,138 @@
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
-const slug = 'tennis-autumn-season-2026-what-happens-after-us-open';
-const stamp = '2026-09-14T05:00:00.000Z';
-const title = 'The Season Nobody Tells You About: What Happens to Tennis After the US Open';
+const slug = 'beatriz-haddad-maia-break-2026-sp-open-sao-paulo';
+const stamp = '2026-09-15T05:00:00.000Z';
+const title = 'Brazil Has a Tennis Tournament This Week and Its Biggest Star Is Not Playing';
 const meta_title = title;
-const meta_description = 'The US Open is over and the tennis season is not. A fan guide to the autumn run-in: Davis Cup, the Asian swing, the indoor months and two year-end finals.';
-const excerpt = 'Zverev and Rybakina have their trophies and the courts at Flushing Meadows are quiet. Most casual fans now switch off until January, and they are about to miss the strangest, most crowded ten weeks of the tennis year.';
-const image_url = '/images/tournaments/atp-finals.webp';
-const image_alt = 'A packed indoor arena lit in deep blue for a season-ending tennis final, the court glowing at the centre of the darkness';
+const meta_description = 'The SP Open is running in Sao Paulo without Bia Haddad Maia, the first Brazilian woman to reach the top ten. Why she stopped her season to look after her mind.';
+const excerpt = 'A WTA tournament opened in Sao Paulo on Monday and the name everybody in the country wanted on the draw sheet is missing from it. Bia Haddad Maia stopped her season in August, and the reason she gave was not her back or her knee.';
+const image_url = '/images/lifestyle/tennis-pressure.webp';
+const image_alt = 'An empty hard court photographed from above, the green and red paint cracked and weathered, the white lines still perfectly drawn';
 
-const body = `On Sunday evening Alexander Zverev stood on a blue court in New York holding a silver trophy and looking like a man who had been waiting most of his adult life for it. He had beaten Ben Shelton 6-3, 7-6(2), 5-7, 6-2 across three and a half hours, and it was his second major of the year after Roland Garros in June. The night before, Elena Rybakina had beaten Aryna Sabalenka 6-4, 5-7, 6-2 in the same stadium, adding the US Open to the Australian Open she won in January.
+const body = `A tennis tournament opened in São Paulo on Monday, in a public park where joggers go past the fence and the city noise never quite stops, and the one name everybody in Brazil wanted on the draw sheet was not on it.
 
-And then, on Monday morning, nothing. No night session. No draw sheet on your phone. If you are the kind of tennis fan who watches the four Slams properly and gets on with your life in between, this is the week the sport goes quiet and stays quiet until Melbourne in January.
+The SP Open runs from 14 to 20 September at Parque Villa-Lobos. It is only the second edition, a WTA 250, the smallest tier the women play for, and it is the sort of event that lives or dies on the local crowd turning up. Leylah Fernandez of Canada is the top seed. Paula Badosa of Spain is second. Both are proper players and both deserve their billing. But if you had asked anyone in São Paulo a year ago who would be walking onto that centre court in 2026 with the stands full and the whole place shouting one syllable at her, they would all have given you the same answer.
 
-Except it does not. Not even slightly.
+Bia.
 
-## The sport that never really stops
+Beatriz Haddad Maia is not there. She is not injured, she has not retired, and she has not been left out. She stopped playing in early August, of her own accord, and told the world in a video she filmed herself. The reason she gave was not her back or her knee or her shoulder. It was her head.
 
-Tennis has one of the most punishing calendars in professional sport. Eleven months of it, played across six continents and four surfaces, with an off-season so short that some players get about five weeks between their last match of one year and their first of the next. What most of us think of as "the tennis season" is really just the four fortnights that get on terrestrial television and into the news bulletins. The rest of it happens anyway, in arenas most fans could not point to on a map, in time zones that make it inconvenient, in front of crowds that are often enormous and almost never mentioned.
+## The player Brazil had been waiting sixty years for
 
-The autumn is the clearest example. From this week until the last weekend of November there is tennis every single week, including some of the best events of the year, and it is played largely out of sight of the casual audience that was gripped by New York for a fortnight.
+If you only watch the Slams, you have almost certainly seen her without knowing much about her. She is hard to miss. One metre eighty-five, left-handed, a two-handed backhand she hits flat and heavy, and a way of walking between points with her shoulders back that makes her look like she is in charge even when she is losing.
 
-That is a shame, because the autumn has a completely different flavour from the summer. The Slams are grand and slow and ceremonial. The autumn is compressed, slightly unhinged, and full of players making desperate late runs at things they have spent nine months chasing. The crowds are different. The light is different. By the end of it the courts are indoors, the ball is flying, and everyone on tour is exhausted and pretending not to be.
+Born in São Paulo in May 1996, good early, and then a long unglamorous grind through the lower tiers of the tour — the ITF events, the qualifying draws, the years when nobody is watching and the flights are the worst part of the week.
 
-Here is what is actually coming, and why some of it is worth your evening.
+And then, in the early 2020s, everything landed at once.
 
-## This week: exhale, then play for your country
+In the summer of 2022 she won Nottingham and Birmingham back to back, on grass, a surface nobody had ever expected a Brazilian left-hander to be dangerous on. The Nottingham final went to three sets against Alison Riske. The Birmingham final ended with Zhang Shuai retiring at 5-4. Two titles in eight days, and suddenly she was not a promising outsider any more, she was seeded.
 
-The first week after a Slam is always strange. Players who lost in the first round have been resting for a fortnight. Players who reached the second Sunday are still somewhere between elated and destroyed. Physios earn their money. Nobody wants to hit a tennis ball.
+Then came Paris, 2023, and eleven days that Brazil is still talking about.
 
-They do not get long. On 18, 19 and 20 September the Davis Cup Qualifiers second round takes over, and this is the part of the autumn that fans of the old competition still love best. Fourteen nations, seven ties, home or away, four continents in one weekend. The thirteen winners from February plus Spain, who went straight through as last year's runners-up. Win and you go to the Final 8 in Bologna in November. Lose and your year as a national team is finished.
+## Three hours and fifty-one minutes
 
-The venues tell you what kind of weekend it is. Great Britain play Ecuador at the Copper Box Arena in London on 19 and 20 September, a 7,000-seat box built for the 2012 Olympics where the noise has nowhere to escape. There is a tie in Vienna, one at the O2 arena in Prague, one at the Seoul Olympic Park tennis centre, one in Quebec City. Home nations choose the dates and, crucially, the surface, which is why a team with two clay-courters will suddenly discover a passionate commitment to clay in mid-September.
+Her fourth round at Roland Garros that year was against Sara Sorribes Tormo, and if you want a single match to understand what kind of competitor Haddad Maia is, it is that one. Sorribes Tormo is the most stubborn retriever in the women's game. Nothing comes back cheap. The match lasted three hours and fifty-one minutes, the longest women's match of the whole tournament, and Haddad Maia won it 6-7(3), 6-3, 7-5, serving out a set that had been on serve for forty minutes.
 
-This is home-and-away tennis, and it is the loudest tennis there is. No neutral crowd, no polite hush, no queueing for a cocktail. Just a few thousand people who have taken a Friday off work screaming at a man they have never met to hold serve. If you have only ever seen the modern week-long Davis Cup finals on television, the old format in a small arena is a different sport entirely. Our [Davis Cup guide](/tournaments/davis-cup-guide/) explains how the competition ended up with this two-part shape, and why the format argument has been running for the better part of a decade.
+Two days later she played Ons Jabeur, then one of the best players in the world, and lost the first set. She won the next two 7-6(5) and 6-1. When the last ball dropped she stood on Philippe Chatrier with her hands on her head, and in Brazil people who do not watch tennis were watching tennis.
 
-## Team tennis, twice more
+She was the first Brazilian woman to reach a Roland Garros semi-final in the Open era. She lost that semi-final to Iga Swiatek, who won the title, and a few days later, on 12 June 2023, she became the first Brazilian woman ever to be ranked inside the world top ten. World number ten. A number that had stood empty in Brazilian women's tennis since the era of black and white photographs.
 
-A week later the sport does something it does nowhere else on the calendar: it plays two team events back to back and pretends that is normal.
+## What that number meant at home
 
-The Billie Jean King Cup Finals run from 22 to 27 September at the Shenzhen Bay Sports Centre, indoors on hard courts, with the best women's national teams playing for the trophy that used to be the Fed Cup. It is the women's world cup of tennis, and if you have never watched a tie you should know the emotional temperature is completely unlike the individual tour. Players who spend the year as rivals sit on a bench together in matching tracksuits shouting themselves hoarse. Captains give speeches. People cry over doubles matches.
+You need to know what she was carrying, because it explains the rest.
 
-Then, from 25 to 27 September, the Laver Cup arrives at the O2 in London for its ninth edition: Yannick Noah's Team Europe in blue against Andre Agassi's Team World in red, Carlos Alcaraz and Zverev on one bench, Taylor Fritz and Alex de Minaur on the other, on that famous black court under concert lighting. We wrote about what that weekend actually feels like in [Red Against Blue: The Laver Cup Comes Back to London](/lifestyle/laver-cup-2026-london-o2-red-against-blue/), so I will only say this: it is the one event where the best players in the world sit close enough to touch each other for three days, and it shows.
+Brazil has produced two of the most beloved figures the sport has ever had, and then a long silence. Maria Esther Bueno won seven Grand Slam singles titles between 1959 and 1966, three at Wimbledon and four in New York, and played the kind of tennis people wrote poetry about. Gustavo Kuerten, Guga, won Roland Garros in 1997, 2000 and 2001, became the first South American man to be ranked number one in the world, and drew a heart in the clay with his racquet in a moment that is still on the wall of half the tennis clubs in the country.
 
-Spare a thought for the men who play a Davis Cup tie one weekend and the Laver Cup the next. That is two intercontinental flights, two teams, two sets of national anthems, and no actual rest, eight days after a Grand Slam final.
+After that, for two decades, almost nothing at the very top. There was a beautiful exception in Tokyo, when Laura Pigossi and Luisa Stefani saved four straight match points and won Brazil its first Olympic tennis medal, a bronze in the women's doubles, 4-6, 6-4, 11-9, both of them in tears before it was even over. But in singles, the space where a Brazilian contender should have been stayed empty.
 
-## Then the whole sport moves east
+Haddad Maia filled it alone. For three years she was the entire answer to the question "who does Brazil have?" — every press conference, every home tie, every exhibition, every sponsor day, every kid in a queue with a marker pen. The men's game now has João Fonseca, who has settled into the world's top thirty and set off a genuine tennis boom at home, with children turning up at academies because of him. But when Haddad Maia was at her peak, there was no Fonseca yet. There was her.
 
-From late September the tour packs up and goes to Asia for a month, and this is the swing the casual audience misses most completely, because it is on while you are asleep or making breakfast.
+Nobody hands you a manual for that.
 
-The men start with Chengdu and Hangzhou from 23 to 29 September, then Beijing and Tokyo from 30 September to 6 October. The women have the China Open in Beijing from 30 September to 11 October, one of the biggest and best-attended events on their calendar, running as a two-week tournament with a draw deep enough to feel like a fifth Slam in everything but name. The Rolex Shanghai Masters follows from 7 to 18 October, also spread across a fortnight, in a stadium shaped like a magnolia blossom that seats around 15,000. Then Wuhan, from 12 to 18 October, at the Optics Valley centre.
+## The ten months nobody expected
 
-Asian crowds are worth the alarm clock. They are young, they are enormous, and they treat players with a kind of open delight that is rare in European arenas. Shanghai in particular has produced some of the most-watched matches of recent seasons, partly because the conditions are humid and slow enough to make rallies go on forever, and partly because by October everyone has stopped being careful.
+There is a chapter of her career that gets summarised badly, so here it is properly.
 
-The practical problem for fans in Europe and North America is the clock. A Shanghai afternoon session is breakfast in London and the middle of the night on the American west coast. My honest advice is not to try to watch all of it. Pick the second week. Pick the quarter-finals onwards, when the draw has thinned out and the matches start to matter, and accept that you will be watching tennis with a coffee rather than a beer. If you are still working out how to follow the sport outside the Slams at all, our guide to [how to watch tennis](/lifestyle/how-to-watch-tennis/) is a decent place to start.
+In June 2019, at a small tournament in Bol, in Croatia, she gave a urine sample that came back positive for two banned substances from the SARM family. She was provisionally suspended from 22 July that year. She denied taking anything knowingly, and then the supplements themselves were tested.
 
-## And then the roof goes on
+They were five custom preparations made up by a compounding pharmacy in São Paulo, prescribed by two sports medicine doctors. The prohibited substances were in them. She had correspondence showing she had tried to check. The ITF accepted her explanation, accepted that she bore no significant fault or negligence, and gave her ten months rather than the years such a finding can carry. She was eligible to play again in May 2020, by which point the tour had shut down for the pandemic anyway.
 
-At the end of October the sport comes back to Europe and moves inside, and the change is more dramatic than it sounds.
+That is not a footnote. That is a young player losing nearly a year of her career and a large part of her public reputation to something she did not choose, at the age when careers are supposed to be taking off. What she did afterwards — the grass titles, Paris, the top ten — happened on the other side of it.
 
-Indoor tennis is faster. There is no wind, no sun, no heat, no bad bounces, so the ball does exactly what it was hit to do, and big servers who struggled all summer suddenly look unplayable. The sound changes too: instead of the flat open noise of an outdoor stadium you get the boom of a ball inside a sealed building, every grunt audible, the crowd noise pressing in. It is the closest tennis gets to boxing.
+If you have read our piece on [Grigor Dimitrov and the long way back](/lifestyle/grigor-dimitrov-cincinnati-2026-long-way-back/), you will recognise the shape of it. The sport is full of people who have already come back from something once, and then are asked to do it again.
 
-Vienna and Basel both run from 24 October to 1 November, two of the most atmospheric weeks on the men's calendar, in buildings where the crowd sits practically on the tramlines. Then comes the Rolex Paris Masters from 31 October to 8 November at Paris La Defense Arena, the last Masters 1000 of the year and the largest indoor tennis venue in the world, a converted rugby stadium that can take tens of thousands of people and feels like a rock venue that happens to contain a tennis court.
+## The part that came apart slowly
 
-Paris in early November is where the season starts to bite. Players who need one more good week to qualify for the year-end finals arrive already limping. Some withdraw. Some play on painkillers and pay for it in Turin. It is compelling and slightly grim, and it is the clearest evidence for the argument that the calendar has simply got too long, an argument we looked at when the biggest names started skipping events in the summer, in [Montreal Without Its Biggest Names](/lifestyle/montreal-2026-missing-stars-masters-1000-calendar-crunch/).
+Nothing dramatic happened. That is what makes it worth writing about.
 
-## Where the year is actually decided
+The 2025 season was hard. She lost twenty-six of her forty-two matches. In September, in Seoul, something happened in a match that got a small amount of coverage and should have got more: she had trouble breathing on court, her hands were shaking as she sat in her chair between games, and a physiotherapist came out to check her blood pressure. And then she kept playing. Of course she kept playing. That is what the job trains you to do.
 
-Then, in three consecutive weeks in November, the season ends three times.
+A week or so later she posted that she was ending her 2025 season earlier than planned, in her words, to rest her body and mind for a longer period. Elina Svitolina announced something similar in the same stretch of days, which is its own small story about how the autumn grinds people down — we wrote about Svitolina's remarkable second act in [her Toronto run this summer at thirty-one](/lifestyle/elina-svitolina-toronto-2026-best-tennis-of-her-life-at-31/).
 
-The WTA Finals come first, from 8 to 15 November, and this year they are somewhere new: Indian Wells, California. The WTA announced the move in July, ending the run in Riyadh, and the tournament will now be played at the Indian Wells Tennis Garden, a desert site with a 16,000-seat main stadium that most fans associate with sunshine in March rather than the last act of the season. Eight singles players, eight doubles teams, round-robin groups, and a format where you can lose your first match and still win the title.
+Haddad Maia came back for 2026. It did not work. She won four matches all year and lost nineteen. In May her ranking fell outside the top hundred for the first time in five years. By Wimbledon she was 134 in the world and playing on the outside courts, and on 30 June, on Court 9, she lost 6-3, 6-2 to a qualifier, Maria Timofeeva, in a match that took a little over an hour.
 
-The Nitto ATP Finals follow immediately, from 15 to 22 November at the Inalpi Arena in Turin, the sixth straight year in the city. Same shape: eight men, two groups, no draw luck to hide behind. You have to beat the best players in the world three or four times in a week, indoors, in November, having already played eleven months of tennis. The Italian crowd is one of the great sporting audiences and treats the whole week like a festival.
+That turned out to be the last match she has played.
 
-And then, finally, the Davis Cup Final 8 in Bologna from 24 to 29 November, at the SuperTennis Arena, where Italy as host nation are joined by the seven teams who come through next weekend. One week, eight countries, knockout ties, and a trophy that has existed since 1900 and has been lifted by almost every great player in the history of the men's game.
+## The video
 
-That is the real end of the tennis year: not a Sunday in New York, but a Sunday in Bologna at the end of November.
+In early August she posted a video to Instagram. No press conference, no management company. She filmed it and put it up.
 
-## What is still on the line
+She said she would not be competing again this season. She said the decision was one she had been dealing with mentally for a few months, privately, before saying it out loud. She used a phrase that has been quoted everywhere since, and it is worth sitting with rather than skimming: her relationship with tennis has not been easy.
 
-If you want a reason to care beyond the venues, the numbers are unusually good this season.
+Read that as a professional athlete's sentence, not a caption. This is a woman who has spent roughly twenty-five years of her life inside this sport, who broke a sixty-year drought for her country, who has been the face of tennis in a nation of two hundred million people, and what she is describing is a relationship. Relationships get strained. Sometimes they need distance before they can be repaired.
 
-On the men's side, Jannik Sinner is world No. 1 on around 12,800 points, roughly 5,000 clear of Zverev in the official rankings, which count the last twelve months. But the Race to Turin, which resets every January and counts only this calendar year, tells a completely different story: after New York, Zverev leads it on 8,650 points, about 700 ahead of Sinner, with Shelton up to third on 4,420 after his run to the final. The Race is what decides year-end No. 1, and it is now genuinely, unpleasantly close for both of them. Ten weeks, one long fight, two men who have already played each other in a Wimbledon final this year, which Sinner won.
+She also said she intends to come back in 2027, using a protected ranking.
 
-The women's race is even tighter. Rybakina leads it with 5,492 points, Sabalenka is on 5,185, Mirra Andreeva on 5,184, Jessica Pegula on 5,045 and Coco Gauff on 4,874. Six hundred points cover the top five, which in practical terms means one good tournament in Beijing or Wuhan reorders the entire thing. Year-end No. 1 is unresolved and will probably stay that way until the last week of the season.
+## What a protected ranking actually is
 
-And it has been that kind of year all round. Six different players won the eight Grand Slam singles titles: Alcaraz in Melbourne, Zverev at Roland Garros and now New York, Sinner at Wimbledon, Rybakina in Melbourne and New York, Andreeva in Paris at nineteen, Linda Noskova at Wimbledon. Nobody has controlled 2026. That is why the autumn matters more than usual this time round.
+This is one of those bits of tour machinery that sounds like paperwork and is actually mercy.
 
-## How to watch it without losing your evenings
+Rankings are built from the last fifty-two weeks of results. Stop playing and your points fall off week by week until there is nothing left, which would mean a returning player has to start again from the very bottom, in qualifying draws at tiny events, thousands of miles from the tour she left. Almost nobody can climb back through that.
 
-You do not have to follow all of it. Almost nobody does, including the people who write about tennis for a living.
+So the rules allow a player who is out for at least six months to freeze the ranking she had when she stopped, and use that frozen number to enter a limited quota of tournaments when she returns. Haddad Maia was ranked in the mid one-fifties when she stopped playing, so that is roughly the number she will carry back. It does not get her into a Grand Slam main draw. It does get her a real entry list at real tournaments instead of a cold start, which is the difference between a comeback and a fantasy.
 
-Pick your moments. The Davis Cup weekend, if your country is playing, because nothing else in tennis sounds like that. The Laver Cup, because it is designed to be watched. The second week of Shanghai. The last three days of Paris. And then the two finals weeks in November, when the fields are small, the matches are meaningful, and every single player on court is someone you have heard of.
+The rule exists mostly because of injuries and pregnancies. That it now covers a player stepping away to look after her mind is quietly one of the more decent things about modern tennis, and it is very new. Twenty years ago there was no vocabulary for this at all. You were injured, or you were finished, and if you were struggling you called it a back problem because that was a reason people accepted.
 
-Treat the rest as background. Have it on while you cook. Check a score at lunch. Learn the name of one player you did not know in September and follow them through to Turin. The autumn rewards that kind of low-effort attention far more than the Slams do, because the fields are smaller and the stories repeat week after week until they become familiar.
+## The players who came back
 
-## Bologna, and then quiet
+If your instinct is that this is the end of her story, the recent history of the women's tour argues otherwise, and it argues hard.
 
-There is a specific moment coming at the end of November that almost nobody who watched the US Open final will see. It will be in an indoor arena in northern Italy, late on a Sunday, after a doubles rubber has decided a tie, and it will be two teams of exhausted men in matching tracksuits shaking hands while a few thousand Italians make an extraordinary amount of noise.
+In May 2023, Amanda Anisimova wrote that she had been struggling with her mental health and burnout since the previous summer, that being at tournaments had become unbearable, and that she was stepping away. She was twenty-one. She put the racquets down for four months, spent time with her family and did a lot of painting, and plenty of people quietly assumed that was that.
 
-Then the lights go off and tennis takes its five or six weeks away. The players go to the Maldives or to a gym in Dubai, the courts sit empty, and for a short while there is genuinely nothing on.
+In 2025 she reached the Wimbledon final. Then she reached the US Open final. Two major finals in one summer, from the player who could not face a locker room two years earlier. She lost both, one of them 6-0, 6-0 in a way that would have broken someone with less in them, and came back again the following week.
 
-It will not last. The first balls of 2027 get struck in Australia while most of us are still taking the decorations down. Until then, there are ten weeks of the sport left, played in Prague and Shenzhen and Shanghai and Vienna and Paris and Turin and Bologna, and you now know where all of it is.
+That is the honest counterweight to the gloom around Haddad Maia's announcement. Time away from tennis is not the same thing as the end of tennis. Sometimes it is the only thing that makes the rest of a career possible. If you want the gentler, everyday version of the same idea, we have written about [what the court gives back when you stop treating it as a battlefield](/lifestyle/tennis-stress-relief-mindfulness/) — it applies to the people in the folding chairs as much as to the people in the rankings.
 
-*Photo: an indoor arena during a season-ending final, the court lit blue under a full house.*`;
+## São Paulo, this week, without her
+
+So what is actually happening at Parque Villa-Lobos while all this sits in the background?
+
+A good little tournament, is the answer. Fernandez is a former US Open finalist with a left-handed game and a taste for a fight. Badosa has been ranked as high as number two in the world. There are qualifiers who have flown in from three continents for a draw of thirty-two, and there is a Brazilian crowd, which is the real point. South American tennis crowds do not behave like tennis crowds elsewhere. They sing. They start things in the middle of rallies. They treat a WTA 250 in a city park like a football night.
+
+Last year, in the very first edition, Haddad Maia was the top seed and the entire reason the tickets sold. She beat her compatriot Laura Pigossi in the last sixteen and then lost in the quarter-finals to Renata Zarazúa of Mexico, 7-6(5), 6-3, in front of a crowd that had spent the whole week waiting for a final they never got. The title went to Tiantsoa Rakotomanga Rajaonah of France, who was ranked outside the top two hundred and who nobody in the park had come to see.
+
+This year, there is not even that. There is a draw sheet with no Brazilian at the top of it, and a tournament that will be perfectly good and slightly quieter than it should be.
+
+And that gap in São Paulo is the clearest picture anyone could draw of what one player means to a country. The tennis calendar does not stop for her. It never stops for anyone — if you want to know what is filling the next ten weeks now that New York is over, we laid out the whole strange autumn in [our guide to the season after the US Open](/lifestyle/tennis-autumn-season-2026-what-happens-after-us-open/). The Asian swing will arrive, the indoor season will arrive, the year-end finals will arrive, and by January the sport will be somewhere else entirely.
+
+## What you can do with a story like this
+
+Nothing, is the honest answer, and that is an uncomfortable thing for a fan to sit with. You cannot fix it, you cannot cheer her back onto the court, and the worst thing anybody can do with an athlete who has said she needs quiet is demand a timetable from her.
+
+What you can do is adjust what you think you are watching.
+
+Most of us consume this sport as a results service. A name wins, a name loses, the ranking moves, the next tournament starts. The player is a set of numbers that goes up or down and we feel entitled to an explanation when the numbers go the wrong way. Haddad Maia has just told us, as plainly as anyone in tennis has told us in years, that the numbers were coming from a person who was not all right, for longer than any of us noticed, while she kept turning up and playing anyway.
+
+The next time you see a top-fifty player lose badly in a first round, that is worth remembering. You are watching one bad hour of a life you know nothing about.
+
+Brazilian tennis will be fine. Fonseca is pulling a generation of kids into the sport, the SP Open will be back next September, and somewhere in a club in São Paulo there is a twelve-year-old with a left-handed forehand who watched Paris in 2023 and decided.
+
+But there is a specific thing worth holding onto about this week. Tennis asked Bia Haddad Maia for everything she had for the better part of a decade — the comeback, the top ten, the flag, the whole weight of a country's expectations on one pair of shoulders — and when she finally had nothing left, she said so out loud, in her own words, on her own account, with no medical excuse to hide behind.
+
+That took more nerve than any three-hour-fifty-one-minute match she ever won. The trophy cabinet will not record it. It should.
+
+*Photo: an empty hard court seen from above, its paint cracked by the sun, the lines still perfectly drawn.*`;
 
 const record = {
   slug, title, excerpt, body,
